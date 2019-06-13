@@ -34,7 +34,7 @@ for op in "$@";do
         -t|--technology)
             shift
             if [[ "$1" != "" ]]; then
-                technology="${1/%\//}"
+                technology=`echo "${1/%\//}" | tr '[:upper:]' '[:lower:]'`
                 shift
                 skip=true
             else
@@ -87,3 +87,15 @@ done
 
 echo technology: $technology
 echo files: $read1 \(Read1\) and $read2 \(Read2\)
+
+if [ "$technology" == "10x" ]; then
+        echo "running cellranger for 10x"
+elif [ "$technology" == "nadia" ]; then
+        echo "convert barcodes for nadia"
+        echo "running cellranger for nadia"
+elif [ "$technology" == "icell8" ]; then
+        echo "convert barcodes for iCELL8"
+        echo "running cellranger for iCELL8"
+fi
+
+
