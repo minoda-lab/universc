@@ -46,8 +46,8 @@ for op in "$@";do
         -f|--file)
             shift
             if [[ "$1" != "" ]]; then
-                read1="${1/%\//}_R1"
-                read2="${1/%\//}_R2"
+                read1="${1/%\//}_R1_001"
+                read2="${1/%\//}_R2_001"
                 shift
                 skip=true
             else
@@ -69,7 +69,7 @@ for op in "$@";do
         -R2|--read2)
             shift
             if [[ "$1" != "" ]]; then
-                read1="${1/%\//}"
+                read2="${1/%\//}"
                 shift
                 skip=true
             else
@@ -86,4 +86,4 @@ for op in "$@";do
 done
 
 echo technology: $technology
-echo files: $read1 (Read1) and $read2 (Read2)
+echo files: $read1 \(Read1\) and $read2 \(Read2\)
