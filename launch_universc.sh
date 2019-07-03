@@ -277,25 +277,25 @@ crR2=$(echo "$unzipR2")
 cp $read1 $crR1
 
 if [[ "$technology" == "10x" ]]; then
-	echo "10X files accepted without conversion
+    echo "10X files accepted without conversion
 else
-	echo "	converting R1 file from $technology format to 10x format..."
-	if [[ "$technology" == "nadia" ]]; then
-		echo "converting barcodes"
-		sed -i '2~4s/^/AAAA/' $crR1 #Add AAAA to every read
-      		echo "converting quality scores"
-		sed -i '4~4s/^/IIII/' $crR1 #Add quality scores for added bases
-        	echo "converting UMI"
-		sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $crR1 #Replace last 6 bases with AA
-		echo "converting quality scores"       
-		sed -i '4~4s/......$/II/' $crR1 #Replace quality scores for added bases
-	elif [[ "$technology" == "icell8" ]]; then
-        	echo "converting barcodes"
-		sed -i '2~4s/^/AAAAA/' $crR1 #Add AAAAA to every read
-        	echo "converting quality scores"
-		sed -i '4~4s/^/IIIII/' $crR1 #Add quality scores for added bases
-	fi
-	echo "conversion complete"
+    echo "    converting R1 file from $technology format to 10x format..."
+    if [[ "$technology" == "nadia" ]]; then
+        echo "converting barcodes"
+        sed -i '2~4s/^/AAAA/' $crR1 #Add AAAA to every read
+              echo "converting quality scores"
+        sed -i '4~4s/^/IIII/' $crR1 #Add quality scores for added bases
+            echo "converting UMI"
+        sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $crR1 #Replace last 6 bases with AA
+        echo "converting quality scores"       
+        sed -i '4~4s/......$/II/' $crR1 #Replace quality scores for added bases
+    elif [[ "$technology" == "icell8" ]]; then
+            echo "converting barcodes"
+        sed -i '2~4s/^/AAAAA/' $crR1 #Add AAAAA to every read
+            echo "converting quality scores"
+        sed -i '4~4s/^/IIIII/' $crR1 #Add quality scores for added bases
+    fi
+    echo "conversion complete"
 fi
 
 #create virtual directory of modified files
@@ -306,13 +306,17 @@ ln -s $crR2 cellranger/$crR2
 ln -s $crR1 cellranger/$unzipR1
 rm -rf $id
 
+#extract sample name from beginning of read1 name but regex 
+SAMPLE=`echo $read1 | sed "s/\(^.*\)_S._.*/\1/g"`
+LANE=`echo $read1 | sed "s/^.*00\(.\)_R.*/\1/g"`
+
 #running cellranger
 start=`date +%s`
 cellranger count --id=$id \
          --fastqs="cellranger" \
-         --lanes="1,2" \
+         --lanes=$LANE \ # possible to make it revert to "1,2" or pass args from script
          --r1-length="26" \
-         --chemistry="threeprime" \
+         --chemistry="SC3Pv2" \ #change to variable to pass 5' 'SC5P-PE' or 'SC5P-R2
          --transcriptome=$reference
 #         --sample=SAMPLE
 #        --noexit
