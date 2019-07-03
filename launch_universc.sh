@@ -223,7 +223,7 @@ if $setup; then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
         if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
             then
-            echo "restore 10x barcodes
+            echo "restore 10x barcodes"
             cp 737K-august-2016.txt.backup 737K-august-2016.txt
         fi
         #create a file with every possible barcode (permutation)
@@ -235,7 +235,7 @@ if $setup; then
         #save original barcode file (if doesn't already exist)
         if [ ! -f  737K-august-2016.txt.backup ]
             then
-            echo backup of version 2 whitelist
+            echo "backup of version 2 whitelist"
             cp 737K-august-2016.txt 737K-august-2016.txt.backup
         fi
         #combine 10x and Nadia barcodes
@@ -247,13 +247,13 @@ if $setup; then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
             if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
                 then
-                echo "restore 10x barcodes
+                echo "restore 10x barcodes"
                 cp 3M-february-2018.txt.gz.backup 3M-february-2018.txt.gz
             fi
             gunzip -k  3M-february-2018.txt.gz
             if [ ! -f  3M-february-2018.txt.backup.gz ]
                 then
-                echo backup of version 3 whitelist
+                echo "backup of version 3 whitelist"
                 cp 3M-february-2018.txt 3M-february-2018.txt.backup
                 gzip 3M-february-2018.txt.backup
             fi
@@ -268,7 +268,7 @@ if $setup; then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
         if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
             then
-            echo "restore 10x barcodes
+            echo "restore 10x barcodes"
             cp 737K-august-2016.txt.backup 737K-august-2016.txt
         fi
         #create a file with every possible barcode (permutation)
@@ -280,7 +280,7 @@ if $setup; then
         #save original barcode file (if doesn't already exist)
         if [ ! -f  737K-august-2016.txt.backup ]
             then
-            echo backup of version 2 whitelist
+            echo "backup of version 2 whitelist"
             cp 737K-august-2016.txt 737K-august-2016.txt.backup
         fi
         #combine 10x and Nadia barcodes
@@ -292,13 +292,13 @@ if $setup; then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
             if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
                 then
-                echo "restore 10x barcodes
+                echo "restore 10x barcodes"
                 cp 3M-february-2018.txt.gz.backup 3M-february-2018.txt.gz
             fi
             gunzip -k  3M-february-2018.txt.gz
             if [ ! -f  3M-february-2018.txt.backup.gz ]
                 then
-                echo backup of version 3 whitelist
+                echo "backup of version 3 whitelist"
                 cp 3M-february-2018.txt 3M-february-2018.txt.backup
                 gzip 3M-february-2018.txt.backup
             fi
