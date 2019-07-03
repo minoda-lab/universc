@@ -156,6 +156,36 @@ elif [ "$technology" == "icell8" ]; then
         echo "running cellranger for iCELL8"
 fi
 
+unzipR1=$(echo "$read1" | sed 's/\.gz$//')
+unzipR2=$(echo "$read2" | sed 's/\.gz$//')
+if [[ -f $read1 ]]; then
+	if [[ $read1 != *'.fastq'* ]] && [[ $read1 != *'.fq'* ]]; then
+		echo "Error: $read1 is not in .fq or .fastq format"
+		exit 1
+	fi
+	if [[ $read1 == *'.gz' ]]; then
+		echo "	unzipping R1 file..."
+		gunzip -kf $read1
+	fi
+else
+	echo "Error: $read1 is missing"
+	exit 1
+fi
+
+if [[ -f $read2 ]]; then
+	if [[ $read2 != *'.fastq'* ]] && [[ $read2 != *'.fq'* ]]; then
+		echo "Error: $read2 is not in .fq or .fastq format"
+		exit 1
+	fi
+	if [[ $read2 == *'.gz' ]]; then
+		echo "	unzipping R2 file..."
+		gunzip -kf $read2
+	fi
+else
+	echo "Error: $read2 is missing"
+	exit 1
+fi
+
 #detect FASTQ files for sample
 if [ -f $read1 ]; then
         echo $read1
@@ -199,3 +229,18 @@ fi
 
 echo files: $read1 \(Read1\) and $read2 \(Read2\)
 
+#format conversion of R1 file for running cellrenger
+crR1=$(echo "$unzipR1" | sed 's/\./_conv10x./')
+crR2=$(echo "$unzipR2")
+
+echo "	converting R1 file from $technology format to 10x format..."
+cp $read1 $crR1
+if [[ "$technology" == "nadia" ]]; then
+	sed -i '2~4s/^/AAAA/' $crR1 #Add AAAA to every read
+	sed -i '4~4s/^/IIII/' $crR1 #Add quality scores for added bases
+	sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $crR1 #Replace last 6 bases with AA
+	sed -i '4~4s/......$/II/' $crR1 #Replace quality scores for added bases
+elif [[ "$technology" == "icell8" ]]; then
+	sed -i '2~4s/^/AAAAA/' $crR1 #Add AAAAA to every read
+	sed -i '4~4s/^/IIIII/' $crR1 #Add quality scores for added bases
+fi
