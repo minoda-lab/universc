@@ -18,7 +18,8 @@ Convert sequencing data (FASTQ) from various platforms for compatibility with 10
 Mandatory arguments to long options are mandatory for short options too.
   -R1, --read1=FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
   -R2, --read2=FILE             Read 2 FASTQ file to pass to cellranger
-  -f,  --file=NAME              Name of FASTQ files to pass to cellranger
+  -f,  --file=NAME              Name of FASTQ files to pass to cellranger (prefix before R1 or R2)
+  -a,  --directory=DIR          Path of directory containing all R1 and R2 files
   -t,  --technology=PLATFORM    Name of technology used to generate data (10x, nadia, icell8)
   -d,  --description=TEXT       Sample description to embed in output files.
   -c,  --chemistry=CHEM         Assay configuration, autodetection is not possible for converted files:  'SC3Pv2', 'SC5P-PE', or 'SC5P-R2' 
@@ -41,7 +42,10 @@ if [[ -z $@ ]]; then
     exit 1
 fi
 
-echo " checking options..."
+#reading in options
+echo "	checking options..."
+read1=()
+read2=()
 skip=false
 for op in "$@";do
     if $skip;then skip=false;continue;fi
@@ -130,8 +134,8 @@ for op in "$@";do
         -f|--file)
             shift
             if [[ "$1" != "" ]]; then
-                read1="${1/%\//}_R1_001"
-                read2="${1/%\//}_R2_001"
+                read1s="${1/%\//}_R1_001"
+                read2s="${1/%\//}_R2_001"
                 shift
                 skip=true
             else
@@ -139,10 +143,25 @@ for op in "$@";do
                 exit 1
             fi
             ;;
+        -a|--directory)
+            shift
+            if [[ "$1" != "" ]]; then
+                dir=$(echo $1/*)
+                for fq in $dir; do
+                    if [[ $fq == *"_R1_"* ]]; then
+                        read1s+=("$fq")
+                    elif [[ $fq == *"_R2_"* ]]; then
+                        read2s+=("$fq")
+                    fi
+                done
+                shift
+                skip=true
+            fi
+            ;;
         -R1|--read1)
             shift
             if [[ "$1" != "" ]]; then
-                read1="${1/%\//}"
+                read1s+=("${1/%\//}")
                 shift
                 skip=false
             else
@@ -153,7 +172,7 @@ for op in "$@";do
         -R2|--read2)
             shift
             if [[ "$1" != "" ]]; then
-                read2="${1/%\//}"
+                read2s+=("${1/%\//}")
                 shift
                 skip=true
             else
@@ -341,6 +360,12 @@ fi
 if [[ -z $chemistry ]]; then
     chemistry="SC3Pv2"
     echo "Warning: option -c not found, defaulting to SC3Pv2 (three-prime)"
+fi
+
+if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]
+    then
+    echo "Error: option -t needs to be 10x, nadia, or icell8"
+    exit 1
 fi
 
 #report inputs
