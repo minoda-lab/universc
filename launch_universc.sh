@@ -4,8 +4,8 @@ install=false
 #cell renger version
 cellrangerpass=`which cellranger`
 if [[ -z $cellrangerpass ]]; then
-	echo "cellranger command is not found."
-	exit 1
+    echo "cellranger command is not found."
+    exit 1
 fi
 ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.1) | head -n 3 | tail -n 2`
 help="Usage: bash $(basename "$0") -R1=FILE1 -R2=FILE2 -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
@@ -19,9 +19,13 @@ Mandatory arguments to long options are mandatory for short options too.
   -R2, --read2=FILE             Read 2 FASTQ file to pass to cellranger
   -f,  --file=NAME              Name of FASTQ files to pass to cellranger
   -t,  --technology=PLATFORM    Name of technology used to generate data (10x, nadia, icell8)
-  -i,  --id=ID	                A unique run id, used to name output folder
+  -d,  --description=TEXT       Sample description to embed in output files.
+  -c,  --chemistry=CHEM         Assay configuration, autodetection is not possible for converted files:  'SC3Pv2', 'SC5P-PE', or 'SC5P-R2' 
+  -l,  --lanes=NUMS             Comma-separated lane numbers
+  -n,  --force-cells=NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
+  -i,  --id=ID                    A unique run id, used to name output folder
   -r,  --reference=DIR          Path of directory containing 10x-compatible reference.
-  -h,  --help	                Display this help and exit
+  -h,  --help                    Display this help and exit
   -v,  --version                Output version information and exit
 
 For each fastq file, follow the following naming convention:
@@ -31,8 +35,8 @@ For each fastq file, follow the following naming convention:
 "
 
 if [[ -z $@ ]]; then
-	echo "$help"
-	exit 1
+    echo "$help"
+    exit 1
 fi
 
 echo " checking options..."
@@ -60,6 +64,38 @@ for op in "$@";do
               fi
               shift
               skip=true 
+            fi
+            ;;
+        -d|--description)
+            shift
+            if [[ "$1" != "" ]]; then
+                TEXT="${1/%\//}"
+                shift
+                skip=true
+            fi
+            ;;
+        -c|--chemistry)
+            shift
+            if [[ "$1" != "" ]]; then
+                chemistry="${1/%\//}"
+                shift
+                skip=true
+            fi
+            ;;
+        -l|--lanes)
+            shift
+            if [[ "$1" != "" ]]; then
+                lanes="${1/%\//}"
+                shift
+                skip=true
+            fi
+            ;;
+        -n|--force-cells)
+            shift
+            if [[ "$1" != "" ]]; then
+                ncells="${1/%\//}"
+                shift
+                skip=true
             fi
             ;;
         -i|--id)
@@ -92,7 +128,7 @@ for op in "$@";do
                 shift
                 skip=true
             else
-                echo "Error: File missing for --read1"
+                echo "Error: File input missing --file or --read1"
                 exit 1
             fi
             ;;
@@ -128,20 +164,20 @@ done
 
 #check inputs
 if [[ -z $read1 ]]; then
-	echo "Error: option -R1 is required"
-	exit 1
+    echo "Error: option -R1 is required"
+    exit 1
 elif [[ -z $read2 ]]; then
-	echo "Error: option -R2 is required"
-	exit 1
+    echo "Error: option -R2 is required"
+    exit 1
 elif [[ -z $technology ]]; then
-	echo "Error: option -t is required"
-	exit 1
+    echo "Error: option -t is required"
+    exit 1
 elif [[ -z $id ]]; then
-	echo "Error: option -i is required"
-	exit 1
+    echo "Error: option -i is required"
+    exit 1
 elif [[ -z $reference ]]; then
-	echo "Error: option -r is required"
-	exit 1
+    echo "Error: option -r is required"
+    exit 1
 fi
 
 #report inputs
@@ -159,31 +195,31 @@ fi
 unzipR1=$(echo "$read1" | sed 's/\.gz$//')
 unzipR2=$(echo "$read2" | sed 's/\.gz$//')
 if [[ -f $read1 ]]; then
-	if [[ $read1 != *'.fastq'* ]] && [[ $read1 != *'.fq'* ]]; then
-		echo "Error: $read1 is not in .fq or .fastq format"
-		exit 1
-	fi
-	if [[ $read1 == *'.gz' ]]; then
-		echo "	unzipping R1 file..."
-		gunzip -kf $read1
-	fi
+    if [[ $read1 != *'.fastq'* ]] && [[ $read1 != *'.fq'* ]]; then
+        echo "Error: $read1 is not in .fq or .fastq format"
+        exit 1
+    fi
+    if [[ $read1 == *'.gz' ]]; then
+        echo "    unzipping R1 file..."
+        gunzip -kf $read1
+    fi
 else
-	echo "Error: $read1 is missing"
-	exit 1
+    echo "Error: $read1 is missing"
+    exit 1
 fi
 
 if [[ -f $read2 ]]; then
-	if [[ $read2 != *'.fastq'* ]] && [[ $read2 != *'.fq'* ]]; then
-		echo "Error: $read2 is not in .fq or .fastq format"
-		exit 1
-	fi
-	if [[ $read2 == *'.gz' ]]; then
-		echo "	unzipping R2 file..."
-		gunzip -kf $read2
-	fi
+    if [[ $read2 != *'.fastq'* ]] && [[ $read2 != *'.fq'* ]]; then
+        echo "Error: $read2 is not in .fq or .fastq format"
+        exit 1
+    fi
+    if [[ $read2 == *'.gz' ]]; then
+        echo "    unzipping R2 file..."
+        gunzip -kf $read2
+    fi
 else
-	echo "Error: $read2 is missing"
-	exit 1
+    echo "Error: $read2 is missing"
+    exit 1
 fi
 
 #detect FASTQ files for sample
@@ -233,16 +269,16 @@ echo files: $read1 \(Read1\) and $read2 \(Read2\)
 crR1=$(echo "$unzipR1" | sed 's/\./_conv10x./')
 crR2=$(echo "$unzipR2")
 
-echo "	converting R1 file from $technology format to 10x format..."
+echo "    converting R1 file from $technology format to 10x format..."
 cp $read1 $crR1
 if [[ "$technology" == "nadia" ]]; then
-	sed -i '2~4s/^/AAAA/' $crR1 #Add AAAA to every read
-	sed -i '4~4s/^/IIII/' $crR1 #Add quality scores for added bases
-	sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $crR1 #Replace last 6 bases with AA
-	sed -i '4~4s/......$/II/' $crR1 #Replace quality scores for added bases
+    sed -i '2~4s/^/AAAA/' $crR1 #Add AAAA to every read
+    sed -i '4~4s/^/IIII/' $crR1 #Add quality scores for added bases
+    sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $crR1 #Replace last 6 bases with AA
+    sed -i '4~4s/......$/II/' $crR1 #Replace quality scores for added bases
 elif [[ "$technology" == "icell8" ]]; then
-	sed -i '2~4s/^/AAAAA/' $crR1 #Add AAAAA to every read
-	sed -i '4~4s/^/IIIII/' $crR1 #Add quality scores for added bases
+    sed -i '2~4s/^/AAAAA/' $crR1 #Add AAAAA to every read
+    sed -i '4~4s/^/IIIII/' $crR1 #Add quality scores for added bases
 fi
 
 #create virtual directory of modified files
@@ -256,15 +292,15 @@ rm -rf $id
 #running cellranger
 start=`date +%s`
 cellranger count --id=$id \
-		 --fastqs="cellranger" \
-		 --lanes="1,2" \
-		 --r1-length="26" \
-		 --chemistry="threeprime" \
-		 --transcriptome=$reference
-#		 --sample=SAMPLE
-#		--noexit
-#		--nopreflight
-#		--force-cells="2500"
+         --fastqs="cellranger" \
+         --lanes="1,2" \
+         --r1-length="26" \
+         --chemistry="threeprime" \
+         --transcriptome=$reference
+#         --sample=SAMPLE
+#        --noexit
+#        --nopreflight
+#        --force-cells="2500"
 end=`date +%s`
 runtime=$((end-start))
 
@@ -278,8 +314,8 @@ log="
 $ver_info
 
 Following files were passed on to cellranger:
-	Read1: $read1 --(converted to)--> cellranger/$unzipR1
-	Read2: $read2 --(converted to)--> cellranger/$unzipR2
+    Read1: $read1 --(converted to)--> cellranger/$unzipR1
+    Read2: $read2 --(converted to)--> cellranger/$unzipR2
 Original barcode format: ${technology} (then converted to 10x)
 
 Runtime: $runtime s
