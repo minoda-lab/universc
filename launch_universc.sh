@@ -274,16 +274,28 @@ echo files: $read1 \(Read1\) and $read2 \(Read2\)
 crR1=$(echo "$unzipR1" | sed 's/\./_conv10x./')
 crR2=$(echo "$unzipR2")
 
-echo "    converting R1 file from $technology format to 10x format..."
 cp $read1 $crR1
-if [[ "$technology" == "nadia" ]]; then
-    sed -i '2~4s/^/AAAA/' $crR1 #Add AAAA to every read
-    sed -i '4~4s/^/IIII/' $crR1 #Add quality scores for added bases
-    sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $crR1 #Replace last 6 bases with AA
-    sed -i '4~4s/......$/II/' $crR1 #Replace quality scores for added bases
-elif [[ "$technology" == "icell8" ]]; then
-    sed -i '2~4s/^/AAAAA/' $crR1 #Add AAAAA to every read
-    sed -i '4~4s/^/IIIII/' $crR1 #Add quality scores for added bases
+
+if [[ "$technology" == "10x" ]]; then
+	echo "10X files accepted without conversion
+else
+	echo "	converting R1 file from $technology format to 10x format..."
+	if [[ "$technology" == "nadia" ]]; then
+		echo "converting barcodes"
+		sed -i '2~4s/^/AAAA/' $crR1 #Add AAAA to every read
+      		echo "converting quality scores"
+		sed -i '4~4s/^/IIII/' $crR1 #Add quality scores for added bases
+        	echo "converting UMI"
+		sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $crR1 #Replace last 6 bases with AA
+		echo "converting quality scores"       
+		sed -i '4~4s/......$/II/' $crR1 #Replace quality scores for added bases
+	elif [[ "$technology" == "icell8" ]]; then
+        	echo "converting barcodes"
+		sed -i '2~4s/^/AAAAA/' $crR1 #Add AAAAA to every read
+        	echo "converting quality scores"
+		sed -i '4~4s/^/IIIII/' $crR1 #Add quality scores for added bases
+	fi
+	echo "conversion complete"
 fi
 
 #create virtual directory of modified files
