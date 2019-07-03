@@ -5,17 +5,26 @@ DIR=`which /home/tom/local/bin/cellranger-2.1.0/cellranger`
 VERSION=`cellranger count --version | head -n 2 | tail -n 1 | cut -d"(" -f2 | cut -d")" -f1`
 cd ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes
 
+echo "update barcodes in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes \n for cellranger version $VERSION installed in $DIR"
+
+
 #create a file with every possible barcode (permutation)
-echo AAAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > iCELL8_barcode.txt
+if [ ! -f iCELL8_barcode.txt ]
+    then
+    echo AAAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > iCELL8_barcode.txt
+    echo "expected barcodes generated for iCELL8"
+    fi
 
 #save original barcode file (if doesn't already exist)
 if [ ! -f  737K-august-2016.txt.backup ]
     then
+    echo backup of version 2 whitelist
     cp 737K-august-2016.txt 737K-august-2016.txt.backup
     fi
 
 #combine 10x and Nadia barcodes
 cat iCELL8_barcode.txt 737K-august-2016.txt.backup > 737K-august-2016.txt
+echo "whitelist converted for iCELL8 compatibility with version 2 kit"
 
 #create version 3 files if version 3 whitelist available
 if [ -f 3M-february-2018.txt.gz ]
@@ -23,6 +32,7 @@ if [ -f 3M-february-2018.txt.gz ]
     gunzip -k  3M-february-2018.txt.gz
     if [ ! -f  3M-february-2018.txt.backup.gz ]
         then
+        echo backup of version 3 whitelist
         cp 3M-february-2018.txt 3M-february-2018.txt.backup
         gzip 3M-february-2018.txt.backup
         fi
@@ -30,6 +40,7 @@ if [ -f 3M-february-2018.txt.gz ]
     gzip -k iCELL8_barcode.txt
     zcat iCELL8_barcode.txt 3M-february-2018.txt.backup > 3M-february-2018.txt
     gzip -f 3M-february-2018.txt
+    echo "whitelist converted for iCELL8 compatibility with version 3 kit"
     fi
 
 
