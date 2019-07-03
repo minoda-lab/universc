@@ -7,6 +7,7 @@ cd ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes
 
 echo "update barcodes in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes \n for cellranger version $VERSION installed in $DIR"
 
+#restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
 if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
     then
     echo "restore 10x barcodes
@@ -34,6 +35,7 @@ echo "whitelist converted for Nadia compatibility with version 2 kit"
 #create version 3 files if version 3 whitelist available
 if [ -f 3M-february-2018.txt.gz ]
     then
+    #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
     if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
         then
         echo "restore 10x barcodes
