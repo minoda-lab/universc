@@ -198,7 +198,8 @@ if $setup; then
     VERSION=`cellranger count --version | head -n 2 | tail -n 1 | cut -d"(" -f2 | cut -d")" -f1`
     cd ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes
     echo "update barcodes in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes \n for cellranger version $VERSION installed in $DIR"
-    if [[ $technology == "10x" ]]; then
+    if [[ $technology == "10x" ]]
+        then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
         if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
             then
@@ -217,7 +218,8 @@ if $setup; then
             fi
             echo "whitelist converted for 10x compatibility with version 3 kit"
         fi
-    elif [[ $technology == "nadia" ]]; then
+    elif [[ $technology == "nadia" ]]
+        then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
         if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
             then
@@ -261,7 +263,8 @@ if $setup; then
             gzip -f 3M-february-2018.txt
             echo "whitelist converted for Nadia compatibility with version 3 kit"
         fi
-    elif [[ $technology == "icell8" ]]; then
+    elif [[ $technology == "icell8" ]]
+        then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
         if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
             then
@@ -273,7 +276,7 @@ if $setup; then
             then
             echo AAAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > iCELL8_barcode.txt
             echo "expected barcodes generated for iCELL8"
-        fi 
+        fi
         #save original barcode file (if doesn't already exist)
         if [ ! -f  737K-august-2016.txt.backup ]
             then
