@@ -43,7 +43,7 @@ if [[ -z $@ ]]; then
 fi
 
 #reading in options
-echo "	checking options..."
+echo "    checking options..."
 read1=()
 read2=()
 skip=false
@@ -134,8 +134,8 @@ for op in "$@";do
         -f|--file)
             shift
             if [[ "$1" != "" ]]; then
-                read1s="${1/%\//}_R1_001"
-                read2s="${1/%\//}_R2_001"
+                read1="${1/%\//}_R1_001"
+                read2="${1/%\//}_R2_001"
                 shift
                 skip=true
             else
@@ -149,9 +149,9 @@ for op in "$@";do
                 dir=$(echo $1/*)
                 for fq in $dir; do
                     if [[ $fq == *"_R1_"* ]]; then
-                        read1s+=("$fq")
+                        read1+=("$fq")
                     elif [[ $fq == *"_R2_"* ]]; then
-                        read2s+=("$fq")
+                        read2+=("$fq")
                     fi
                 done
                 shift
@@ -161,7 +161,7 @@ for op in "$@";do
         -R1|--read1)
             shift
             if [[ "$1" != "" ]]; then
-                read1s+=("${1/%\//}")
+                read1+=("${1/%\//}")
                 shift
                 skip=false
             else
@@ -172,7 +172,7 @@ for op in "$@";do
         -R2|--read2)
             shift
             if [[ "$1" != "" ]]; then
-                read2s+=("${1/%\//}")
+                read2+=("${1/%\//}")
                 shift
                 skip=true
             else
@@ -453,59 +453,164 @@ fi
 
 echo files: $read1 \(Read1\) and $read2 \(Read2\)
 
-#format conversion of R1 file for running cellrenger
-crR1=$(echo "$unzipR1" | sed 's/\./_conv10x./')
-crR2=$(echo "$unzipR2")
+#checking the quality of fastq file names
+SAMPLE=""
+LANE=()
 
-cp $read1 $crR1
+for fq in "${read1[@]}"; do
+    name=`basename $fq | cut -f1 -d'.' | grep -o "_" | wc -l | xargs`
+    sn=`basename $fq | cut -f1 -d'_'`
+    ln=`basename $fq | cut -f3 -d'_' | sed 's/L00//'`
+    LANE+=($ln)
+    
+    if [[ $name != 4 ]]; then
+        echo "Error: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
+        exit 1
+    elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
+        echo "Error: $fq does not have a .fq or .fastq extention"
+        exit 1
+    fi
+    
+    if [[ $sn != $SAMPLE ]]; then
+        if [[ -z $SAMPLE ]]; then
+            SAMPLE=$sn
+        else
+            echo "Error: some samples are labeled $SAMPLE while others are labeled $sn. cellranger can only handle files from one sample at a time."
+            exit 1
+        fi
+    fi
+done
+for fq in "${read2[@]}"; do
+    name=`basename $fq | cut -f1 -d'.' | grep -o "_" | wc -l | xargs`
+    sn=`basename $fq | cut -f1 -d'_'`
+    ln=`basename $fq | cut -f3 -d'_' | sed 's/L00//'`
+    LANE+=($ln)
+    
+    if [[ $name != 4 ]]; then
+        echo "Error: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
+        exit 1
+    elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
+        echo "Error: $fq does not have a .fq or .fastq extention"
+        exit 1
+    fi
+    
+    if [[ $sn != $SAMPLE ]]; then
+        if [[ -z $SAMPLE ]]; then
+            SAMPLE=$sn
+        else
+            echo "Error: some samples are labeled $SAMPLE while others are labeled $sn. cellranger can only handle files from one sample at a time."
+            exit 1
+        fi
+    fi
+done
+
+LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
+
+#create directory of modified files
+echo "    creating a folder for all cellranger input files..."
+crIN="cellranger"
+rm -rf $crIN
+mkdir $crIN
+
+crR1s=()
+for fq in "${read1[@]}"; do
+    to=`basename $fq`
+    to="${crIN}/${to}"
+    to=$(echo "$to" | sed 's/\.gz$//')
+    crR1s+=($fq)
+    
+    if [[ $fq == *'.gz' ]]; then
+        echo "    unzipping and redirecting $fq file..."
+        gunzip -c $fq > $to
+    else
+        echo "    redirecting $fq file..."
+        cp $fq $to
+    fi
+done
+
+crR2s=()
+for fq in "${read2[@]}"; do
+    to=`basename $fq`
+    to="${crIN}/${to}"
+    to=$(echo "$to" | sed 's/\.gz$//')
+    crR1s+=($fq)
+    
+    if [[ $fq == *'.gz' ]]; then
+        echo "    unzipping and redirecting $fq file..."
+        gunzip -c $fq > $to
+    else
+        echo "    redirecting $fq file..."
+        cp $fq $to
+    fi
+done
 
 if [[ "$technology" == "10x" ]]; then
-    echo "10X files accepted without conversion
+    echo "    10x files accepted without conversion"
 else
-    echo "    converting R1 file from $technology format to 10x format..."
-    if [[ "$technology" == "nadia" ]]; then
-        echo "converting barcodes"
-        sed -i '2~4s/^/AAAA/' $crR1 #Add AAAA to every read
-              echo "converting quality scores"
-        sed -i '4~4s/^/IIII/' $crR1 #Add quality scores for added bases
-            echo "converting UMI"
-        sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $crR1 #Replace last 6 bases with AA
-        echo "converting quality scores"       
-        sed -i '4~4s/......$/II/' $crR1 #Replace quality scores for added bases
-    elif [[ "$technology" == "icell8" ]]; then
+    echo "    converting file from $technology format to 10x format..."
+    for fq in "${crR1s[@]}"; do
+        echo "        handling $fq"
+        if [[ "$technology" == "nadia" ]]; then
+            echo "        converting barcodes of"
+            sed -i '2~4s/^/AAAA/' $fq #Add AAAA to every read
+            echo "        converting quality scores"
+            sed -i '4~4s/^/IIII/' $fq #Add quality scores for added bases
+            echo "        converting UMI"
+            sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $fq #Replace last 6 bases with AA
+            echo "        converting quality scores"
+            sed -i '4~4s/......$/II/' $fq #Replace quality scores for added bases
+        elif [[ "$technology" == "icell8" ]]; then
             echo "converting barcodes"
-        sed -i '2~4s/^/AAAAA/' $crR1 #Add AAAAA to every read
+            sed -i '2~4s/^/AAAAA/' $fq #Add AAAAA to every read
             echo "converting quality scores"
-        sed -i '4~4s/^/IIIII/' $crR1 #Add quality scores for added bases
-    fi
-    echo "conversion complete"
+            sed -i '4~4s/^/IIIII/' $fq #Add quality scores for added bases
+        fi
+    done
+    
+    for fq in "${crR2s[@]}"; do
+        echo "        handling $fq"
+        if [[ "$technology" == "nadia" ]]; then
+            echo "        converting barcodes"
+            sed -i '2~4s/^/AAAA/' $fq #Add AAAA to every read
+            echo "        converting quality scores"
+            sed -i '4~4s/^/IIII/' $fq #Add quality scores for added bases
+            echo "        converting UMI"
+            sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $fq #Replace last 6 bases with AA
+            echo "        converting quality scores"
+            sed -i '4~4s/......$/II/' $fq #Replace quality scores for added bases
+        elif [[ "$technology" == "icell8" ]]; then
+            echo "converting barcodes"
+            sed -i '2~4s/^/AAAAA/' $fq #Add AAAAA to every read
+            echo "converting quality scores"
+            sed -i '4~4s/^/IIIII/' $fq #Add quality scores for added bases
+        fi
+    done
+    echo "    conversion complete"
 fi
 
-#create virtual directory of modified files
-rm -rf cellranger
-mkdir cellranger
-ln -s $crR1 cellranger/$crR1
-ln -s $crR2 cellranger/$crR2
-ln -s $crR1 cellranger/$unzipR1
-rm -rf $id
-
-#extract sample name from beginning of read1 name but regex 
-SAMPLE=`echo $read1 | sed "s/\(^.*\)_S._.*/\1/g"`
-LANE=`echo $read1 | sed "s/^.*00\(.\)_R.*/\1/g"`
-
 #running cellranger
+echo "    running cellranger..."
+d=""
+if [[ ! $description ]]; then
+    d="--description=$description"
+fi
+n=""
+if [[ ! $ncells ]]; then
+    n="--force-cells=$ncells"
+fi
+
 start=`date +%s`
 cellranger count --id=$id \
-         --fastqs="cellranger" \
-         --lanes=$LANE \ # possible to make it revert to "1,2" or pass args from script
-         --r1-length="26" \
-         --chemistry="SC3Pv2" \ #change to variable to pass 5' 'SC5P-PE' or 'SC5P-R2
-        --description=$description \
-         --transcriptome=$reference \
-         --sample=$SAMPLE
+        --fastqs=$crIN \
+        --lanes=$LANE \
+        --r1-length="26" \
+        --chemistry=$chemistry \
+        --transcriptome=$reference \
+        --sample=$SAMPLE \
+        $d \
+        $n
 #        --noexit
 #        --nopreflight
-#        --force-cells="2500"
 end=`date +%s`
 runtime=$((end-start))
 
@@ -514,14 +619,11 @@ log="
 ###Conversion tool log###
 $ver_info
 
-Following files were passed on to cellranger:
-    Read1: $read1 --(converted to)--> cellranger/$unzipR1
-    Read2: $read2 --(converted to)--> cellranger/$unzipR2
 Original barcode format: ${technology} (then converted to 10x)
 
-Runtime: $runtime s
+Runtime: ${runtime}s
 "
-
 echo "$log"
 
 exit 0
+
