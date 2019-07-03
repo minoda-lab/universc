@@ -6,10 +6,12 @@ VERSION=`cellranger count --version | head -n 2 | tail -n 1 | cut -d"(" -f2 | cu
 cd ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes
 
 #create a file with every possible barcode (permutation)
-echo AAAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > nadia_barcode.txt
+echo AAAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > iCELL8_barcode.txt
 
-#save original barcode file
-cp 737K-august-2016.txt 737K-august-2016.txt.backup
+#save original barcode file (if doesn't already exist)
+if [ ! -f  737K-august-2016.txt.backup ] then
+    cp 737K-august-2016.txt 737K-august-2016.txt.backup
+    fi
 
 #combine 10x and Nadia barcodes
-cat nadia_barcodes.txt 737K-august-2016.txt.backup > 737K-august-2016.txt
+cat iCELL8_barcode.txt 737K-august-2016.txt.backup > 737K-august-2016.txt

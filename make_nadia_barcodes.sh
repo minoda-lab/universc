@@ -9,10 +9,13 @@ cd ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes
 echo AAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > nadia_barcode.txt
 
 #save original barcode file
-cp 737K-august-2016.txt 737K-august-2016.txt.backup
+#save original barcode file (if doesn't already exist)
+if [ ! -f  737K-august-2016.txt.backup ] then
+    cp 737K-august-2016.txt 737K-august-2016.txt.backup
+    fi
 
 #combine 10x and Nadia barcodes
-cat nadia_barcodes.txt 737K-august-2016.txt.backup > 737K-august-2016.txt
+cat nadia_barcode.txt 737K-august-2016.txt.backup > 737K-august-2016.txt
 
 if [ -f 3M-february-2018.txt.gz ]; then
     gunzip -k  3M-february-2018.txt.gz
