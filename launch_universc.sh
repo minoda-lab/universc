@@ -31,6 +31,11 @@ For each fastq file, follow the following naming convention:
 "
 skip=false
 
+if [[ -z $@ ]]; then
+	echo "$help"
+	exit 1
+fi
+
 for op in "$@";do
     if $skip;then skip=false;continue;fi
     case "$op" in
