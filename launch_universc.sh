@@ -175,6 +175,7 @@ if $setup; then
         echo "Error: option -t is required"
         exit 1
     fi
+    DIR=`which /home/tom/local/bin/cellranger-2.1.0/cellranger`
     VERSION=`cellranger count --version | head -n 2 | tail -n 1 | cut -d"(" -f2 | cut -d")" -f1`
     cd ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes
     echo "update barcodes in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes \n for cellranger version $VERSION installed in $DIR"
@@ -243,7 +244,7 @@ if $setup; then
         fi
     elif [[ $technology == "icell8" ]]; then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-        if [ -f iCELL8_barcode.txt -o -f  iCELL8_barcode.txt ]
+        if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
             then
             echo "restore 10x barcodes
             cp 737K-august-2016.txt.backup 737K-august-2016.txt
@@ -267,7 +268,7 @@ if $setup; then
         if [ -f 3M-february-2018.txt.gz ]
             then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-            if [ -f iCELL8_barcode.txt -o -f  iCELL8_barcode.txt ]
+            if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
                 then
                 echo "restore 10x barcodes
                 cp 3M-february-2018.txt.gz.backup 3M-february-2018.txt.gz
@@ -290,13 +291,28 @@ if $setup; then
         cd -
         exit 1
     fi
+    echo $technology > .last_called
     cd -
     echo "setup complete"
     exit 0
 fi
 
+#detect whitelist directory
+DIR=`which /home/tom/local/bin/cellranger-2.1.0/cellranger`
+VERSION=`cellranger count --version | head -n 2 | tail -n 1 | cut -d"(" -f2 | cut -d")" -f1`
 #checkwhitelist and run --setup if needed
-#bash $(basename "$0") --setup -t=TECHNOLOGY
+if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
+    then
+    #run again if last technology called is different from technology
+    last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
+    if [[ $last != $technology ]]
+        then
+        echo " running setup on $technology on whitelist in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes ..."
+        bash $(basename "$0") --setup -t=$technology
+    fi
+    else
+        echo $technology > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called
+fi
 
 #check inputs
 if [[ -z $read1 ]]; then
