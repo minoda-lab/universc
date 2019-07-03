@@ -11,6 +11,7 @@ ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script v
 help="Usage: bash $(basename "$0") -R1=FILE1 -R2=FILE2 -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
 bash $(basename "$0") -v
 bash $(basename "$0") -h
+bash $(basename "$0") --setup -t=TECHNOLOGY
 
 Convert sequencing data (FASTQ) from various platforms for compatibility with 10x Genomics and run cellranger count
 
@@ -23,10 +24,11 @@ Mandatory arguments to long options are mandatory for short options too.
   -c,  --chemistry=CHEM         Assay configuration, autodetection is not possible for converted files:  'SC3Pv2', 'SC5P-PE', or 'SC5P-R2' 
   -l,  --lanes=NUMS             Comma-separated lane numbers
   -n,  --force-cells=NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
-  -i,  --id=ID                    A unique run id, used to name output folder
+  -i,  --id=ID                  A unique run id, used to name output folder
   -r,  --reference=DIR          Path of directory containing 10x-compatible reference.
-  -h,  --help                    Display this help and exit
+  -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
+  -s,  --setup                  Set up whitelists for compatibility with new technology
 
 For each fastq file, follow the following naming convention:
   <SampleName>_<SampleNumber>_<LaneNumber>_<ReadNumber>_001.fastq
@@ -53,6 +55,11 @@ for op in "$@";do
             echo "$help"
             shift
             exit 0
+            ;;
+        -s|--setup)
+            echo " configure whitelist for ${cellrangerpass}..."
+            setup=true
+            shift
             ;;
         -t|--technology)
             shift
@@ -181,6 +188,8 @@ elif [[ -z $reference ]]; then
     echo "Error: option -r is required"
     exit 1
 fi
+
+#bash $(basename "$0") --setup -t=TECHNOLOGY
 
 if [[ -z $description ]]; then
     description=$id
