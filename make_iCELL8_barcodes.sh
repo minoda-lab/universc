@@ -7,6 +7,11 @@ cd ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes
 
 echo "update barcodes in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes \n for cellranger version $VERSION installed in $DIR"
 
+if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
+    then
+    echo "restore 10x barcodes
+    cp 737K-august-2016.txt.backup 737K-august-2016.txt
+    fi
 
 #create a file with every possible barcode (permutation)
 if [ ! -f iCELL8_barcode.txt ]
@@ -29,6 +34,11 @@ echo "whitelist converted for iCELL8 compatibility with version 2 kit"
 #create version 3 files if version 3 whitelist available
 if [ -f 3M-february-2018.txt.gz ]
     then
+    if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
+        then
+    echo "restore 10x barcodes
+    cp 3M-february-2018.txt.gz.backup 3M-february-2018.txt.gz
+        fi
     gunzip -k  3M-february-2018.txt.gz
     if [ ! -f  3M-february-2018.txt.backup.gz ]
         then
