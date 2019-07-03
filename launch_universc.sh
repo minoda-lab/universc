@@ -174,15 +174,21 @@ elif [[ -z $read2 ]]; then
 elif [[ -z $technology ]]; then
     echo "Error: option -t is required"
     exit 1
-elif [[ -z $chemistry ]]; then
-        chemistry="SC3Pv2"
-    echo "Warning: option -c not found, defaulting to SC3Pv2 (three-prime)"
 elif [[ -z $id ]]; then
     echo "Error: option -i is required"
     exit 1
 elif [[ -z $reference ]]; then
     echo "Error: option -r is required"
     exit 1
+fi
+
+if [[ -z $description ]]; then
+    description=$id
+    echo "Warning: no description given, setting to ID value: $id"
+fi
+if [[ -z $chemistry ]]; then
+    chemistry="SC3Pv2"
+    echo "Warning: option -c not found, defaulting to SC3Pv2 (three-prime)"
 fi
 
 #report inputs
