@@ -566,25 +566,6 @@ else
             sed -i '4~4s/^/IIIII/' $fq #Add quality scores for added bases
         fi
     done
-    
-    for fq in "${crR2s[@]}"; do
-        echo "        handling $fq"
-        if [[ "$technology" == "nadia" ]]; then
-            echo "        converting barcodes"
-            sed -i '2~4s/^/AAAA/' $fq #Add AAAA to every read
-            echo "        converting quality scores"
-            sed -i '4~4s/^/IIII/' $fq #Add quality scores for added bases
-            echo "        converting UMI"
-            sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $fq #Replace last 6 bases with AA
-            echo "        converting quality scores"
-            sed -i '4~4s/......$/II/' $fq #Replace quality scores for added bases
-        elif [[ "$technology" == "icell8" ]]; then
-            echo "converting barcodes"
-            sed -i '2~4s/^/AAAAA/' $fq #Add AAAAA to every read
-            echo "converting quality scores"
-            sed -i '4~4s/^/IIIII/' $fq #Add quality scores for added bases
-        fi
-    done
     echo "    conversion complete"
 fi
 
