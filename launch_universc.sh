@@ -169,6 +169,135 @@ for op in "$@";do
     esac
 done
 
+#run setup if called
+if $setup; then
+    if [[ -z $technology ]]; then
+        echo "Error: option -t is required"
+        exit 1
+    fi
+    VERSION=`cellranger count --version | head -n 2 | tail -n 1 | cut -d"(" -f2 | cut -d")" -f1`
+    cd ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes
+    echo "update barcodes in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes \n for cellranger version $VERSION installed in $DIR"
+    if [[ $technology == "10x" ]]; then
+        #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
+        if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
+            then
+            echo "restore 10x barcodes
+            cp 737K-august-2016.txt.backup 737K-august-2016.txt
+        fi
+        echo "whitelist converted for 10x compatibility with version 2 kit"
+        #create version 3 files if version 3 whitelist available
+        if [ -f 3M-february-2018.txt.gz ]
+            then
+            #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
+            if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
+                then
+                echo "restore 10x barcodes
+                cp 3M-february-2018.txt.gz.backup 3M-february-2018.txt.gz
+            fi
+            echo "whitelist converted for 10x compatibility with version 3 kit"
+        fi
+    elif [[ $technology == "nadia" ]]; then
+        #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
+        if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
+            then
+            echo "restore 10x barcodes
+            cp 737K-august-2016.txt.backup 737K-august-2016.txt
+        fi
+        #create a file with every possible barcode (permutation)
+        if [ ! -f nadia_barcode.txt ]
+            then
+            echo AAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > nadia_barcode.txt
+            echo "expected barcodes generated for Nadia"
+        fi 
+        #save original barcode file (if doesn't already exist)
+        if [ ! -f  737K-august-2016.txt.backup ]
+            then
+            echo backup of version 2 whitelist
+            cp 737K-august-2016.txt 737K-august-2016.txt.backup
+        fi
+        #combine 10x and Nadia barcodes
+        cat nadia_barcode.txt 737K-august-2016.txt.backup > 737K-august-2016.txt
+        echo "whitelist converted for Nadia compatibility with version 2 kit"
+        #create version 3 files if version 3 whitelist available
+        if [ -f 3M-february-2018.txt.gz ]
+            then
+            #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
+            if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
+                then
+                echo "restore 10x barcodes
+                cp 3M-february-2018.txt.gz.backup 3M-february-2018.txt.gz
+            fi
+            gunzip -k  3M-february-2018.txt.gz
+            if [ ! -f  3M-february-2018.txt.backup.gz ]
+                then
+                echo backup of version 3 whitelist
+                cp 3M-february-2018.txt 3M-february-2018.txt.backup
+                gzip 3M-february-2018.txt.backup
+            fi
+            #combine 10x and Nadia barcodes
+            gzip -k nadia_barcode.txt
+            zcat nadia_barcode.txt 3M-february-2018.txt.backup > 3M-february-2018.txt
+            gzip -f 3M-february-2018.txt
+            echo "whitelist converted for Nadia compatibility with version 3 kit"
+        fi
+    elif [[ $technology == "icell8" ]]; then
+        #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
+        if [ -f iCELL8_barcode.txt -o -f  iCELL8_barcode.txt ]
+            then
+            echo "restore 10x barcodes
+            cp 737K-august-2016.txt.backup 737K-august-2016.txt
+        fi
+        #create a file with every possible barcode (permutation)
+        if [ ! -f iCELL8_barcode.txt ]
+            then
+            echo AAAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > iCELL8_barcode.txt
+            echo "expected barcodes generated for iCELL8"
+        fi 
+        #save original barcode file (if doesn't already exist)
+        if [ ! -f  737K-august-2016.txt.backup ]
+            then
+            echo backup of version 2 whitelist
+            cp 737K-august-2016.txt 737K-august-2016.txt.backup
+        fi
+        #combine 10x and Nadia barcodes
+        cat iCELL8_barcode.txt 737K-august-2016.txt.backup > 737K-august-2016.txt
+        echo "whitelist converted for iCELL8 compatibility with version 2 kit"
+        #create version 3 files if version 3 whitelist available
+        if [ -f 3M-february-2018.txt.gz ]
+            then
+            #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
+            if [ -f iCELL8_barcode.txt -o -f  iCELL8_barcode.txt ]
+                then
+                echo "restore 10x barcodes
+                cp 3M-february-2018.txt.gz.backup 3M-february-2018.txt.gz
+            fi
+            gunzip -k  3M-february-2018.txt.gz
+            if [ ! -f  3M-february-2018.txt.backup.gz ]
+                then
+                echo backup of version 3 whitelist
+                cp 3M-february-2018.txt 3M-february-2018.txt.backup
+                gzip 3M-february-2018.txt.backup
+            fi
+            #combine 10x and Nadia barcodes
+            gzip -k iCELL8_barcode.txt
+            zcat iCELL8_barcode.txt 3M-february-2018.txt.backup > 3M-february-2018.txt
+            gzip -f 3M-february-2018.txt
+            echo "whitelist converted for iCELL8 compatibility with version 3 kit"        
+        fi
+    else
+        echo "Error: technology not supported"
+        cd -
+        exit 1
+    fi
+    cd -
+    echo "setup complete"
+    exit 0
+fi
+
+#checkwhitelist and run --setup if needed
+#bash $(basename "$0") --setup -t=TECHNOLOGY
+
 #check inputs
 if [[ -z $read1 ]]; then
     if [[ -z $file ]]; then
@@ -188,8 +317,6 @@ elif [[ -z $reference ]]; then
     echo "Error: option -r is required"
     exit 1
 fi
-
-#bash $(basename "$0") --setup -t=TECHNOLOGY
 
 if [[ -z $description ]]; then
     description=$id
