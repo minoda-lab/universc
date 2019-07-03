@@ -301,9 +301,9 @@ fi
 #create virtual directory of modified files
 rm -rf cellranger
 mkdir cellranger
-cp $crR1 cellranger
-cp $crR2 cellranger
-mv cellranger/$crR1 cellranger/$unzipR1
+ln -s $crR1 cellranger/$crR1
+ln -s $crR2 cellranger/$crR2
+ln -s $crR1 cellranger/$unzipR1
 rm -rf $id
 
 #running cellranger
