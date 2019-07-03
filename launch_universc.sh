@@ -164,14 +164,19 @@ done
 
 #check inputs
 if [[ -z $read1 ]]; then
-    echo "Error: option -R1 is required"
-    exit 1
+    if [[ -z $file ]]; then
+        echo "Error: option -R1 or --file is required"
+        exit 1
 elif [[ -z $read2 ]]; then
-    echo "Error: option -R2 is required"
-    exit 1
+    if [[ -z $file ]]; then
+        echo "Error: option -R2 or --file is required"
+        exit 1
 elif [[ -z $technology ]]; then
     echo "Error: option -t is required"
     exit 1
+elif [[ -z $chemistry ]]; then
+        chemistry="SC3Pv2"
+    echo "Warning: option -c not found, defaulting to SC3Pv2 (three-prime)"
 elif [[ -z $id ]]; then
     echo "Error: option -i is required"
     exit 1
