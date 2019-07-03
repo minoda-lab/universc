@@ -1,20 +1,33 @@
 #!/bin/bash
-dr=''
 install=false
-ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.1)`
-help="Usage: bash $(basename "$0") -R1=FILE1 -R2=FILE2 -t=TECHNOLOGY [--option=OPT]
+
+#cell renger version
+cellrangerpass=`which cellranger`
+if [[ -z $cellrangerpass ]]; then
+	echo "cellranger command is not found."
+	exit 1
+fi
+ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.1) | head -n 3 | tail -n 2`
+help="Usage: bash $(basename "$0") -R1=FILE1 -R2=FILE2 -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
 bash $(basename "$0") -v
 bash $(basename "$0") -h
 
-Convert sequencing data (FASTQ) from various platforms for compatibility with 10x Genomics
+Convert sequencing data (FASTQ) from various platforms for compatibility with 10x Genomics and run cellranger count
 
 Mandatory arguments to long options are mandatory for short options too.
-  -R1, --read1=FILE     Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
-  -R2, --read2=FILE     Read 2 FASTQ file to pass to cellranger
-  -f,  --file=NAME      Name of FASTQ files to pass to cellranger
+  -R1, --read1=FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
+  -R2, --read2=FILE             Read 2 FASTQ file to pass to cellranger
+  -f,  --file=NAME              Name of FASTQ files to pass to cellranger
   -t,  --technology=PLATFORM    Name of technology used to generate data (10x, nadia, icell8)
-  -h,  --help     display this help and exit
-  -v,  --version  output version information and exit
+  -i,  --id=ID	                A unique run id, used to name output folder
+  -r,  --reference=DIR          Path of directory containing 10x-compatible reference.
+  -h,  --help	                Display this help and exit
+  -v,  --version                Output version information and exit
+
+For each fastq file, follow the following naming convention:
+  <SampleName>_<SampleNumber>_<LaneNumber>_<ReadNumber>_001.fastq
+  e.g. EXAMPLE_S1_L001_R1_001.fastq
+       Example_S4_L002_R2_001.fastq.gz
 "
 skip=false
 
