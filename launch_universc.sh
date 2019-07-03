@@ -317,17 +317,14 @@ cellranger count --id=$id \
          --lanes=$LANE \ # possible to make it revert to "1,2" or pass args from script
          --r1-length="26" \
          --chemistry="SC3Pv2" \ #change to variable to pass 5' 'SC5P-PE' or 'SC5P-R2
-         --transcriptome=$reference
-#         --sample=SAMPLE
+        --description=$description \
+         --transcriptome=$reference \
+         --sample=$SAMPLE
 #        --noexit
 #        --nopreflight
 #        --force-cells="2500"
 end=`date +%s`
 runtime=$((end-start))
-
-#edit html output
-#sed -i "s/test_AtRTD2/Arabidopsis \(NP01\)/g" test_AtRTD2/outs/web_summary.html
-#sed -i "1621s/.*/  <td><i>Arabidopsis thaliana<\/i> (NP01)<\/td>/" test_AtRTD2/outs/web_summary.html
 
 #printing out log
 log="
