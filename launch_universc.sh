@@ -100,17 +100,17 @@ fi
 
 if [ -f $read1 ]; then
         echo $read1
-elif [ -f ${read1}.fq]; then
+elif [ -f ${read1}.fq ]; then
         read1=${read1}.fq
         echo $read1
-elif [ -f ${read1}.fastq]; then
+elif [ -f ${read1}.fastq ]; then
         read1=${read1}.fastq
         echo $read1
-elif [ -f ${read1}.fq.gz]; then
+elif [ -f ${read1}.fq.gz ]; then
         gunzip -k ${read1}.fq.gz
         read1=${read1}.fq
         echo $read1
-elif [ -f ${read1}.fastq.gz]; then
+elif [ -f ${read1}.fastq.gz ]; then
         gunzip -k ${read1}.fq.gz
         read1=${read1}.fastq
         echo $read1
@@ -120,17 +120,17 @@ fi
 
 if [ -f $read2 ]; then
         echo $read2
-elif [ -f ${read2}.fq]; then
+elif [ -f ${read2}.fq ]; then
         read2=${read2}.fq
         echo $read2
-elif [ -f ${read2}.fastq]; then
+elif [ -f ${read2}.fastq ]; then
         read2=${read2}.fastq
         echo $read2
-elif [ -f ${read2}.fq.gz]; then
+elif [ -f ${read2}.fq.gz ]; then
         gunzip -k ${read2}.fq.gz
         read2=${read2}.fq
         echo $read2
-elif [ -f ${read2}.fastq.gz]; then
+elif [ -f ${read2}.fastq.gz ]; then
         gunzip -k ${read2}.fq.gz
         read2=${read2}.fastq
         echo $read2
