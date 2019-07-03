@@ -244,3 +244,47 @@ elif [[ "$technology" == "icell8" ]]; then
 	sed -i '2~4s/^/AAAAA/' $crR1 #Add AAAAA to every read
 	sed -i '4~4s/^/IIIII/' $crR1 #Add quality scores for added bases
 fi
+
+#create virtual directory of modified files
+rm -rf cellranger
+mkdir cellranger
+cp $crR1 cellranger
+cp $crR2 cellranger
+mv cellranger/$crR1 cellranger/$unzipR1
+rm -rf $id
+
+#running cellranger
+start=`date +%s`
+cellranger count --id=$id \
+		 --fastqs="cellranger" \
+		 --lanes="1,2" \
+		 --r1-length="26" \
+		 --chemistry="threeprime" \
+		 --transcriptome=$reference
+#		 --sample=SAMPLE
+#		--noexit
+#		--nopreflight
+#		--force-cells="2500"
+end=`date +%s`
+runtime=$((end-start))
+
+#edit html output
+#sed -i "s/test_AtRTD2/Arabidopsis \(NP01\)/g" test_AtRTD2/outs/web_summary.html
+#sed -i "1621s/.*/  <td><i>Arabidopsis thaliana<\/i> (NP01)<\/td>/" test_AtRTD2/outs/web_summary.html
+
+#printing out log
+log="
+###Conversion tool log###
+$ver_info
+
+Following files were passed on to cellranger:
+	Read1: $read1 --(converted to)--> cellranger/$unzipR1
+	Read2: $read2 --(converted to)--> cellranger/$unzipR2
+Original barcode format: ${technology} (then converted to 10x)
+
+Runtime: $runtime s
+"
+
+echo "$log"
+
+exit 0
