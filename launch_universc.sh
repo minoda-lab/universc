@@ -203,7 +203,7 @@ if $setup; then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
         if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
             then
-            echo "restore 10x barcodes
+            echo "restore 10x barcodes"
             cp 737K-august-2016.txt.backup 737K-august-2016.txt
         fi
         echo "whitelist converted for 10x compatibility with version 2 kit"
@@ -213,7 +213,7 @@ if $setup; then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
             if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
                 then
-                echo "restore 10x barcodes
+                echo "restore 10x barcodes"
                 cp 3M-february-2018.txt.gz.backup 3M-february-2018.txt.gz
             fi
             echo "whitelist converted for 10x compatibility with version 3 kit"
