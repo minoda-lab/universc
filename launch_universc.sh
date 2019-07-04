@@ -106,6 +106,14 @@ for op in "$@";do
                 skip=true
             fi
             ;;
+        -j|--jobmode)
+            shift
+            if [[ "$1" != "" ]]; then
+                jobmode="${1/%\//}"
+                shift
+                skip=true
+            fi
+            ;;
         -i|--id)
             shift
             if [[ "$1" != "" ]]; then
@@ -427,6 +435,10 @@ if [[ -z $description ]]; then
     description=$id
     echo "Warning: no description given, setting to ID value: $id"
 fi
+if [[ -z $jobmode ]]; then
+    echo jobmode="local"
+    echo " defaulting to local mode: --jobmode \"sge\" is recommended if running script with qsub"
+fi
 if [[ -z $chemistry ]]; then
     chemistry="SC3Pv2"
     echo "Warning: option -c not found, defaulting to SC3Pv2 (three-prime)"
@@ -664,7 +676,10 @@ n=""
 if [[ ! $ncells ]]; then
     n="--force-cells=$ncells"
 fi
-
+j=""
+if [[ ! $jobmode ]]; then
+    j="--jobmode=$jobmode"
+fi
 start=`date +%s`
 cellranger count --id=$id \
         --fastqs=$crIN \
@@ -674,7 +689,8 @@ cellranger count --id=$id \
         --transcriptome=$reference \
         --sample=$SAMPLE \
         $d \
-        $n
+        $n \
+        $j
 
 #        --noexit
 #        --nopreflight
