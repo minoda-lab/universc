@@ -316,7 +316,6 @@ if $setup; then
     echo $technology > .last_called
     cd -
     echo "setup complete"
-    exit 0
 fi
 
 #detect whitelist directory
@@ -332,7 +331,8 @@ if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
         echo " running setup on $technology on whitelist in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes ..."
         bash $(basename "$0") --setup -t=$technology
     fi
-    else
+else    
+        echo " using setup $technology from previous whitelist configuration ..."
         echo $technology > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called
 fi
 
@@ -341,10 +341,12 @@ if [[ -z $read1 ]]; then
     if [[ -z $file ]]; then
         echo "Error: option -R1 or --file is required"
         exit 1
+    fi
 elif [[ -z $read2 ]]; then
     if [[ -z $file ]]; then
         echo "Error: option -R2 or --file is required"
         exit 1
+    fi
 elif [[ -z $technology ]]; then
     echo "Error: option -t is required"
     exit 1
@@ -552,6 +554,7 @@ cellranger count --id=$id \
         --sample=$SAMPLE \
         $d \
         $n
+
 #        --noexit
 #        --nopreflight
 end=`date +%s`
