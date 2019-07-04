@@ -422,44 +422,62 @@ elif [ "$technology" == "icell8" ]; then
 fi
 
 #auto detect read file format (if one file each)
-if [ -f $read1 ]; then
+if [[ ${#read1[@]} == 1 ]]
+    then
+    echo " checking file format for $read1 ..."
+    if [ -f $read1 ]
+        then
         echo $read1
-elif [ -f ${read1}.fq ]; then
+    elif [ -f ${read1}.fq ]
+    then
         read1=${read1}.fq
         echo $read1
-elif [ -f ${read1}.fastq ]; then
+    elif [ -f ${read1}.fastq ]
+        then
         read1=${read1}.fastq
         echo $read1
-elif [ -f ${read1}.fq.gz ]; then
+    elif [ -f ${read1}.fq.gz ]
+        then
         gunzip -k ${read1}.fq.gz
         read1=${read1}.fq
         echo $read1
-elif [ -f ${read1}.fastq.gz ]; then
+    elif [ -f ${read1}.fastq.gz ]
+        then
         gunzip -k ${read1}.fq.gz
         read1=${read1}.fastq
         echo $read1
-else
+    else
         echo $read1 not found
+    fi
 fi
 
-if [ -f $read2 ]; then
+if [[ ${#read2[@]} == 1 ]]
+    then
+    echo " checking file format for $read2 ..."
+    if [ -f $read2 ]
+        then
         echo $read2
-elif [ -f ${read2}.fq ]; then
+    elif [ -f ${read2}.fq ]
+        then
         read2=${read2}.fq
         echo $read2
-elif [ -f ${read2}.fastq ]; then
+    elif [ -f ${read2}.fastq ]
+        then
         read2=${read2}.fastq
         echo $read2
-elif [ -f ${read2}.fq.gz ]; then
+    elif [ -f ${read2}.fq.gz ]
+        then
         gunzip -k ${read2}.fq.gz
         read2=${read2}.fq
         echo $read2
-elif [ -f ${read2}.fastq.gz ]; then
+    elif [ -f ${read2}.fastq.gz ]
+        then
         gunzip -k ${read2}.fq.gz
         read2=${read2}.fastq
         echo $read2
-else
+    else
         echo $read2 not found
+    fi
 fi
 
 echo files: $read1 \(Read1\) and $read2 \(Read2\)
