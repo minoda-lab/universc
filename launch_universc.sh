@@ -48,7 +48,6 @@ read1=()
 read2=()
 skip=false
 for op in "$@";do
-    echo $op
     if $skip;then skip=false;continue;fi
     case "$op" in
         -v|--version)
