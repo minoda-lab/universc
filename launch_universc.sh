@@ -188,6 +188,29 @@ for op in "$@";do
     esac
 done
 
+#check technology input
+if [[ -z $technology ]]; then
+    echo "Error: option -t is required"
+    exit 1
+fi
+#check matches expected inputs
+if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]
+    then
+    echo "Error: option -t needs to be 10x, nadia, or icell8"
+    exit 1
+fi
+#warn about barcodes for converted scripts
+if [[ "$technology" == "nadia" ]] || [[ "$technology" == "icell8" ]]
+    then
+    echo "Warning: converting whitelist for compatibility, valid barcodes cannot be detected accurately with this technology."
+fi
+
+
+if [[ -z $setup ]]; then
+    echo setup=false
+    echo " skipping setup: checking if not required..."
+fi
+
 #run setup if called
 if $setup; then
     if [[ -z $technology ]]; then
@@ -316,7 +339,7 @@ if $setup; then
     echo $technology > .last_called
     cd -
     echo "setup complete"
-fi
+else
 
 #detect whitelist directory
 DIR=`which /home/tom/local/bin/cellranger-2.1.0/cellranger`
@@ -330,6 +353,7 @@ if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
         then
         echo " running setup on $technology on whitelist in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes ..."
         bash $(basename "$0") --setup -t=$technology
+        setup=false
     fi
 else    
         echo " using setup $technology from previous whitelist configuration ..."
@@ -365,12 +389,6 @@ fi
 if [[ -z $chemistry ]]; then
     chemistry="SC3Pv2"
     echo "Warning: option -c not found, defaulting to SC3Pv2 (three-prime)"
-fi
-
-if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]
-    then
-    echo "Error: option -t needs to be 10x, nadia, or icell8"
-    exit 1
 fi
 
 #report inputs
@@ -573,3 +591,4 @@ echo "$log"
 
 exit 0
 
+fi
