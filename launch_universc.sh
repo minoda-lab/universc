@@ -30,6 +30,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
   -s,  --setup                  Set up whitelists for compatibility with new technology
+       --verbose                Print additional outputs for debugging
 
 For each fastq file, follow the following naming convention:
   <SampleName>_<SampleNumber>_<LaneNumber>_<ReadNumber>_001.fastq
@@ -43,13 +44,12 @@ if [[ -z $@ ]]; then
 fi
 
 #reading in options
-echo "    checking options..."
 read1=()
 read2=()
 skip=false
 for op in "$@";do
-    if $skip;then skip=false;continue;fi
     echo $op
+    if $skip;then skip=false;continue;fi
     case "$op" in
         -v|--version)
             echo "$ver_info"
@@ -65,11 +65,13 @@ for op in "$@";do
             shift
             if [[ "$1" != "" ]]; then
               technology=`echo "${1/%\//}" | tr '[:upper:]' '[:lower:]'`
-              shift
               if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
                 echo "Error: Technology needs to be 10x, nadia, or icell8"
                 exit 1
               fi
+              echo "$technology set"
+              shift
+                echo "tech: $@"
               skip=true
             fi
             ;;
@@ -188,6 +190,12 @@ for op in "$@";do
             setup=true
             skip=false
             shift
+            echo "setup: $@"
+            ;;
+           --verbose)
+            echo " debugging mode activated"
+            verbose=true
+            skip=false
             ;;
         -*)
             echo "Error: Invalid option: $1"
@@ -196,6 +204,10 @@ for op in "$@";do
             ;;
     esac
 done
+if [[ $verbose ]]
+    then
+    echo " checking options ..."
+fi
 
 #check technology input
 if [[ -z $technology ]]; then
@@ -362,9 +374,12 @@ if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
     if [[ $last != $technology ]]
         then
         echo " running setup on $technology on whitelist in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes ..."
-        #echo " last: $last"
-        #echo " technology: $technology"
-        bash $(basename "$0") --setup -t=$technology
+        if [[ $verbose ]]
+            then
+            echo " last: $last"
+            echo " technology: $technology"
+        fi
+        bash $(basename "$0") -t $technology --setup
         setup=false
         echo "setup is $setup"
     fi
