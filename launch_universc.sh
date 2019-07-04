@@ -11,7 +11,7 @@ ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script v
 help="Usage: bash $(basename "$0") -R1=FILE1 -R2=FILE2 -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
 bash $(basename "$0") -v
 bash $(basename "$0") -h
-bash $(basename "$0") --setup -t=TECHNOLOGY
+bash $(basename "$0") -t=TECHNOLOGY --setup
 
 Convert sequencing data (FASTQ) from various platforms for compatibility with 10x Genomics and run cellranger count
 
@@ -49,6 +49,7 @@ read2=()
 skip=false
 for op in "$@";do
     if $skip;then skip=false;continue;fi
+    echo $op
     case "$op" in
         -v|--version)
             echo "$ver_info"
@@ -60,21 +61,16 @@ for op in "$@";do
             shift
             exit 0
             ;;
-        -s|--setup)
-            echo " configure whitelist for ${cellrangerpass}..."
-            setup=true
-            shift
-            ;;
         -t|--technology)
             shift
             if [[ "$1" != "" ]]; then
               technology=`echo "${1/%\//}" | tr '[:upper:]' '[:lower:]'`
+              shift
               if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
                 echo "Error: Technology needs to be 10x, nadia, or icell8"
                 exit 1
               fi
-              shift
-              skip=true 
+              skip=true
             fi
             ;;
         -d|--description)
@@ -155,7 +151,10 @@ for op in "$@";do
                     fi
                 done
                 shift
-                skip=true
+                skip = true
+            else
+                echo "Error: File input missing --directory must contain fastq files"
+                exit 1
             fi
             ;;
         -R1|--read1)
@@ -163,10 +162,12 @@ for op in "$@";do
             if [[ "$1" != "" ]]; then
                 read1+=("${1/%\//}")
                 shift
-                skip=false
+                skip=true
             else
-                echo "Error: File missing for --read1"
-                exit 1
+                if [[ -z $read1 ]]; then
+                    echo "Error: File missing for --read1"
+                    exit 1
+                fi
             fi
             ;;
         -R2|--read2)
@@ -176,9 +177,17 @@ for op in "$@";do
                 shift
                 skip=true
             else
-                echo "Error: File missing for --read1"
-                exit 1
+                if [[ -z $read2 ]]; then
+                    echo "Error: File missing for --read2"
+                    exit 1
+                fi
             fi
+            ;;
+        -s|--setup)
+            echo " configure whitelist for ${cellrangerpass}..."
+            setup=true
+            skip=false
+            shift
             ;;
         -*)
             echo "Error: Invalid option: $1"
@@ -212,7 +221,8 @@ if [[ -z $setup ]]; then
 fi
 
 #run setup if called
-if $setup; then
+if [[ $setup ]]
+    then
     if [[ -z $technology ]]; then
         echo "Error: option -t is required"
         exit 1
@@ -352,8 +362,11 @@ if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
     if [[ $last != $technology ]]
         then
         echo " running setup on $technology on whitelist in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes ..."
+        #echo " last: $last"
+        #echo " technology: $technology"
         bash $(basename "$0") --setup -t=$technology
         setup=false
+        echo "setup is $setup"
     fi
 else    
         echo " using setup $technology from previous whitelist configuration ..."
@@ -379,6 +392,11 @@ elif [[ -z $id ]]; then
     exit 1
 elif [[ -z $reference ]]; then
     echo "Error: option -r is required"
+    exit 1
+fi
+
+if [[ $id == *" "* ]]; then
+    echo "id: \"$id\" must not contain a space"
     exit 1
 fi
 
