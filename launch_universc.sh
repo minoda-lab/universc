@@ -9,6 +9,9 @@ if [[ -z $cellrangerpass ]]; then
 fi
 ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.1) | head -n 3 | tail -n 2`
 help="Usage: bash $(basename "$0") -R1=FILE1 -R2=FILE2 -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
+bash $(basename "$0") -R1=READ1_LANE1 READ1_LANE2 -R2=READ2_LANE1 READ2_LANE2 -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
+bash $(basename "$0") -f="SAMPLE_LANE" -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
+bash $(basename "$0") -f="SAMPLE_LANE1" "SAMPLE_LANE2" -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
 bash $(basename "$0") -v
 bash $(basename "$0") -h
 bash $(basename "$0") -t=TECHNOLOGY --setup
@@ -68,9 +71,7 @@ for op in "$@";do
                 echo "Error: Technology needs to be 10x, nadia, or icell8"
                 exit 1
               fi
-              echo "$technology set"
               shift
-                echo "tech: $@"
               skip=true
             fi
             ;;
@@ -138,10 +139,17 @@ for op in "$@";do
             ;;
         -f|--file)
             shift
-            if [[ "$1" != "" ]]; then
-                read1="${1/%\//}_R1_001"
-                read2="${1/%\//}_R2_001"
-                shift
+            if [[ "$1" != "" ]]
+                then
+                arg=$1
+                while [[ ! "$arg" == "-"* ]] && [[ "$arg" != "" ]]
+                    do
+                    echo "file: $arg"
+                    read1+="${1/%\//}_R1_001"
+                    read2+="${1/%\//}_R2_001"
+                    shift
+                    arg=$1
+                done
                 skip=true
             else
                 echo "Error: File input missing --file or --read1"
@@ -168,9 +176,16 @@ for op in "$@";do
             ;;
         -R1|--read1)
             shift
-            if [[ "$1" != "" ]]; then
-                read1+=("${1/%\//}")
-                shift
+             if [[ "$1" != "" ]]
+                then
+                while [[ "$1" != "-"* ]]
+                    do
+                    if [[ "$1" != "" ]]
+                        then
+                        read1+=("${1/%\//}")
+                        shift
+                     fi
+                done
                 skip=true
             else
                 if [[ -z $read1 ]]; then
@@ -181,9 +196,16 @@ for op in "$@";do
             ;;
         -R2|--read2)
             shift
-            if [[ "$1" != "" ]]; then
-                read2+=("${1/%\//}")
-                shift
+             if [[ "$1" != "" ]]
+                then
+                while [[ "$1" != "-"* ]]
+                    do
+                    if [[ "$1" != "" ]]
+                        then
+                        read2+=("${1/%\//}")
+                        shift
+                    fi
+                done
                 skip=true
             else
                 if [[ -z $read2 ]]; then
@@ -197,7 +219,6 @@ for op in "$@";do
             setup=true
             skip=false
             shift
-            echo "setup: $@"
             ;;
            --verbose)
             echo " debugging mode activated"
