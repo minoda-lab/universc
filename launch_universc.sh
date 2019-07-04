@@ -536,38 +536,67 @@ if [[ ${#read2[@]} == 1 ]]
     fi
 fi
 
-echo files: $read1 \(Read1\) and $read2 \(Read2\)
+for i in ${!read1[@]}
+do
+read=${read1[$i]}
+    echo " checking file format for $read1 ..."
+    if [ -f $read ]
+        then
+        echo $read
+    elif [ -f ${read}.fq ]
+    then
+        read=${read}.fq
+        echo $read
+    elif [ -f ${read}.fastq ]
+        then
+        read=${read}.fastq
+        echo $read
+    elif [ -f ${read}.fq.gz ]
+        then
+        gunzip -k ${read}.fq.gz
+        read=${read}.fq
+        echo $read
+    elif [ -f ${read}.fastq.gz ]
+        then
+        gunzip -k ${read}.fastq.gz
+        read=${read}.fastq
+        echo $read
+    else
+        echo $read not found
+    fi
+read1[$i]=$read
+done
 
-
-unzipR1=$(echo "$read1" | sed 's/\.gz$//')
-unzipR2=$(echo "$read2" | sed 's/\.gz$//')
-if [[ -f $read1 ]]; then
-    if [[ $read1 != *'.fastq'* ]] && [[ $read1 != *'.fq'* ]]; then
-        echo "Error: $read1 is not in .fq or .fastq format"
-        exit 1
+for i in ${!read2[@]}
+do
+read=${read2[$i]}
+    echo " checking file format for $read1 ..."
+    if [ -f $read ]
+        then
+        echo $read 
+    elif [ -f ${read}.fq ]
+    then
+        read=${read}.fq
+        echo $read 
+    elif [ -f ${read}.fastq ]        
+        then
+        read=${read}.fastq
+        echo $read 
+    elif [ -f ${read}.fq.gz ]
+        then
+        gunzip -k ${read}.fq.gz
+        read=${read}.fq
+        echo $read 
+    elif [ -f ${read}.fastq.gz ]
+        then
+        gunzip -k ${read}.fastq.gz
+        read=${read}.fastq
+        echo $read
+    else
+        echo $read not found
     fi
-    if [[ $read1 == *'.gz' ]]; then
-        echo "    unzipping R1 file..."
-        gunzip -kf $read1
-    fi
-else
-    echo "Error: $read1 is missing"
-    exit 1
-fi
-
-if [[ -f $read2 ]]; then
-    if [[ $read2 != *'.fastq'* ]] && [[ $read2 != *'.fq'* ]]; then
-        echo "Error: $read2 is not in .fq or .fastq format"
-        exit 1
-    fi
-    if [[ $read2 == *'.gz' ]]; then
-        echo "    unzipping R2 file..."
-        gunzip -kf $read2
-    fi
-else
-    echo "Error: $read2 is missing"
-    exit 1
-fi
+read2[$i]=$read
+done
 
 echo files: $read1 \(Read1\) and $read2 \(Read2\)
 
@@ -577,11 +606,10 @@ LANE=()
 
 for fq in "${read1[@]}"; do
     name=`basename $fq | cut -f1 -d'.' | grep -o "_" | wc -l | xargs`
-    sn=`basename $fq | cut -f1 -d'_'`
-    ln=`basename $fq | cut -f3 -d'_' | sed 's/L00//'`
+    sn=`basename $fq | cut -f1-$(($name-3))  -d'_'`
+    ln=`basename $fq | cut -f$(($name-1))  -d'_' | sed 's/L00//'`
     LANE+=($ln)
-    
-    if [[ $name != 4 ]]; then
+    if [[ $name < 4 ]]; then
         echo "Error: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
         exit 1
     elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
