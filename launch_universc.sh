@@ -444,11 +444,11 @@ for fq in "${read1[@]}"; do
 done
 for fq in "${read2[@]}"; do
     name=`basename $fq | cut -f1 -d'.' | grep -o "_" | wc -l | xargs`
-    sn=`basename $fq | cut -f1 -d'_'`
-    ln=`basename $fq | cut -f3 -d'_' | sed 's/L00//'`
+    sn=`basename $fq | cut -f1-$(($name-3))  -d'_'`
+    ln=`basename $fq | cut -f$(($name-1))  -d'_' | sed 's/L00//'`
     LANE+=($ln)
     
-    if [[ $name != 4 ]]; then
+    if [[ $name < 4 ]]; then
         echo "Error: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
         exit 1
     elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
