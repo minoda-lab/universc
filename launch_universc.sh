@@ -145,8 +145,8 @@ for op in "$@";do
                 while [[ ! "$arg" == "-"* ]] && [[ "$arg" != "" ]]
                     do
                     echo "file: $arg"
-                    read1+="${1/%\//}_R1_001"
-                    read2+="${1/%\//}_R2_001"
+                    read1+=("${1/%\//}_R1_001")
+                    read2+=("${1/%\//}_R2_001")
                     shift
                     arg=$1
                 done
@@ -176,15 +176,15 @@ for op in "$@";do
             ;;
         -R1|--read1)
             shift
-             if [[ "$1" != "" ]]
+            if [[ "$1" != "" ]]
                 then
-                while [[ "$1" != "-"* ]]
+                arg=$1
+                while [[ ! "$arg" == "-"* ]] && [[ "$arg" != "" ]]
                     do
-                    if [[ "$1" != "" ]]
-                        then
-                        read1+=("${1/%\//}")
-                        shift
-                     fi
+                    echo "file: $arg"
+                    read1+=("${1/%\//}")
+                    shift
+                    arg=$1
                 done
                 skip=true
             else
@@ -196,15 +196,15 @@ for op in "$@";do
             ;;
         -R2|--read2)
             shift
-             if [[ "$1" != "" ]]
+            if [[ "$1" != "" ]]
                 then
-                while [[ "$1" != "-"* ]]
+                arg=$1
+                while [[ ! "$arg" == "-"* ]] && [[ "$arg" != "" ]]
                     do
-                    if [[ "$1" != "" ]]
-                        then
-                        read2+=("${1/%\//}")
-                        shift
-                    fi
+                    echo "file: $arg"
+                    read2+=("${1/%\//}")
+                    shift
+                    arg=$1
                 done
                 skip=true
             else
