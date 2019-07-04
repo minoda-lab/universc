@@ -240,6 +240,15 @@ if [[ $setup ]]
     fi
     DIR=`which /home/tom/local/bin/cellranger-2.1.0/cellranger`
     VERSION=`cellranger count --version | head -n 2 | tail -n 1 | cut -d"(" -f2 | cut -d")" -f1`
+    if [[ ! -w ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes ]]
+        then
+        echo "Error: conversion can only be run on a local install of cellranger"
+        echo "Running cellranger installed at $DIR"
+        echo "Install cellranger in a directory with write permissions such as /home/`whoami`/local"
+        echo "Cellranger must be exported to the PATH"
+        echo "The following versions of cellranger are found:"
+        where cellranger
+    fi
     cd ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes
     echo "update barcodes in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes \n for cellranger version $VERSION installed in $DIR"
     if [[ $technology == "10x" ]]
