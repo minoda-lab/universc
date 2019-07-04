@@ -630,7 +630,7 @@ for fq in "${read2[@]}"; do
     to=`basename $fq`
     to="${crIN}/${to}"
     to=$(echo "$to" | sed 's/\.gz$//')
-    crR1s+=($fq)
+    crR2s+=($fq)
     
     if [[ $fq == *'.gz' ]]; then
         echo "    unzipping and redirecting $fq file..."
@@ -649,18 +649,18 @@ else
         echo "        handling $fq"
         if [[ "$technology" == "nadia" ]]; then
             echo "        converting barcodes of"
-            sed -i '2~4s/^/AAAA/' $fq #Add AAAA to every read
+            sed -i '2~4s/^/AAAA/' ${crIN}/$fq #Add AAAA to every read
             echo "        converting quality scores"
-            sed -i '4~4s/^/IIII/' $fq #Add quality scores for added bases
+            sed -i '4~4s/^/IIII/'  ${crIN}/$fq #Add quality scores for added bases
             echo "        converting UMI"
-            sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $fq #Replace last 6 bases with AA
+            sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/'  ${crIN}/$fq #Replace last 6 bases with AA
             echo "        converting quality scores"
-            sed -i '4~4s/......$/II/' $fq #Replace quality scores for added bases
+            sed -i '4~4s/......$/II/'  ${crIN}/$fq #Replace quality scores for added bases
         elif [[ "$technology" == "icell8" ]]; then
             echo "converting barcodes"
-            sed -i '2~4s/^/AAAAA/' $fq #Add AAAAA to every read
+            sed -i '2~4s/^/AAAAA/'  ${crIN}/$fq #Add AAAAA to every read
             echo "converting quality scores"
-            sed -i '4~4s/^/IIIII/' $fq #Add quality scores for added bases
+            sed -i '4~4s/^/IIIII/'  ${crIN}/$fq #Add quality scores for added bases
         fi
     done
     echo "    conversion complete"
@@ -691,7 +691,6 @@ cellranger count --id=$id \
         $d \
         $n \
         $j
-
 #        --noexit
 #        --nopreflight
 end=`date +%s`
