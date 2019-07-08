@@ -29,6 +29,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -l,  --lanes=NUMS             Comma-separated lane numbers
   -n,  --force-cells=NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -i,  --id=ID                  A unique run id, used to name output folder
+  -j,  --jobmode=MODE           Job manager to use. Valid options: local (default), sge, lsf, or a .template file
   -r,  --reference=DIR          Path of directory containing 10x-compatible reference.
   -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
