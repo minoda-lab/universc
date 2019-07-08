@@ -684,8 +684,28 @@ LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 #create directory of modified files
 echo "    creating a folder for all cellranger input files..."
 crIN="cellranger"
-rm -rf $crIN
-mkdir $crIN
+mkdir -p $crIN
+if [ -d $crIN ]
+    then
+    for i in ${!read1[@]}
+    do
+        read=${read1[$i]}
+        if [ -f $crIN/$read ] 
+            then
+            echo "warning: converted $read file already exists"
+        fi
+        rm -rf $crIN/$read
+    done
+    for i in ${!read2[@]}
+    do
+        read=${read2[$i]}
+        if [ -f $crIN/$read ]
+            then
+            echo "warning: converted $read file already exists"
+        fi
+        rm -rf $crIN/$read
+    done
+fi
 
 crR1s=()
 for fq in "${read1[@]}"; do
