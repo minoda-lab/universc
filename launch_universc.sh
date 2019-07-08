@@ -568,6 +568,17 @@ case $read in
         read1[$i]=$read
         echo "   renaming $read ...";;
 esac
+case $read in
+    #check if contains sample before lane
+    (*_R1_001.*) echo " $read compatible with suffix";;
+    (*) echo "  converting $read ..."
+        #rename file
+        rename "s/_R1.*\./_R1_001\./" $read
+        #update file variable
+        read=`echo $read | sed -e  "s/_R1.*\./_R1_001\./g"`
+        read1[$i]=$read
+        echo "   renaming $read";;
+esac
 done
 
 echo " checking file name for $read2 ..."
@@ -597,6 +608,17 @@ case $read in
         read=`echo $read | sed -e  "s/_L0/_S${j}_L0/g"`
         read2[$i]=$read
         echo "   renaming $read ...";;
+esac
+case $read in
+    #check if contains sample before lane
+    (*_R1_001.*) echo " $read compatible with suffix";;
+    (*) echo "  converting $read ..."
+        #rename file
+        rename "s/_R1.*\./_R1_001\./" $read
+        #update file variable
+        read=`echo $read | sed -e  "s/_R1.*\./_R1_001\./g"`
+        read1[$i]=$read
+        echo "   renaming $read";;
 esac
 done
 
