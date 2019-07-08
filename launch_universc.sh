@@ -596,7 +596,7 @@ case $read in
         echo "   assuming 1 lane if none given"
         rename "s/_R2/_L001_R2/" $read
         #update file variable
-        read=`echo $read | sed -e  "s/_R2/_L001_R2/g" 
+        read=`echo $read | sed -e  "s/_R2/_L001_R2/g"`
         read2[$i]=$read
         echo "   renaming $read ...";;
 esac
