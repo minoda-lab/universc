@@ -144,12 +144,14 @@ for op in "$@";do
             shift
             if [[ "$1" != "" ]]
                 then
-                arg=$1
-                while [[ ! "$arg" == "-"* ]] && [[ "$arg" != "" ]]
+               arg=$1
+               namesarray=($arg)
+               for i in ${!namesarray[@]}
                     do
-                    echo "file: $arg"
-                    read1+=("${1/%\//}_R1_001")
-                    read2+=("${1/%\//}_R2_001")
+                    name=${namesarray}[$i]}
+                    echo "file: $name"
+                    read1+=("${name}_R1_001")
+                    read2+=("${name}_R2_001")
                     shift
                     arg=$1
                 done
@@ -421,7 +423,6 @@ if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
         fi
         bash $(basename "$0") -t $technology --setup
         setup=false
-        echo "setup is $setup"
     fi
 else    
         echo " using setup $technology from previous whitelist configuration ..."
