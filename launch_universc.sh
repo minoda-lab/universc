@@ -270,7 +270,7 @@ if [[ $setup ]]
         echo "Error: option -t is required"
         exit 1
     fi
-    DIR=`which /home/tom/local/bin/cellranger-2.1.0/cellranger`
+    DIR=`which cellranger`
     VERSION=`cellranger count --version | head -n 2 | tail -n 1 | cut -d"(" -f2 | cut -d")" -f1`
     if [[ ! -w ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes ]]
         then
