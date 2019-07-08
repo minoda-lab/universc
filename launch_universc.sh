@@ -148,7 +148,7 @@ for op in "$@";do
                namesarray=($arg)
                for i in ${!namesarray[@]}
                     do
-                    name=${namesarray}[$i]}
+                    name=${namesarray[$i]}
                     echo "file: $name"
                     read1+=("${name}_R1_001")
                     read2+=("${name}_R2_001")
