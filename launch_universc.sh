@@ -629,8 +629,6 @@ done
 echo " files: ${read1[@]}  \(Read1\)"
 echo "        ${read2[@]} \(Read2\)"
 
-#test exit
-exit 0
 #checking the quality of fastq file names
 SAMPLE=""
 LANE=()
