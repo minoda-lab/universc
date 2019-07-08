@@ -406,7 +406,7 @@ if [[ $setup ]]
 else
 
 #detect whitelist directory
-DIR=`which /home/tom/local/bin/cellranger-2.1.0/cellranger`
+DIR=`which cellranger`
 VERSION=`cellranger count --version | head -n 2 | tail -n 1 | cut -d"(" -f2 | cut -d")" -f1`
 #checkwhitelist and run --setup if needed
 if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
