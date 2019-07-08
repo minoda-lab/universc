@@ -478,64 +478,6 @@ elif [ "$technology" == "icell8" ]; then
 fi
 
 #auto detect read file format (if one file each)
-if [[ ${#read1[@]} == 1 ]]
-    then
-    echo " checking file format for $read1 ..."
-    if [ -f $read1 ]
-        then
-        echo $read1
-    elif [ -f ${read1}.fq ]
-    then
-        read1=${read1}.fq
-        echo $read1
-    elif [ -f ${read1}.fastq ]
-        then
-        read1=${read1}.fastq
-        echo $read1
-    elif [ -f ${read1}.fq.gz ]
-        then
-        gunzip -k ${read1}.fq.gz
-        read1=${read1}.fq
-        echo $read1
-    elif [ -f ${read1}.fastq.gz ]
-        then
-        gunzip -k ${read1}.fq.gz
-        read1=${read1}.fastq
-        echo $read1
-    else
-        echo $read1 not found
-    fi
-fi
-
-if [[ ${#read2[@]} == 1 ]]
-    then
-    echo " checking file format for $read2 ..."
-    if [ -f $read2 ]
-        then
-        echo $read2
-    elif [ -f ${read2}.fq ]
-        then
-        read2=${read2}.fq
-        echo $read2
-    elif [ -f ${read2}.fastq ]
-        then
-        read2=${read2}.fastq
-        echo $read2
-    elif [ -f ${read2}.fq.gz ]
-        then
-        gunzip -k ${read2}.fq.gz
-        read2=${read2}.fq
-        echo $read2
-    elif [ -f ${read2}.fastq.gz ]
-        then
-        gunzip -k ${read2}.fq.gz
-        read2=${read2}.fastq
-        echo $read2
-    else
-        echo $read2 not found
-    fi
-fi
-
 for i in ${!read1[@]}
 do
 read=${read1[$i]}
@@ -570,7 +512,7 @@ done
 for i in ${!read2[@]}
 do
 read=${read2[$i]}
-    echo " checking file format for $read1 ..."
+    echo " checking file format for $read2 ..."
     if [ -f $read ]
         then
         echo $read 
@@ -578,7 +520,7 @@ read=${read2[$i]}
     then
         read=${read}.fq
         echo $read 
-    elif [ -f ${read}.fastq ]        
+    elif [ -f ${read}.fastq ]
         then
         read=${read}.fastq
         echo $read 
@@ -598,8 +540,71 @@ read=${read2[$i]}
 read2[$i]=$read
 done
 
-echo files: $read1 \(Read1\) and $read2 \(Read2\)
+echo " checking file name for $read1 ..."
+for i in ${!read1[@]}
+do
+read=${read1[$i]}
+case $read in
+    #check if contains lane before read
+    (*_L0[0123456789][0123456789]_R[12]*) echo " $read compatible with lane";;
+    (*) echo "  converting $read..."
+        #rename file
+        echo "   assuming 1 lane if none given"
+        rename "s/_R1/_L001_R1/" $read
+        #update file variable
+        read=`echo $read | sed -e  "s/_R1/_L001_R1/g"`
+        read1[$i]=$read
+        echo "   renaming $read ...";;
+esac
+case $read in
+    #check if contains sample before lane
+    (*_S[123456789]_L0*) echo " $read compatible with sample";;
+    (*) echo "  converting $read ..."
+        #rename file
+        j=$((${i}+1))
+        rename "s/_L0/_S${j}_L0/" $read
+        #update file variable
+        read=`echo $read | sed -e  "s/_L0/_S${j}_L0/g"`
+        read1[$i]=$read
+        echo "   renaming $read ...";;
+esac
+done
 
+echo " checking file name for $read2 ..."
+for i in ${!read2[@]}
+do
+read=${read2[$i]}
+case $read in
+    #check if contains lane before read
+    (*_L0[0123456789][0123456789]_R[12]*) echo " $read compatible with lane";;
+    (*) echo "  converting $read..."
+        #rename file
+        echo "   assuming 1 lane if none given"
+        rename "s/_R2/_L001_R2/" $read
+        #update file variable
+        read=`echo $read | sed -e  "s/_R2/_L001_R2/g" 
+        read2[$i]=$read
+        echo "   renaming $read ...";;
+esac
+case $read in
+    #check if contains sample before lane
+    (*_S[123456789]_L0*) echo " $read compatible with sample";;
+    (*) echo "  converting $read ..."
+        #rename file
+        j=$((${i}+1))
+        rename "s/_L0/_S${j}_L0/" $read
+        #update file variable
+        read=`echo $read | sed -e  "s/_L0/_S${j}_L0/g"`
+        read2[$i]=$read
+        echo "   renaming $read ...";;
+esac
+done
+
+echo " files: ${read1[@]}  \(Read1\)"
+echo "        ${read2[@]} \(Read2\)"
+
+#test exit
+exit 0
 #checking the quality of fastq file names
 SAMPLE=""
 LANE=()
