@@ -39,6 +39,8 @@ For each fastq file, follow the following naming convention:
   <SampleName>_<SampleNumber>_<LaneNumber>_<ReadNumber>_001.fastq
   e.g. EXAMPLE_S1_L001_R1_001.fastq
        Example_S4_L002_R2_001.fastq.gz
+
+Files will be renamed if they do not follow this format. File extension will be detected automatically.
 "
 
 if [[ -z $@ ]]; then
