@@ -589,7 +589,7 @@ if [ ! -f $read ]
     then
     echo "  warning: file $read not in current directory"
     echo "   creating link to full path"
-    ln -s $path $read
+    mv $path $read
     read1[$i]=$read
 fi
 done
@@ -639,7 +639,7 @@ if [ ! -f $read ]
     then
     echo "  warning: file $read not in current directory"
     echo "   creating link to full path"
-    ln -s $path $read
+    mv $read $path
     read2[$i]=$read
 fi
 done
