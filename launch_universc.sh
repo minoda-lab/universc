@@ -583,6 +583,15 @@ case $read in
         read1[$i]=$read
         echo "   renaming $read";;
 esac
+path=$read
+read=`echo $read | sed -r "s/.+\/(.+)/\1/"`
+if [ ! -f $read ]
+    then
+    echo "  warning: file $read not in current directory"
+    echo "   creating link to full path"
+    ln -s $path $read
+    read1[$i]=$read
+fi
 done
 
 echo " checking file name for $read2 ..."
@@ -624,6 +633,15 @@ case $read in
         read1[$i]=$read
         echo "   renaming $read";;
 esac
+path=$read
+read=`echo $read | sed -r "s/.+\/(.+)/\1/"`
+if [ ! -f $read ] 
+    then
+    echo "  warning: file $read not in current directory"
+    echo "   creating link to full path"
+    ln -s $path $read
+    read2[$i]=$read
+fi
 done
 
 echo " files: ${read1[@]}  \(Read1\)"
