@@ -54,7 +54,6 @@ fi
 #reading in options
 read1=()
 read2=()
-verbose=false
 keep=false
 convert=true
 skip=false
@@ -255,7 +254,7 @@ for op in "$@";do
             ;;
     esac
 done
-if [[ $verbose == "true" ]]
+if [[ $verbose == "true ]]
     then
     echo " checking options ..."
 fi
@@ -505,28 +504,27 @@ elif [ "$technology" == "icell8" ]; then
 fi
 
 #auto detect read file format (if one file each)
-for j in ${!read1[@]}
+for i in ${!read1[@]}
 do
-i=$(($j+1))
 read=${read1[$i]}
     echo " checking file format for $read1 ..."
-    if [ -f $read ] && [ ! -h $read ]
+    if [ -f $read ]
         then
         echo $read
-    elif [ -f ${read}.fq ] && [ ! -h $read ]
+    elif [ -f ${read}.fq ]
     then
         read=${read}.fq
         echo $read
-    elif [ -f ${read}.fastq ] && [ ! -h $read ]
+    elif [ -f ${read}.fastq ]
         then
         read=${read}.fastq
         echo $read
-    elif [ -f ${read}.fq.gz ] && [ ! -h $read ]
+    elif [ -f ${read}.fq.gz ]
         then
         gunzip -k ${read}.fq.gz
         read=${read}.fq
         echo $read
-    elif [ -f ${read}.fastq.gz ] && [ ! -h $read ]
+    elif [ -f ${read}.fastq.gz ]
         then
         gunzip -k ${read}.fastq.gz
         read=${read}.fastq
@@ -537,28 +535,27 @@ read=${read1[$i]}
 read1[$i]=$read
 done
 
-for j in ${!read2[@]}
+for i in ${!read2[@]}
 do
-i=$(($j+1))
 read=${read2[$i]}
     echo " checking file format for $read2 ..."
-    if [ -f $read ] || [ ! -h $read ]
+    if [ -f $read ]
         then
         echo $read 
-    elif [ -f ${read}.fq ] && [ ! -h $read ]
+    elif [ -f ${read}.fq ]
     then
         read=${read}.fq
         echo $read 
-    elif [ -f ${read}.fastq ] && [ ! -h $read ]
+    elif [ -f ${read}.fastq ]
         then
         read=${read}.fastq
         echo $read 
-    elif [ -f ${read}.fq.gz ] && [ ! -h $read ]
+    elif [ -f ${read}.fq.gz ]
         then
         gunzip -k ${read}.fq.gz
         read=${read}.fq
         echo $read 
-    elif [ -f ${read}.fastq.gz ] && [ ! -h $read ]
+    elif [ -f ${read}.fastq.gz ]
         then
         gunzip -k ${read}.fastq.gz
         read=${read}.fastq
@@ -570,9 +567,8 @@ read2[$i]=$read
 done
 
 echo " checking file name for $read1 ..."
-for j in ${!read1[@]}
+for i in ${!read1[@]}
 do
-i=$(($j+1))
 read=${read1[$i]}
 case $read in
     #check if contains lane before read
@@ -599,7 +595,7 @@ case $read in
         echo "   renaming $read ...";;
 esac
 case $read in
-    #check if contains suffix
+    #check if contains sample before lane
     (*_R1_001.*) echo " $read compatible with suffix";;
     (*) echo "  converting $read ..."
         #rename file
@@ -624,9 +620,8 @@ fi
 done
 
 echo " checking file name for $read2 ..."
-for j in ${!read2[@]}
+for i in ${!read2[@]}
 do
-i=$(($j+1))
 read=${read2[$i]}
 case $read in
     #check if contains lane before read
@@ -653,14 +648,12 @@ case $read in
         echo "   renaming $read ...";;
 esac
 case $read in
-    #check if contains suffix
+    #check if contains sample before lane
     (*_R1_001.*) echo " $read compatible with suffix";;
     (*) echo "  converting $read ..."
         #rename file
         rename "s/_R1.*\./_R1_001\./" $read
-        rename "s/_R1.*\./_R1_001\./" $read
         #update file variable
-        read=`echo $read | sed -e  "s/_R1.*\./_R1_001\./g"`
         read=`echo $read | sed -e  "s/_R1.*\./_R1_001\./g"`
         read2[$i]=$read
         echo "   renaming $read";;
@@ -674,7 +667,7 @@ if [ ! -f $read ]  || [ -h $read ]
     then
     echo "  warning: file $read not in current directory"
     echo "   creating link to full path"
-    ln -s -f $path $read
+    ln -s -f $read $path
     read2[$i]=$read
 fi
 done
@@ -746,9 +739,8 @@ fi
 mkdir -p $crIN
 if [ -d $crIN ]
     then
-    for j in ${!read1[@]}
+    for i in ${!read1[@]}
     do
-    i=$(($j+1))
         read=${read1[$i]}
         if [ -f $crIN/$read ] 
             then
@@ -762,9 +754,8 @@ if [ -d $crIN ]
              echo "file $crIN/$read kept"
         fi
     done
-    for j in ${!read2[@]}
+    for i in ${!read2[@]}
     do
-    i=$(($j+1))
         read=${read2[$i]}
         if [ -f $crIN/$read ]
             then
@@ -851,13 +842,13 @@ if [[ $convert == "true" ]]
             echo "        handling $fq"
             if [[ "$technology" == "nadia" ]]; then
                 echo "        converting barcodes"
-                sed -i '2~4s/^/AAAA/' ${crIN}/$fq #Add AAAA to every read
+                echo sed -i '2~4s/^/AAAA/' ${crIN}/$fq #Add AAAA to every read
                 echo "        converting quality scores"
-                sed -i '4~4s/^/IIII/'  ${crIN}/$fq #Add quality scores for added bases
+                echo sed -i '4~4s/^/IIII/'  ${crIN}/$fq #Add quality scores for added bases
                 echo "        converting UMI"
-                sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/'  ${crIN}/$fq #Replace last 6 bases with AA
+                echo sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/'  ${crIN}/$fq #Replace last 6 bases with AA
                 echo "        converting quality scores"
-                sed -i '4~4s/......$/II/'  ${crIN}/$fq #Replace quality scores for added bases
+                echo sed -i '4~4s/......$/II/'  ${crIN}/$fq #Replace quality scores for added bases
             elif [[ "$technology" == "icell8" ]]; then
                 echo "converting barcodes"
                 sed -i '2~4s/^/AAAAA/'  ${crIN}/$fq #Add AAAAA to every read
