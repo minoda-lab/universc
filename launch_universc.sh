@@ -34,6 +34,8 @@ Mandatory arguments to long options are mandatory for short options too.
   -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
   -s,  --setup                  Set up whitelists for compatibility with new technology
+  -k,  --keep                   Keep converted files
+  -x,  --skip                   Skip conversion and run cellranger
        --verbose                Print additional outputs for debugging
 
 For each fastq file, follow the following naming convention:
@@ -52,6 +54,8 @@ fi
 #reading in options
 read1=()
 read2=()
+keep=false
+convert=true
 skip=false
 for op in "$@";do
     if $skip;then skip=false;continue;fi
@@ -222,6 +226,19 @@ for op in "$@";do
         -s|--setup)
             echo " configure whitelist for ${cellrangerpass}..."
             setup=true
+            skip=false
+            shift
+            ;;
+        -k|--keep)
+            echo " converted files will be kept if already exists"
+            keep=true
+            skip=false
+            shift
+            ;;
+        -x|--skip)
+            echo " running ${cellrangerpass} on existing converted files"
+            keep=true
+            convert=false
             skip=false
             shift
             ;;
@@ -708,6 +725,12 @@ LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 #create directory of modified files
 echo "    creating a folder for all cellranger input files..."
 crIN="cellranger"
+if [ ! $crIN ]
+   then
+   echo "    directory $crIN created for converted files"
+else
+   echo "    directory $crIN already exists"
+fi
 mkdir -p $crIN
 if [ -d $crIN ]
     then
@@ -718,7 +741,13 @@ if [ -d $crIN ]
             then
             echo "warning: converted $read file already exists"
         fi
-        rm -rf $crIN/$read
+        if [ ! keep ]
+            then
+            echo "file $crIN/$read removed"
+            rm -rf $crIN/$read
+        else
+             echo "file $crIN/$read kept"
+        fi
     done
     for i in ${!read2[@]}
     do
@@ -727,7 +756,13 @@ if [ -d $crIN ]
             then
             echo "warning: converted $read file already exists"
         fi
-        rm -rf $crIN/$read
+        if [ ! keep ]
+            then
+            echo "file $crIN/$read removed"
+            rm -rf $crIN/$read
+        else 
+             echo "file $crIN/$read kept"
+        fi
     done
 fi
 
