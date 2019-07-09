@@ -747,8 +747,8 @@ mkdir -p $crIN
 if [ -d $crIN ]
     then
     for j in ${!read1[@]}
-    i=$(($j+1))
     do
+    i=$(($j+1))
         read=${read1[$i]}
         if [ -f $crIN/$read ] 
             then
@@ -763,8 +763,8 @@ if [ -d $crIN ]
         fi
     done
     for j in ${!read2[@]}
-    i=$(($j+1))
     do
+    i=$(($j+1))
         read=${read2[$i]}
         if [ -f $crIN/$read ]
             then
