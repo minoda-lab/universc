@@ -254,7 +254,7 @@ for op in "$@";do
             ;;
     esac
 done
-if [[ $verbose == "true ]]
+if [[ $verbose == "true" ]]
     then
     echo " checking options ..."
 fi
