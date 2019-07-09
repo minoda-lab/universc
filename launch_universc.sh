@@ -254,7 +254,7 @@ for op in "$@";do
             ;;
     esac
 done
-if [[ $verbose ]]
+if [[ $verbose == "true ]]
     then
     echo " checking options ..."
 fi
@@ -433,7 +433,7 @@ if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
     if [[ $last != $technology ]]
         then
         echo " running setup on $technology on whitelist in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes ..."
-        if [[ $verbose ]]
+        if [[ $verbose == "true" ]]
             then
             echo " last: $last"
             echo " technology: $technology"
