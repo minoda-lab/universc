@@ -784,6 +784,7 @@ for fq in "${read1[@]}"; do
         echo "    unzipping and redirecting $fq file..."
         gunzip -c $fq > $to
     elif [ ! keep ]
+        then
         echo "    redirecting $fq file..."
         cp $fq $to
     else
@@ -810,6 +811,7 @@ for fq in "${read2[@]}"; do
         echo "    unzipping and redirecting $fq file..."
         gunzip -c $fq > $to
  elif [ ! keep ]
+        then
         echo "    redirecting $fq file..."
         cp $fq $to
     else
