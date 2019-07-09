@@ -443,7 +443,7 @@ if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
         if [ ! convert ]
             then
             echo "  warning: technology changed to $technology since last run"
-            convert=true
+            #convert=true
         fi
     fi
 else    
