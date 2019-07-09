@@ -440,7 +440,7 @@ if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
         fi
         bash $(basename "$0") -t $technology --setup
         setup=false
-        if [ ! convert ]
+        if [ ! $convert ]
             then
             echo "  warning: technology changed to $technology since last run"
             convert=true
@@ -608,8 +608,11 @@ esac
 #check if file in directory and link if not
 path=$read
 read=`echo $read | sed -r "s/.+\/(.+)/\1/"`
-echo "read: $read"
-echo "path: $path"
+if [[ $verbose == "true" ]]
+then
+    echo "read: $read"
+    echo "path: $path"
+fi
 if [ ! -f $read ] || [ -h $read ]
     then
     echo "  warning: file $read not in current directory"
@@ -661,8 +664,11 @@ esac
 #check if file in directory and link if not
 path=$read
 read=`echo $read | sed -r "s/.+\/(.+)/\1/"`
-echo "read: $read"
-echo "path: $path"
+if [[ $verbose == "true" ]]
+then
+   echo "read: $read"
+   echo "path: $path"
+fi
 if [ ! -f $read ]  || [ -h $read ]
     then
     echo "  warning: file $read not in current directory"
