@@ -583,13 +583,16 @@ case $read in
         read1[$i]=$read
         echo "   renaming $read";;
 esac
+#check if file in directory and link if not
 path=$read
 read=`echo $read | sed -r "s/.+\/(.+)/\1/"`
-if [ ! -f $read ]
+echo "read: $read"
+echo "path: $path"
+if [ ! -f $read ] || [ -h $read ]
     then
     echo "  warning: file $read not in current directory"
     echo "   creating link to full path"
-    mv $path $read
+    ln -sf $path $read
     read1[$i]=$read
 fi
 done
@@ -633,13 +636,16 @@ case $read in
         read1[$i]=$read
         echo "   renaming $read";;
 esac
+#check if file in directory and link if not
 path=$read
 read=`echo $read | sed -r "s/.+\/(.+)/\1/"`
-if [ ! -f $read ] 
+echo "read: $read"
+echo "path: $path"
+if [ ! -f $read ]  || [ -h $read ]
     then
     echo "  warning: file $read not in current directory"
     echo "   creating link to full path"
-    mv $read $path
+    ln -s -f $read $path
     read2[$i]=$read
 fi
 done
