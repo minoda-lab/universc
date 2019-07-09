@@ -505,8 +505,9 @@ elif [ "$technology" == "icell8" ]; then
 fi
 
 #auto detect read file format (if one file each)
-for i in ${!read1[@]}
+for j in ${!read1[@]}
 do
+i=$(($j+1))
 read=${read1[$i]}
     echo " checking file format for $read1 ..."
     if [ -f $read ] && [ ! -h $read ]
@@ -536,8 +537,9 @@ read=${read1[$i]}
 read1[$i]=$read
 done
 
-for i in ${!read2[@]}
+for j in ${!read2[@]}
 do
+i=$(($j+1))
 read=${read2[$i]}
     echo " checking file format for $read2 ..."
     if [ -f $read ] || [ ! -h $read ]
@@ -568,8 +570,9 @@ read2[$i]=$read
 done
 
 echo " checking file name for $read1 ..."
-for i in ${!read1[@]}
+for j in ${!read1[@]}
 do
+i=$(($j+1))
 read=${read1[$i]}
 case $read in
     #check if contains lane before read
@@ -596,7 +599,7 @@ case $read in
         echo "   renaming $read ...";;
 esac
 case $read in
-    #check if contains sample before lane
+    #check if contains suffix
     (*_R1_001.*) echo " $read compatible with suffix";;
     (*) echo "  converting $read ..."
         #rename file
@@ -621,8 +624,9 @@ fi
 done
 
 echo " checking file name for $read2 ..."
-for i in ${!read2[@]}
+for j in ${!read2[@]}
 do
+i=$(($j+1))
 read=${read2[$i]}
 case $read in
     #check if contains lane before read
@@ -649,12 +653,14 @@ case $read in
         echo "   renaming $read ...";;
 esac
 case $read in
-    #check if contains sample before lane
+    #check if contains suffix
     (*_R1_001.*) echo " $read compatible with suffix";;
     (*) echo "  converting $read ..."
         #rename file
         rename "s/_R1.*\./_R1_001\./" $read
+        rename "s/_R1.*\./_R1_001\./" $read
         #update file variable
+        read=`echo $read | sed -e  "s/_R1.*\./_R1_001\./g"`
         read=`echo $read | sed -e  "s/_R1.*\./_R1_001\./g"`
         read2[$i]=$read
         echo "   renaming $read";;
@@ -740,7 +746,8 @@ fi
 mkdir -p $crIN
 if [ -d $crIN ]
     then
-    for i in ${!read1[@]}
+    for j in ${!read1[@]}
+    i=$(($j+1))
     do
         read=${read1[$i]}
         if [ -f $crIN/$read ] 
@@ -755,7 +762,8 @@ if [ -d $crIN ]
              echo "file $crIN/$read kept"
         fi
     done
-    for i in ${!read2[@]}
+    for j in ${!read2[@]}
+    i=$(($j+1))
     do
         read=${read2[$i]}
         if [ -f $crIN/$read ]
