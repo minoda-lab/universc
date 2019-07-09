@@ -490,6 +490,10 @@ if [[ -z $chemistry ]]; then
     chemistry="SC3Pv2"
     echo "Warning: option -c not found, defaulting to SC3Pv2 (three-prime)"
 fi
+if [[ -z $keep ]]; then
+    keep=false
+fi
+
 
 #report inputs
 echo technology: $technology
