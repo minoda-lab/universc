@@ -508,23 +508,23 @@ for i in ${!read1[@]}
 do
 read=${read1[$i]}
     echo " checking file format for $read1 ..."
-    if [ -f $read ]
+    if [ -f $read ] && [ ! -h $read ]
         then
         echo $read
-    elif [ -f ${read}.fq ]
+    elif [ -f ${read}.fq ] && [ ! -h $read ]
     then
         read=${read}.fq
         echo $read
-    elif [ -f ${read}.fastq ]
+    elif [ -f ${read}.fastq ] && [ ! -h $read ]
         then
         read=${read}.fastq
         echo $read
-    elif [ -f ${read}.fq.gz ]
+    elif [ -f ${read}.fq.gz ] && [ ! -h $read ]
         then
         gunzip -k ${read}.fq.gz
         read=${read}.fq
         echo $read
-    elif [ -f ${read}.fastq.gz ]
+    elif [ -f ${read}.fastq.gz ] && [ ! -h $read ]
         then
         gunzip -k ${read}.fastq.gz
         read=${read}.fastq
@@ -539,23 +539,23 @@ for i in ${!read2[@]}
 do
 read=${read2[$i]}
     echo " checking file format for $read2 ..."
-    if [ -f $read ]
+    if [ -f $read ] && [ ! -h $read ]
         then
         echo $read 
-    elif [ -f ${read}.fq ]
+    elif [ -f ${read}.fq ] && [ ! -h $read ]
     then
         read=${read}.fq
         echo $read 
-    elif [ -f ${read}.fastq ]
+    elif [ -f ${read}.fastq ] && [ ! -h $read ]
         then
         read=${read}.fastq
         echo $read 
-    elif [ -f ${read}.fq.gz ]
+    elif [ -f ${read}.fq.gz ] && [ ! -h $read ]
         then
         gunzip -k ${read}.fq.gz
         read=${read}.fq
         echo $read 
-    elif [ -f ${read}.fastq.gz ]
+    elif [ -f ${read}.fastq.gz ] && [ ! -h $read ]
         then
         gunzip -k ${read}.fastq.gz
         read=${read}.fastq
