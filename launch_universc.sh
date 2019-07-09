@@ -833,7 +833,6 @@ if [[ $convert == true ]]
         echo "    10x files accepted without conversion"
     else
         echo "    converting file from $technology format to 10x format..."
-        exit 1
         for fq in "${crR1s[@]}"; do
             echo "        handling $fq"
             if [[ "$technology" == "nadia" ]]; then
