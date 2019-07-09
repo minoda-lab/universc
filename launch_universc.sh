@@ -443,7 +443,7 @@ if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
         if [ ! convert ]
             then
             echo "  warning: technology changed to $technology since last run"
-            #convert=true
+            convert=true
         fi
     fi
 else    
@@ -808,7 +808,7 @@ for fq in "${read2[@]}"; do
     if [[ $fq == *'.gz' ]]; then
         echo "    unzipping and redirecting $fq file..."
         gunzip -c $fq > $to
- elif [ ! keep ]
+   elif [ ! keep ]
         then
         echo "    redirecting $fq file..."
         cp $fq $to
@@ -827,12 +827,13 @@ done
 
 echo "convert: $convert"
 
-if [[ $convert ]]
-then
+if [[ $convert == true ]]
+    then
     if [[ "$technology" == "10x" ]]; then
         echo "    10x files accepted without conversion"
     else
         echo "    converting file from $technology format to 10x format..."
+        exit 1
         for fq in "${crR1s[@]}"; do
             echo "        handling $fq"
             if [[ "$technology" == "nadia" ]]; then
