@@ -673,7 +673,7 @@ if [ ! -f $read ]  || [ -h $read ]
     then
     echo "  warning: file $read not in current directory"
     echo "   creating link to full path"
-    ln -s -f $read $path
+    ln -s -f $path $read
     read2[$i]=$read
 fi
 done
