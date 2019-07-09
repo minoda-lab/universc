@@ -440,6 +440,11 @@ if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
         fi
         bash $(basename "$0") -t $technology --setup
         setup=false
+        if [ ! convert ]
+            then
+            echo "  warning: technology changed to $technology since last run"
+            convert=true
+        fi
     fi
 else    
         echo " using setup $technology from previous whitelist configuration ..."
@@ -722,6 +727,8 @@ done
 
 LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
+if [ convert ]
+then
 #create directory of modified files
 echo "    creating a folder for all cellranger input files..."
 crIN="cellranger"
@@ -842,6 +849,8 @@ else
     done
     echo "    conversion complete"
 fi
+#close conversion
+fi
 
 #running cellranger
 echo "    running cellranger..."
@@ -858,6 +867,18 @@ if [[ ! $jobmode ]]; then
     j="--jobmode=$jobmode"
 fi
 start=`date +%s`
+echo "cellranger count --id=$id \
+        --fastqs=$crIN \
+        --lanes=$LANE \
+        --r1-length="26" \
+        --chemistry=$chemistry \
+        --transcriptome=$reference \
+        --sample=$SAMPLE \
+        $d \
+        $n \
+        $j
+"
+
 cellranger count --id=$id \
         --fastqs=$crIN \
         --lanes=$LANE \
