@@ -727,8 +727,6 @@ done
 
 LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
-if [ convert ]
-then
 #create directory of modified files
 echo "    creating a folder for all cellranger input files..."
 crIN="cellranger"
@@ -827,6 +825,8 @@ for fq in "${read2[@]}"; do
     fi
 done
 
+if [[ $convert ]]
+then
 if [[ "$technology" == "10x" ]]; then
     echo "    10x files accepted without conversion"
 else
@@ -834,7 +834,7 @@ else
     for fq in "${crR1s[@]}"; do
         echo "        handling $fq"
         if [[ "$technology" == "nadia" ]]; then
-            echo "        converting barcodes of"
+            echo "        converting barcodes"
             sed -i '2~4s/^/AAAA/' ${crIN}/$fq #Add AAAA to every read
             echo "        converting quality scores"
             sed -i '4~4s/^/IIII/'  ${crIN}/$fq #Add quality scores for added bases
