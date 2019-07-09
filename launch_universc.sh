@@ -776,9 +776,19 @@ for fq in "${read1[@]}"; do
     if [[ $fq == *'.gz' ]]; then
         echo "    unzipping and redirecting $fq file..."
         gunzip -c $fq > $to
-    else
+    elif [ ! keep ]
         echo "    redirecting $fq file..."
         cp $fq $to
+    else
+        if [ -f $crIN/$read ]
+            then
+            echo "    converted $fq file exists"
+        else
+            echo "    converted $fq file does not exist"
+            cp $fq $to 
+            convert=true
+            echo "      warning: file will be converted"
+        fi
     fi
 done
 
@@ -792,9 +802,19 @@ for fq in "${read2[@]}"; do
     if [[ $fq == *'.gz' ]]; then
         echo "    unzipping and redirecting $fq file..."
         gunzip -c $fq > $to
-    else
+ elif [ ! keep ]
         echo "    redirecting $fq file..."
         cp $fq $to
+    else
+        if [ -f $crIN/$read ]
+            then
+            echo "    converted $fq file exists"
+        else
+            echo "    converted $fq file does not exist"
+            cp $fq $to 
+            convert=true
+            echo "      warning: file will be converted"
+        fi
     fi
 done
 
