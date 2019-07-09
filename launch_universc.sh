@@ -752,7 +752,7 @@ if [ -d $crIN ]
             then
             echo "warning: converted $read file already exists"
         fi
-        if [ ! keep ]
+        if [ ! $keep ]
             then
             echo "file $crIN/$read removed"
             rm -rf $crIN/$read
@@ -767,7 +767,7 @@ if [ -d $crIN ]
             then
             echo "warning: converted $read file already exists"
         fi
-        if [ ! keep ]
+        if [ ! $keep ]
             then
             echo "file $crIN/$read removed"
             rm -rf $crIN/$read
@@ -787,7 +787,7 @@ for fq in "${read1[@]}"; do
     if [[ $fq == *'.gz' ]]; then
         echo "    unzipping and redirecting $fq file..."
         gunzip -c $fq > $to
-    elif [ ! keep ]
+    elif [ ! $keep ]
         then
         echo "    redirecting $fq file..."
         cp $fq $to
@@ -814,7 +814,7 @@ for fq in "${read2[@]}"; do
     if [[ $fq == *'.gz' ]]; then
         echo "    unzipping and redirecting $fq file..."
         gunzip -c $fq > $to
-   elif [ ! keep ]
+   elif [ ! $keep ]
         then
         echo "    redirecting $fq file..."
         cp $fq $to
