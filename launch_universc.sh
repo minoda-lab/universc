@@ -54,6 +54,7 @@ fi
 #reading in options
 read1=()
 read2=()
+verbose=false
 keep=false
 convert=true
 skip=false
