@@ -737,6 +737,11 @@ done
 
 LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
+if [[ $verbose == "true" ]]
+    then
+    echo "keep: $keep"
+fi
+
 #create directory of modified files
 echo "    creating a folder for all cellranger input files..."
 crIN="cellranger"
@@ -818,7 +823,7 @@ for fq in "${read2[@]}"; do
     if [[ $fq == *'.gz' ]]; then
         echo "    unzipping and redirecting $fq file..."
         gunzip -c $fq > $to
-   elif [ ! $keep ]
+    elif [ ! $keep ]
         then
         echo "    redirecting $fq file..."
         cp $fq $to
