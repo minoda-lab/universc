@@ -494,6 +494,14 @@ if [[ -z $keep ]]; then
     keep=false
 fi
 
+if [ -z "$ncells" ]; then
+    ncells=null
+else
+    if ! [[ $ncells =~ '^[0-9]+$' ]] ; then
+        error "--force-cells must be a number"
+    fi
+fi
+
 
 #report inputs
 echo technology: $technology
@@ -879,15 +887,15 @@ fi
 #running cellranger
 echo "    running cellranger..."
 d=""
-if [[ ! $description ]]; then
+if [[ -n $description ]]; then
     d="--description=$description"
 fi
 n=""
-if [[ ! $ncells ]]; then
+if [[ -n $ncells ]]; then
     n="--force-cells=$ncells"
 fi
 j=""
-if [[ ! $jobmode ]]; then
+if [[ -n $jobmode ]]; then
     j="--jobmode=$jobmode"
 fi
 start=`date +%s`
