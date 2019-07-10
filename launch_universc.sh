@@ -278,7 +278,7 @@ fi
 
 
 if [[ -z $setup ]]; then
-    echo setup=false
+    setup=false
     echo " skipping setup: checking if not required..."
 fi
 
