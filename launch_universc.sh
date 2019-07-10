@@ -495,11 +495,11 @@ if [[ -z $keep ]]; then
 fi
 
 if [ -z "$ncells" ]; then
-    ncells=null
+    ncells=""
 else
     if ! [[ $ncells =~ '^[0-9]+$' ]] ; then
-        error "--force-cells must be a number"
-    fi
+         echo "Warning --force-cells $ncells must be a number"
+   fi
 fi
 
 
