@@ -301,6 +301,10 @@ if [[ $setup == "true" ]]
         where cellranger
     fi
     cd ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes
+    if [ -f  3M-february-2018.txt ]
+        then
+            gzip -f 3M-february-2018.txt
+    fi
     echo "update barcodes in ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes \n for cellranger version $VERSION installed in $DIR"
     if [[ $technology == "10x" ]]
         then
