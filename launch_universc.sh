@@ -372,7 +372,7 @@ if [[ $setup == "true" ]]
             #combine 10x and Nadia barcodes
             if [ ! -f nadia_barcode.txt.gz ]
                 then
-                gzip nadia_barcode.txt
+                gzip -f nadia_barcode.txt
             fi
             zcat nadia_barcode.txt.gz 3M-february-2018.txt.backup.gz > 3M-february-2018.txt
             gzip -f 3M-february-2018.txt
@@ -424,7 +424,7 @@ if [[ $setup == "true" ]]
             #combine 10x and Nadia barcodes
             if [ ! -f iCELL8_barcode.txt.gz ]
                 then
-                gzip iCELL8_barcode.txt
+                gzip -f iCELL8_barcode.txt
             fi
             zcat iCELL8_barcode.txt.gz 3M-february-2018.txt.backup.gz > 3M-february-2018.txt
             gzip -f 3M-february-2018.txt
