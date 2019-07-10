@@ -861,7 +861,7 @@ if [[ $convert == "true" ]]
         echo "    10x files accepted without conversion"
     else
         echo "    converting file from $technology format to 10x format..."
-        for fq in "${crR1s[@]}"; do
+        for fq in "${read1[@]}"; do
             echo "        handling $fq"
             if [[ "$technology" == "nadia" ]]; then
                 echo "        converting barcodes"
