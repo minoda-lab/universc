@@ -318,7 +318,7 @@ if [[ $setup ]]
             if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
                 then
                 echo "restore 10x barcodes"
-                cp 3M-february-2018.txt.gz.backup 3M-february-2018.txt.gz
+                cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
             fi
             echo "whitelist converted for 10x compatibility with version 3 kit"
         fi
@@ -352,7 +352,7 @@ if [[ $setup ]]
             if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
                 then
                 echo "restore 10x barcodes"
-                cp 3M-february-2018.txt.gz.backup 3M-february-2018.txt.gz
+                cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
             fi
             gunzip -k  3M-february-2018.txt.gz
             if [ ! -f  3M-february-2018.txt.backup.gz ]
@@ -397,7 +397,7 @@ if [[ $setup ]]
             if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
                 then
                 echo "restore 10x barcodes"
-                cp 3M-february-2018.txt.gz.backup 3M-february-2018.txt.gz
+                cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
             fi
             gunzip -k  3M-february-2018.txt.gz
             if [ ! -f  3M-february-2018.txt.backup.gz ]
