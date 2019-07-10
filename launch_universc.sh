@@ -354,7 +354,7 @@ if [[ $setup == "true" ]]
             cp 737K-august-2016.txt 737K-august-2016.txt.backup
         fi
         #combine 10x and Nadia barcodes
-        cat nadia_barcode.txt 737K-august-2016.txt.backup > 737K-august-2016.txt
+        cat nadia_barcode.txt 737K-august-2016.txt.backup | sort | uniq > 737K-august-2016.txt
         echo "whitelist converted for Nadia compatibility with version 2 kit"
         #create version 3 files if version 3 whitelist available
         if [ -f 3M-february-2018.txt.gz ]
@@ -377,7 +377,7 @@ if [[ $setup == "true" ]]
                 then
                 gzip -f nadia_barcode.txt
             fi
-            zcat nadia_barcode.txt.gz 3M-february-2018.txt.backup.gz > 3M-february-2018.txt
+            zcat nadia_barcode.txt.gz 3M-february-2018.txt.backup.gz | sort | uniq > 3M-february-2018.txt
             gzip -f 3M-february-2018.txt
             echo "whitelist converted for Nadia compatibility with version 3 kit"
         fi
@@ -409,7 +409,7 @@ if [[ $setup == "true" ]]
             cp 737K-august-2016.txt 737K-august-2016.txt.backup
         fi
         #combine 10x and Nadia barcodes
-        cat iCELL8_barcode.txt 737K-august-2016.txt.backup > 737K-august-2016.txt
+        cat iCELL8_barcode.txt 737K-august-2016.txt.backup | sort | uniq > 737K-august-2016.txt
         echo "whitelist converted for iCELL8 compatibility with version 2 kit"
         #create version 3 files if version 3 whitelist available
         if [ -f 3M-february-2018.txt.gz ]
@@ -432,7 +432,7 @@ if [[ $setup == "true" ]]
                 then
                 gzip -f iCELL8_barcode.txt
             fi
-            zcat iCELL8_barcode.txt.gz 3M-february-2018.txt.backup.gz > 3M-february-2018.txt
+            zcat iCELL8_barcode.txt.gz 3M-february-2018.txt.backup.gz | sort | uniq > 3M-february-2018.txt
             gzip -f 3M-february-2018.txt
             echo "whitelist converted for iCELL8 compatibility with version 3 kit"        
         fi
