@@ -335,6 +335,10 @@ if [[ $setup == "true" ]]
             cp 737K-august-2016.txt.backup 737K-august-2016.txt
         fi
         #create a file with every possible barcode (permutation)
+        if [ -f nadia_barcode.txt.gz ]
+            then
+            gunzip nadia_barcode.txt.gz
+        fi
         if [ ! -f nadia_barcode.txt ]
             then
             echo AAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > nadia_barcode.txt
@@ -368,9 +372,9 @@ if [[ $setup == "true" ]]
             #combine 10x and Nadia barcodes
             if [ ! -f nadia_barcode.txt.gz ]
                 then
-                gzip -k nadia_barcode.txt
+                gzip nadia_barcode.txt
             fi
-            zcat nadia_barcode.txt 3M-february-2018.txt.backup > 3M-february-2018.txt
+            zcat nadia_barcode.txt.gz 3M-february-2018.txt.backup.gz > 3M-february-2018.txt
             gzip -f 3M-february-2018.txt
             echo "whitelist converted for Nadia compatibility with version 3 kit"
         fi
@@ -383,6 +387,10 @@ if [[ $setup == "true" ]]
             cp 737K-august-2016.txt.backup 737K-august-2016.txt
         fi
         #create a file with every possible barcode (permutation)
+        if [ -f iCELL8_barcode.txt.gz ]
+            then
+            gunzip iCELL8_barcode.txt.gz
+        fi
         if [ ! -f iCELL8_barcode.txt ]
             then
             echo AAAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > iCELL8_barcode.txt
@@ -416,9 +424,9 @@ if [[ $setup == "true" ]]
             #combine 10x and Nadia barcodes
             if [ ! -f iCELL8_barcode.txt.gz ]
                 then
-                gzip -k iCELL8_barcode.txt
+                gzip iCELL8_barcode.txt
             fi
-            zcat iCELL8_barcode.txt 3M-february-2018.txt.backup > 3M-february-2018.txt
+            zcat iCELL8_barcode.txt.gz 3M-february-2018.txt.backup.gz > 3M-february-2018.txt
             gzip -f 3M-february-2018.txt
             echo "whitelist converted for iCELL8 compatibility with version 3 kit"        
         fi
