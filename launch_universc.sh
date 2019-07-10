@@ -337,7 +337,10 @@ if [[ $setup == "true" ]]
         #create a file with every possible barcode (permutation)
         if [ -f nadia_barcode.txt.gz ]
             then
-            gunzip nadia_barcode.txt.gz
+            if [ ! -f nadia_barcode.txt ]
+                then
+                gunzip nadia_barcode.txt.gz
+            fi
         fi
         if [ ! -f nadia_barcode.txt ]
             then
@@ -389,7 +392,10 @@ if [[ $setup == "true" ]]
         #create a file with every possible barcode (permutation)
         if [ -f iCELL8_barcode.txt.gz ]
             then
-            gunzip iCELL8_barcode.txt.gz
+            if [ ! -f iCELL8_barcode.txt ]
+                then
+                gunzip iCELL8_barcode.txt.gz
+            fi
         fi
         if [ ! -f iCELL8_barcode.txt ]
             then
