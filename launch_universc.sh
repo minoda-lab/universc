@@ -283,7 +283,7 @@ if [[ -z $setup ]]; then
 fi
 
 #run setup if called
-if [[ $setup ]]
+if [[ $setup == "true" ]]
     then
     if [[ -z $technology ]]; then
         echo "Error: option -t is required"
