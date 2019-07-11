@@ -85,7 +85,7 @@ for op in "$@";do
         -d|--description)
             shift
             if [[ "$1" != "" ]]; then
-                TEXT="${1/%\//}"
+                description="${1/%\//}"
                 shift
                 skip=true
             fi
