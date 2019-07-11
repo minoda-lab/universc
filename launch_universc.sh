@@ -326,6 +326,20 @@ if [[ $setup == "true" ]]
             fi
             echo "whitelist converted for 10x compatibility with version 3 kit"
         fi
+        #if cellranger version is 3 or greater, restore assert functions
+        if [[ `printf '%s\n' '$VERSION 3.0.0' | sort -V | head -n 1` != $VERSION ]]
+            then
+            #restore functions if other technology run previously
+            last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
+            if [[ $last != $technology ]]
+            then
+                sed -i "s/#assert barcode_idx >= prev_barcode_idx/assert barcode_idx >= prev_barcode_idx/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
+                sed -i "s/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/assert np.array_equal(in_mc.get_barcodes(), barcodes)/g"  ${DIR}-cs/${VERSION}/lib/python/cellranger/molecule_counter.py
+            fi
+            echo "$DIR restored for $technology"
+        else
+            echo "$DIR ready for $technology"
+        fi
     elif [[ $technology == "nadia" ]]
         then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
@@ -381,6 +395,20 @@ if [[ $setup == "true" ]]
             gzip -f 3M-february-2018.txt
             echo "whitelist converted for Nadia compatibility with version 3 kit"
         fi
+        #if cellranger version is 3 or greater, restore assert functions
+        if [[ `printf '%s\n' '$VERSION 3.0.0' | sort -V | head -n 1` != $VERSION ]]
+             then
+             #disable functions if 10x technology run previously
+             last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
+             if [[ $last != "10x" ]]
+                 then
+                 sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
+                 sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g"  ${DIR}-cs/${VERSION}/lib/python/cellranger/molecule_counter.py
+             fi
+             echo "$DIR restored for $technology"
+         else
+             echo "$DIR ready for $technology"
+         fi
     elif [[ $technology == "icell8" ]]
         then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
@@ -436,12 +464,26 @@ if [[ $setup == "true" ]]
             gzip -f 3M-february-2018.txt
             echo "whitelist converted for iCELL8 compatibility with version 3 kit"        
         fi
+        #if cellranger version is 3 or greater, restore assert functions
+        if [[ `printf '%s\n' '$VERSION 3.0.0' | sort -V | head -n 1` != $VERSION ]]
+            then
+            #disable functions if 10x technology run previously
+            last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
+            if [[ $last != "10x" ]]
+                then
+                sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
+                sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g"  ${DIR}-cs/${VERSION}/lib/python/cellranger/molecule_counter.py
+            fi
+            echo "$DIR restored for $technology"
+        else
+            echo "$DIR ready for $technology"
+        fi
     else
         echo "Error: technology not supported"
         cd -
         exit 1
     fi
-    echo $technology > .last_called
+    echo $technology > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called
     cd -
     echo "setup complete"
 else
