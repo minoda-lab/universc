@@ -24,7 +24,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -f,  --file=NAME              Name of FASTQ files to pass to cellranger (prefix before R1 or R2)
   -a,  --directory=DIR          Path of directory containing all R1 and R2 files
   -t,  --technology=PLATFORM    Name of technology used to generate data (10x, nadia, icell8)
-  -d,  --description=TEXT       Sample description to embed in output files.
+  -d,  --description=TEXT       Sample description to embed in output files. Spaces are not recommended.
   -c,  --chemistry=CHEM         Assay configuration, autodetection is not possible for converted files:  'SC3Pv2', 'SC5P-PE', or 'SC5P-R2' 
   -l,  --lanes=NUMS             Comma-separated lane numbers
   -n,  --force-cells=NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
