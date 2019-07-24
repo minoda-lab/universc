@@ -827,7 +827,7 @@ for fq in "${read1[@]}"; do
         if [[ $fq == *'.gz' ]]; then
             gunzip -c $fq > $to
         else
-            cp $fq $to
+            cp -T $fq $to
         fi
     elif [[ $convert == "keep" ]] && [[ ! -f $to ]]; then
         echo " handling $fq ..."
@@ -835,7 +835,7 @@ for fq in "${read1[@]}"; do
         if [[ $fq == *'.gz' ]]; then
             gunzip -c $fq > $to
         else
-            cp $fq $to
+            cp -T $fq $to
         fi
     fi
 done
@@ -852,14 +852,14 @@ for fq in "${read2[@]}"; do
         if [[ $fq == *'.gz' ]]; then
             gunzip -c $fq > $to
         else
-            cp $fq $to
+            cp -T $fq $to
         fi
     elif [[ $convert == "keep" ]] && [[ ! -f $to ]]; then
         echo " handling $fq ..."
         if [[ $fq == *'.gz' ]]; then
             gunzip -c $fq > $to
         else
-            cp $fq $to
+            cp -T $fq $to
         fi
     fi
 done
