@@ -17,8 +17,8 @@ ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script v
 help='
 Usage:
   bash $(basename "$0") -R1=FILE1 -R2=FILE2 -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
-  bash $(basename "$0") -R1=\"READ1_LANE1 READ1_LANE2\" -R2=\"READ2_LANE1 READ2_LANE2\" -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
-  bash $(basename "$0") -f=\"SAMPLE_LANE\" -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
+  bash $(basename "$0") -R1=READ1_LANE1 READ1_LANE2 -R2=READ2_LANE1 READ2_LANE2 -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
+  bash $(basename "$0") -f=SAMPLE_LANE -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
   bash $(basename "$0") -f=\"SAMPLE_LANE1 SAMPLE_LANE2\" -t=TECHNOLOGY -i=ID -r=REFERENCE [--option=OPT]
   bash $(basename "$0") -v
   bash $(basename "$0") -h
