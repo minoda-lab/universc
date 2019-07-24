@@ -285,7 +285,7 @@ fi
 for i in ${!read1[@]}; do
     read=${read1[$i]}
     if [ -h $read ]; then
-        path=`readlink -f $raed`
+        path=`readlink -f $read`
         if [[ $verbose == "true" ]]; then
             echo " ***Warning: file $read not in current directory. Path to the file captured instead***"
             echo " (file) $read"
