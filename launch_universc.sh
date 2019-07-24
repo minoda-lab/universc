@@ -139,22 +139,18 @@ for op in "$@"; do
             ;;
         -f|--file)
             shift
-            if [[ "$1" != "" ]]; then
-                for i in $1/*; do
-                    if [[ "$i" == *"_R1_"* ]]; then
-                        if [[ ! "$i" == *".gz" ]] || [[ ! -f ${i%.*} ]]; then
-                            read1+=("$i")
-                        fi
-                    elif [[ "$i" == *"_R2_"* ]]; then
-                        if [[ ! "$i" == *".gz" ]] || [[ ! -f ${i%.*} ]]; then
-                            read2+=("$i")
-                        fi
-                    fi
+            if [[ "$1" != "" ]]
+                then
+                arg=$1
+                while [[ ! "$arg" == "-"* ]] && [[ "$arg" != "" ]]; do
+                    read1+=("${1}_R1_001")
+                    read2+=("${1}_R2_001")
+                    shift
+                    arg=$1
                 done
-                next=true
-                shift
-            elif [[ -z $file ]]; then
-                echo "Error: file input missing for --file"
+                skip=true
+            else
+                echo "Error: File input missing --file or --read1"
                 exit 1
             fi
             ;;
@@ -277,6 +273,97 @@ if [[ ${#read2[@]} -eq 0 ]] && [[ $setup == "false" ]]; then
     echo "Error: option -R2 or --file is required"
     exit 1
 fi
+
+#check for file type (extension) for files
+##allows incomplete file names and processing compressed files
+for i in ${!read1[@]}
+do
+read=${read1[$i]}
+    if [[ $verbose == "true" ]];
+        then
+        echo " checking file format for $read1 ..."
+    fi
+    if [ -f $read ] && [ ! -h $read ]
+        then
+        if [[ $read != *"gz" ]]
+            then
+            gunzip -k $read
+            #update file variable
+            read=`echo $read | sed -e  "s/\.gz//g"`
+        fi
+        if [[ $read != *"fastq" ]] || [[ $read != *"fq" ]]
+            then
+            echo "Warning: file $read expected to be in fastq format"
+        fi
+        echo $read
+    elif [ -f ${read}.fq ] && [ ! -h $read ]
+    then
+        read=${read}.fq
+        echo $read
+    elif [ -f ${read}.fastq ] && [ ! -h $read ]
+        then
+        read=${read}.fastq
+        echo $read
+    elif [ -f ${read}.fq.gz ] && [ ! -h $read ]
+        then
+        gunzip -k ${read}.fq.gz
+        read=${read}.fq
+        echo $read
+    elif [ -f ${read}.fastq.gz ] && [ ! -h $read ]
+        then
+        gunzip -k ${read}.fastq.gz
+        read=${read}.fastq
+        echo $read
+    else
+        echo $read not found
+    fi
+read1[$i]=$read
+done
+
+for i in ${!read2[@]}
+do
+read=${read2[$i]}
+    if [[ $verbose == "true" ]];
+        then
+        echo " checking file format for $read2 ..."
+    fi
+    if [ -f $read ] && [ ! -h $read ]
+        then
+        if [[ $read != *"gz" ]]
+            then
+            gunzip -k $read
+            #update file variable
+            read=`echo $read | sed -e  "s/\.gz//g"`
+        fi
+        if [[ $read != *"fastq" ]] || [[ $read != *"fq" ]]
+            then
+            echo "Warning: file $read expected to be in fastq format"
+        fi
+        echo $read
+    elif [ -f ${read}.fq ] && [ ! -h $read ]
+    then
+        read=${read}.fq
+        echo $read
+    elif [ -f ${read}.fastq ] && [ ! -h $read ]
+        then
+        read=${read}.fastq
+        echo $read
+    elif [ -f ${read}.fq.gz ] && [ ! -h $read ]
+        then
+        gunzip -k ${read}.fq.gz
+        read=${read}.fq
+        echo $read
+    elif [ -f ${read}.fastq.gz ] && [ ! -h $read ]
+        then
+        gunzip -k ${read}.fastq.gz
+        read=${read}.fastq
+        echo $read
+    else
+        echo $read not found
+    fi
+read2[$i]=$read
+done
+
 
 #renaming read1 and read 2 files if not compatible with the convention.
 if [[ $verbose == "true" ]]; then
