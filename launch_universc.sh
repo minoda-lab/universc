@@ -989,6 +989,10 @@ d=""
 if [[ -n $description ]]; then
     d="--description=$description"
 fi
+c=""
+if [[ -n $chemistry ]]; then
+     c="--chemistry=$chemistry"
+fi
 n=""
 if [[ -n $ncells ]]; then
     n="--force-cells=$ncells"
@@ -1007,7 +1011,8 @@ echo "cellranger count --id=$id \
         --sample=$SAMPLE \
         $d \
         $n \
-        $j
+        $j \
+        $c
 "
 
 cellranger count --id=$id \
@@ -1019,7 +1024,8 @@ cellranger count --id=$id \
         --sample=$SAMPLE \
         $d \
         $n \
-        $j
+        $j \
+        $c
 #        --noexit
 #        --nopreflight
 end=`date +%s`
