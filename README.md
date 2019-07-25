@@ -1,4 +1,4 @@
-### UniverSC version 0.1
+### UniverSC version 0.2
 
 Conversion script to run Nadia and iCELL8 libraries with cellranger (10x Genomics analysis tool)
 
