@@ -18,7 +18,7 @@ before_script:
   - echo "cellranger added to PATH"
   - export PATH=~/local/lib/cellranger-3.1.0:$PATH
   - cellranger --version
-  -- cellranger testrun --id "test"
+  - cellranger testrun --id "test"
   - cd -
   
 after_script:
