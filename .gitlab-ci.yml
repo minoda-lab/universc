@@ -38,7 +38,7 @@ build1:
    
 test1:
   stage: test
-  script: "technologies"
+  script: convert.sh
     - echo "test 10x"
     - bash convert.sh -t "10x" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
     - --read1 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
@@ -54,7 +54,7 @@ test1:
    
 test2:
   stage: test 
-  script: "technologies"
+  script: convert.sh
     - echo "test file inputs"
     - bash convert.sh -t "icell8" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
     - -- file "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001" \
