@@ -55,19 +55,19 @@ test1:
 test2:
   stage: test 
   script: 
-     - echo "test file inputs"
-     - bash convert.sh -t "icell8" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
-     - -- file "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001" \
-     - echo "test multiple lanes"
-     - bash convert.sh -t "Nadia" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
-     - --read1 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
-     - --read1 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002_R1_001.fastq.gz" \
-     - "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R2_001.fastq.gz"\
-     - "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002_R2_001.fastq.gz"
-     - echo "test file inputs"
-     - bash convert.sh -t "icell8" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
-     - --file "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001" \
-     - "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002" \
+    - echo "test file inputs"
+    - bash convert.sh -t "icell8" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
+    - -- file "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001" \
+    - echo "test multiple lanes"
+    - bash convert.sh -t "Nadia" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
+    - --read1 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
+    - --read1 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002_R1_001.fastq.gz" \
+    - "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R2_001.fastq.gz"\
+    - "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002_R2_001.fastq.gz"
+    - echo "test file inputs"
+    - bash convert.sh -t "icell8" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
+    - --file "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001" \
+    - "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002"
 
    
 deploy1:
