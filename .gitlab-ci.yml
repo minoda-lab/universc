@@ -57,7 +57,7 @@ test2:
   script: convert.sh
     - echo "test file inputs"
     - bash convert.sh -t "icell8" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
-    - -- file "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001" \
+    - -- file "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001" 
     - echo "test multiple lanes"
     - bash convert.sh -t "Nadia" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
     - --read1 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
