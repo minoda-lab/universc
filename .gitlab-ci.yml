@@ -6,9 +6,9 @@ image: busybox:latest
 
 before_script:
   - echo "Creating cellranger test install"
-#  - mkdir -p ~/local/lib/bin
-#  - if [[ -w ~/local/lib/bin ]]; then echo "install directory writeable"; else echo "install directory not writeable"; fi
-#  - cd ~/local/lib/bin
+#  - mkdir -p ~/local/bin
+#  - if [[ -w ~/local/bin ]]; then echo "install directory writeable"; else echo "install directory not writeable"; fi
+#  - cd ~/local/bin
 #  - echo "Downloading cellranger"
 #  - wget -O cellranger-3.1.0.tar.gz "http://cf.10xgenomics.com/releases/cell-exp/cellranger-3.1.0.tar.gz?Expires=1564080778&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cDovL2NmLjEweGdlbm9taWNzLmNvbS9yZWxlYXNlcy9jZWxsLWV4cC9jZWxscmFuZ2VyLTMuMS4wLnRhci5neiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTU2NDA4MDc3OH19fV19&Signature=m6fJx3etqOoywnpHgADfRzpCSZ04YZEe0sA3ZyVl1EQMn5Zm60qLk7v4KVPRLy6a9Qi2zE5DKWr8EpFfAg3kWqZ5-vDYtZtlYAnl0~OhtijIyYs7Rm8Uqzal-lk8tmD4SQaZQVQY~RLEed7iWq7stYwc4QTXRUjtojGqwMvqf5t4dMQbn7tNs513shjC4lGfL7~xCWpc5vaxaSN9wGSRF8ex9Hy-GsMYG2Dm8ya7ajplR1SPqTcHd9sDfro1UzOK~IGkHh9GGO9EicXQ6ypExvKB-WrDLLLZ66rEJjeNoSS6qnTKeEzyKw-3UoEYfho~Ph4eKrFS-XSZhtEX-UDItg__&Key-Pair-Id=APKAI7S6A5RYOXBWRPDA"
 #  - tar -xzvf cellranger-3.1.0.tar.gz
@@ -16,7 +16,7 @@ before_script:
 #  - wget http://cf.10xgenomics.com/supp/cell-exp/refdata-cellranger-GRCh38-3.0.0.tar.gz
 #  - tar -xzvf refdata-cellranger-GRCh38-3.0.0.tar.gz
   - echo "cellranger added to PATH"
-  - export PATH=/home/tom/local/lib/bin/cellranger-3.1.0:$PATH
+  - export PATH=/home/tom/local/bin/cellranger-3.1.0:$PATH
   - cellranger --version
   - cellranger testrun --id "test"
   - cd -
@@ -40,34 +40,34 @@ test1:
   stage: test
   script: convert.sh
     - echo "test 10x"
-    - bash convert.sh -t "10x" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
-    - --read1 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
-    - --read2 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R2_001.fastq.gz"
+    - bash convert.sh -t "10x" -r "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
+    - --read1 "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
+    - --read2 "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R2_001.fastq.gz"
     - echo "test Nadia"
-    - bash convert.sh -t "Nadia" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
-    - --read1 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
-    - --read2 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R2_001.fastq.gz"
+    - bash convert.sh -t "Nadia" -r "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
+    - --read1 "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
+    - --read2 "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R2_001.fastq.gz"
     - echo "test iCELL8"
-    - bash convert.sh -t "Nadia" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
-    - --read1 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
-    - --read2 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R2_001.fastq.gz"
+    - bash convert.sh -t "Nadia" -r "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
+    - --read1 "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
+    - --read2 "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R2_001.fastq.gz"
    
 test2:
   stage: test 
   script: convert.sh
     - echo "test file inputs"
-    - bash convert.sh -t "icell8" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
+    - bash convert.sh -t "icell8" -r "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
     - -- file "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001" 
     - echo "test multiple lanes"
-    - bash convert.sh -t "Nadia" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
-    - --read1 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
-    - --read1 "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002_R1_001.fastq.gz" \
-    - "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R2_001.fastq.gz"\
-    - "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002_R2_001.fastq.gz"
+    - bash convert.sh -t "Nadia" -r "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
+    - --read1 "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R1_001.fastq.gz" \
+    - --read1 "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002_R1_001.fastq.gz" \
+    - "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001_R2_001.fastq.gz"\
+    - "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002_R2_001.fastq.gz"
     - echo "test file inputs"
-    - bash convert.sh -t "icell8" -r "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
-    - --file "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001" \
-    - "~/home/local/lib/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002"
+    - bash convert.sh -t "icell8" -r "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0" \
+    - --file "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L001" \
+    - "~/home/local/bin/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/tinygex_S1_L002"
 
    
 deploy1:
