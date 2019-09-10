@@ -382,12 +382,12 @@ for i in ${!read1[@]}; do
     fi
     case $read in
         #check if contains lane before read
-        (*_L0[0123456789][0123456789]_R[12]*)
+        *_L0[0123456789][0123456789]_R[12]*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with lane"
         fi
         ;;
-        (*) echo "  converting $read ..."
+        *) echo "  converting $read ..."
         #rename file
         if [[ $verbose == "true" ]]; then
             echo "   assuming 1 lane if not given"
@@ -403,12 +403,12 @@ for i in ${!read1[@]}; do
     esac
     case $read in
         #check if contains sample before lane
-        (*_S[123456789]_L0*)
+        *_S[123456789]_L0*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with sample"
         fi
         ;;
-        (*)
+        *)
         if [[ $verbose == "true" ]]; then
             echo "  converting $read ..."
         fi
@@ -425,12 +425,12 @@ for i in ${!read1[@]}; do
     esac
     case $read in
         #check if contains sample before lane
-        (*_R1_001.*)
+        *_R1_001.*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with suffix"
         fi
         ;;
-        (*)
+        *)
         if [[ $verbose == "true" ]]; then
             echo "  converting $read ..."
         fi
@@ -461,12 +461,12 @@ for i in ${!read2[@]}; do
     fi
     case $read in
         #check if contains lane before read
-        (*_L0[0123456789][0123456789]_R[12]*)
+        *_L0[0123456789][0123456789]_R[12]*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with lane"
         fi
         ;;
-        (*) echo "  converting $read ..."
+        *) echo "  converting $read ..."
         #rename file
         if [[ $verbose == "true" ]]; then
             echo "   assuming 1 lane if not given"
@@ -482,12 +482,12 @@ for i in ${!read2[@]}; do
     esac
     case $read in
         #check if contains sample before lane
-        (*_S[123456789]_L0*)
+        *_S[123456789]_L0*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with sample"
         fi
         ;;
-        (*)
+        *)
         if [[ $verbose == "true" ]]; then
             echo "  converting $read ..."
         fi
@@ -504,12 +504,12 @@ for i in ${!read2[@]}; do
     esac
     case $read in
         #check if contains sample before lane
-        (*_R2_001.*)
+        *_R2_001.*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with suffix"
         fi
         ;;
-        (*)
+        *)
         if [[ $verbose == "true" ]]; then
             echo "  converting $read ..."
         fi
