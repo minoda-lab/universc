@@ -5,7 +5,24 @@
 image: busybox:latest
 
 before_script:
+  - echo "Installing cellranger dependencies
+  - sudo apt-get install install go rust rustup node python
+  - export GOPATH="${HOME}/.go"
+  - export GOROOT="$(brew --prefix golang)/libexec"
+  - export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
+  - test -d "${GOPATH}" || mkdir "${GOPATH}"
+  - test -d "${GOPATH}/src/github.com" || mkdir -p "${GOPATH}/src/github.com"
+  - export PATH=/usr/lib/go-1.11/bin:$PATH # Add golang to path
+  - rustup install 1.28.0
+  - rustup default 1.28.0
+  - sudo apt-get install make clang-6.0 golang-1.11-go libz-dev libbz2-dev liblzma-dev
   - echo "Creating cellranger test install"
+  - git clone https://github.com/10XGenomics/cellranger.git
+  - cd cellranger
+  - git checkout 3.0.2
+  - make
+  - cd ..
+
 #  - mkdir -p ~/local/bin
 #  - if [[ -w ~/local/bin ]]; then echo "install directory writeable"; else echo "install directory not writeable"; fi
 #  - cd ~/local/bin
@@ -16,7 +33,7 @@ before_script:
 #  - wget http://cf.10xgenomics.com/supp/cell-exp/refdata-cellranger-GRCh38-3.0.0.tar.gz
 #  - tar -xzvf refdata-cellranger-GRCh38-3.0.0.tar.gz
   - echo "cellranger added to PATH"
-  - export PATH=/home/tom/local/bin/cellranger-3.1.0:$PATH
+  - export PATH=./cellranger:$PATH
   - cellranger --version
   - cellranger testrun --id "test"
   - cd -
