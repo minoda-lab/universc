@@ -17,7 +17,10 @@ if [ -f nadia_barcode.txt -o -f  iCELL8_barcode.txt ]
 #create a file with every possible barcode (permutation)
 if [ ! -f iCELL8_barcode.txt ]
     then
-    echo AAAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > iCELL8_barcode.txt
+    #copy known iCell8 barcodes from convert repo to cellranger install
+    cp iCell8_barcode.txt iCell8_barcode_converted.txt
+    #convert barcode whitelist to match converted barcodes
+    sed -i 's/^/AAAAA/g' iCell8_barcodes_converted.txt
     echo "expected barcodes generated for iCELL8"
     fi
 
@@ -29,7 +32,7 @@ if [ ! -f  737K-august-2016.txt.backup ]
     fi
 
 #combine 10x and Nadia barcodes
-cat iCELL8_barcode.txt 737K-august-2016.txt.backup > 737K-august-2016.txt
+cat iCELL8_barcode_converted.txt > 737K-august-2016.txt
 echo "whitelist converted for iCELL8 compatibility with version 2 kit"
 
 #create version 3 files if version 3 whitelist available
@@ -50,7 +53,7 @@ if [ -f 3M-february-2018.txt.gz ]
         fi
     #combine 10x and iCELL8 barcodes
     gzip -k iCELL8_barcode.txt
-    zcat iCELL8_barcode.txt 3M-february-2018.txt.backup > 3M-february-2018.txt
+    cat iCELL8_barcode_converted.txt  > 3M-february-2018.txt
     gzip -f 3M-february-2018.txt
     echo "whitelist converted for iCELL8 compatibility with version 3 kit"
     fi
