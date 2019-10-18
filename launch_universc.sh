@@ -285,24 +285,24 @@ if [[ $lock -ge 1 ]]
         if [[ $last == $technology ]]
            then
            echo "no conflict detected"
-           #add current job to lock
-           lock=$(($lock+1))
-           echo $lock >  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+           #add disable increment for setup calls (which aren't counted or removed)
+           if [[ $setup == "false" ]]
+               then
+               #add current job to lock
+               lock=$(($lock+1))
+               echo $lock >  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+           fi
            echo "call accepted: running $lock cellranger calls on $technology"
         else
            echo "conflict between $technology and current $lock cellranger runs on $last"
            echo "***Please hold calls for $technology until jobs running $last are completed"
-           stop "***Error: barcode whitelist configured for currently running technology: $last" 
+           echo "***Warning: remove ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock if $last jobs have completed or aborted"
+           echo "***Error: barcode whitelist configured for currently running technology: $last" 
+           exit 1
         fi
     fi
 fi
 
-if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]; then
-    #run again if last technology called is different from technology
-    last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
-    if [[ $last != $technology ]]; then
-
-echo "$(($lock+1))"
 
 #####check if input maches expected inputs#####
 if [[ $verbose == "true" ]]
@@ -1085,6 +1085,31 @@ cellranger count --id=$id \
 end=`date +%s`
 runtime=$((end-start))
 ##########
+
+#####remove files if convert is not running elsewhere#####
+#reset lock counter (read in case changed by other jobs)
+lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+# remove currewnt job from counter (successfully completed)
+lock=$(($lock-1))
+#check if jobs running
+if [[ $lock -ge 1 ]]
+    then
+    echo "$lock number of cellranger ${VERSION} jobs still running in ${DIR}"
+    #check technology current running
+    if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
+        then
+        last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
+        echo "running technology $last with $lock jobs"
+    fi
+fi
+
+#remove .lock file if no other jobs running exists (prevents negative values allowing technologies to run at same time)
+if [[ $lock -le 0 ]]
+    then
+    echo "no other jobs currently running: lock files cleared for cellranger ${VERSION} in ${DIR}"
+    echo "no conflicts: whitelist can now be changed for other technologies"
+    rm -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+fi
 
 
 
