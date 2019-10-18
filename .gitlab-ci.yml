@@ -6,7 +6,7 @@ image: busybox:latest
 
 before_script:
   - echo "Installing cellranger dependencies"
-  - apt-get install install go rust rustup node python
+  - apt-get install go rust rustup node python
   - export GOPATH="${HOME}/.go"
   - export GOROOT="$(brew --prefix golang)/libexec"
   - export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
