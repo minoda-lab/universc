@@ -264,7 +264,45 @@ for op in "$@"; do
 done
 ##########
 
+#####check if UniverSC is running already#####
+#create .lock file if none exists
+if [[ ! -f  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock ]]
+    then
+    echo 0 > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+fi
+#import lock counter
+lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+#check if jobs running
+if [[ $lock -ge 1 ]]
+    then
+    echo "$lock number of cellranger ${VERSION} jobs running in ${DIR}"
+    #check technology current running
+    if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
+        then
+        last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
+        echo "running technology $last with $lock jobs"
+        #check if currently running technology is different to convert call
+        if [[ $last == $technology ]]
+           then
+           echo "no conflict detected"
+           #add current job to lock
+           lock=$(($lock+1))
+           echo $lock >  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+           echo "call accepted: running $lock cellranger calls on $technology"
+        else
+           echo "conflict between $technology and current $lock cellranger runs on $last"
+           echo "***Please hold calls for $technology until jobs running $last are completed"
+           stop "***Error: barcode whitelist configured for currently running technology: $last" 
+        fi
+    fi
+fi
 
+if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]; then
+    #run again if last technology called is different from technology
+    last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
+    if [[ $last != $technology ]]; then
+
+echo "$(($lock+1))"
 
 #####check if input maches expected inputs#####
 if [[ $verbose == "true" ]]
