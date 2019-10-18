@@ -15,7 +15,7 @@ before_script:
   - export PATH=/usr/lib/go-1.11/bin:$PATH # Add golang to path
   - rustup install 1.28.0
   - rustup default 1.28.0
-  - sudo apt-get install make clang-6.0 golang-1.11-go libz-dev libbz2-dev liblzma-dev
+  - apt-get install make clang-6.0 golang-1.11-go libz-dev libbz2-dev liblzma-dev
   - echo "Creating cellranger test install"
   - git clone https://github.com/10XGenomics/cellranger.git
   - cd cellranger
