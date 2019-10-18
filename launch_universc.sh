@@ -268,12 +268,13 @@ done
 #create .lock file if none exists
 if [[ ! -f  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock ]]
     then
+    echo "creating lock file"
     echo 0 > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
 fi
 #import lock counter
 lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
 #check if jobs running
-if [[ $lock -ge 1 ]]
+if [[ ! $lock == "0" ]]
     then
     echo "$lock number of cellranger ${VERSION} jobs running in ${DIR}"
     #check technology current running
@@ -286,9 +287,10 @@ if [[ $lock -ge 1 ]]
            then
            echo "no conflict detected"
            #add disable increment for setup calls (which aren't counted or removed)
-           if [[ $setup == "false" ]]
+           if [[ $setup == false ]]
                then
                #add current job to lock
+               echo "increment lock"
                lock=$(($lock+1))
                echo $lock >  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
            fi
@@ -300,6 +302,17 @@ if [[ $lock -ge 1 ]]
            echo "***Error: barcode whitelist configured for currently running technology: $last" 
            exit 1
         fi
+    fi
+else
+    ## initialise lock file if first call (no other jobs running)
+    #add disable increment for setup calls (which aren't counted or removed)
+    if [[ $setup == false ]]
+        then
+        #add current job to lock
+        echo "increment lock"
+        lock=$(($lock+1))
+        echo "no other jobs running: $lock initiated for $technology"
+        echo $lock >  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
     fi
 fi
 
