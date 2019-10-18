@@ -11,7 +11,26 @@ fi
 ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.2.0.9001) | head -n 3 | tail -n 2`
 ##########
 
-
+#####locate script for importing barcodes######
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  TARGET="$(readlink "$SOURCE")"
+  if [[ $TARGET == /* ]]; then
+    echo "SOURCE '$SOURCE' is an absolute symlink to '$TARGET'"
+    SOURCE="$TARGET"
+  else
+    SCRIPT_DIR="$( dirname "$SOURCE" )"
+    echo "SOURCE '$SOURCE' is a relative symlink to '$TARGET' (relative to '$SCRIPT_DIR')"
+    SOURCE="$SCRIPT_DIR/$TARGET" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+  fi
+done
+echo "SOURCE is '$SOURCE'"
+RDIR="$( dirname "$SOURCE" )"
+SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+if [ "$DIR" != "$RDIR" ]; then
+  echo "DIR '$RDIR' resolves to '$SCRIPT_DIR'"
+fi
+echo "Running convertion script in '$SCRIPT_DIR'"
 
 #####usage statement#####
 help='
@@ -245,6 +264,44 @@ for op in "$@"; do
 done
 ##########
 
+#####check if UniverSC is running already#####
+#create .lock file if none exists
+if [[ ! -f  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock ]]
+    then
+    echo 0 > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+fi
+#import lock counter
+lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+#check if jobs running
+if [[ $lock -ge 1 ]]
+    then
+    echo "$lock number of cellranger ${VERSION} jobs running in ${DIR}"
+    #check technology current running
+    if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
+        then
+        last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
+        echo "running technology $last with $lock jobs"
+        #check if currently running technology is different to convert call
+        if [[ $last == $technology ]]
+           then
+           echo "no conflict detected"
+           #add disable increment for setup calls (which aren't counted or removed)
+           if [[ $setup == "false" ]]
+               then
+               #add current job to lock
+               lock=$(($lock+1))
+               echo $lock >  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+           fi
+           echo "call accepted: running $lock cellranger calls on $technology"
+        else
+           echo "conflict between $technology and current $lock cellranger runs on $last"
+           echo "***Please hold calls for $technology until jobs running $last are completed"
+           echo "***Warning: remove ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock if $last jobs have completed or aborted"
+           echo "***Error: barcode whitelist configured for currently running technology: $last" 
+           exit 1
+        fi
+    fi
+fi
 
 
 #####check if input maches expected inputs#####
@@ -382,12 +439,12 @@ for i in ${!read1[@]}; do
     fi
     case $read in
         #check if contains lane before read
-        (*_L0[0123456789][0123456789]_R[12]*)
+        *_L0[0123456789][0123456789]_R[12]*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with lane"
         fi
         ;;
-        (*) echo "  converting $read ..."
+        *) echo "  converting $read ..."
         #rename file
         if [[ $verbose == "true" ]]; then
             echo "   assuming 1 lane if not given"
@@ -403,12 +460,12 @@ for i in ${!read1[@]}; do
     esac
     case $read in
         #check if contains sample before lane
-        (*_S[123456789]_L0*)
+        *_S[123456789]_L0*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with sample"
         fi
         ;;
-        (*)
+        *)
         if [[ $verbose == "true" ]]; then
             echo "  converting $read ..."
         fi
@@ -425,12 +482,12 @@ for i in ${!read1[@]}; do
     esac
     case $read in
         #check if contains sample before lane
-        (*_R1_001.*)
+        *_R1_001.*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with suffix"
         fi
         ;;
-        (*)
+        *)
         if [[ $verbose == "true" ]]; then
             echo "  converting $read ..."
         fi
@@ -451,7 +508,7 @@ fi
 for i in ${!read2[@]}; do
     read=${read2[$i]}
     if [[ -h $read ]]; then
-        path=`readlink -f $raed`
+        path=`readlink -f $read`
         if [[ $verbose == "true" ]]; then
             echo " ***Warning: file $read not in current directory. Path to the file captured instead***"
             echo " (file) $read"
@@ -461,12 +518,12 @@ for i in ${!read2[@]}; do
     fi
     case $read in
         #check if contains lane before read
-        (*_L0[0123456789][0123456789]_R[12]*)
+        *_L0[0123456789][0123456789]_R[12]*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with lane"
         fi
         ;;
-        (*) echo "  converting $read ..."
+        *) echo "  converting $read ..."
         #rename file
         if [[ $verbose == "true" ]]; then
             echo "   assuming 1 lane if not given"
@@ -482,12 +539,12 @@ for i in ${!read2[@]}; do
     esac
     case $read in
         #check if contains sample before lane
-        (*_S[123456789]_L0*)
+        *_S[123456789]_L0*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with sample"
         fi
         ;;
-        (*)
+        *)
         if [[ $verbose == "true" ]]; then
             echo "  converting $read ..."
         fi
@@ -504,12 +561,12 @@ for i in ${!read2[@]}; do
     esac
     case $read in
         #check if contains sample before lane
-        (*_R2_001.*)
+        *_R2_001.*)
         if [[ $verbose == "true" ]]; then
             echo " $read compatible with suffix"
         fi
         ;;
-        (*)
+        *)
         if [[ $verbose == "true" ]]; then
             echo "  converting $read ..."
         fi
@@ -749,6 +806,7 @@ if [[ $setup == "true" ]]; then
             echo " backing up whitelist of version 2 kit ..."
             cp 737K-august-2016.txt 737K-august-2016.txt.backup
         fi
+        echo "Warning: Valid barcodes cannot be calculated accurately for Nadia or DropSeq technology"
         #combine 10x and Nadia barcodes
         cat nadia_barcode.txt 737K-august-2016.txt.backup | sort | uniq > 737K-august-2016.txt
         echo " whitelist converted for Nadia compatibility with version 2 kit."
@@ -793,21 +851,23 @@ if [[ $setup == "true" ]]; then
         fi
         #create a file with every possible barcode (permutation)
         if [[ -f iCELL8_barcode.txt.gz ]]; then
-            if [[ ! -f iCELL8_barcode.txt ]]; then
-                gunzip iCELL8_barcode.txt.gz
-            fi
+            rm iCELL8_barcode.txt.gz
         fi
         if [[ ! -f iCELL8_barcode.txt ]]; then
-            echo AAAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > iCELL8_barcode.txt
-            echo " generating expected barcodes for iCELL8 ..."
+            #copy known iCell8 barcodes from convert repo to cellranger install
+            rsync -u ${SCRIPT_DIR}/iCell8_barcode.txt iCell8_barcode.txt
+            #convert barcode whitelist to match converted barcodes
+            sed -i 's/^/AAAAA/g' iCell8_barcodes.txt
+            echo " imported expected barcodes for iCELL8 ..."
         fi
+        echo "Valid barcodes can be calculated accurately for iCELL8"
         #save original barcode file (if doesn't already exist)
         if [[ ! -f 737K-august-2016.txt.backup ]]; then
             echo " backing up whitelist of version 2 kit ..."
             cp 737K-august-2016.txt 737K-august-2016.txt.backup
         fi
-        #combine 10x and Nadia barcodes
-        cat iCELL8_barcode.txt 737K-august-2016.txt.backup | sort | uniq > 737K-august-2016.txt
+        #replace 10x barcodes with icell8
+        cat iCELL8_barcode.txt | sort | uniq > 737K-august-2016.txt
         echo " whitelist converted for iCELL8 compatibility with version 2 kit."
         #create version 3 files if version 3 whitelist available
         if [[ -f 3M-february-2018.txt.gz ]]; then
@@ -824,9 +884,9 @@ if [[ $setup == "true" ]]; then
             fi
             #combine 10x and Nadia barcodes
             if [[ ! -f iCELL8_barcode.txt.gz ]]; then
-                gzip -f iCELL8_barcode.txt
+                rm iCELL8_barcode.txt.gz
             fi
-            zcat iCELL8_barcode.txt.gz 3M-february-2018.txt.backup.gz | sort | uniq > 3M-february-2018.txt
+            cat iCELL8_barcode.txt > 3M-february-2018.txt
             gzip -f 3M-february-2018.txt
             echo " whitelist converted for iCELL8 compatibility with version 3 kit."        
         fi
@@ -1025,6 +1085,31 @@ cellranger count --id=$id \
 end=`date +%s`
 runtime=$((end-start))
 ##########
+
+#####remove files if convert is not running elsewhere#####
+#reset lock counter (read in case changed by other jobs)
+lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+# remove currewnt job from counter (successfully completed)
+lock=$(($lock-1))
+#check if jobs running
+if [[ $lock -ge 1 ]]
+    then
+    echo "$lock number of cellranger ${VERSION} jobs still running in ${DIR}"
+    #check technology current running
+    if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
+        then
+        last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
+        echo "running technology $last with $lock jobs"
+    fi
+fi
+
+#remove .lock file if no other jobs running exists (prevents negative values allowing technologies to run at same time)
+if [[ $lock -le 0 ]]
+    then
+    echo "no other jobs currently running: lock files cleared for cellranger ${VERSION} in ${DIR}"
+    echo "no conflicts: whitelist can now be changed for other technologies"
+    rm -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+fi
 
 
 
