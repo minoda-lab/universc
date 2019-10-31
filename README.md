@@ -53,5 +53,5 @@ The script will:
 Please note that this script alters the barcode whitelist. Known iCELL8 barcodes are supported but this is not possible with Nadia or DropSeq chemistry so 100% valid barcodes will be returned.
 
 This is a work-in-progress and documentation with examples will be added in the future. The script is stable and functional.
-Please send feedback, comments, or issues to Kai Battenberg/辻井 快 <[kai.battenberg@riken.jp](mailto:kai.battenberg@riken.jp)>
+Please send feedback, comments, or issues to Kai Battenberg <[kai.battenberg@riken.jp](mailto:kai.battenberg@riken.jp)>
  or Tom Kelly <[tom.kelly@riken.jp](mailto:tom.kelly@riken.jp)>
