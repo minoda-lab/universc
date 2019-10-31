@@ -2,7 +2,7 @@
 
 Conversion script to run Nadia and iCELL8 libraries with cellranger (10x Genomics analysis tool)
 
-#### Tom Kelly (RIKEN IMS) and Kai Battenberg (RIKEN CSRS)
+#### Tom Kelly (RIKEN IMS) and Kai Battenberg (RIKEN CSRS/IMS)
 
 ## Purpose
 
