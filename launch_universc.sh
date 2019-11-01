@@ -8,29 +8,33 @@ if [[ -z $cellrangerpass ]]; then
     echo "cellranger command is not found."
     exit 1
 fi
-ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.2.0.9001) | head -n 3 | tail -n 2`
+ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.2.0.9002) | head -n 3 | tail -n 2`
 ##########
 
-#####locate script for importing barcodes######
+
+
+#####locate launch_universc.sh for importing barcodes######
 SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  TARGET="$(readlink "$SOURCE")"
-  if [[ $TARGET == /* ]]; then
-    echo "SOURCE '$SOURCE' is an absolute symlink to '$TARGET'"
-    SOURCE="$TARGET"
-  else
-    SCRIPT_DIR="$( dirname "$SOURCE" )"
-    echo "SOURCE '$SOURCE' is a relative symlink to '$TARGET' (relative to '$SCRIPT_DIR')"
-    SOURCE="$SCRIPT_DIR/$TARGET" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-  fi
+while [[ -h "$SOURCE" ]]; do #resolve $SOURCE until the file is no longer a symlink
+    TARGET="$(readlink "$SOURCE")"
+    if [[ $TARGET == /* ]]; then
+        echo "SOURCE '$SOURCE' is an absolute symlink to '$TARGET'"
+        SOURCE="$TARGET"
+    else
+        SCRIPT_DIR="$( dirname "$SOURCE" )"
+        echo "SOURCE '$SOURCE' is a relative symlink to '$TARGET' (relative to '$SCRIPT_DIR')"
+        SOURCE="$SCRIPT_DIR/$TARGET" #if $SOURCE is a relative symlink, we need to resolve it relative to the path where the symlink file was located
+    fi
 done
-echo "SOURCE is '$SOURCE'"
 RDIR="$( dirname "$SOURCE" )"
 SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
-if [ "$DIR" != "$RDIR" ]; then
-  echo "DIR '$RDIR' resolves to '$SCRIPT_DIR'"
+if [[ $RDIR != $SCRIPT_DIR ]]; then
+    echo "DIR '$RDIR' resolves to '$SCRIPT_DIR'"
 fi
-echo "Running convertion script in '$SCRIPT_DIR'"
+echo "Running launch_universc.sh in '$SCRIPT_DIR'"
+##########
+
+
 
 #####usage statement#####
 help='
@@ -62,7 +66,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -v,  --version                Output version information and exit
        --verbose                Print additional outputs for debugging
 
-For each fastq file, follow the following naming convention:
+For each fastq file, follow the naming convention below:
   <SampleName>_<SampleNumber>_<LaneNumber>_<ReadNumber>_001.fastq
   e.g. EXAMPLE_S1_L001_R1_001.fastq
        Example_S4_L002_R2_001.fastq.gz
@@ -266,61 +270,55 @@ done
 
 #####check if UniverSC is running already#####
 #create .lock file if none exists
-if [[ ! -f  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock ]]
-    then
+if [[ ! -f  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock ]]; then
     echo "creating lock file"
     echo 0 > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
 fi
-#import lock counter
+
+#check if jobs running (check value in .lock file)
+echo "checking .lock file"
 lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
-#check if jobs running
-if [[ ! $lock == "0" ]]
-    then
-    echo "$lock number of cellranger ${VERSION} jobs running in ${DIR}"
+
+if [[ ! $lock == "0" ]]; then
+    echo " $lock number of cellranger ${VERSION} jobs already running in ${DIR}"
     #check technology current running
-    if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
-        then
+    if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]; then
         last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
-        echo "running technology $last with $lock jobs"
-        #check if currently running technology is different to convert call
-        if [[ $last == $technology ]]
-           then
-           echo "no conflict detected"
-           #add disable increment for setup calls (which aren't counted or removed)
-           if [[ $setup == false ]]
-               then
-               #add current job to lock
-               echo "increment lock"
-               lock=$(($lock+1))
-               echo $lock >  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
-           fi
-           echo "call accepted: running $lock cellranger calls on $technology"
-        else
-           echo "conflict between $technology and current $lock cellranger runs on $last"
-           echo "***Please hold calls for $technology until jobs running $last are completed"
-           echo "***Warning: remove ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock if $last jobs have completed or aborted"
-           echo "***Error: barcode whitelist configured for currently running technology: $last" 
-           exit 1
+        echo " running $lock jobs with technology $last"
+        #check if the technology running is different from the current convert call
+        if [[ $last == $technology ]]; then
+            echo " no conflict detected"
+            #add disable increment for setup calls (which are not counted or removed)
+            if [[ $setup == false ]]; then
+                #add current job to lock
+                echo " increment lock"
+                lock=$(($lock+1))
+                echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+                echo " call accepted: running $lock cellranger jobs on $technology"
+            fi
+	else
+	    echo "Error: conflict between technology selected for the new job ($technology) and for $lock jobs currently running ($last)"
+            echo "barcode whitelist configured and locked for currently running technology: $last"
+            echo "remove ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock if $last jobs have completed or aborted"
+            exit 1
         fi
     fi
 else
-    ## initialise lock file if first call (no other jobs running)
-    #add disable increment for setup calls (which aren't counted or removed)
-    if [[ $setup == false ]]
-        then
+    #initialise lock file if first call (no other jobs running)
+    #add disable increment for setup calls (which are not counted or removed)
+    if [[ $setup == false ]]; then
         #add current job to lock
-        echo "increment lock"
+        echo " increment lock"
         lock=$(($lock+1))
-        echo "no other jobs running: $lock initiated for $technology"
-        echo $lock >  ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+        echo " call accepted: running no other cellranger jobs"
+        echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
     fi
 fi
-
+##########
 
 #####check if input maches expected inputs#####
-if [[ $verbose == "true" ]]
-    then
-    echo " checking options ..."
+if [[ $verbose == "true" ]]; then
+    echo "checking options ..."
 fi
 
 #check if technology matches expected inputs
@@ -334,7 +332,7 @@ if [[ -z $setup ]]; then
     setup=false
 fi
 
-#check for presence of read1 and read 2 files
+#check for presence of read1 and read2 files
 if [[ ${#read1[@]} -eq 0 ]] && [[ $setup == "false" ]]; then
     echo "Error: option -R1 or --file is required"
     exit 1
@@ -346,94 +344,69 @@ fi
 
 #check for file type (extension) for files
 ##allows incomplete file names and processing compressed files
-for i in ${!read1[@]}
-do
-read=${read1[$i]}
-    if [[ $verbose == "true" ]];
-        then
+for i in ${!read1[@]}; do
+    read=${read1[$i]}
+    if [[ $verbose == "true" ]]; then
         echo " checking file format for $read1 ..."
     fi
-    if [ -f $read ] && [ ! -h $read ]
-        then
-        if [[ $read != *"gz" ]]
-            then
+    if [[ -f $read ]] && [[ -h $read ]]; then
+        if [[ $read == *"gz" ]]; then
             gunzip -k $read
             #update file variable
-            read=`echo $read | sed -e  "s/\.gz//g"`
+            read=`echo $read | sed -e "s/\.gz//g"`
         fi
-        if [[ $read != *"fastq" ]] || [[ $read != *"fq" ]]
-            then
-            echo "Warning: file $read expected to be in fastq format"
+        if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
+            echo "***Warning: file $read is assubed to be in fastq format***"
         fi
-        echo $read
-    elif [ -f ${read}.fq ] && [ ! -h $read ]
-    then
-        read=${read}.fq
-        echo $read
-    elif [ -f ${read}.fastq ] && [ ! -h $read ]
-        then
-        read=${read}.fastq
-        echo $read
-    elif [ -f ${read}.fq.gz ] && [ ! -h $read ]
-        then
-        gunzip -k ${read}.fq.gz
-        read=${read}.fq
-        echo $read
-    elif [ -f ${read}.fastq.gz ] && [ ! -h $read ]
-        then
-        gunzip -k ${read}.fastq.gz
-        read=${read}.fastq
-        echo $read
+        echo "  $read"
+    elif [[ -f $read ]]; then
+        if [[ $read == *"gz" ]]; then
+            gunzip -k $read
+            #update file variable
+            read=`echo $read | sed -e "s/\.gz//g"`
+        fi
+        if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
+            echo "***Warning: file $read is assubed to be in fastq format***"
+        fi
+        echo "  $read"
     else
-        echo $read not found
+        echo "Error: $read not found"
+        exit 1
     fi
-read1[$i]=$read
+    read1[$i]=$read
 done
 
-for i in ${!read2[@]}
-do
-read=${read2[$i]}
-    if [[ $verbose == "true" ]];
-        then
+for i in ${!read2[@]}; do
+    read=${read2[$i]}
+    if [[ $verbose == "true" ]]; then
         echo " checking file format for $read2 ..."
     fi
-    if [ -f $read ] && [ ! -h $read ]
-        then
-        if [[ $read != *"gz" ]]
-            then
+    if [[ -f $read ]] && [[ -h $read ]]; then
+        if [[ $read == *"gz" ]]; then
             gunzip -k $read
             #update file variable
-            read=`echo $read | sed -e  "s/\.gz//g"`
+            read=`echo $read | sed -e "s/\.gz//g"`
         fi
-        if [[ $read != *"fastq" ]] || [[ $read != *"fq" ]]
-            then
-            echo "Warning: file $read expected to be in fastq format"
+        if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
+            echo "***Warning: file $read is assubed to be in fastq format***"
         fi
-        echo $read
-    elif [ -f ${read}.fq ] && [ ! -h $read ]
-    then
-        read=${read}.fq
-        echo $read
-    elif [ -f ${read}.fastq ] && [ ! -h $read ]
-        then
-        read=${read}.fastq
-        echo $read
-    elif [ -f ${read}.fq.gz ] && [ ! -h $read ]
-        then
-        gunzip -k ${read}.fq.gz
-        read=${read}.fq
-        echo $read
-    elif [ -f ${read}.fastq.gz ] && [ ! -h $read ]
-        then
-        gunzip -k ${read}.fastq.gz
-        read=${read}.fastq
-        echo $read
+        echo "  $read"
+    elif [[ -f $read ]]; then
+        if [[ $read == *"gz" ]]; then
+            gunzip -k $read
+            #update file variable
+            read=`echo $read | sed -e "s/\.gz//g"`
+        fi
+        if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
+            echo "***Warning: file $read is assubed to be in fastq format***"
+        fi
+        echo "  $read"
     else
-        echo $read not found
+        echo "Error: $read not found"
+        exit 1
     fi
-read2[$i]=$read
+    read2[$i]=$read
 done
-
 
 #renaming read1 and read 2 files if not compatible with the convention.
 if [[ $verbose == "true" ]]; then
@@ -444,77 +417,72 @@ for i in ${!read1[@]}; do
     if [[ -h $read ]]; then
         path=`readlink -f $read`
         if [[ $verbose == "true" ]]; then
-            echo " ***Warning: file $read not in current directory. Path to the file captured instead***"
-            echo " (file) $read"
-            echo " (path) $path"
+            echo " ***Warning: file $read not in current directory. Path to the file captured instead.***"
+            echo "  (file) $read"
+            echo "  (path) $path"
         fi
         read=${path}
     fi
     case $read in
         #check if contains lane before read
-        *_L0[0123456789][0123456789]_R[12]*)
-        if [[ $verbose == "true" ]]; then
-            echo " $read compatible with lane"
-        fi
+        *_L0[0123456789][0123456789]_R1*)
+            if [[ $verbose == "true" ]]; then
+                echo "  $read compatible with lane"
+            fi
         ;;
-        *) echo "  converting $read ..."
-        #rename file
-        if [[ $verbose == "true" ]]; then
-            echo "   assuming 1 lane if not given"
-        fi
-        rename "s/_R1/_L001_R1/" $read
-        #update file variable
-        read=`echo $read | sed -e  "s/_R1/_L001_R1/g"`
-        read1[$i]=$read
-        if [[ $verbose == "true" ]]; then
-            echo "   renaming $read ..."
-        fi
+        *) 
+            #rename file
+            if [[ $verbose == "true" ]]; then
+                echo "***Warning: file $read does not have lane value in its name. Lane 1 is assumed.***"
+	        echo "  renaming $read ..."
+            fi
+            rename "s/_R1/_L001_R1/" $read
+            #update file variable
+            read=`echo $read | sed -e "s/_R1/_L001_R1/g"`
+            read1[$i]=$read
         ;;
     esac
     case $read in
         #check if contains sample before lane
         *_S[123456789]_L0*)
-        if [[ $verbose == "true" ]]; then
-            echo " $read compatible with sample"
-        fi
+            if [[ $verbose == "true" ]]; then
+                echo "  $read compatible with sample"
+            fi
         ;;
         *)
-        if [[ $verbose == "true" ]]; then
-            echo "  converting $read ..."
-        fi
-        #rename file
-        j=$((${i}+1))
-        rename "s/_L0/_S${j}_L0/" $read
-        #update file variable
-        read=`echo $read | sed -e  "s/_L0/_S${j}_L0/g"`
-        read1[$i]=$read
-        if [[ $verbose == "true" ]]; then
-            echo "   renaming $read ..."
-        fi
+            #rename file
+            if [[ $verbose == "true" ]]; then
+                echo "***Warning: file $read does not have sample value in its name. Sample $j is assumed.***"
+	        echo "  renaming $read ..."
+            fi
+	    j=$((${i}+1))
+            rename "s/_L0/_S${j}_L0/" $read
+            #update file variable
+            read=`echo $read | sed -e  "s/_L0/_S${j}_L0/g"`
+            read1[$i]=$read
         ;;
     esac
     case $read in
         #check if contains sample before lane
         *_R1_001.*)
-        if [[ $verbose == "true" ]]; then
-            echo " $read compatible with suffix"
-        fi
+            if [[ $verbose == "true" ]]; then
+                echo "  $read compatible with suffix"
+            fi
         ;;
         *)
-        if [[ $verbose == "true" ]]; then
-            echo "  converting $read ..."
-        fi
-        #rename file
-        rename "s/_R1.*\./_R1_001\./" $read
-        #update file variable
-        read=`echo $read | sed -e  "s/_R1.*\./_R1_001\./g"`
-        read1[$i]=$read
-        if [[ $verbose == "true" ]]; then
-            echo "   renaming $read"
-        fi
+            #rename file
+            if [[ $verbose == "true" ]]; then
+                echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
+                echo "  renaming $read ..."
+            fi
+	    rename "s/_R1.*\./_R1_001\./" $read
+            #update file variable
+            read=`echo $read | sed -e  "s/_R1.*\./_R1_001\./g"`
+            read1[$i]=$read
         ;;
     esac
 done
+
 if [[ $verbose == "true" ]]; then
     echo " checking file name for $read2 ..."
 fi
@@ -523,7 +491,7 @@ for i in ${!read2[@]}; do
     if [[ -h $read ]]; then
         path=`readlink -f $read`
         if [[ $verbose == "true" ]]; then
-            echo " ***Warning: file $read not in current directory. Path to the file captured instead***"
+            echo " ***Warning: file $read not in current directory. Path to the file captured instead.***"
             echo " (file) $read"
             echo " (path) $path"
         fi
@@ -531,66 +499,60 @@ for i in ${!read2[@]}; do
     fi
     case $read in
         #check if contains lane before read
-        *_L0[0123456789][0123456789]_R[12]*)
-        if [[ $verbose == "true" ]]; then
-            echo " $read compatible with lane"
-        fi
+        *_L0[0123456789][0123456789]_R2*)
+            if [[ $verbose == "true" ]]; then
+                echo "  $read compatible with lane"
+            fi
         ;;
-        *) echo "  converting $read ..."
-        #rename file
-        if [[ $verbose == "true" ]]; then
-            echo "   assuming 1 lane if not given"
-        fi
-        rename "s/_R2/_L001_R2/" $read
-        #update file variable
-        read=`echo $read | sed -e  "s/_R2/_L001_R2/g"`
-        read2[$i]=$read
-        if [[ $verbose == "true" ]]; then
-            echo "   renaming $read ..."
-        fi
+        *) 
+            #rename file
+            if [[ $verbose == "true" ]]; then
+                echo "***Warning: file $read does not have lane value in its name. Lane 1 is assumed.***"
+	        echo "  renaming $read ..."
+            fi
+            rename "s/_R2/_L001_R2/" $read
+            #update file variable
+            read=`echo $read | sed -e "s/_R2/_L001_R2/g"`
+            read2[$i]=$read
         ;;
     esac
     case $read in
         #check if contains sample before lane
         *_S[123456789]_L0*)
-        if [[ $verbose == "true" ]]; then
-            echo " $read compatible with sample"
-        fi
+            if [[ $verbose == "true" ]]; then
+                echo "  $read compatible with sample"
+            fi
         ;;
         *)
-        if [[ $verbose == "true" ]]; then
-            echo "  converting $read ..."
-        fi
-        #rename file
-        j=$((${i}+1))
-        rename "s/_L0/_S${j}_L0/" $read
-        #update file variable
-        read=`echo $read | sed -e  "s/_L0/_S${j}_L0/g"`
-        read2[$i]=$read
-        if [[ $verbose == "true" ]]; then
-            echo "   renaming $read ..."
-        fi
+            #rename file
+            if [[ $verbose == "true" ]]; then
+                echo "***Warning: file $read does not have sample value in its name. Sample $j is assumed.***"
+	        echo "  renaming $read ..."
+            fi
+	    j=$((${i}+1))
+            rename "s/_L0/_S${j}_L0/" $read
+            #update file variable
+            read=`echo $read | sed -e  "s/_L0/_S${j}_L0/g"`
+            read2[$i]=$read
         ;;
     esac
     case $read in
         #check if contains sample before lane
         *_R2_001.*)
-        if [[ $verbose == "true" ]]; then
-            echo " $read compatible with suffix"
-        fi
+            if [[ $verbose == "true" ]]; then
+                echo "  $read compatible with suffix"
+            fi
         ;;
         *)
-        if [[ $verbose == "true" ]]; then
-            echo "  converting $read ..."
-        fi
-        #rename file
-        rename "s/_R2.*\./_R2_001\./" $read
-        #update file variable
-        read=`echo $read | sed -e  "s/_R2.*\./_R2_001\./g"`
-        read2[$i]=$read
-        if [[ $verbose == "true" ]]; then
-            echo "   renaming $read"
-        fi
+            #rename file
+            if [[ $verbose == "true" ]]; then
+                echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
+                echo "  renaming $read ..."
+            fi
+	    rename "s/_R2.*\./_R2_001\./" $read
+            #update file variable
+            read=`echo $read | sed -e  "s/_R2.*\./_R2_001\./g"`
+            read2[$i]=$read
         ;;
     esac
 done
@@ -653,7 +615,7 @@ elif [[ $id == *" "* ]]; then
 fi
 
 #check if reference is present
-if [[ -z $reference ]] && [[ $setup == "false" ]]; then
+if [[ -z $reference ]] && [[ $setup != "false" ]]; then
     echo "Error: option --reference is required"
     exit 1
 fi
@@ -693,13 +655,13 @@ fi
 
 
 ####report inputs#####
-echo "
-#####Input information#####"
+echo ""
+echo "#####Input information#####"
 echo "SETUP: $setup"
 if ! [[ $setup == "false" ]]; then
-    echo " ***Warning: whitelist is converted for compatibility, valid barcodes cannot be detected accurately with this technology***"
+    echo "***Warning: whitelist is converted for compatibility, valid barcodes cannot be detected accurately with this technology***"
     if [[ ${#read1[@]} -eq 0 ]] && [[ ${#read1[@]} -eq 0 ]]; then
-        echo " ***Warning: no FASTQ files were selected, launch_universc.sh will exit after setting up the whitelist***"
+        echo "***Warning: no FASTQ files were selected, launch_universc.sh will exit after setting up the whitelist***"
     fi
 fi
 if ! [[ "$technology" == "10x" ]]; then
@@ -725,7 +687,7 @@ echo "ID: $id"
 if [[ -z $description ]]; then
     description=$id
     echo "DESCRIPTION: $description"
-    echo " ***Warning: no description given, setting to ID value***"
+    echo "***Warning: no description given, setting to ID value***"
 else
     echo "DESCRIPTION: $description"
 fi
@@ -738,7 +700,7 @@ fi
 echo "CHEMISTRY: $chemistry"
 echo "JOBMODE: $jobmode"
 if [[ "$jobmode" == "local" ]]; then
-    echo " ***Warning: --jobmode \"sge\" is recommended if running script with qsub***"
+    echo "***Warning: --jobmode \"sge\" is recommended if running script with qsub***"
 fi
 echo "CONVERSTION: $convert"
 echo "##########"
@@ -758,7 +720,7 @@ if [[ $setup == "true" ]]; then
         echo "cellranger must be exported to the PATH"
         echo "The following versions of cellranger are found:"
         echo " `whereis cellranger`"
-    exit 1
+        exit 1
     fi
     cd ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes
     
@@ -776,7 +738,7 @@ if [[ $setup == "true" ]]; then
         fi
         echo " whitelist converted for 10x compatibility with version 2 kit."
         
-    #create version 3 files if version 3 whitelist available
+        #create version 3 files if version 3 whitelist available
         if [[ -f 3M-february-2018.txt.gz ]]; then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
             if [[ -f nadia_barcode.txt ]] || [[ -f iCELL8_barcode.txt ]]; then
@@ -812,7 +774,7 @@ if [[ $setup == "true" ]]; then
         fi
         if [[ ! -f nadia_barcode.txt ]]; then
             echo " generating expected barcodes for Nadia ..."
-        echo AAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > nadia_barcode.txt
+            echo AAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > nadia_barcode.txt
         fi 
         #save original barcode file (if doesn't already exist)
         if [[ ! -f  737K-august-2016.txt.backup ]]; then
@@ -851,14 +813,14 @@ if [[ $setup == "true" ]]; then
             if [[ $last != "10x" ]]; then
                 sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
                 sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g"  ${DIR}-cs/${VERSION}/lib/python/cellranger/molecule_counter.py
-             fi
-             echo " $DIR restored for $technology"
-         else
-             echo " $DIR ready for $technology"
-         fi
+            fi
+            echo " $DIR restored for $technology"
+        else
+            echo " $DIR ready for $technology"
+        fi
     elif [[ $technology == "icell8" ]]; then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-        if [[ -f nadia_barcode.txt ]] || [[ -f  iCELL8_barcode.txt ]];  then
+        if [[ -f nadia_barcode.txt ]] || [[ -f iCELL8_barcode.txt ]]; then
             echo " restoring 10x barcodes for version 2 kit ..."
             cp 737K-august-2016.txt.backup 737K-august-2016.txt
         fi
@@ -885,7 +847,7 @@ if [[ $setup == "true" ]]; then
         #create version 3 files if version 3 whitelist available
         if [[ -f 3M-february-2018.txt.gz ]]; then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-            if [[ -f nadia_barcode.txt ]] || [[ -f  iCELL8_barcode.txt ]]; then
+            if [[ -f nadia_barcode.txt ]] || [[ -f iCELL8_barcode.txt ]]; then
                 echo " restoring 10x barcodes for version 3 kit ..."
                 cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
             fi
@@ -909,7 +871,7 @@ if [[ $setup == "true" ]]; then
             last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
             if [[ $last != "10x" ]]; then
                 sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
-                sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g"  ${DIR}-cs/${VERSION}/lib/python/cellranger/molecule_counter.py
+                sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${DIR}-cs/${VERSION}/lib/python/cellranger/molecule_counter.py
             fi
             echo "$DIR restored for $technology"
         else
@@ -953,8 +915,8 @@ if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]; th
         fi
     fi
 else    
-        echo " using setup $technology from previous whitelist configuration ..."
-        echo $technology > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called
+    echo " using setup $technology from previous whitelist configuration ..."
+    echo $technology > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called
 fi
 echo "check complete"
 ##########
@@ -1099,30 +1061,33 @@ end=`date +%s`
 runtime=$((end-start))
 ##########
 
+
+
 #####remove files if convert is not running elsewhere#####
+echo "updating .lock file"
+
 #reset lock counter (read in case changed by other jobs)
 lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
-# remove currewnt job from counter (successfully completed)
+
+#remove currewnt job from counter (successfully completed)
 lock=$(($lock-1))
 #check if jobs running
-if [[ $lock -ge 1 ]]
-    then
+if [[ $lock -ge 1 ]]; then
     echo "$lock number of cellranger ${VERSION} jobs still running in ${DIR}"
     #check technology current running
-    if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]
-        then
+    if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]; then
         last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
         echo "running technology $last with $lock jobs"
     fi
 fi
 
 #remove .lock file if no other jobs running exists (prevents negative values allowing technologies to run at same time)
-if [[ $lock -le 0 ]]
-    then
+if [[ $lock -le 0 ]]; then
     echo "no other jobs currently running: lock files cleared for cellranger ${VERSION} in ${DIR}"
     echo "no conflicts: whitelist can now be changed for other technologies"
     rm -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
 fi
+##########
 
 
 
