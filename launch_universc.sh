@@ -115,9 +115,9 @@ for op in "$@"; do
             exit 0
             ;;
         -s|--setup)
-        setup=true
-        next=false
-        shift
+            setup=true
+            next=false
+            shift
             ;;
         -t|--technology)
         shift
@@ -615,7 +615,7 @@ elif [[ $id == *" "* ]]; then
 fi
 
 #check if reference is present
-if [[ -z $reference ]] && [[ $setup != "false" ]]; then
+if [[ -z $reference ]] && [[ $setup == "false" ]]; then
     echo "Error: option --reference is required"
     exit 1
 fi
