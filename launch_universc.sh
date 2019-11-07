@@ -8,7 +8,7 @@ if [[ -z $cellrangerpass ]]; then
     echo "cellranger command is not found."
     exit 1
 fi
-ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.2.0.9002) | head -n 3 | tail -n 2`
+ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.2.0.900333 | head -n 3 | tail -n 2`
 ##########
 
 
@@ -39,28 +39,28 @@ echo "Running launch_universc.sh in '$SCRIPT_DIR'"
 #####usage statement#####
 help='
 Usage:
-  bash $(basename "$0") -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  bash $(basename "$0") -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option=OPT]
-  bash $(basename "$0") -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option=OPT]
-  bash $(basename "$0") -f \"SAMPLE_LANE1 SAMPLE_LANE2\" -t TECHNOLOGY -i ID -r REFERENCE [--option=OPT]
-  bash $(basename "$0") -v
-  bash $(basename "$0") -h
-  bash $(basename "$0") -t TECHNOLOGY --setup
+  bash '$(basename $0)' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  bash '$(basename $0)' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  bash '$(basename $0)' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  bash '$(basename $0)' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  bash '$(basename $0)' -v
+  bash '$(basename $0)' -h
+  bash '$(basename $0)' -t TECHNOLOGY --setup
 
 Convert sequencing data (FASTQ) from various platforms for compatibility with 10x Genomics and run cellranger count
 
 Mandatory arguments to long options are mandatory for short options too.
   -s,  --setup                  Set up whitelists for compatibility with new technology
-  -t,  --technology=PLATFORM    Name of technology used to generate data (10x, nadia, icell8)
-  -R1, --read1=FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
-  -R2, --read2=FILE             Read 2 FASTQ file to pass to cellranger
-  -f,  --file=NAME              Name of FASTQ files to pass to cellranger (prefix before R1 or R2)
-  -i,  --id=ID                  A unique run id, used to name output folder
-  -d,  --description=TEXT       Sample description to embed in output files.
-  -r,  --reference=DIR          Path of directory containing 10x-compatible reference.
-  -c,  --chemistry=CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
-  -n,  --force-cells=NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
-  -j,  --jobmode=MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
+  -t,  --technology PLATFORM    Name of technology used to generate data (10x, nadia, icell8)
+  -R1, --read1 FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
+  -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
+  -f,  --file NAME              Name of FASTQ files to pass to cellranger (prefix before R1 or R2)
+  -i,  --id ID                  A unique run id, used to name output folder
+  -d,  --description TEXT       Sample description to embed in output files.
+  -r,  --reference DIR          Path of directory containing 10x-compatible reference.
+  -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
+  -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
+  -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
   -w,  --overwrite              How to carry out FASTQ file conversions: 'skip' to skip conversion, 'convert' to overwrite all preexisting converted files, and 'keep' (default) to only convert files that do not already exist.
   -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
@@ -123,6 +123,7 @@ for op in "$@"; do
         shift
             if [[ $1 != "" ]]; then
                 technology="${1/%\//}"
+                technology=`echo "$technology" | tr '[:upper:]' '[:lower:]'`
                 next=true
                 shift
             else
@@ -255,7 +256,7 @@ for op in "$@"; do
             fi
             ;;
         --verbose)
-            echo " debugging mode activated"
+            echo "debugging mode activated"
             verbose=true
             next=false
             shift
@@ -267,6 +268,8 @@ for op in "$@"; do
     esac
 done
 ##########
+
+
 
 #####check if UniverSC is running already#####
 #create .lock file if none exists
@@ -280,7 +283,7 @@ echo "checking .lock file"
 lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
 
 if [[ ! $lock == "0" ]]; then
-    echo " $lock number of cellranger ${VERSION} jobs already running in ${DIR}"
+    echo " total of $lock cellranger ${VERSION} jobs already running in ${DIR}"
     #check technology current running
     if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]; then
         last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
@@ -288,14 +291,11 @@ if [[ ! $lock == "0" ]]; then
         #check if the technology running is different from the current convert call
         if [[ $last == $technology ]]; then
             echo " no conflict detected"
-            #add disable increment for setup calls (which are not counted or removed)
-            if [[ $setup == false ]]; then
-                #add current job to lock
-                echo " increment lock"
-                lock=$(($lock+1))
-                echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
-                echo " call accepted: running $lock cellranger jobs on $technology"
-            fi
+            #add current job to lock
+            echo " increment .lock"
+            lock=$(($lock+1))
+            echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+            echo " call accepted: running $lock cellranger jobs on $technology"
 	else
 	    echo "Error: conflict between technology selected for the new job ($technology) and for $lock jobs currently running ($last)"
             echo "barcode whitelist configured and locked for currently running technology: $last"
@@ -306,15 +306,15 @@ if [[ ! $lock == "0" ]]; then
 else
     #initialise lock file if first call (no other jobs running)
     #add disable increment for setup calls (which are not counted or removed)
-    if [[ $setup == false ]]; then
-        #add current job to lock
-        echo " increment lock"
-        lock=$(($lock+1))
-        echo " call accepted: running no other cellranger jobs"
-        echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
-    fi
+    #add current job to lock
+    echo " increment .lock"
+    lock=$(($lock+1))
+    echo " call accepted: running no other cellranger jobs"
+    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
 fi
 ##########
+
+
 
 #####check if input maches expected inputs#####
 if [[ $verbose == "true" ]]; then
@@ -322,8 +322,10 @@ if [[ $verbose == "true" ]]; then
 fi
 
 #check if technology matches expected inputs
-technology=`echo "$technology" | tr '[:upper:]' '[:lower:]'`
 if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
+    lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+    lock=$(($lock-1))
+    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
     echo "Error: option -t needs to be 10x, nadia, or icell8"
     exit 1
 fi
@@ -335,10 +337,16 @@ fi
 
 #check for presence of read1 and read2 files
 if [[ ${#read1[@]} -eq 0 ]] && [[ $setup == "false" ]]; then
+    lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+    lock=$(($lock-1))
+    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
     echo "Error: option -R1 or --file is required"
     exit 1
 fi
 if [[ ${#read2[@]} -eq 0 ]] && [[ $setup == "false" ]]; then
+    lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+    lock=$(($lock-1))
+    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
     echo "Error: option -R2 or --file is required"
     exit 1
 fi
@@ -359,7 +367,9 @@ for i in ${!read1[@]}; do
         if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
             echo "***Warning: file $read is assubed to be in fastq format***"
         fi
-        echo "  $read"
+        if [[ $verbose == "true" ]]; then
+            echo "  $read"
+        fi
     elif [[ -f $read ]]; then
         if [[ $read == *"gz" ]]; then
             gunzip -k $read
@@ -369,8 +379,13 @@ for i in ${!read1[@]}; do
         if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
             echo "***Warning: file $read is assubed to be in fastq format***"
         fi
-        echo "  $read"
+        if [[ $verbose == "true" ]]; then
+            echo "  $read"
+        fi
     else
+        lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+        lock=$(($lock-1))
+        echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
         echo "Error: $read not found"
         exit 1
     fi
@@ -391,7 +406,9 @@ for i in ${!read2[@]}; do
         if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
             echo "***Warning: file $read is assubed to be in fastq format***"
         fi
-        echo "  $read"
+        if [[ $verbose == "true" ]]; then
+	    echo "  $read"
+	fi
     elif [[ -f $read ]]; then
         if [[ $read == *"gz" ]]; then
             gunzip -k $read
@@ -401,8 +418,13 @@ for i in ${!read2[@]}; do
         if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
             echo "***Warning: file $read is assubed to be in fastq format***"
         fi
-        echo "  $read"
+        if [[ $verbose = "true" ]]; then
+            echo "  $read"
+        fi
     else
+        lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+        lock=$(($lock-1))
+        echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
         echo "Error: $read not found"
         exit 1
     fi
@@ -565,9 +587,15 @@ for fq in "${read1[@]}"; do
     ln=`basename $fq | cut -f$(($name-1))  -d'_' | sed 's/L00//'`
     LANE+=($ln)
     if [[ $name < 4 ]]; then
+        lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+        lock=$(($lock-1))
+        echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
         echo "Error: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
         exit 1
     elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
+        lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+        lock=$(($lock-1))
+        echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
         echo "Error: $fq does not have a .fq or .fastq extention"
         exit 1
     fi
@@ -576,6 +604,9 @@ for fq in "${read1[@]}"; do
         if [[ -z $SAMPLE ]]; then
             SAMPLE=$sn
         else
+            lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+            lock=$(($lock-1))
+            echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
             echo "Error: some samples are labeled $SAMPLE while others are labeled $sn. cellranger can only handle files from one sample at a time."
             exit 1
         fi
@@ -588,9 +619,15 @@ for fq in "${read2[@]}"; do
     LANE+=($ln)
     
     if [[ $name < 4 ]]; then
+        lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+        lock=$(($lock-1))
+        echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
         echo "Error: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
         exit 1
     elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
+        lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+        lock=$(($lock-1))
+        echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
         echo "Error: $fq does not have a .fq or .fastq extention"
         exit 1
     fi
@@ -599,6 +636,9 @@ for fq in "${read2[@]}"; do
         if [[ -z $SAMPLE ]]; then
             SAMPLE=$sn
         else
+            lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+            lock=$(($lock-1))
+            echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
             echo "Error: some samples are labeled $SAMPLE while others are labeled $sn. cellranger can only handle files from one sample at a time."
             exit 1
         fi
@@ -607,18 +647,29 @@ done
 LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
 #check if ID is present
-if [[ -z $id ]] && ! [[ ${#read1[@]} -eq 0 ]]; then
+if [[ -z $id ]] && [[ ${#read1[@]} -eq 0 ]]; then
+    lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+    lock=$(($lock-1))
+    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
     echo "Error: option --id is required"
     exit 1
 elif [[ $id == *" "* ]]; then
+    lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+    lock=$(($lock-1))
+    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
     echo "Error: \"$id\" for option -id must not contain a space"
     exit 1
 fi
 
 #check if reference is present
-if [[ -z $reference ]] && [[ $setup == "false" ]]; then
-    echo "Error: option --reference is required"
-    exit 1
+if [[ -z $reference ]]; then
+    if [[ $setup == "false" ]] || [[ ${#read1[@]} -ne 0 ]] || [[ ${#read2[@]} -ne 0 ]]; then
+        lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+        lock=$(($lock-1))
+        echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+        echo "Error: option --reference is required";
+        exit 1
+    fi
 fi
 
 #check if ncells is an integer
@@ -626,14 +677,20 @@ int='^[0-9]+$'
 if [ -z "$ncells" ]; then
     ncells=""
 elif ! [[ $ncells =~ $int ]] && [[ $setup == "false" ]]; then
-   echo "Error: option --force-cells must be an integer"
-   exit 1
+    lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+    lock=$(($lock-1))
+    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+    echo "Error: option --force-cells must be an integer"
+    exit 1
 fi
 
 #check if chemistry matches expected input
 if [ -z "$chemistry" ]; then
     chemistry="SC3Pv2"
 elif [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+    lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+    lock=$(($lock-1))
+    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
     echo "Error: option --chemistry must be SC3Pv2, SC5P-PE , or SC5P-R2"
     exit 1
 fi
@@ -642,12 +699,18 @@ fi
 if [ -z "$jobmode" ]; then
     jobmode="local"
 elif [[ "$jobmode" != "local" ]] && [[ "$jobmode" != "sge" ]] && [[ "$jobmode" != "lsf" ]] && [[ "$jobmode" != *"template" ]]; then
+    lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+    lock=$(($lock-1))
+    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
     echo "Error: option --jobmode must be local, sge, lsf, or a .template file"
     exit 1
 fi
 
 #check if conversion matches expected input
 if [[ "$convert" != "keep" ]] && [[ "$convert" != "skip" ]] && [[ "$convert" != "convert" ]]; then
+    lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+    lock=$(($lock-1))
+    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
     echo "Error: option --overwrite needs to be keep, skip, or convert"
     exit 1
 fi
@@ -882,6 +945,9 @@ if [[ $setup == "true" ]]; then
             echo "$DIR ready for $technology"
         fi
     else
+        lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+        lock=$(($lock-1))
+        echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
         echo "Error: technology ($technology) is not supported"
         cd -
         exit 1
@@ -892,6 +958,9 @@ if [[ $setup == "true" ]]; then
 fi
 
 if [[ ${#read1[@]} -eq 0 ]] && [[ ${#read2[@]} -eq 0 ]]; then
+    lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+    lock=$(($lock-1))
+    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
     echo " whitelist converted and no FASTQ files are selected. exiting launch_universc.sh"
     exit 0
 fi
@@ -929,7 +998,7 @@ echo "check complete"
 
 #####create directory with files fed to cellranger#####
 echo "creating a folder for all cellranger input files ..."
-crIN="cellranger"
+crIN="input4cellranger"
 convFiles=()
 
 if [[ ! -d $crIN ]]; then
@@ -1023,7 +1092,9 @@ fi
 
 
 #####run cellranger#####
-echo "running cellranger..."
+echo "running cellranger ..."
+echo ""
+echo "#####cellranger#####"
 d=""
 if [[ -n $description ]]; then
     d="--description=$description"
@@ -1063,6 +1134,8 @@ cellranger count --id=$id \
 #        --nopreflight
 end=`date +%s`
 runtime=$((end-start))
+echo "##########"
+echo ""
 ##########
 
 
@@ -1077,18 +1150,18 @@ lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
 lock=$(($lock-1))
 #check if jobs running
 if [[ $lock -ge 1 ]]; then
-    echo "$lock number of cellranger ${VERSION} jobs still running in ${DIR}"
+    echo " total of $lock cellranger ${VERSION} jobs still running in ${DIR}"
     #check technology current running
     if [[ -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called ]]; then
         last=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called`
-        echo "running technology $last with $lock jobs"
+        echo " running technology $last with $lock jobs"
     fi
 fi
 
 #remove .lock file if no other jobs running exists (prevents negative values allowing technologies to run at same time)
 if [[ $lock -le 0 ]]; then
-    echo "no other jobs currently running: lock files cleared for cellranger ${VERSION} in ${DIR}"
-    echo "no conflicts: whitelist can now be changed for other technologies"
+    echo " no other jobs currently running: lock files cleared for cellranger ${VERSION} in ${DIR}"
+    echo " no conflicts: whitelist can now be changed for other technologies"
     rm -f ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
 fi
 ##########
