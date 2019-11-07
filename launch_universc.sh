@@ -322,6 +322,7 @@ if [[ $verbose == "true" ]]; then
 fi
 
 #check if technology matches expected inputs
+technology=`echo "$technology" | tr '[:upper:]' '[:lower:]'`
 if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
     echo "Error: option -t needs to be 10x, nadia, or icell8"
     exit 1
@@ -826,7 +827,7 @@ if [[ $setup == "true" ]]; then
         fi
         #create a file with every possible barcode (permutation)
         if [[ -f iCELL8_barcode.txt.gz ]]; then
-            rm iCELL8_barcode.txt.gz
+            rm iCELL8_barcode.txt.gz iCELL8_barcode.txt
         fi
         if [[ ! -f iCELL8_barcode.txt ]]; then
             #copy known iCell8 barcodes from convert repo to cellranger install
