@@ -733,7 +733,7 @@ if [[ $setup == "true" ]]; then
     
     if [[ $technology == "10x" ]]; then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-        if [[ -f nadia_barcode.txt ]] || [[ -f iCELL8_barcode.txt ]]; then
+        if [[ -f nadia_barcode.txt ]] || [[ -f iCell8_barcode.txt ]]; then
             echo " restoring 10x barcodes for version 2 kit ..."
             cp 737K-august-2016.txt.backup 737K-august-2016.txt
         fi
@@ -742,7 +742,7 @@ if [[ $setup == "true" ]]; then
         #create version 3 files if version 3 whitelist available
         if [[ -f 3M-february-2018.txt.gz ]]; then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-            if [[ -f nadia_barcode.txt ]] || [[ -f iCELL8_barcode.txt ]]; then
+            if [[ -f nadia_barcode.txt ]] || [[ -f iCell8_barcode.txt ]]; then
                 echo " restoring 10x barcodes for version 3 kit ..."
                 cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
             fi
@@ -763,7 +763,7 @@ if [[ $setup == "true" ]]; then
         fi
     elif [[ $technology == "nadia" ]]; then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-        if [[ -f nadia_barcode.txt ]] || [[ -f  iCELL8_barcode.txt ]]; then
+        if [[ -f nadia_barcode.txt ]] || [[ -f  iCell8_barcode.txt ]]; then
             echo " restoring 10x barcodes for version 2 kit ..."
             cp 737K-august-2016.txt.backup 737K-august-2016.txt
         fi
@@ -789,7 +789,7 @@ if [[ $setup == "true" ]]; then
         #create version 3 files if version 3 whitelist available
         if [[ -f 3M-february-2018.txt.gz ]]; then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-            if [[ -f nadia_barcode.txt ]] || [[ -f  iCELL8_barcode.txt ]]; then
+            if [[ -f nadia_barcode.txt ]] || [[ -f  iCell8_barcode.txt ]]; then
                 echo " restoring 10x barcodes for version 3 kit ..."
                 cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
             fi
@@ -821,15 +821,18 @@ if [[ $setup == "true" ]]; then
         fi
     elif [[ $technology == "icell8" ]]; then
         #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-        if [[ -f nadia_barcode.txt ]] || [[ -f iCELL8_barcode.txt ]]; then
+        if [[ -f nadia_barcode.txt ]] || [[ -f iCell8_barcode.txt ]]; then
             echo " restoring 10x barcodes for version 2 kit ..."
             cp 737K-august-2016.txt.backup 737K-august-2016.txt
         fi
         #create a file with every possible barcode (permutation)
-        if [[ -f iCELL8_barcode.txt.gz ]]; then
-            rm iCELL8_barcode.txt.gz iCELL8_barcode.txt
+        if [[ -f iCell8_barcode.txt.gz ]]; then
+            rm iCell8_barcode.txt.gz
         fi
-        if [[ ! -f iCELL8_barcode.txt ]]; then
+        if [[ -f iCell8_barcode.txt ]]; then
+             rm iCell8_barcode.txt
+         fi
+        if [[ ! -f iCell8_barcode.txt ]]; then
             #copy known iCell8 barcodes from convert repo to cellranger install
             rsync -u ${SCRIPT_DIR}/iCell8_barcode.txt ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/iCell8_barcode.txt
             #convert barcode whitelist to match converted barcodes
@@ -843,12 +846,12 @@ if [[ $setup == "true" ]]; then
             cp 737K-august-2016.txt 737K-august-2016.txt.backup
         fi
         #replace 10x barcodes with icell8
-        cat iCELL8_barcode.txt | sort | uniq > 737K-august-2016.txt
+        cat iCell8_barcode.txt | sort | uniq > 737K-august-2016.txt
         echo " whitelist converted for iCELL8 compatibility with version 2 kit."
         #create version 3 files if version 3 whitelist available
         if [[ -f 3M-february-2018.txt.gz ]]; then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-            if [[ -f nadia_barcode.txt ]] || [[ -f iCELL8_barcode.txt ]]; then
+            if [[ -f nadia_barcode.txt ]] || [[ -f iCell8_barcode.txt ]]; then
                 echo " restoring 10x barcodes for version 3 kit ..."
                 cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
             fi
@@ -859,10 +862,10 @@ if [[ $setup == "true" ]]; then
                 gzip 3M-february-2018.txt.backup
             fi
             #combine 10x and Nadia barcodes
-            if [[ ! -f iCELL8_barcode.txt.gz ]]; then
-                rm iCELL8_barcode.txt.gz
+            if [[ ! -f iCell8_barcode.txt.gz ]]; then
+                rm iCell8_barcode.txt.gz
             fi
-            cat iCELL8_barcode.txt > 3M-february-2018.txt
+            cat iCell8_barcode.txt > 3M-february-2018.txt
             gzip -f 3M-february-2018.txt
             echo " whitelist converted for iCELL8 compatibility with version 3 kit."        
         fi
