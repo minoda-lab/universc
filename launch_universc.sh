@@ -806,7 +806,8 @@ if [[ $setup == "true" ]]; then
             zcat nadia_barcode.txt.gz 3M-february-2018.txt.backup.gz | sort | uniq > 3M-february-2018.txt
             gzip -f 3M-february-2018.txt
             if [ -d translation ]; then
-                rsync -u 3M-february-2018.txt.gz translation/3M-february-2018.txt.gz
+                rm translation/3M-february-2018.txt.gz
+                ln -s ../3M-february-2018.txt.gz translation/3M-february-2018.txt.gz
             fi
             echo " whitelist converted for Nadia compatibility with version 3 kit"
         fi
@@ -871,7 +872,8 @@ if [[ $setup == "true" ]]; then
             cat iCell8_barcode.txt > 3M-february-2018.txt
             gzip -f 3M-february-2018.txt
             if [ -d translation ]; then
-                rsync -u 3M-february-2018.txt.gz translation/3M-february-2018.txt.gz
+                rm translation/3M-february-2018.txt.gz
+                ln -s ../3M-february-2018.txt.gz translation/3M-february-2018.txt.gz
             fi
             echo " whitelist converted for iCELL8 compatibility with version 3 kit."        
         fi
