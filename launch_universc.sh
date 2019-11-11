@@ -573,8 +573,10 @@ LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
 #check if ID is present
 if [[ -z $id ]] && [[ ${#read1[@]} -eq 0 ]]; then
-    echo "Error: option --id is required"
-    exit 1
+    if [[ $setup == "false" ]] ; then
+        echo "Error: option --id is required"
+        exit 1
+    fi
 elif [[ $id == *" "* ]]; then
     echo "Error: \"$id\" for option -id must not contain a space"
     exit 1
