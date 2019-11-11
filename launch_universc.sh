@@ -852,7 +852,7 @@ if [[ $setup == "true" ]]; then
             #copy known iCell8 barcodes from convert repo to cellranger install
             rsync -u ${SCRIPT_DIR}/iCell8_barcode.txt ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/iCell8_barcode.txt
             #convert barcode whitelist to match converted barcodes
-            sed -i 's/^/AAAAA/g' iCell8_barcodes.txt
+            sed -i 's/^/AAAAA/g' iCell8_barcode.txt
             echo " imported expected barcodes for iCELL8 ..."
         fi
         echo "Valid barcodes can be calculated accurately for iCELL8"
