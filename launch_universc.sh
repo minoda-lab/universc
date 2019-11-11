@@ -764,6 +764,7 @@ if [[ $setup == "true" ]]; then
         if [[ `printf '%s\n' '$VERSION 3.0.0' | sort -V | head -n 1` != $VERSION ]]; then
             #restore functions if other technology run previously
             if [[ $lastcall != $technology ]]; then
+                sed -i "s/#if gem_group == prev_gem_group/if gem_group == prev_gem_group/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
                 sed -i "s/#assert barcode_idx >= prev_barcode_idx/assert barcode_idx >= prev_barcode_idx/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
                 sed -i "s/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${DIR}-cs/${VERSION}/lib/python/cellranger/molecule_counter.py
             fi
@@ -823,7 +824,8 @@ if [[ $setup == "true" ]]; then
         #if cellranger version is 3 or greater, restore assert functions
         if [[ `printf '%s\n' '$VERSION 3.0.0' | sort -V | head -n 1` != $VERSION ]]; then
             #disable functions if 10x technology run previously
-            if [[ $lastcall != "10x" ]]; then
+            if [[ $lastcall == "10x" ]]; then
+                sed -i "s/if gem_group == prev_gem_group/#if gem_group == prev_gem_group/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
                 sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
                 sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g"  ${DIR}-cs/${VERSION}/lib/python/cellranger/molecule_counter.py
             fi
@@ -888,7 +890,8 @@ if [[ $setup == "true" ]]; then
         #if cellranger version is 3 or greater, restore assert functions
         if [[ `printf '%s\n' '$VERSION 3.0.0' | sort -V | head -n 1` != $VERSION ]]; then
             #disable functions if 10x technology run previously
-            if [[ $lastcall != "10x" ]]; then
+            if [[ $lastcall == "10x" ]]; then
+                sed -i "s/if gem_group == prev_gem_group/#if gem_group == prev_gem_group/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
                 sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
                 sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${DIR}-cs/${VERSION}/lib/python/cellranger/molecule_counter.py
             fi
