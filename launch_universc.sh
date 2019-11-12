@@ -61,7 +61,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
-  -w,  --overwrite              How to carry out FASTQ file conversions: 'skip' to skip conversion, 'convert' to overwrite all preexisting converted files, and 'keep' (default) to only convert files that do not already exist.
+  -p,  --pass                   Skips the FASTQ file conversion if converted files already exist
   -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
        --verbose                Print additional outputs for debugging
@@ -94,6 +94,7 @@ crIN=input4cellranger #name of the directory with all FASTQ files given to cellr
 
 #variable options
 setup=false
+convert=true
 read1=()
 read2=()
 SAMPLE=""
@@ -104,7 +105,6 @@ reference=""
 ncells=""
 chemistry=""
 jobmode=""
-convert=keep
 
 next=false
 for op in "$@"; do
@@ -250,16 +250,10 @@ for op in "$@"; do
                 exit 1
             fi
             ;;
-        -w|--overwrite)
+        -p|--pass)
+            convert=false
+            next=false
             shift
-            if [[ "$1" != "" ]]; then
-                convert="${1/%\//}"
-                next=true
-                shift
-            else
-                echo "Error: value missing for --overwrite"
-                exit 1
-            fi
             ;;
         --verbose)
             echo "debugging mode activated"
@@ -301,16 +295,6 @@ fi
 
 #check for file type (extension) for files
 ##allows incomplete file names and processing compressed files
-
-#test
-#read12=( $read1, $read2 )
-#for i in ${read12[@]}; do
-#    echo "KAI! $i"
-#done
-
-
-
-
 for i in ${!read1[@]}; do
     read=${read1[$i]}
     if [[ $verbose == "true" ]]; then
@@ -581,17 +565,6 @@ for fq in "${read2[@]}"; do
 done
 LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
-#check if ID is present
-if [[ -z $id ]] && [[ ${#read1[@]} -eq 0 ]]; then
-    if [[ $setup == "false" ]] ; then
-        echo "Error: option --id is required"
-        exit 1
-    fi
-elif [[ $id == *" "* ]]; then
-    echo "Error: \"$id\" for option -id must not contain a space"
-    exit 1
-fi
-
 #check if reference is present
 if [[ -z $reference ]]; then
     if [[ $setup == "false" ]] || [[ ${#read1[@]} -ne 0 ]] || [[ ${#read2[@]} -ne 0 ]]; then
@@ -625,18 +598,20 @@ elif [[ "$jobmode" != "local" ]] && [[ "$jobmode" != "sge" ]] && [[ "$jobmode" !
     exit 1
 fi
 
-#check if conversion matches expected input
-if [[ "$convert" != "keep" ]] && [[ "$convert" != "skip" ]] && [[ "$convert" != "convert" ]]; then
-    echo "Error: option --overwrite needs to be keep, skip, or convert"
-    exit 1
-fi
-
 #check if setup needs to be run before analysis
 if [[ -z $setup ]]; then
     setup=false
 fi
 if [[ $lastcall != $technology ]]; then
     setup=true
+fi
+
+#check if ID is present
+if [[ -z $id ]]; then
+    if [[ ${#read1[@]} -ne 0 ]] || [[ ${#read2[@]} -ne 0 ]]; then
+        echo "Error: option --id is required"
+        exit 1
+    fi
 fi
 ##########
 
@@ -939,14 +914,21 @@ fi
 echo "creating a folder for all cellranger input files ..."
 convFiles=()
 
-if [[ ! -d $crIN ]]; then
+if [[ ! -d $crIN ]] || [[ $lastcall != $technology ]]; then
     echo " directory $crIN created for converted files"
+    convert=true
+    if [[ -d $crIN ]]; then
+        rm -rf $crIN
+    fi
     mkdir $crIN
 else
     echo " directory $crIN already exists"
 fi
 
-echo "moving files to new location"
+if [[ $convert == "true" ]]; then
+    echo "moving file to new location"
+fi
+
 crR1s=()
 for fq in "${read1[@]}"; do
     to=`basename $fq`
@@ -954,15 +936,7 @@ for fq in "${read1[@]}"; do
     to=$(echo "$to" | sed 's/\.gz$//')
     crR1s+=($to)
     
-    if [[ $convert == "convert" ]]; then
-        echo "handling $fq ..."
-        convFiles+=($to)
-        if [[ $fq == *'.gz' ]]; then
-            gunzip -c $fq > $to
-        else
-            cp -T $fq $to
-        fi
-    elif [[ $convert == "keep" ]] && [[ ! -f $to ]]; then
+    if [[ $convert == "true" ]]; then
         echo " handling $fq ..."
         convFiles+=($to)
         if [[ $fq == *'.gz' ]]; then
@@ -980,14 +954,7 @@ for fq in "${read2[@]}"; do
     to=$(echo "$to" | sed 's/\.gz$//')
     crR2s+=($to)
     
-    if [[ $convert == "convert" ]]; then
-        echo " handling $fq ..."
-        if [[ $fq == *'.gz' ]]; then
-            gunzip -c $fq > $to
-        else
-            cp -T $fq $to
-        fi
-    elif [[ $convert == "keep" ]] && [[ ! -f $to ]]; then
+    if [[ $convert == "true" ]]; then
         echo " handling $fq ..."
         if [[ $fq == *'.gz' ]]; then
             gunzip -c $fq > $to
@@ -1002,9 +969,13 @@ done
 
 #####convert file format#####
 echo "converting input files to confer cellranger format ..."
+if [[ $convert = "false" ]]; then
+    echo " input file format conversion skipped"
+fi
+
 if [[ "$technology" == "10x" ]]; then
     echo " 10x files accepted without conversion"
-else
+elif [[ $convert == "true" ]]; then
     echo " converting file from $technology format to 10x format ..."
     for convFile in "${convFiles[@]}"; do
         echo " handling $convFile ..."
