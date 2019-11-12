@@ -8,7 +8,7 @@ if [[ -z $cellrangerpass ]]; then
     echo "cellranger command is not found."
     exit 1
 fi
-ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.2.0.900333) | head -n 3 | tail -n 2`
+ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.2.1) | head -n 3 | tail -n 2`
 ##########
 
 
@@ -509,9 +509,7 @@ if [[ $lastcall != $technology ]]; then
 fi
 
 #check if convertion is needs to be run before analysis (potentially overriding the user input)
-if [[ $technology == "10x" ]]; then
-    convert=false
-elif [[ ! -d $crIN ]] || [[ $lastcall != $technology ]]; then
+if [[ ! -d $crIN ]] || [[ $lastcall != $technology ]]; then
     convert=true
 fi
 
@@ -620,6 +618,8 @@ echo ""
 #run setup if called
 if [[ $setup == "true" ]]; then
     echo "setup begin"
+    echo "updating barcodes in $barcodefolder for cellranger version $VERSION installed in $DIR ..."
+    
     if [[ ! -w $barcodefolder ]]; then
         echo "Error: launch_universc.sh can only be run cellranger installed locally"
         echo "Running cellranger installed at $DIR"
@@ -632,20 +632,19 @@ if [[ $setup == "true" ]]; then
     
     cd $barcodefolder
     
+    #compressing v3 whilelist
     if [[ -f 3M-february-2018.txt ]]; then
         gzip -f 3M-february-2018.txt
     fi
-    
-    echo "updating barcodes in $barcodefolder for cellranger version $VERSION installed in $DIR ..."
+
+    #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
+    if [[ -f nadia_barcode.txt ]] || [[ -f iCell8_barcode.txt ]]; then
+        echo " restoring 10x barcodes for version 2 kit ..."
+        cp 737K-august-2016.txt.backup 737K-august-2016.txt
+    fi
+    echo " whitelist converted for 10x compatibility with version 2 kit."
     
     if [[ $technology == "10x" ]]; then
-        #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-        if [[ -f nadia_barcode.txt ]] || [[ -f iCell8_barcode.txt ]]; then
-            echo " restoring 10x barcodes for version 2 kit ..."
-            cp 737K-august-2016.txt.backup 737K-august-2016.txt
-        fi
-        echo " whitelist converted for 10x compatibility with version 2 kit."
-        
         #create version 3 files if version 3 whitelist available
         if [[ -f 3M-february-2018.txt.gz ]]; then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
@@ -668,55 +667,80 @@ if [[ $setup == "true" ]]; then
         else
             echo " $DIR ready for $technology"
         fi
-    elif [[ $technology == "nadia" ]]; then
-        #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-        if [[ -f nadia_barcode.txt ]] || [[ -f  iCell8_barcode.txt ]]; then
-            echo " restoring 10x barcodes for version 2 kit ..."
-            cp 737K-august-2016.txt.backup 737K-august-2016.txt
-        fi
-        #create a file with every possible barcode (permutation)
-        if [[ -f nadia_barcode.txt.gz ]]; then
-            if [[ ! -f nadia_barcode.txt ]]; then
-                gunzip nadia_barcode.txt.gz
-            fi
-        fi
-        if [[ ! -f nadia_barcode.txt ]]; then
-            echo " generating expected barcodes for Nadia ..."
-            echo AAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > nadia_barcode.txt
-        fi 
+    else
         #save original barcode file (if doesn't already exist)
         if [[ ! -f  737K-august-2016.txt.backup ]]; then
             echo " backing up whitelist of version 2 kit ..."
             cp 737K-august-2016.txt 737K-august-2016.txt.backup
         fi
-        #combine 10x and Nadia barcodes
-        cat nadia_barcode.txt 737K-august-2016.txt.backup | sort | uniq > 737K-august-2016.txt
-        echo " whitelist converted for Nadia compatibility with version 2 kit."
-        #create version 3 files if version 3 whitelist available
+        
+	#create a new version 2 barcode file
+        if [[ $technology == "nadia" ]]; then
+            #create a Nadia barcode file
+            if [[ ! -f nadia_barcode.txt ]]; then
+                if [[ -f nadia_barcide.txt.gz ]]; then
+                    gunzip nadia_barcode.txt.gz
+                else
+                    echo AAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > nadia_barcode.txt
+                fi
+            fi
+            cat nadia_barcode.txt 737K-august-2016.txt.backup | sort | uniq > 737K-august-2016.txt
+        elif [[ $technology == "icell8" ]]; then
+            #create an iCell8 barcode file by copying from convert repo
+            if [[ -f iCell8_barcode.txt.gz ]]; then
+                rm iCell8_barcode.txt.gz
+            fi
+            if [[ -f iCell8_barcode.txt ]]; then
+                rm iCell8_barcode.txt
+            fi
+            rsync -u ${SCRIPT_DIR}/iCell8_barcode.txt $barcodefolder/iCell8_barcode.txt
+            sed -i 's/^/AAAAA/g' iCell8_barcode.txt #convert barcode whitelist to match converted barcodes
+            cat iCell8_barcode.txt 737K-august-2016.txt.backup | sort | uniq > 737K-august-2016.txt
+        else
+            lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+            lock=$(($lock-1))
+            echo $lock > $lockfile
+            echo "Error: technology ($technology) is not supported"
+            cd -
+            exit 1
+        fi
+        echo " whitelist converted for $technology compatibility with version 2 kit."
+        
+        #create new version 3 files if version 3 whitelist available
         if [[ -f 3M-february-2018.txt.gz ]]; then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
             if [[ -f nadia_barcode.txt ]] || [[ -f  iCell8_barcode.txt ]]; then
                 echo " restoring 10x barcodes for version 3 kit ..."
                 cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
             fi
-            gunzip -k  3M-february-2018.txt.gz
+            gunzip -k -f 3M-february-2018.txt.gz
             if [[ ! -f  3M-february-2018.txt.backup.gz ]]; then
                 echo " backing up whitelist of version 3 kit ..."
                 cp 3M-february-2018.txt 3M-february-2018.txt.backup
                 gzip 3M-february-2018.txt.backup
             fi
-            #combine 10x and Nadia barcodes
-            if [[ ! -f nadia_barcode.txt.gz ]]; then
-                gzip -f nadia_barcode.txt
+            
+            #combine 10x and new barcodes
+            if [[ $technology == "nadia" ]]; then
+                if [[ ! -f nadia_barcode.txt.gz ]]; then
+                    gzip -f nadia_barcode.txt
+                fi
+                zcat nadia_barcode.txt.gz 3M-february-2018.txt.backup.gz | sort | uniq > 3M-february-2018.txt
+            elif [[ $technology == "icell8" ]]; then
+                if [[ -f iCell8_barcode.txt.gz ]]; then
+                    rm iCell8_barcode.txt.gz
+                fi
+                cat iCell8_barcode.txt > 3M-february-2018.txt
             fi
-            zcat nadia_barcode.txt.gz 3M-february-2018.txt.backup.gz | sort | uniq > 3M-february-2018.txt
             gzip -f 3M-february-2018.txt
+            
             if [ -d translation ]; then
                 rm translation/3M-february-2018.txt.gz
                 ln -s ../3M-february-2018.txt.gz translation/3M-february-2018.txt.gz
             fi
-            echo " whitelist converted for Nadia compatibility with version 3 kit"
-        fi
+        fi    
+        echo " whitelist converted for $technology compatibility with version 3 kit."
+        
         #if cellranger version is 3 or greater, restore assert functions
         if [[ `printf '%s\n' '$VERSION 3.0.0' | sort -V | head -n 1` != $VERSION ]]; then
             #disable functions if 10x technology run previously
@@ -729,80 +753,8 @@ if [[ $setup == "true" ]]; then
         else
             echo " $DIR ready for $technology"
         fi
-    elif [[ $technology == "icell8" ]]; then
-        #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-        if [[ -f nadia_barcode.txt ]] || [[ -f iCell8_barcode.txt ]]; then
-            echo " restoring 10x barcodes for version 2 kit ..."
-            cp 737K-august-2016.txt.backup 737K-august-2016.txt
-        fi
-        #create a file with every possible barcode (permutation)
-        if [[ -f iCell8_barcode.txt.gz ]]; then
-            rm iCell8_barcode.txt.gz
-        fi
-        if [[ -f iCell8_barcode.txt ]]; then
-             rm iCell8_barcode.txt
-         fi
-        if [[ ! -f iCell8_barcode.txt ]]; then
-            #copy known iCell8 barcodes from convert repo to cellranger install
-            rsync -u ${SCRIPT_DIR}/iCell8_barcode.txt ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/iCell8_barcode.txt
-            #convert barcode whitelist to match converted barcodes
-            sed -i 's/^/AAAAA/g' iCell8_barcode.txt
-            echo " imported expected barcodes for iCELL8 ..."
-        fi
-        echo "Valid barcodes can be calculated accurately for iCELL8"
-        #save original barcode file (if doesn't already exist)
-        if [[ ! -f 737K-august-2016.txt.backup ]]; then
-            echo " backing up whitelist of version 2 kit ..."
-            cp 737K-august-2016.txt 737K-august-2016.txt.backup
-        fi
-        #replace 10x barcodes with icell8
-        cat iCell8_barcode.txt | sort | uniq > 737K-august-2016.txt
-        echo " whitelist converted for iCELL8 compatibility with version 2 kit."
-        #create version 3 files if version 3 whitelist available
-        if [[ -f 3M-february-2018.txt.gz ]]; then
-            #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-            if [[ -f nadia_barcode.txt ]] || [[ -f iCell8_barcode.txt ]]; then
-                echo " restoring 10x barcodes for version 3 kit ..."
-                cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
-            fi
-            gunzip -k -f 3M-february-2018.txt.gz
-            if [[ ! -f 3M-february-2018.txt.backup.gz ]]; then
-                echo " backing up whitelist of version 3 kit ..."
-                cp 3M-february-2018.txt 3M-february-2018.txt.backup
-                gzip 3M-february-2018.txt.backup
-            fi
-            #combine 10x and Nadia barcodes
-            if [[ ! -f iCell8_barcode.txt.gz ]]; then
-                rm iCell8_barcode.txt.gz
-            fi
-            cat iCell8_barcode.txt > 3M-february-2018.txt
-            gzip -f 3M-february-2018.txt
-            if [ -d translation ]; then
-                rm translation/3M-february-2018.txt.gz
-                ln -s ../3M-february-2018.txt.gz translation/3M-february-2018.txt.gz
-            fi
-            echo " whitelist converted for iCELL8 compatibility with version 3 kit."        
-        fi
-        #if cellranger version is 3 or greater, restore assert functions
-        if [[ `printf '%s\n' '$VERSION 3.0.0' | sort -V | head -n 1` != $VERSION ]]; then
-            #disable functions if 10x technology run previously
-            if [[ $lastcall == "10x" ]]; then
-                sed -i "s/if gem_group == prev_gem_group/#if gem_group == prev_gem_group/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
-                sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${DIR}-cs/${VERSION}/mro/stages/counter/report_molecules/__init__.py
-                sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${DIR}-cs/${VERSION}/lib/python/cellranger/molecule_counter.py
-            fi
-            echo "$DIR restored for $technology"
-        else
-            echo "$DIR ready for $technology"
-        fi
-    else
-        lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
-        lock=$(($lock-1))
-        echo $lock > $lockfile
-        echo "Error: technology ($technology) is not supported"
-        cd -
-        exit 1
     fi
+    
     echo $technology > $lastcallfile
     cd -
     echo "setup complete"
