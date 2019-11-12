@@ -301,6 +301,16 @@ fi
 
 #check for file type (extension) for files
 ##allows incomplete file names and processing compressed files
+
+#test
+#read12=( $read1, $read2 )
+#for i in ${read12[@]}; do
+#    echo "KAI! $i"
+#done
+
+
+
+
 for i in ${!read1[@]}; do
     read=${read1[$i]}
     if [[ $verbose == "true" ]]; then
@@ -915,9 +925,9 @@ if [[ $setup == "true" ]]; then
 fi
 
 if [[ ${#read1[@]} -eq 0 ]] && [[ ${#read2[@]} -eq 0 ]]; then
-    lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
+    lock=`cat $lockfile`
     lock=$(($lock-1))
-    echo $lock > ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock
+    echo $lock > $lockfile
     echo " whitelist converted and no FASTQ files are selected. exiting launch_universc.sh"
     exit 0
 fi
