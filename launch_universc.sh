@@ -90,7 +90,7 @@ lockfile=${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock #path for .lo
 lastcallfile=${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called #path for .last_called
 lastcall=`cat $lastcallfile`
 barcodefolder=${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes #folder with the barcodes
-cdrIN="input4cellranger" #name of the directory with all FASTQ files given to cellranger
+crIN="input4cellranger" #name of the directory with all FASTQ files given to cellranger
 
 #variable options
 setup=false
@@ -931,7 +931,7 @@ convFiles=()
 
 if [[ ! -d $crIN ]]; then
     echo " directory $crIN created for converted files"
-    mkdir $crIN
+    mkdir -p $crIN
 else
     echo " directory $crIN already exists"
 fi
