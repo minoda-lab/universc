@@ -293,232 +293,157 @@ if [[ $setup == "false" ]]; then
     fi
 fi
 
-#check for file type (extension) for files
+#check read1 and read2 files for their extensions
 ##allows incomplete file names and processing compressed files
-for i in ${!read1[@]}; do
-    read=${read1[$i]}
-    if [[ $verbose == "true" ]]; then
-        echo " checking file format for $read1 ..."
+for i in {1..2}; do
+    readkey=R$i
+    list=""
+    if [[ $readkey == "R1" ]]; then
+        list=("${read1[@]}")
+    elif [[ $readkey == "R2" ]]; then
+        list=("${read2[@]}")
     fi
-    if [[ -f $read ]] && [[ -h $read ]]; then
-        if [[ $read == *"gz" ]]; then
-            gunzip -k $read
-            #update file variable
-            read=`echo $read | sed -e "s/\.gz//g"`
-        fi
-        if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
-            echo "***Warning: file $read is assumed to be in fastq format***"
-        fi
+    
+    for j in ${!list[@]}; do
+        read=${list[$j]}
         if [[ $verbose == "true" ]]; then
-            echo "  $read"
+            echo "checking file format for $read ..."
         fi
-    elif [[ -f $read ]]; then
-        if [[ $read == *"gz" ]]; then
-            gunzip -k $read
-            #update file variable
-            read=`echo $read | sed -e "s/\.gz//g"`
+        if [[ -f $read ]] && [[ -h $read ]]; then
+            if [[ $read == *"gz" ]]; then
+                gunzip -k $read
+                #update file variable
+                read=`echo $read | sed -e "s/\.gz//g"`
+            fi
+            if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
+                echo "Error: file $read needs a .fq or .fastq extention."
+                exit 1
+            fi
+            if [[ $verbose == "true" ]]; then
+                echo "  $read"
+            fi
+        elif [[ -f $read ]]; then
+            if [[ $read == *"gz" ]]; then
+                gunzip -k $read
+                #update file variable
+                read=`echo $read | sed -e "s/\.gz//g"`
+            fi
+            if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
+                echo "Error: file $read needs a .fq or .fastq extention."
+                exit 1
+            fi
+            if [[ $verbose == "true" ]]; then
+                echo "  $read"
+            fi
+        else
+            echo "Error: $read not found"
+            exit 1
         fi
-        if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
-            echo "***Warning: file $read is assubed to be in fastq format***"
-        fi
-        if [[ $verbose == "true" ]]; then
-            echo "  $read"
-        fi
-    else
-        echo "Error: $read not found"
-        exit 1
+        list[$j]=$read
+    done
+    
+    if [[ $readkey == "R1" ]]; then
+        read1=("${list[@]}")
+    elif [[ $readkey == "R2" ]]; then
+        read2=("${list[@]}")
     fi
-    read1[$i]=$read
 done
 
-for i in ${!read2[@]}; do
-    read=${read2[$i]}
-    if [[ $verbose == "true" ]]; then
-        echo " checking file format for $read2 ..."
+#renaming read1 and read2 files if not compatible with the convention
+for i in {1..2}; do
+    readkey=R$i
+    list=""
+    if [[ $readkey == "R1" ]]; then
+        list=("${read1[@]}")
+    elif [[ $readkey == "R2" ]]; then
+        list=("${read2[@]}")
     fi
-    if [[ -f $read ]] && [[ -h $read ]]; then
-        if [[ $read == *"gz" ]]; then
-            gunzip -k $read
-            #update file variable
-            read=`echo $read | sed -e "s/\.gz//g"`
-        fi
-        if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
-            echo "***Warning: file $read is assubed to be in fastq format***"
-        fi
+    
+    for j in ${!list[@]}; do
+        read=${list[$j]}
         if [[ $verbose == "true" ]]; then
-	    echo "  $read"
-	fi
-    elif [[ -f $read ]]; then
-        if [[ $read == *"gz" ]]; then
-            gunzip -k $read
-            #update file variable
-            read=`echo $read | sed -e "s/\.gz//g"`
+            echo " checking file name for $read ..."
         fi
-        if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
-            echo "***Warning: file $read is assubed to be in fastq format***"
+        
+        if [[ -h $read ]]; then
+            path=`readlink -f $read`
+            if [[ $verbose == "true" ]]; then
+                echo " ***Warning: file $read not in current directory. Path to the file captured instead.***"
+                echo "  (file) $read"
+                echo "  (path) $path"
+            fi
+            read=${path}
         fi
-        if [[ $verbose = "true" ]]; then
-            echo "  $read"
-        fi
-    else
-        echo "Error: $read not found"
-        exit 1
+        case $read in
+            #check if contains lane before read
+            *_L0[0123456789][0123456789]_$readkey*)
+                if [[ $verbose == "true" ]]; then
+                    echo "  $read compatible with lane"
+                fi
+            ;;
+            *) 
+                #rename file
+                if [[ $verbose == "true" ]]; then
+                    echo "***Warning: file $read does not have lane value in its name. Lane 1 is assumed.***"
+	            echo "  renaming $read ..."
+                fi
+                rename "s/_$raadkey/_L001_$readkey/" $read
+                #update file variable
+                read=`echo $read | sed -e "s/_${readkey}/_L001_${raedkey}/g"`
+                list[$j]=$read
+            ;;
+        esac
+        case $read in
+            #check if contains sample before lane
+            *_S[123456789]_L0*)
+                if [[ $verbose == "true" ]]; then
+                    echo "  $read compatible with sample"
+                fi
+            ;;
+            *)
+                #rename file
+                if [[ $verbose == "true" ]]; then
+                    echo "***Warning: file $read does not have sample value in its name. Sample $k is assumed.***"
+	            echo "  renaming $read ..."
+                fi
+	        k=$((${j}+1))
+                rename "s/_L0/_S${k}_L0/" $read
+                #update file variable
+                read=`echo $read | sed -e "s/_L0/_S${j}_L0/g"`
+                list[$j]=$read
+            ;;
+        esac
+        case $read in
+            #check if contains sample before lane
+            *_${readkey}_001.*)
+                if [[ $verbose == "true" ]]; then
+                    echo "  $read compatible with suffix"
+                fi
+            ;;
+            *)
+                #rename file
+                if [[ $verbose == "true" ]]; then
+                    echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
+                    echo "  renaming $read ..."
+                fi
+	        rename "s/_${readkey}.*\./_${readkey}_001\./" $read
+                #update file variable
+                read=`echo $read | sed -e "s/_${readkey}.*\./_${raedkey}_001\./g"`
+                list[$j]=$read
+            ;;
+        esac
+    done
+    
+    if [[ $readkey == "R1" ]]; then
+        read1=("${list[@]}")
+    elif [[ $readkey == "R2" ]]; then
+        read2=("${list[@]}")
     fi
-    read2[$i]=$read
-done
-
-#renaming read1 and read 2 files if not compatible with the convention.
-if [[ $verbose == "true" ]]; then
-    echo " checking file name for $read1 ..."
-fi
-
-for i in ${!read1[@]}; do
-    read=${read1[$i]}
-    if [[ -h $read ]]; then
-        path=`readlink -f $read`
-        if [[ $verbose == "true" ]]; then
-            echo " ***Warning: file $read not in current directory. Path to the file captured instead.***"
-            echo "  (file) $read"
-            echo "  (path) $path"
-        fi
-        read=${path}
-    fi
-    case $read in
-        #check if contains lane before read
-        *_L0[0123456789][0123456789]_R1*)
-            if [[ $verbose == "true" ]]; then
-                echo "  $read compatible with lane"
-            fi
-        ;;
-        *) 
-            #rename file
-            if [[ $verbose == "true" ]]; then
-                echo "***Warning: file $read does not have lane value in its name. Lane 1 is assumed.***"
-	        echo "  renaming $read ..."
-            fi
-            rename "s/_R1/_L001_R1/" $read
-            #update file variable
-            read=`echo $read | sed -e "s/_R1/_L001_R1/g"`
-            read1[$i]=$read
-        ;;
-    esac
-    case $read in
-        #check if contains sample before lane
-        *_S[123456789]_L0*)
-            if [[ $verbose == "true" ]]; then
-                echo "  $read compatible with sample"
-            fi
-        ;;
-        *)
-            #rename file
-            if [[ $verbose == "true" ]]; then
-                echo "***Warning: file $read does not have sample value in its name. Sample $j is assumed.***"
-	        echo "  renaming $read ..."
-            fi
-	    j=$((${i}+1))
-            rename "s/_L0/_S${j}_L0/" $read
-            #update file variable
-            read=`echo $read | sed -e  "s/_L0/_S${j}_L0/g"`
-            read1[$i]=$read
-        ;;
-    esac
-    case $read in
-        #check if contains sample before lane
-        *_R1_001.*)
-            if [[ $verbose == "true" ]]; then
-                echo "  $read compatible with suffix"
-            fi
-        ;;
-        *)
-            #rename file
-            if [[ $verbose == "true" ]]; then
-                echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
-                echo "  renaming $read ..."
-            fi
-	    rename "s/_R1.*\./_R1_001\./" $read
-            #update file variable
-            read=`echo $read | sed -e  "s/_R1.*\./_R1_001\./g"`
-            read1[$i]=$read
-        ;;
-    esac
-done
-
-if [[ $verbose == "true" ]]; then
-    echo " checking file name for $read2 ..."
-fi
-for i in ${!read2[@]}; do
-    read=${read2[$i]}
-    if [[ -h $read ]]; then
-        path=`readlink -f $read`
-        if [[ $verbose == "true" ]]; then
-            echo " ***Warning: file $read not in current directory. Path to the file captured instead.***"
-            echo " (file) $read"
-            echo " (path) $path"
-        fi
-        read=${path}
-    fi
-    case $read in
-        #check if contains lane before read
-        *_L0[0123456789][0123456789]_R2*)
-            if [[ $verbose == "true" ]]; then
-                echo "  $read compatible with lane"
-            fi
-        ;;
-        *) 
-            #rename file
-            if [[ $verbose == "true" ]]; then
-                echo "***Warning: file $read does not have lane value in its name. Lane 1 is assumed.***"
-	        echo "  renaming $read ..."
-            fi
-            rename "s/_R2/_L001_R2/" $read
-            #update file variable
-            read=`echo $read | sed -e "s/_R2/_L001_R2/g"`
-            read2[$i]=$read
-        ;;
-    esac
-    case $read in
-        #check if contains sample before lane
-        *_S[123456789]_L0*)
-            if [[ $verbose == "true" ]]; then
-                echo "  $read compatible with sample"
-            fi
-        ;;
-        *)
-            #rename file
-            if [[ $verbose == "true" ]]; then
-                echo "***Warning: file $read does not have sample value in its name. Sample $j is assumed.***"
-	        echo "  renaming $read ..."
-            fi
-	    j=$((${i}+1))
-            rename "s/_L0/_S${j}_L0/" $read
-            #update file variable
-            read=`echo $read | sed -e  "s/_L0/_S${j}_L0/g"`
-            read2[$i]=$read
-        ;;
-    esac
-    case $read in
-        #check if contains sample before lane
-        *_R2_001.*)
-            if [[ $verbose == "true" ]]; then
-                echo "  $read compatible with suffix"
-            fi
-        ;;
-        *)
-            #rename file
-            if [[ $verbose == "true" ]]; then
-                echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
-                echo "  renaming $read ..."
-            fi
-	    rename "s/_R2.*\./_R2_001\./" $read
-            #update file variable
-            read=`echo $read | sed -e  "s/_R2.*\./_R2_001\./g"`
-            read2[$i]=$read
-        ;;
-    esac
 done
 
 #checking the quality of fastq file names
-for fq in "${read1[@]}"; do
+read12=("${read1[@]}" "${read2[@]}")
+for fq in "${read12[@]}"; do
     name=`basename $fq | cut -f1 -d'.' | grep -o "_" | wc -l | xargs`
     sn=`basename $fq | cut -f1-$(($name-3))  -d'_'`
     ln=`basename $fq | cut -f$(($name-1))  -d'_' | sed 's/L00//'`
@@ -527,30 +452,7 @@ for fq in "${read1[@]}"; do
         echo "Error: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
         exit 1
     elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
-        echo "Error: $fq does not have a .fq or .fastq extention"
-        exit 1
-    fi
-    
-    if [[ $sn != $SAMPLE ]]; then
-        if [[ -z $SAMPLE ]]; then
-            SAMPLE=$sn
-        else
-            echo "Error: some samples are labeled $SAMPLE while others are labeled $sn. cellranger can only handle files from one sample at a time."
-            exit 1
-        fi
-    fi
-done
-for fq in "${read2[@]}"; do
-    name=`basename $fq | cut -f1 -d'.' | grep -o "_" | wc -l | xargs`
-    sn=`basename $fq | cut -f1-$(($name-3))  -d'_'`
-    ln=`basename $fq | cut -f$(($name-1))  -d'_' | sed 's/L00//'`
-    LANE+=($ln)
-    
-    if [[ $name < 4 ]]; then
-        echo "Error: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
-        exit 1
-    elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
-        echo "Error: $fq does not have a .fq or .fastq extention"
+        echo "Error: $fq does not have a .fq or .fastq extention."
         exit 1
     fi
     
@@ -598,12 +500,19 @@ elif [[ "$jobmode" != "local" ]] && [[ "$jobmode" != "sge" ]] && [[ "$jobmode" !
     exit 1
 fi
 
-#check if setup needs to be run before analysis
+#check if setup needs to be run before analysis (potentially overriding the user input)
 if [[ -z $setup ]]; then
     setup=false
 fi
 if [[ $lastcall != $technology ]]; then
     setup=true
+fi
+
+#check if convertion is needs to be run before analysis (potentially overriding the user input)
+if [[ $technology == "10x" ]]; then
+    convert=false
+elif [[ ! -d $crIN ]] || [[ $lastcall != $technology ]]; then
+    convert=true
 fi
 
 #check if ID is present
@@ -916,7 +825,6 @@ convFiles=()
 
 if [[ ! -d $crIN ]] || [[ $lastcall != $technology ]]; then
     echo " directory $crIN created for converted files"
-    convert=true
     if [[ -d $crIN ]]; then
         rm -rf $crIN
     fi
