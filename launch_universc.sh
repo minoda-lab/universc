@@ -90,7 +90,7 @@ lockfile=${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock #path for .lo
 lastcallfile=${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.last_called #path for .last_called
 lastcall=`cat $lastcallfile`
 barcodefolder=${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes #folder with the barcodes
-cdrIN="input4cellranger" #name of the directory with all FASTQ files given to cellranger
+crIN=input4cellranger #name of the directory with all FASTQ files given to cellranger
 
 #variable options
 setup=false
@@ -301,6 +301,16 @@ fi
 
 #check for file type (extension) for files
 ##allows incomplete file names and processing compressed files
+
+#test
+#read12=( $read1, $read2 )
+#for i in ${read12[@]}; do
+#    echo "KAI! $i"
+#done
+
+
+
+
 for i in ${!read1[@]}; do
     read=${read1[$i]}
     if [[ $verbose == "true" ]]; then
