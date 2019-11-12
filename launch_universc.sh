@@ -573,8 +573,10 @@ LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
 #check if ID is present
 if [[ -z $id ]] && [[ ${#read1[@]} -eq 0 ]]; then
-    echo "Error: option --id is required"
-    exit 1
+    if [[ $setup == "false" ]] ; then
+        echo "Error: option --id is required"
+        exit 1
+    fi
 elif [[ $id == *" "* ]]; then
     echo "Error: \"$id\" for option -id must not contain a space"
     exit 1
@@ -850,7 +852,7 @@ if [[ $setup == "true" ]]; then
             #copy known iCell8 barcodes from convert repo to cellranger install
             rsync -u ${SCRIPT_DIR}/iCell8_barcode.txt ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/iCell8_barcode.txt
             #convert barcode whitelist to match converted barcodes
-            sed -i 's/^/AAAAA/g' iCell8_barcodes.txt
+            sed -i 's/^/AAAAA/g' iCell8_barcode.txt
             echo " imported expected barcodes for iCELL8 ..."
         fi
         echo "Valid barcodes can be calculated accurately for iCELL8"
