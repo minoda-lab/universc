@@ -311,7 +311,7 @@ for i in {1..2}; do
         fi
         if [[ -f $read ]] && [[ -h $read ]]; then
             if [[ $read == *"gz" ]]; then
-                gunzip -k $read
+                gunzip -f -k $read
                 #update file variable
                 read=`echo $read | sed -e "s/\.gz//g"`
             fi
@@ -330,15 +330,15 @@ for i in {1..2}; do
                 exit 1
             fi
          #allow detection of file extension (needed for --file input)
-         elif [ -f ${read}.fq ] && [ ! -h ${read}.fq ]; then
+         elif [ -f ${read}.fq ] || [ ! -h ${read}.fq ]; then
              read=${read}.fq
-         elif [ -f ${read}.fastq ] && [ ! -h ${read}.fastq ]; then
+         elif [ -f ${read}.fastq ] || [ ! -h ${read}.fastq ]; then
              read=${read}.fastq
-         elif [ -f ${read}.fq.gz ] && [ ! -h ${read}.fq.gz ]l then
-             gunzip -k ${read}.fq.gz
+         elif [ -f ${read}.fq.gz ] || [ ! -h ${read}.fq.gz ]; then
+             gunzip -f -k ${read}.fq.gz
              read=${read}.fq
-         elif [ -f ${read}.fastq.gz ] && [ ! -h $read ]; then
-             gunzip -k ${read}.fastq.gz
+         elif [ -f ${read}.fastq.gz ] || [ ! -h ${read}.fastq.gz ]; then
+             gunzip -f -k ${read}.fastq.gz
              read=${read}.fastq
         else
             echo "Error: $read not found"
