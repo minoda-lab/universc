@@ -319,9 +319,6 @@ for i in {1..2}; do
                 echo "Error: file $read needs a .fq or .fastq extention."
                 exit 1
             fi
-            if [[ $verbose == "true" ]]; then
-                echo "  $read"
-            fi
         elif [[ -f $read ]]; then
             if [[ $read == *"gz" ]]; then
                 gunzip -k $read
@@ -332,13 +329,26 @@ for i in {1..2}; do
                 echo "Error: file $read needs a .fq or .fastq extention."
                 exit 1
             fi
-            if [[ $verbose == "true" ]]; then
-                echo "  $read"
-            fi
+         #allow detection of file extension (needed for --file input)
+         elif [ -f ${read}.fq ] && [ ! -h ${read}.fq ]; then
+             read=${read}.fq
+         elif [ -f ${read}.fastq ] && [ ! -h ${read}.fastq ]; then
+             read=${read}.fastq
+         elif [ -f ${read}.fq.gz ] && [ ! -h ${read}.fq.gz ]l then
+             gunzip -k ${read}.fq.gz
+             read=${read}.fq
+         elif [ -f ${read}.fastq.gz ] && [ ! -h $read ]; then
+             gunzip -k ${read}.fastq.gz
+             read=${read}.fastq
         else
             echo "Error: $read not found"
             exit 1
         fi
+
+        if [[ $verbose == "true" ]]; then
+             echo "  $read"
+        fi
+
         list[$j]=$read
     done
     
