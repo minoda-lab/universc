@@ -329,17 +329,17 @@ for i in {1..2}; do
                 echo "Error: file $read needs a .fq or .fastq extention."
                 exit 1
             fi
-         #allow detection of file extension (needed for --file input)
-         elif [ -f ${read}.fq ] || [ -h ${read}.fq ]; then
-             read=${read}.fq
-         elif [ -f ${read}.fastq ] || [ -h ${read}.fastq ]; then
-             read=${read}.fastq
-         elif [ -f ${read}.fq.gz ] || [ -h ${read}.fq.gz ]; then
-             gunzip -f -k ${read}.fq.gz
-             read=${read}.fq
-         elif [ -f ${read}.fastq.gz ] || [ -h ${read}.fastq.gz ]; then
-             gunzip -f -k ${read}.fastq.gz
-             read=${read}.fastq
+        #allow detection of file extension (needed for --file input)
+        elif [ -f ${read}.fq ] || [ -h ${read}.fq ]; then
+            read=${read}.fq
+        elif [ -f ${read}.fastq ] || [ -h ${read}.fastq ]; then
+            read=${read}.fastq
+        elif [ -f ${read}.fq.gz ] || [ -h ${read}.fq.gz ]; then
+            gunzip -f -k ${read}.fq.gz
+            read=${read}.fq
+        elif [ -f ${read}.fastq.gz ] || [ -h ${read}.fastq.gz ]; then
+            gunzip -f -k ${read}.fastq.gz
+            read=${read}.fastq
         else
             echo "Error: $read not found"
             exit 1
@@ -529,6 +529,10 @@ if [[ -z $id ]]; then
         echo "Error: option --id is required"
         exit 1
     fi
+fi
+crIN=${crIN}_$id
+if [[ ! -d ${crIN} ]]; then
+    convert=true
 fi
 ##########
 
@@ -785,11 +789,8 @@ fi
 echo "creating a folder for all cellranger input files ..."
 convFiles=()
 
-if [[ ! -d $crIN ]] || [[ $lastcall != $technology ]]; then
+if [[ ! -d $crIN ]]; then
     echo " directory $crIN created for converted files"
-    if [[ -d $crIN ]]; then
-        rm -rf $crIN
-    fi
     mkdir $crIN
 else
     echo " directory $crIN already exists"
@@ -803,17 +804,14 @@ crR1s=()
 for fq in "${read1[@]}"; do
     to=`basename $fq`
     to="${crIN}/${to}"
-    to=$(echo "$to" | sed 's/\.gz$//')
     crR1s+=($to)
     
+    echo " handling $fq ..."
+    if [[ ! -f $to ]] || [[ $convert == "true" ]]; then
+        cp -f $fq $to
+    fi
     if [[ $convert == "true" ]]; then
-        echo " handling $fq ..."
         convFiles+=($to)
-        if [[ $fq == *'.gz' ]]; then
-            gunzip -c $fq > $to
-        else
-            cp -T $fq $to
-        fi
     fi
 done
 
@@ -824,13 +822,9 @@ for fq in "${read2[@]}"; do
     to=$(echo "$to" | sed 's/\.gz$//')
     crR2s+=($to)
     
-    if [[ $convert == "true" ]]; then
-        echo " handling $fq ..."
-        if [[ $fq == *'.gz' ]]; then
-            gunzip -c $fq > $to
-        else
-            cp -T $fq $to
-        fi
+    echo " handling $fq ..."
+    if [[ ! -f $to ]] || [[ $convert == "true" ]]; then
+        cp -f $fq $to
     fi
 done
 ##########
