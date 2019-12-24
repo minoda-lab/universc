@@ -8,7 +8,7 @@ if [[ -z $cellrangerpass ]]; then
     echo "cellranger command is not found."
     exit 1
 fi
-ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.2.1) | head -n 3 | tail -n 2`
+ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.2.2) | head -n 3 | tail -n 2`
 ##########
 
 
