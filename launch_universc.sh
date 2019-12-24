@@ -47,7 +47,7 @@ Usage:
   bash '$(basename $0)' -h
   bash '$(basename $0)' -t TECHNOLOGY --setup
 
-Convert sequencing data (FASTQ) from various platforms for compatibility with 10x Genomics and run cellranger count
+Convert sequencing data (FASTQ) from Nadia or iCELL8 platforms for compatibility with 10x Genomics and run cellranger count
 
 Mandatory arguments to long options are mandatory for short options too.
   -s,  --setup                  Set up whitelists for compatibility with new technology
@@ -55,6 +55,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -R1, --read1 FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
   -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
   -f,  --file NAME              Name of FASTQ files to pass to cellranger (prefix before R1 or R2)
+  -b,  --barcodes FILE           custom iCELL8 barcode list in plain text
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
@@ -97,6 +98,7 @@ setup=false
 convert=true
 read1=()
 read2=()
+barcodes=""
 SAMPLE=""
 LANE=()
 id=""
@@ -181,6 +183,17 @@ for op in "$@"; do
                 skip=true
             else
                 echo "Error: File input missing --file or --read1"
+                exit 1
+            fi
+            ;;
+        -b|--barcodes)
+            shift
+            if [[ "$1" != "" ]]; then
+                barcodes="${1/%\//}"
+                next=true
+                shift
+            else
+                echo "Error: value missing for --barcodes"
                 exit 1
             fi
             ;;
@@ -321,7 +334,7 @@ for i in {1..2}; do
             fi
         elif [[ -f $read ]]; then
             if [[ $read == *"gz" ]]; then
-                gunzip -k $read
+                gunzip -f -k $read
                 #update file variable
                 read=`echo $read | sed -e "s/\.gz//g"`
             fi
@@ -330,25 +343,25 @@ for i in {1..2}; do
                 exit 1
             fi
         #allow detection of file extension (needed for --file input)
-        elif [ -f ${read}.fq ] || [ -h ${read}.fq ]; then
+        elif [[ -f ${read}.fq ]] || [[ -h ${read}.fq ]]; then
             read=${read}.fq
-        elif [ -f ${read}.fastq ] || [ -h ${read}.fastq ]; then
+        elif [[ -f ${read}.fastq ]] || [[ -h ${read}.fastq ]]; then
             read=${read}.fastq
-        elif [ -f ${read}.fq.gz ] || [ -h ${read}.fq.gz ]; then
+        elif [[ -f ${read}.fq.gz ]] || [[ -h ${read}.fq.gz ]]; then
             gunzip -f -k ${read}.fq.gz
             read=${read}.fq
-        elif [ -f ${read}.fastq.gz ] || [ -h ${read}.fastq.gz ]; then
+        elif [[ -f ${read}.fastq.gz ]] || [[ -h ${read}.fastq.gz ]]; then
             gunzip -f -k ${read}.fastq.gz
             read=${read}.fastq
         else
             echo "Error: $read not found"
             exit 1
         fi
-
+        
         if [[ $verbose == "true" ]]; then
              echo "  $read"
         fi
-
+        
         list[$j]=$read
     done
     
@@ -395,7 +408,7 @@ for i in {1..2}; do
                 #rename file
                 if [[ $verbose == "true" ]]; then
                     echo "***Warning: file $read does not have lane value in its name. Lane 1 is assumed.***"
-	            echo "  renaming $read ..."
+                echo "  renaming $read ..."
                 fi
                 rename "s/_$raadkey/_L001_$readkey/" $read
                 #update file variable
@@ -414,9 +427,9 @@ for i in {1..2}; do
                 #rename file
                 if [[ $verbose == "true" ]]; then
                     echo "***Warning: file $read does not have sample value in its name. Sample $k is assumed.***"
-	            echo "  renaming $read ..."
+                    echo "  renaming $read ..."
                 fi
-	        k=$((${j}+1))
+                k=$((${j}+1))
                 rename "s/_L0/_S${k}_L0/" $read
                 #update file variable
                 read=`echo $read | sed -e "s/_L0/_S${j}_L0/g"`
@@ -436,7 +449,7 @@ for i in {1..2}; do
                     echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
                     echo "  renaming $read ..."
                 fi
-	        rename "s/_${readkey}.*\./_${readkey}_001\./" $read
+                rename "s/_${readkey}.*\./_${readkey}_001\./" $read
                 #update file variable
                 read=`echo $read | sed -e "s/_${readkey}.*\./_${raedkey}_001\./g"`
                 list[$j]=$read
@@ -477,6 +490,17 @@ for fq in "${read12[@]}"; do
 done
 LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
+#checking the quality of custom barcode file
+if [[ ! -z "$barcodes" ]]; then
+    if [[ ! -f $barcodes ]]; then
+        echo "Error: File selected for --barcode does not exist"
+    elif [[ "$technology" != "icell8" ]]; then
+        echo "Error: option --barcodes is only valid when --technology is icell8 yet its currently set as $technology."
+        exit 1
+    fi
+fi
+barcodes=`readlink -f $barcodes`
+
 #check if reference is present
 if [[ -z $reference ]]; then
     if [[ $setup == "false" ]] || [[ ${#read1[@]} -ne 0 ]] || [[ ${#read2[@]} -ne 0 ]]; then
@@ -487,7 +511,7 @@ fi
 
 #check if ncells is an integer
 int='^[0-9]+$'
-if [ -z "$ncells" ]; then
+if [[ -z "$ncells" ]]; then
     ncells=""
 elif ! [[ $ncells =~ $int ]] && [[ $setup == "false" ]]; then
     echo "Error: option --force-cells must be an integer"
@@ -495,7 +519,7 @@ elif ! [[ $ncells =~ $int ]] && [[ $setup == "false" ]]; then
 fi
 
 #check if chemistry matches expected input
-if [ -z "$chemistry" ]; then
+if [[ -z "$chemistry" ]]; then
     chemistry="SC3Pv2"
 elif [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
     echo "Error: option --chemistry must be SC3Pv2, SC5P-PE , or SC5P-R2"
@@ -503,7 +527,7 @@ elif [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$c
 fi
 
 #checking if jobmode matches expected input
-if [ -z "$jobmode" ]; then
+if [[ -z "$jobmode" ]]; then
     jobmode="local"
 elif [[ "$jobmode" != "local" ]] && [[ "$jobmode" != "sge" ]] && [[ "$jobmode" != "lsf" ]] && [[ "$jobmode" != *"template" ]]; then
     echo "Error: option --jobmode must be local, sge, lsf, or a .template file"
@@ -530,7 +554,7 @@ if [[ -z $id ]]; then
         exit 1
     fi
 fi
-crIN=${crIN}_$id
+crIN=${crIN}_${id}
 if [[ ! -d ${crIN} ]]; then
     convert=true
 fi
@@ -557,13 +581,19 @@ else
             echo " total of $lock cellranger ${VERSION} jobs already running in ${DIR} with technology $lastcall"
             
             #check if the technology running is different from the current convert call
-            if [[ $lastcall == $technology ]]; then
+            if [[ $lastcall == "icell8_custom" ]]; then
+                echo "Error: icell8 with custom barcode list is currently running"
+                echo "other jobs cannot be run until the current job is complete"
+                echo "remove $lockfile if $lastcall jobs have completed or aborted"
+                exit 1
+            elif [[ $lastcall == $technology ]]; then
                 echo " call accepted: no conflict detected with other jobs currently running"
                 #add current job to lock
                 lock=$(($lock+1))
                 echo $lock > $lockfile
-	    else
-	        echo "Error: conflict between technology selected for the new job ($technology) and other jobs currently running ($lastcall)"
+                setup=false
+            else
+                echo "Error: conflict between technology selected for the new job ($technology) and other jobs currently running ($lastcall)"
                 echo "barcode whitelist configured and locked for currently running technology: $lastcall"
                 echo "remove $lockfile if $lastcall jobs have completed or aborted"
                 exit 1
@@ -584,6 +614,11 @@ echo "SETUP: $setup"
 echo "FORMAT: $technology"
 if [[ $technology == "nadia" ]]; then
     echo "***Warning: whitelist is converted for compatibility with $technology, valid barcodes cannot be detected accurately with this technology***"
+fi
+if [[ -z $barcodes ]]; then
+    echo "BARCODES: default"
+else
+    echo "BARCODES: (custom barcode file) $barcodes"
 fi
 if [[ ${#read1[@]} -eq 0 ]] && [[ ${#read1[@]} -eq 0 ]]; then
     echo "***Warning: no FASTQ files were selected, launch_universc.sh will exit after setting up the whitelist***"
@@ -650,7 +685,7 @@ if [[ $setup == "true" ]]; then
     if [[ -f 3M-february-2018.txt ]]; then
         gzip -f 3M-february-2018.txt
     fi
-
+    
     #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
     if [[ -f nadia_barcode.txt ]] || [[ -f iCell8_barcode.txt ]]; then
         echo " restoring 10x barcodes for version 2 kit ..."
@@ -688,17 +723,17 @@ if [[ $setup == "true" ]]; then
             cp 737K-august-2016.txt 737K-august-2016.txt.backup
         fi
         
-	#create a new version 2 barcode file
+        #create a new version 2 barcode file
         if [[ $technology == "nadia" ]]; then
             #create a Nadia barcode file
             if [[ ! -f nadia_barcode.txt ]]; then
                 if [[ -f nadia_barcide.txt.gz ]]; then
-                    gunzip nadia_barcode.txt.gz
+                    gunzip -f nadia_barcode.txt.gz
                 else
                     echo AAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' > nadia_barcode.txt
                 fi
             fi
-            cat nadia_barcode.txt 737K-august-2016.txt.backup | sort | uniq > 737K-august-2016.txt
+            cat nadia_barcode.txt | sort | uniq > 737K-august-2016.txt
         elif [[ $technology == "icell8" ]]; then
             #create an iCell8 barcode file by copying from convert repo
             if [[ -f iCell8_barcode.txt.gz ]]; then
@@ -707,9 +742,14 @@ if [[ $setup == "true" ]]; then
             if [[ -f iCell8_barcode.txt ]]; then
                 rm iCell8_barcode.txt
             fi
-            rsync -u ${SCRIPT_DIR}/iCell8_barcode.txt $barcodefolder/iCell8_barcode.txt
+            
+            if [[ -z $barcodes ]]; then
+                cat ${SCRIPT_DIR}/iCell8_barcode.txt >$barcodefolder/iCell8_barcode.txt
+            else
+                cat $barcodes >$barcodefolder/iCell8_barcode.txt
+            fi
             sed -i 's/^/AAAAA/g' iCell8_barcode.txt #convert barcode whitelist to match converted barcodes
-            cat iCell8_barcode.txt 737K-august-2016.txt.backup | sort | uniq > 737K-august-2016.txt
+            cat iCell8_barcode.txt | sort | uniq > 737K-august-2016.txt
         else
             lock=`cat ${DIR}-cs/${VERSION}/lib/python/cellranger/barcodes/.lock`
             lock=$(($lock-1))
@@ -723,7 +763,7 @@ if [[ $setup == "true" ]]; then
         #create new version 3 files if version 3 whitelist available
         if [[ -f 3M-february-2018.txt.gz ]]; then
             #restore 10x barcodes if scripts has already been run (allows changing Nadia to iCELL8)
-            if [[ -f nadia_barcode.txt ]] || [[ -f  iCell8_barcode.txt ]]; then
+            if [[ -f nadia_barcode.txt ]] || [[ -f iCell8_barcode.txt ]]; then
                 echo " restoring 10x barcodes for version 3 kit ..."
                 cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
             fi
@@ -744,11 +784,15 @@ if [[ $setup == "true" ]]; then
                 if [[ -f iCell8_barcode.txt.gz ]]; then
                     rm iCell8_barcode.txt.gz
                 fi
-                cat iCell8_barcode.txt > 3M-february-2018.txt
+                if [[ -z $barcodes ]]; then
+                    cat ${SCRIPT_DIR}/iCell8_barcode.txt > 3M-february-2018.txt
+                else
+                    cat ${barcodes} > 3M-february-2018.txt
+                fi
             fi
             gzip -f 3M-february-2018.txt
             
-            if [ -d translation ]; then
+            if [[ -d translation ]]; then
                 rm translation/3M-february-2018.txt.gz
                 ln -s ../3M-february-2018.txt.gz translation/3M-february-2018.txt.gz
             fi
@@ -769,7 +813,11 @@ if [[ $setup == "true" ]]; then
         fi
     fi
     
-    echo $technology > $lastcallfile
+    if [[ ! -z $barcodes ]]; then
+        echo ${technology}_custom > $lastcallfile
+    else
+        echo $technology > $lastcallfile
+    fi
     cd -
     echo "setup complete"
 fi
