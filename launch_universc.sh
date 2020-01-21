@@ -560,7 +560,7 @@ elif ! [[ $ncells =~ $int ]] && [[ $setup == "false" ]]; then
 fi
 #check if ncores is an integer
 int='^[0-9]+$'
-if [[ -z "$ncells" ]]; then
+if [[ -z "$ncores" ]]; then
     ncores=""
 elif ! [[ $ncores =~ $int ]] && [[ $setup == "false" ]]; then
     echo "Error: option --localcores must be an integer"
