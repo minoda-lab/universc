@@ -630,10 +630,12 @@ else
     echo "checking .lock file"
     lock=`cat $lockfile`
     
-    if [[ $lock -eq 0 ]]; then
+    if [[ $lock -le 0 ]]; then
         echo " call accepted: no other cellranger jobs running"
         lock=1
-        echo $lock > $lockfile
+        if [[ $setup == false ]]; then 
+             echo $lock > $lockfile
+        fi
     else
         if [[ -f $lastcallfile ]]; then
             echo " total of $lock cellranger ${VERSION} jobs already running in ${DIR} with technology $lastcall"
@@ -648,7 +650,9 @@ else
                 echo " call accepted: no conflict detected with other jobs currently running"
                 #add current job to lock
                 lock=$(($lock+1))
-                echo $lock > $lockfile
+                if [[ $setup == false ]]; then 
+                    echo $lock > $lockfile
+                fi
                 setup=false
             else
                 echo "Error: conflict between technology selected for the new job ($technology) and other jobs currently running ($lastcall)"
@@ -877,6 +881,7 @@ if [[ $setup == "true" ]]; then
         echo $technology > $lastcallfile
     fi
     cd -
+    exit 0
     echo "setup complete"
 fi
 
