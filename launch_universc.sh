@@ -559,7 +559,7 @@ elif ! [[ $ncells =~ $int ]] && [[ $setup == "false" ]]; then
     exit 1
 fi
 #check if ncores is an integer
-ncores='^[0-9]+$'
+int='^[0-9]+$'
 if [[ -z "$ncells" ]]; then
     ncores=""
 elif ! [[ $ncores =~ $int ]] && [[ $setup == "false" ]]; then
