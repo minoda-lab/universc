@@ -569,8 +569,8 @@ fi
 #check if mem is a number
 int='^[0-9]+([.][0-9]+)?$'
 if [[ -z "$mem" ]]; then
-    ncells=""
-elif ! [[ $ncells =~ $int ]] && [[ $setup == "false" ]]; then
+    mem=""
+elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
     echo "Error: option --localmem or --mempercore must be a number (of GB)"
     exit 1
 fi
