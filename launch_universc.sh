@@ -960,9 +960,9 @@ elif [[ $convert == "true" ]]; then
             echo "  converting quality scores"
             sed -i '4~4s/^/IIII/' $convFile #Add quality scores for added bases
             echo "  converting UMI"
-            sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $convFile #Replace last 6 bases with AA
+            sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG]$//' $convFile #Remove last 4 bases
             echo "  converting quality scores"
-            sed -i '4~4s/......$/II/' $convFile #Replace quality scores for added bases
+            sed -i '4~4s/....$//' $convFile #Replace quality scores for last 4 bases
         elif [[ "$technology" == "icell8" ]]; then
             echo "  converting barcodes"
             sed -i '2~4s/^/AAAAA/' $convFile #Add AAAAA to every read
