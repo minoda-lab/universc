@@ -3,7 +3,7 @@
 install=false
 
 ######convert version#####
-convertversion="0.2.2"
+convertversion="0.2.3"
 ##########
 
 
@@ -764,11 +764,6 @@ if [[ $setup == "true" ]]; then
     echo "updating barcodes in $barcodefolder for cellranger version ${cellrangerversion} installed in ${cellrangerpath} ..."
     
     cd $barcodefolder
-    
-    #compressing v3 whilelist if present
-    if [[ -f 3M-february-2018.txt ]]; then
-        gzip -f 3M-february-2018.txt
-    fi
     
     #restore 10x barcodes if launch_universc.sh has already been run
     if [[ -f nadia_barcode.txt.gz ]] || [[ -f iCell8_barcode.txt.gz ]] || [[ -f custom_barcodes.txt.gz ]]; then
