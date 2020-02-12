@@ -55,13 +55,19 @@ Mandatory arguments to long options are mandatory for short options too.
   -R1, --read1 FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
   -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
   -f,  --file NAME              Name of FASTQ files to pass to cellranger (prefix before R1 or R2)
-  -b,  --barcodes FILE           custom iCELL8 barcode list in plain text
+  -b,  --barcodes FILE              custom iCELL8 barcode list in plain text
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
+       --localcores=NUM         Set max cores the pipeline may request at one time.
+                                    Only applies when --jobmode=local.
+       --localmem=NUM           Set max GB the pipeline may request at one time.
+                                    Only applies when --jobmode=local.
+       --mempercore=NUM         Set max GB each job may use at one time.
+                                    Only applies in cluster jobmodes.
   -p,  --pass                   Skips the FASTQ file conversion if converted files already exist
   -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
@@ -107,6 +113,8 @@ reference=""
 ncells=""
 chemistry=""
 jobmode=""
+ncores=""
+mem=""
 
 next=false
 for op in "$@"; do
@@ -263,6 +271,39 @@ for op in "$@"; do
                 exit 1
             fi
             ;;
+           --localcores)
+             shift
+             if [[ "$1" != "" ]]; then
+                 ncores="${1/%\//}"
+                 next=true
+                 shift
+             else
+                 echo "Error: value missing for --localcores"
+                 exit 1
+             fi
+             ;;
+           --localmem)
+             shift
+             if [[ "$1" != "" ]]; then
+                 mem="${1/%\//}"
+                 next=true
+                 shift
+             else
+                 echo "Error: value missing for --localmem"
+                 exit 1
+             fi
+             ;;
+            --mempercore)
+             shift
+             if [[ "$1" != "" ]]; then
+                 mem="${1/%\//}"
+                 next=true
+                 shift
+             else
+                 echo "Error: value missing for --mempercore"
+                 exit 1
+             fi
+             ;;
         -p|--pass)
             convert=false
             next=false
@@ -517,6 +558,23 @@ elif ! [[ $ncells =~ $int ]] && [[ $setup == "false" ]]; then
     echo "Error: option --force-cells must be an integer"
     exit 1
 fi
+#check if ncores is an integer
+int='^[0-9]+$'
+if [[ -z "$ncores" ]]; then
+    ncores=""
+elif ! [[ $ncores =~ $int ]] && [[ $setup == "false" ]]; then
+    echo "Error: option --localcores must be an integer"
+    exit 1
+fi
+#check if mem is a number
+int='^[0-9]+([.][0-9]+)?$'
+if [[ -z "$mem" ]]; then
+    mem=""
+elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
+    echo "Error: option --localmem or --mempercore must be a number (of GB)"
+    exit 1
+fi
+
 
 #check if chemistry matches expected input
 if [[ -z "$chemistry" ]]; then
@@ -572,10 +630,12 @@ else
     echo "checking .lock file"
     lock=`cat $lockfile`
     
-    if [[ $lock -eq 0 ]]; then
+    if [[ $lock -le 0 ]]; then
         echo " call accepted: no other cellranger jobs running"
         lock=1
-        echo $lock > $lockfile
+        if [[ $setup == false ]]; then 
+             echo $lock > $lockfile
+        fi
     else
         if [[ -f $lastcallfile ]]; then
             echo " total of $lock cellranger ${VERSION} jobs already running in ${DIR} with technology $lastcall"
@@ -590,7 +650,9 @@ else
                 echo " call accepted: no conflict detected with other jobs currently running"
                 #add current job to lock
                 lock=$(($lock+1))
-                echo $lock > $lockfile
+                if [[ $setup == false ]]; then 
+                    echo $lock > $lockfile
+                fi
                 setup=false
             else
                 echo "Error: conflict between technology selected for the new job ($technology) and other jobs currently running ($lastcall)"
@@ -819,6 +881,7 @@ if [[ $setup == "true" ]]; then
         echo $technology > $lastcallfile
     fi
     cd -
+    exit 0
     echo "setup complete"
 fi
 
@@ -897,9 +960,9 @@ elif [[ $convert == "true" ]]; then
             echo "  converting quality scores"
             sed -i '4~4s/^/IIII/' $convFile #Add quality scores for added bases
             echo "  converting UMI"
-            sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG][NATCG][NATCG]$/AA/' $convFile #Replace last 6 bases with AA
+            sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG]$//' $convFile #Remove last 4 bases
             echo "  converting quality scores"
-            sed -i '4~4s/......$/II/' $convFile #Replace quality scores for added bases
+            sed -i '4~4s/....$//' $convFile #Replace quality scores for last 4 bases
         elif [[ "$technology" == "icell8" ]]; then
             echo "  converting barcodes"
             sed -i '2~4s/^/AAAAA/' $convFile #Add AAAAA to every read
@@ -925,9 +988,31 @@ if [[ -n $ncells ]]; then
     n="--force-cells=$ncells"
 fi
 j=""
+l=""
+m=""
 if [[ -n $jobmode ]]; then
     j="--jobmode=$jobmode"
+    if [[ $jobmode == "local" ]]; then
+        if [[ -n $ncores ]]; then
+            l="--localcores=$ncores"
+        fi
+        if [[ -n $mem ]]; then
+           m="--localmem=$mem"
+        fi
+    else
+         if [[ -n $mem ]]; then
+             m="--mempercore=$mem"
+         fi
+    fi
+else
+    if [[ -n $ncores ]]; then
+        l="--localcores=$ncores"
+    fi
+    if [[ -n $mem ]]; then
+        m="--localmem=$mem"
+     fi
 fi
+
 start=`date +%s`
 echo "cellranger count --id=$id \
         --fastqs=$crIN \
@@ -938,7 +1023,9 @@ echo "cellranger count --id=$id \
         --sample=$SAMPLE \
         $d \
         $n \
-        $j
+        $j \
+        $l \
+        $m
 "
 
 cellranger count --id=$id \
@@ -950,7 +1037,9 @@ cellranger count --id=$id \
         --sample=$SAMPLE \
         $d \
         $n \
-        $j
+        $j \
+        $l \
+        $m
 #        --noexit
 #        --nopreflight
 end=`date +%s`

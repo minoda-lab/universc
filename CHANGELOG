@@ -1,0 +1,40 @@
+
+### 0.2.2
+
+allow passing custom barcode whitelists
+
+### 0.2.1
+
+locate script directory
+
+implement lock file to prevent multi technologies running
+
+track last technology ran
+
+### 0.2.0
+
+add support for SGE mode
+
+correct passing description arguments to cellranger
+
+separate whitelist setup for Nadia and iCELL8
+
+configure cellranger version 3 whitelists
+
+add defaults
+
+detect lane and file names
+
+create directory for converted R1sq
+
+### 0.1.0
+
+pass arguments to script
+
+add set up call to configure whitelist when needed
+
+includes a manual and version call
+
+detects input file
+
+converts files if technology other than 10x
