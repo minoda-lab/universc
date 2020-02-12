@@ -345,7 +345,7 @@ if [[ $verbose == "true" ]]; then
 fi
 
 #check if cellranger is writable
-if [[ ! -w $lockfile ]]; then
+if [[ ! -w $barcodedir ]]; then
     echo "Error: Trying to run cellranger installed at ${cellrangerpath}"
     echo "launch_universc.sh can only run with cellranger installed locally"
     echo "Install cellranger in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
@@ -353,7 +353,7 @@ if [[ ! -w $lockfile ]]; then
     echo " `whereis cellranger`"
     exit 1
 fi
-
+exit 0
 #check if technology matches expected inputs
 if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
     if [[ "$technology" != "custom"* ]]; then
