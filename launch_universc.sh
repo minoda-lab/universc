@@ -3,7 +3,7 @@
 install=false
 
 ######convert version#####
-convertversion="0.2.4"
+convertversion="0.3.0.9001"
 ##########
 
 
@@ -14,7 +14,7 @@ if [[ -z $cellrangerpath ]]; then
     echo "cellranger command is not found."
     exit 1
 fi
-cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -d"(" -f2 | cut -d")" -f1` #get cellranger version
+ver_info=`paste -d "\n" <(cellranger count --version) <(echo conversion script version 0.3.0.9001) | head -n 3 | tail -n 2`
 ##########
 
 
@@ -984,6 +984,7 @@ fi
 echo " adjusting UMIs of R1 files"
 if [[ 0 -gt $umiadjust ]]; then 
     for convFile in "${convFiles[@]}"; do
+<<<<<<< HEAD
         toS=`printf '%0.sA' $(seq 1 $(($umiadjust * -1)))`
         toQ=`printf '%0.sI' $(seq 1 $(($umiadjust * -1)))`
 	keeplength=`echo $((${barcode_default}+${umi_default}-($umiadjust * -1)))`
@@ -991,6 +992,24 @@ if [[ 0 -gt $umiadjust ]]; then
         sed -i "2~4s/$/$toS/" $convFile #Add n characters to the end of the sequence
         sed -i "4~4s/$/$toQ/" $convFile #Add n characters to the end of the quality
         echo "  ${convFile} adjusted"
+=======
+        echo " handling $convFile ..."
+        if [[ "$technology" == "nadia" ]]; then
+            echo "  converting barcodes"
+            sed -i '2~4s/^/AAAA/' $convFile #Add AAAA to every read
+            echo "  converting quality scores"
+            sed -i '4~4s/^/IIII/' $convFile #Add quality scores for added bases
+            echo "  converting UMI"
+            sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG]$//' $convFile #Remove last 4 bases
+            echo "  converting quality scores"
+            sed -i '4~4s/....$//' $convFile #Replace quality scores for last 4 bases
+        elif [[ "$technology" == "icell8" ]]; then
+            echo "  converting barcodes"
+            sed -i '2~4s/^/AAAAA/' $convFile #Add AAAAA to every read
+            echo "  converting quality scores"
+            sed -i '4~4s/^/IIIII/' $convFile #Add quality scores for added bases
+        fi
+>>>>>>> e05b998d17d2c79ec3eec9784858acde747671ae
     done
 fi
 ##########
