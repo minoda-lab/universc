@@ -3,7 +3,7 @@
 install=false
 
 ######convert version#####
-convertversion="0.2.3"
+convertversion="0.2.4"
 ##########
 
 
@@ -21,23 +21,27 @@ cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -d"(
 
 #####locate launch_universc.sh for importing barcodes######
 SOURCE="${BASH_SOURCE[0]}"
+SDIR=""
+RDIR=""
+
 while [[ -h "$SOURCE" ]]; do #resolve $SOURCE until the file is no longer a symlink
     TARGET="$(readlink "$SOURCE")"
     if [[ $TARGET == /* ]]; then
         echo "SOURCE '$SOURCE' is an absolute symlink to '$TARGET'"
         SOURCE="$TARGET"
     else
-        SCRIPT_DIR="$( dirname "$SOURCE" )"
-        echo "SOURCE '$SOURCE' is a relative symlink to '$TARGET' (relative to '$SCRIPT_DIR')"
-        SOURCE="$SCRIPT_DIR/$TARGET" #if $SOURCE is a relative symlink, we need to resolve it relative to the path where the symlink file was located
+        SDIR="$( dirname "$SOURCE" )"
+        echo "SOURCE '$SOURCE' is a relative symlink to '$TARGET' (relative to '$SDIR')"
+        SOURCE="$SDIR/$TARGET" #if $SOURCE is a relative symlink, we need to resolve it relative to the path where the symlink file was located
     fi
 done
+SDIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 RDIR="$( dirname "$SOURCE" )"
-SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
-if [[ $RDIR != $SCRIPT_DIR ]]; then
-    echo "DIR '$RDIR' resolves to '$SCRIPT_DIR'"
+
+if [[ $RDIR != $SDIR ]]; then
+    echo "DIR '$RDIR' resolves to '$SDIR'"
 fi
-echo "Running launch_universc.sh in '$SCRIPT_DIR'"
+echo "Running launch_universc.sh in '$SDIR'"
 ##########
 
 
@@ -63,18 +67,18 @@ Mandatory arguments to long options are mandatory for short options too.
   -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
   -f,  --file NAME              Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
                                 e.g. /path/to/files/Example_S1_L001
-  -b,  --barcodes FILE          Custom iCELL8 barcode list in plain text
+  -b,  --barcodefile FILE       Custom barcode list in plain text
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
-       --localcores=NUM         Set max cores the pipeline may request at one time.
+       --localcores NUM         Set max cores the pipeline may request at one time.
                                     Only applies when --jobmode=local.
-       --localmem=NUM           Set max GB the pipeline may request at one time.
+       --localmem NUM           Set max GB the pipeline may request at one time.
                                     Only applies when --jobmode=local.
-       --mempercore=NUM         Set max GB each job may use at one time.
+       --mempercore NUM         Set max GB each job may use at one time.
                                     Only applies in cluster jobmodes.
   -p,  --pass                   Skips the FASTQ file conversion if converted files already exist
   -h,  --help                   Display this help and exit
@@ -106,7 +110,8 @@ fi
 lockfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock #path for .lock file
 lastcallfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.last_called #path for .last_called
 lastcall=`[ -e $lastcallfile ] && echo 1 || echo ""`
-barcodefolder=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder with the barcodes
+barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
+barcodefile=""
 crIN=input4cellranger #name of the directory with all FASTQ files given to cellranger
 
 #variable options
@@ -114,7 +119,6 @@ setup=false
 convert=true
 read1=()
 read2=()
-barcodes=""
 SAMPLE=""
 LANE=()
 id=""
@@ -205,14 +209,14 @@ for op in "$@"; do
                 exit 1
             fi
             ;;
-        -b|--barcodes)
+        -b|--barcodefile)
             shift
             if [[ "$1" != "" ]]; then
-                barcodes="${1/%\//}"
+                barcodefile="${1/%\//}"
                 next=true
                 shift
             else
-                echo "Error: value missing for --barcodes"
+                echo "Error: value missing for --barcodefile"
                 exit 1
             fi
             ;;
@@ -336,7 +340,7 @@ done
 
 
 
-#####check if input maches expected inputs#####
+#####check if input maches expected formats#####
 if [[ $verbose == "true" ]]; then
     echo "checking options ..."
 fi
@@ -363,8 +367,8 @@ if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$techno
 	    echo "Error: option -t needs to be 10x, nadia, icell8, or custom_<barcode>_<UMI>"
 	    exit 1
         fi
-        if [[ -z $barcodes ]]; then
-            echo "Error: when -t is set as custom, a file with a list of barcodes needs to be specified."
+        if [[ -z $barcodefile ]]; then
+            echo "Error: when option -t is set as custom, a file with a list of barcodes needs to be specified with option -b."
 	    exit 1
         fi
     fi
@@ -566,11 +570,11 @@ done
 LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
 #checking the quality of custom barcode file
-if [[ ! -z "$barcodes" ]]; then
-    if [[ ! -f $barcodes ]]; then
-        echo "Error: File selected for --barcode does not exist"
+if [[ ! -z "$barcodefile" ]]; then
+    if [[ ! -f $barcodefile ]]; then
+        echo "Error: File selected for option --barcodefile does not exist"
     else
-        barcodes=`readlink -f $barcodes`
+        barcodefile=`readlink -f $barcodefile`
     fi
 fi
 
@@ -652,6 +656,63 @@ fi
 
 
 
+#####Selecting barcode file and setting parameter for barcode/UMI adjustments#####  
+#barcode and umi lengths expected by cellranger
+barcode_default=16
+umi_default=10
+totallength=`echo $((${barcode_default}+${umi_default}))`
+
+#barcode and umi lengths given by options
+barcodelength=""
+umilength=""
+if [[ "$technology" == "10x" ]]; then
+    barcodelength=16
+    umilength=10
+elif [[ "$technology" == "nadia" ]]; then
+    barcodelength=12
+    umilength=8
+elif [[ "$technology" == "icell8" ]]; then
+    barcodelength=11
+    umilength=14
+else
+    barcodelength=`echo $technology | cut -f 2 -d'_'`
+    umilength=`echo $technology | cut -f 3 -d'_'`
+fi
+
+#adjustment lengths
+barcodeadjust=`echo $(($barcodelength-$barcode_default))`
+umiadjust=`echo $(($umilength-$umi_default))`
+
+#prepare a proper barcode file
+if [[ "$technology" != "10x" ]] && [[ -z $barcodefile ]]; then
+    if [[ "$technology" == "nadia" ]]; then
+        barcodefile=${barcodedir}/nadia_barcode.txt
+        if [[ ! -f ${barcodefile} ]]; then
+            #creat a nadia barcode file
+            echo AAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' | sort | uniq > ${barcodedir}/nadia_barcode.txt
+        fi
+    elif [[ "$technology" == "icell8" ]]; then
+        barcodefile=${barcodedir}/iCell8_barcode.txt
+        if [[ ! -f ${barcodefile} ]]; then
+   	    #create an iCell8 barcode file by copying from convert repo
+            cat ${SDIR}/iCell8_barcode.txt >$barcodefile
+            sed -i 's/^/AAAAA/g' ${barcodefile} | sort | uniq > $barcodefile
+        fi
+    fi
+elif [[ ! -z $barcodefile ]]; then
+    cat ${barcodefile} >${barcodedir}/custom_barcode.txt
+    barcodefile=${barcodedir}/custom_barcode.txt
+    if [[ $barcodeadjust -gt 0 ]]; then
+        sed -i "s/^.{${barcodeadjust}}//" ${barcodefile} #Trim the first n characters from the beginning of the sequence and quality
+    elif [[ 0 -gt $barcodeadjust ]]; then
+        As=`printf '%0.sA' $(seq 1 $(($barcodeadjust * -1)))`
+        sed -i "s/^/$As/" ${barcodefile} #Trim the first n characters from the beginning of the quality
+    fi
+fi
+##########
+
+
+
 #####check if UniverSC is running already#####
 #set up .lock file
 if [[ ! -f $lockfile ]]; then
@@ -672,9 +733,9 @@ else
         if [[ -f $lastcallfile ]]; then
             echo " total of $lock cellranger ${cellrangerversion} jobs already running in ${cellrangerpath} with technology $lastcall"
             
-            #check if the technology running is different from the current convert call
-            if [[ $lastcall == "icell8_custom" ]]; then
-                echo "Error: icell8 with custom barcode list is currently running"
+	    #check if a custom barcode is used for a run (which cannot be run in parallel)
+            if [[ $lastcall == "custom"* ]]; then
+                echo "Error: cellranger is currently running with a custom barcode list"
                 echo "other jobs cannot be run until the current job is complete"
                 echo "remove $lockfile if $lastcall jobs have completed or aborted"
                 exit 1
@@ -709,10 +770,10 @@ echo "FORMAT: $technology"
 if [[ $technology == "nadia" ]]; then
     echo "***Warning: whitelist is converted for compatibility with $technology, valid barcodes cannot be detected accurately with this technology***"
 fi
-if [[ -z $barcodes ]]; then
+if [[ -z $barcodefile ]]; then
     echo "BARCODES: default"
 else
-    echo "BARCODES: (custom barcode file) $barcodes"
+    echo "BARCODES: (custom barcode file) $barcodefile"
 fi
 if [[ ${#read1[@]} -eq 0 ]] && [[ ${#read1[@]} -eq 0 ]]; then
     echo "***Warning: no FASTQ files were selected, launch_universc.sh will exit after setting up the whitelist***"
@@ -761,103 +822,67 @@ echo ""
 #run setup if called
 if [[ $setup == "true" ]]; then
     echo "setup begin"
-    echo "updating barcodes in $barcodefolder for cellranger version ${cellrangerversion} installed in ${cellrangerpath} ..."
+    echo "updating barcodes in $barcodedir for cellranger version ${cellrangerversion} installed in ${cellrangerpath} ..."
     
-    cd $barcodefolder
+    cd $barcodedir
     
-    #restore 10x barcodes if launch_universc.sh has already been run
-    if [[ -f nadia_barcode.txt.gz ]] || [[ -f iCell8_barcode.txt.gz ]] || [[ -f custom_barcodes.txt.gz ]]; then
-        echo " restoring 10x barcodes for version 2 kit ..."
-	cp 737K-august-2016.txt.backup 737K-august-2016.txt
-        echo " restoring 10x barcodes for version 3 kit ..."
-        cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
-    fi
-    echo " whitelist converted for 10x compatibility with version 2 kit and version 3 kit."
-    
-    if [[ $technology == "10x" ]]; then
-        #if cellranger version is 3 or greater, restore assert functions
-        if [[ `printf '%s\n' '${cellrangerversion} 3.0.0' | sort -V | head -n 1` != ${cellrangerversion} ]]; then
+    #restore assert functions if cellranger version is 3 or greater
+    echo " restoring cellranger"
+    if [[ `printf '%s\n' '${cellrangerversion} 3.0.0' | sort -V | head -n 1` != ${cellrangerversion} ]]; then
+        if [[ $technology == "10x" ]]; then
             #restore functions if other technology run previously
             if [[ $lastcall != $technology ]]; then
                 sed -i "s/#if gem_group == prev_gem_group/if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
                 sed -i "s/#assert barcode_idx >= prev_barcode_idx/assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
                 sed -i "s/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
+                echo " ${cellrangerpath} restored for $technology"
+            else
+                echo " ${cellrangerpath} ready for $technology"
             fi
-            echo " ${cellrangerpath} restored for $technology"
         else
-            echo " ${cellrangerpath} ready for $technology"
-        fi
-    else
-        #save original barcode file (if doesn't already exist)
-        if [[ ! -f 737K-august-2016.txt.backup ]]; then
-            echo " backing up whitelist of version 2 kit ..."
-            cp 737K-august-2016.txt 737K-august-2016.txt.backup
-        fi
-        if [[ -f 3M-february-2018.txt.gz ]] && [[ ! -f 3M-february-2018.txt.backup.gz ]]; then
-            echo " backing up whitelist of version 3 kit ..."
-	    cp 3M-february-2018.txt.gz 3M-february-2018.txt.backup.gz
-        fi
-        
-        #create a new version 2 barcode file
-        if [[ $technology == "nadia" ]]; then
-            #create a Nadia barcode file
-            if [[ ! -f nadia_barcode.txt ]]; then
-                if [[ -f nadia_barcide.txt.gz ]]; then
-                    gunzip -f nadia_barcode.txt.gz
-                else
-                    echo AAAA{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' | sort | uniq > nadia_barcode.txt
-		    gzip -f nadia_barcode.txt
-                fi
-            fi
-            zcat nadia_barcode.txt.gz > 737K-august-2016.txt
-        elif [[ $technology == "icell8" ]]; then
-            #create an iCell8 barcode file by copying from convert repo
-            cat ${SCRIPT_DIR}/iCell8_barcode.txt >$barcodefolder/iCell8_barcode.txt
-            sed -i 's/^/AAAAA/g' iCell8_barcode.txt | sort | uniq > iCell8_barcode.txt #convert barcode whitelist to match converted barcodes
-	    gzip -f iCell8_barcode.txt
-            zcat iCell8_barcode.txt.gz > 737K-august-2016.txt
-        fi
-        if [[ $technology == "custom"* ]] || [[ ! -z $barcodes ]]; then
-            #create a custom barcode file by copying from selected barcode file
-            cat ${barcodes} >$barcodefolder/custom_barcodes.txt
-            barcodelength=`echo $technology | cut -f 2 -d'_'`
-	    barcodeadjust=$(($barcodelength-16))
-            if [[ $barcodeadjust -gt 0 ]]; then
-                sed -i "s/^.{${barcodeadjust}}//" custom_barcodes.txt #Trim the first n characters from the beginning of the sequence and quality
-            elif [[ 0 -gt $barcodeadjust ]]; then
-                As=`printf '%0.sA' $(seq 1 $(($barcodeadjust * -1)))`
-                sed -i "s/^/$As/" custom_barcodes.txt #Trim the first n characters from the beginning of the quality
-            fi
-            gzip -f custom_barcodes.txt
-            zcat custom_barcodes.txt.gz > 737K-august-2016.txt
-        fi
-        echo " whitelist converted for $technology compatibility with version 2 kit."
-        
-	#create a new version 3 barcode file (if available)
-        if [[ -f 3M-february-2018.txt.gz ]] && [[ -d translation ]]; then
-            rm 3M-february-2018.txt.gz
-            cp 737K-august-2016.txt 3M-february-2018.txt
-	    gzip -f 3M-february-2018.txt
-            rm translation/3M-february-2018.txt.gz
-            ln -s 3M-february-2018.txt.gz translation/3M-february-2018.txt.gz
-        fi    
-        echo " whitelist converted for $technology compatibility with version 3 kit."
-        
-        #if cellranger version is 3 or greater, restore assert functions
-        if [[ `printf '%s\n' '${cellrangerversion} 3.0.0' | sort -V | head -n 1` != ${cellrangerversion} ]]; then
             #disable functions if 10x technology run previously
             if [[ $lastcall == "10x" ]]; then
                 sed -i "s/if gem_group == prev_gem_group/#if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
                 sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellragerversion}/mro/stages/counter/report_molecules/__init__.py
                 sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
+                echo " ${cellrangerpath} restored for $technology"
+            else
+                echo " ${cellrangerpath} ready for $technology"
             fi
-            echo " ${cellrangerpath} restored for $technology"
-        else
-            echo " ${cellrangerpath} ready for $technology"
         fi
     fi
     
-    if [[ ! -z $barcodes ]]; then
+    #restore whitelist for 10x compatibility
+    echo " restoring whitelist for 10x compatibility"
+    if [[ -f nadia_barcode.txt ]] || [[ -f iCell8_barcode.txt ]] || [[ -f custom_barcodes.txt ]]; then
+        echo " restoring 10x barcodes for version 2 kit ..."
+	cp 737K-august-2016.txt.backup 737K-august-2016.txt
+        echo " restoring 10x barcodes for version 3 kit ..."
+        cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
+    else
+        cp 737K-august-2016.txt 737K-august-2016.txt.backup
+       	cp 3M-february-2018.txt.gz 3M-february.txt.backup.gz
+    fi
+    echo " whitelist restored for 10x compatibility with version 2 kit and version 3 kit"
+    
+    #converting whitelist for specific barcode file
+    if [[ ! -z $barcodefile ]]; then
+        echo "converting whitelist for the selected custom barcode list"
+        #for version 2
+        cat $barcodefile > 737K-august-2016.txt
+        #for version 3
+        if [[ -f 3M-february-2018.txt.gz ]] && [[ -d translation ]]; then
+            rm 3M-february-2018.txt.gz
+            cp 737K-august-2016.txt 3M-february-2018.txt
+            gzip -f 3M-february-2018.txt
+            rm translation/3M-february-2018.txt.gz
+            ln -s 3M-february-2018.txt.gz translation/3M-february-2018.txt.gz
+        fi
+        echo " whitelist converted"
+    fi
+
+    #change last call file
+    if [[ ! -z $barcodefile ]]; then
         echo "custom" > $lastcallfile
     else
         echo $technology > $lastcallfile
@@ -932,25 +957,6 @@ done
 #####convert file format#####
 echo "converting input files to confer cellranger format ..."
 
-#determining the length for adjustment
-barcodelength=""
-umilength=""
-if [[ "$technology" == "10x" ]]; then
-    barcodelength=16
-    umilength=10
-elif [[ "$technology" == "nadia" ]]; then
-    barcodelength=12
-    umilength=8
-elif [[ "$technology" == "icell8" ]]; then
-    barcodelength=11
-    umilength=14
-else
-    barcodelength=`echo $technology | cut -f 2 -d'_'`
-    umilength=`echo $technology | cut -f 3 -d'_'`
-fi
-
-barcodeadjust=`echo $(($barcodelength-16))`
-umiadjust=`echo $(($umilength-12))`
 
 if [[ $convert == "false" ]]; then
     echo " input file format conversion skipped"
@@ -980,7 +986,7 @@ if [[ 0 -gt $umiadjust ]]; then
     for convFile in "${convFiles[@]}"; do
         toS=`printf '%0.sA' $(seq 1 $(($umiadjust * -1)))`
         toQ=`printf '%0.sI' $(seq 1 $(($umiadjust * -1)))`
-	keeplength=`echo $((26-($umiadjust * -1)))`
+	keeplength=`echo $((${barcode_default}+${umi_default}-($umiadjust * -1)))`
 	sed -i "2~2s/^\(.\{${keeplength}\}\).*/\1/" $convFile #Trim off everything beyond what is needed
         sed -i "2~4s/$/$toS/" $convFile #Add n characters to the end of the sequence
         sed -i "4~4s/$/$toQ/" $convFile #Add n characters to the end of the quality
@@ -991,8 +997,7 @@ fi
 
 
 
-####run cellranger#####
-#setting opitons for cellranger
+#####setting parameters for cellranger#####
 d=""
 if [[ -n $description ]]; then
     d="--description=$description"
@@ -1030,13 +1035,13 @@ fi
 #outputting command
 echo "running cellranger ..."
 echo ""
-echo "#####cellranger#####"
+echo "#####cellranger command#####"
 
 start=`date +%s`
 echo "cellranger count --id=$id \
         --fastqs=$crIN \
         --lanes=$LANE \
-        --r1-length="26" \
+        --r1-length=$totallength \
         --chemistry=$chemistry \
         --transcriptome=$reference \
         --sample=$SAMPLE \
@@ -1046,12 +1051,16 @@ echo "cellranger count --id=$id \
         $l \
         $m
 "
+echo "##########"
+##########
 
-#running cellranger
+
+
+#####running cellranger#####
 cellranger count --id=$id \
         --fastqs=$crIN \
         --lanes=$LANE \
-        --r1-length="26" \
+        --r1-length=$totallength \
         --chemistry=$chemistry \
         --transcriptome=$reference \
         --sample=$SAMPLE \
@@ -1062,12 +1071,9 @@ cellranger count --id=$id \
         $m
 #        --noexit
 #        --nopreflight
-
-#outputting log
 end=`date +%s`
 runtime=$((end-start))
-echo "##########"
-echo ""
+echo "cellranger run complete"
 ##########
 
 
