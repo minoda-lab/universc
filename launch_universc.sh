@@ -488,15 +488,15 @@ for i in {1..2}; do
                     echo "***Warning: file $read does not have lane value in its name. Lane 1 is assumed.***"
                 echo "  renaming $read ..."
                 fi
-                rename "s/_$raadkey/_L001_$readkey/" $read
+                rename "s/_$readkey/_L001_$readkey/" $read
                 #update file variable
-                read=`echo $read | sed -e "s/_${readkey}/_L001_${raedkey}/g"`
+                read=`echo $read | sed -e "s/_${readkey}/_L001_${readkey}/g"`
                 list[$j]=$read
             ;;
         esac
         case $read in
             #check if contains sample before lane
-            *_S[123456789]_L0*)
+            *_S[0123456789]_L0*)
                 if [[ $verbose == "true" ]]; then
                     echo "  $read compatible with sample"
                 fi
@@ -510,7 +510,7 @@ for i in {1..2}; do
                 k=$((${j}+1))
                 rename "s/_L0/_S${k}_L0/" $read
                 #update file variable
-                read=`echo $read | sed -e "s/_L0/_S${j}_L0/g"`
+                read=`echo $read | sed -e "s/_L0/_S${k}_L0/g"`
                 list[$j]=$read
             ;;
         esac
@@ -529,7 +529,7 @@ for i in {1..2}; do
                 fi
                 rename "s/_${readkey}.*\./_${readkey}_001\./" $read
                 #update file variable
-                read=`echo $read | sed -e "s/_${readkey}.*\./_${raedkey}_001\./g"`
+                read=`echo $read | sed -e "s/_${readkey}.*\./_${readkey}_001\./g"`
                 list[$j]=$read
             ;;
         esac
