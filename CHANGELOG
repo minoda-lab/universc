@@ -1,9 +1,18 @@
-### 0.3.0
+### 0.3.0 (in development)
 
+- custom whitelists for other technologies
+
+- configure custom input technology (kai)
+
+- test data for checking technologies (tom)
+
+- bundle as docker with cellranger for install (w.i.p.)
+
+- configure automated tested for GitLab or Travis CI
 
 ### 0.2.2
 
-allow passing custom barcode whitelists
+allow passing custom barcode whitelists (can only run in serial)
 
 ### 0.2.1
 

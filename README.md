@@ -1,6 +1,6 @@
-### UniverSC version 0.2.2
+### UniverSC version 0.3.0
 
-Conversion script to run Nadia and iCELL8 libraries with cellranger (10x Genomics analysis tool)
+Conversion script to run Nadia, iCELL8, and custom libraries with cellranger (10x Genomics analysis tool)
 
 #### Tom Kelly (RIKEN IMS) and Kai Battenberg (RIKEN CSRS/IMS)
 
