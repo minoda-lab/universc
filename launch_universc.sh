@@ -101,6 +101,7 @@ crIN=input4cellranger #name of the directory with all FASTQ files given to cellr
 
 #variable options
 setup=false
+testrun=false
 convert=true
 read1=()
 read2=()
@@ -133,6 +134,11 @@ for op in "$@"; do
             ;;
         -s|--setup)
             setup=true
+            next=false
+            shift
+            ;;
+           --testrun)
+            testrun=true
             next=false
             shift
             ;;
@@ -334,6 +340,26 @@ fi
 if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
     echo "Error: option -t needs to be 10x, nadia, or icell8"
     exit 1
+fi
+
+if [[ $testrun == "true" ]]; then
+     reference=${SDRI}/test/cellranger_reference/cellranger-tiny-ref/3.0.0"
+     if [[ -z $id ]] then
+         id=test-tiny-${technology}
+     fi
+     if [[ $technology == "10x" ]]; then
+         gunzip -k ${SDIR}test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L00[12]_R[12]_001.fastq.gz
+         read1=("test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq" "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq")
+         read2=("test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_002.fastq" "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq")
+     elif [[ $technology == "nadia" ]]; then
+         gunzip -k test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq
+         read1=("test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq")
+         read2=("test/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq")
+     elif [[ $technology == "icell8" ]]; then
+          gunzip -k test/shared/mappa-test/test_FL_R[12].fastq.gz
+          read1=("test/shared/mappa-test/test_FL_R1.fastq)
+          read2=("test/shared/mappa-test/test_FL_R2.fastq")
+    fi
 fi
 
 #check for presence of read1 and read2 files
