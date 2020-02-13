@@ -346,7 +346,7 @@ if [[ $verbose == "true" ]]; then
 fi
 
 #check if cellranger is writable
-if [[ ! -w $lockfile ]]; then
+if [[ ! -w $barcodedir ]]; then
     echo "Error: Trying to run cellranger installed at ${cellrangerpath}"
     echo "launch_universc.sh can only run with cellranger installed locally"
     echo "Install cellranger in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
@@ -354,7 +354,7 @@ if [[ ! -w $lockfile ]]; then
     echo " `whereis cellranger`"
     exit 1
 fi
-
+exit 0
 #check if technology matches expected inputs
 if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
     if [[ "$technology" != "custom"* ]]; then
@@ -985,6 +985,7 @@ echo " adjusting UMIs of R1 files"
 if [[ 0 -gt $umiadjust ]]; then 
     for convFile in "${convFiles[@]}"; do
 <<<<<<< HEAD
+<<<<<<< HEAD
         toS=`printf '%0.sA' $(seq 1 $(($umiadjust * -1)))`
         toQ=`printf '%0.sI' $(seq 1 $(($umiadjust * -1)))`
 	keeplength=`echo $((${barcode_default}+${umi_default}-($umiadjust * -1)))`
@@ -993,6 +994,8 @@ if [[ 0 -gt $umiadjust ]]; then
         sed -i "4~4s/$/$toQ/" $convFile #Add n characters to the end of the quality
         echo "  ${convFile} adjusted"
 =======
+=======
+>>>>>>> 1adfb361a1bc38c600bff617ac8877ca5cc3fdaa
         echo " handling $convFile ..."
         if [[ "$technology" == "nadia" ]]; then
             echo "  converting barcodes"
@@ -1009,7 +1012,19 @@ if [[ 0 -gt $umiadjust ]]; then
             echo "  converting quality scores"
             sed -i '4~4s/^/IIIII/' $convFile #Add quality scores for added bases
         fi
+<<<<<<< HEAD
 >>>>>>> e05b998d17d2c79ec3eec9784858acde747671ae
+=======
+=======
+        toS=`printf '%0.sA' $(seq 1 $(($umiadjust * -1)))`
+        toQ=`printf '%0.sI' $(seq 1 $(($umiadjust * -1)))`
+	keeplength=`echo $((${barcode_default}+${umi_default}-($umiadjust * -1)))`
+	sed -i "2~2s/^\(.\{${keeplength}\}\).*/\1/" $convFile #Trim off everything beyond what is needed
+        sed -i "2~4s/$/$toS/" $convFile #Add n characters to the end of the sequence
+        sed -i "4~4s/$/$toQ/" $convFile #Add n characters to the end of the quality
+        echo "  ${convFile} adjusted"
+>>>>>>> 630f098064d4535f192e5fd4ca68bfdc6dd1d966
+>>>>>>> 1adfb361a1bc38c600bff617ac8877ca5cc3fdaa
     done
 fi
 ##########
