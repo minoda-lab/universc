@@ -108,7 +108,7 @@ fi
 #set options
 lockfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock #path for .lock file
 lastcallfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.last_called #path for .last_called
-lastcall=`[ -e $lastcallfile ] && echo 1 || echo ""`
+lastcall=`[ -e $lastcallfile ] &&  cat $lastcallfile || echo ""`
 barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
 barcodefile=""
 crIN=input4cellranger #name of the directory with all FASTQ files given to cellranger
@@ -961,16 +961,21 @@ if [[ $convert == "false" ]]; then
     echo " input file format conversion skipped"
 fi
 
+echo "barcodes:" $barcodeadjust "umis:" $umiadjust 
+
+
 #converting barcodes
 echo " adjusting barcodes of R1 files"
 if [[ $barcodeadjust != 0 ]] && [[ $convert == "true" ]]; then
     if [[ $barcodeadjust -gt 0 ]]; then
         for convFile in "${convFiles[@]}"; do
+            echo " handling $convFile ..."
             sed -i "2~2s/^.{${barcodeadjust}}//" $convFile #Trim the first n characters from the beginning of the sequence and quality
             echo "  ${convFile} adjusted"
        done
     elif [[ 0 -gt $barcodeadjust ]]; then
         for convFile in "${convFiles[@]}"; do
+            echo " handling $convFile ..."
             toS=`printf '%0.sA' $(seq 1 $(($barcodeadjust * -1)))`
             toQ=`printf '%0.sI' $(seq 1 $(($barcodeadjust * -1)))`
             sed -i "2~4s/^/$toS/" $convFile #Trim the first n characters from the beginning of the sequence
@@ -983,24 +988,7 @@ fi
 echo " adjusting UMIs of R1 files"
 if [[ 0 -gt $umiadjust ]]; then 
     for convFile in "${convFiles[@]}"; do
-<<<<<<< HEAD
         echo " handling $convFile ..."
-        if [[ "$technology" == "nadia" ]]; then
-            echo "  converting barcodes"
-            sed -i '2~4s/^/AAAA/' $convFile #Add AAAA to every read
-            echo "  converting quality scores"
-            sed -i '4~4s/^/IIII/' $convFile #Add quality scores for added bases
-            echo "  converting UMI"
-            sed -i '2~4s/[NATCG][NATCG][NATCG][NATCG]$//' $convFile #Remove last 4 bases
-            echo "  converting quality scores"
-            sed -i '4~4s/....$//' $convFile #Replace quality scores for last 4 bases
-        elif [[ "$technology" == "icell8" ]]; then
-            echo "  converting barcodes"
-            sed -i '2~4s/^/AAAAA/' $convFile #Add AAAAA to every read
-            echo "  converting quality scores"
-            sed -i '4~4s/^/IIIII/' $convFile #Add quality scores for added bases
-        fi
-=======
         toS=`printf '%0.sA' $(seq 1 $(($umiadjust * -1)))`
         toQ=`printf '%0.sI' $(seq 1 $(($umiadjust * -1)))`
 	keeplength=`echo $((${barcode_default}+${umi_default}-($umiadjust * -1)))`
@@ -1008,7 +996,6 @@ if [[ 0 -gt $umiadjust ]]; then
         sed -i "2~4s/$/$toS/" $convFile #Add n characters to the end of the sequence
         sed -i "4~4s/$/$toQ/" $convFile #Add n characters to the end of the quality
         echo "  ${convFile} adjusted"
->>>>>>> 630f098064d4535f192e5fd4ca68bfdc6dd1d966
     done
 fi
 ##########
