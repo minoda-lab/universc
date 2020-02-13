@@ -353,7 +353,7 @@ if [[ ! -w $barcodedir ]]; then
     echo " `whereis cellranger`"
     exit 1
 fi
-exit 0
+
 #check if technology matches expected inputs
 if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
     if [[ "$technology" != "custom"* ]]; then
