@@ -3,9 +3,8 @@
 install=false
 
 ######convert version#####
-convertversion="0.3.0.9002"
+convertversion="0.3.0.900333"
 ##########
-
 
 
 ####cellrenger version#####
@@ -351,9 +350,29 @@ if [[ $verbose == "true" ]]; then
     echo "checking options ..."
 fi
 
+#check if this is a test run
+if [[ $testrun == "true" ]]; then
+    reference=${SDIR}/test/cellranger_reference/cellranger-tiny-ref/3.0.0
+    if [[ -z $id ]]; then
+        id=test-tiny-${technology}
+    fi
+    if [[ $technology == "10x" ]]; then
+        gunzip -k ${SDIR}test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L00[12]_R[12]_001.fastq.gz
+        read1=("test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq" "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq")
+        read2=("test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_002.fastq" "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq")
+    elif [[ $technology == "nadia" ]]; then
+        gunzip -k test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq
+        read1=("test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq")
+        read2=("test/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq")
+    elif [[ $technology == "icell8" ]]; then
+        gunzip -k test/shared/mappa-test/test_FL_R[12].fastq.gz
+        read1=("test/shared/mappa-test/test_FL_R1.fastq")
+        read2=("test/shared/mappa-test/test_FL_R2.fastq")
+    fi
+fi
+
 #check if cellranger is writable
 if ! [[ -w "$barcodedir" ]]; then
-    echo "Kai $barcodedir"
     echo "Error: Trying to run cellranger installed at ${cellrangerpath}"
     echo "launch_universc.sh can only run with cellranger installed locally"
     echo "Install cellranger in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
@@ -378,26 +397,6 @@ if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$techno
             echo "Error: when option -t is set as custom, a file with a list of barcodes needs to be specified with option -b."
 	    exit 1
         fi
-    fi
-fi
-
-if [[ $testrun == "true" ]]; then
-     reference=${SDRI}/test/cellranger_reference/cellranger-tiny-ref/3.0.0"
-     if [[ -z $id ]] then
-         id=test-tiny-${technology}
-     fi
-     if [[ $technology == "10x" ]]; then
-         gunzip -k ${SDIR}test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L00[12]_R[12]_001.fastq.gz
-         read1=("test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq" "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq")
-         read2=("test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_002.fastq" "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq")
-     elif [[ $technology == "nadia" ]]; then
-         gunzip -k test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq
-         read1=("test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq")
-         read2=("test/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq")
-     elif [[ $technology == "icell8" ]]; then
-          gunzip -k test/shared/mappa-test/test_FL_R[12].fastq.gz
-          read1=("test/shared/mappa-test/test_FL_R1.fastq)
-          read2=("test/shared/mappa-test/test_FL_R2.fastq")
     fi
 fi
 
@@ -573,21 +572,27 @@ done
 #checking the quality of fastq file names
 read12=("${read1[@]}" "${read2[@]}")
 for fq in "${read12[@]}"; do
-    name=`basename $fq | cut -f1 -d'.' | grep -o "_" | wc -l | xargs`
-    sn=`basename $fq | cut -f1-$(($name-3))  -d'_'`
-    ln=`basename $fq | cut -f$(($name-1))  -d'_' | sed 's/L00//'`
+    name=`basename $fq`
+    name=${name%.*}
+    sn=`echo ${name} | cut -f1 -d'_'`
+    ln=`echo ${name} | cut -f3 -d'_' | sed 's/L00//'`
+    fields=`echo ${name} | grep -o "_" | wc -l`
+    fields=$(($fields+1))
     LANE+=($ln)
-    if [[ $name < 4 ]]; then
+    if [[ ${fields} != 5 ]]; then
         echo "Error: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
         exit 1
     elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
         echo "Error: $fq does not have a .fq or .fastq extention."
         exit 1
+    elif [[ ${sn} =~ "." ]]; then
+        echo "Error: $fq has a period \".\" within its sample name. Remove it to run cellranger."
+	exit 1
     fi
     
-    if [[ $sn != $SAMPLE ]]; then
+    if [[ ${sn} != $SAMPLE ]]; then
         if [[ -z $SAMPLE ]]; then
-            SAMPLE=$sn
+            SAMPLE=${sn}
         else
             echo "Error: some samples are labeled $SAMPLE while others are labeled $sn. cellranger can only handle files from one sample at a time."
             exit 1
@@ -970,14 +975,11 @@ done
 
 #####convert file format#####
 echo "converting input files to confer cellranger format ..."
-
-
 if [[ $convert == "false" ]]; then
     echo " input file format conversion skipped"
 fi
-
-echo "barcodes:" $barcodeadjust "umis:" $umiadjust 
-
+echo " barcodes: ${barcodeadjust}bps at its head"
+echo " UMIs: ${umiadjust}bps at its tail" 
 
 #converting barcodes
 echo " adjusting barcodes of R1 files"
