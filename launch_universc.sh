@@ -86,7 +86,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data 
   
   -s,  --setup                  Set up whitelists for compatibility with new technology
-  -w,  --whitelist-as-is        Skips the FASTQ file conversion if converted files already exist
+  -a,  --as-is                  Skips the FASTQ file conversion if converted files already exist
   
   -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
@@ -339,7 +339,7 @@ for op in "$@"; do
             next=false
             shift
             ;;
-        -w|--whitelist-as-is)
+        -a|--as-is)
             convert=false
             next=false
             shift
