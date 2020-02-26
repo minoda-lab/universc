@@ -3,8 +3,7 @@
 install=false
 
 ######convert version#####
-convertversion="0.3.0.90003"
-##########
+convertversion="0.3.0.90005"
 
 
 ####cellrenger version#####
@@ -41,6 +40,8 @@ if [[ $RDIR != $SDIR ]]; then
     echo "DIR '$RDIR' resolves to '$SDIR'"
 fi
 echo "Running launch_universc.sh in '$SDIR'"
+
+PERCELLSTATS=${SDIR}/ExtractBasicStats.pl
 ##########
 
 
@@ -59,7 +60,6 @@ Usage:
 Convert sequencing data (FASTQ) from Nadia or iCELL8 platforms for compatibility with 10x Genomics and run cellranger count
 
 Mandatory arguments to long options are mandatory for short options too.
-  -s,  --setup                  Set up whitelists for compatibility with new technology
   -t,  --technology PLATFORM    Name of technology used to generate data (10x, nadia, icell8, or custom)
                                 e.g. custom_16_10
   -R1, --read1 FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
@@ -67,9 +67,11 @@ Mandatory arguments to long options are mandatory for short options too.
   -f,  --file NAME              Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
                                 e.g. /path/to/files/Example_S1_L001
   -b,  --barcodefile FILE       Custom barcode list in plain text
+  
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
+  
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
@@ -79,7 +81,12 @@ Mandatory arguments to long options are mandatory for short options too.
                                     Only applies when --jobmode=local.
        --mempercore NUM         Set max GB each job may use at one time.
                                     Only applies in cluster jobmodes.
-  -p,  --pass                   Skips the FASTQ file conversion if converted files already exist
+  
+  -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data 
+  
+  -s,  --setup                  Set up whitelists for compatibility with new technology
+  -a,  --as-is                  Skips the FASTQ file conversion if converted files already exist
+  
   -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
        --verbose                Print additional outputs for debugging
@@ -112,6 +119,7 @@ lastcall=`[ -e $lastcallfile ] &&  cat $lastcallfile || echo ""`
 barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
 barcodefile=""
 crIN=input4cellranger #name of the directory with all FASTQ files given to cellranger
+percellfile="outs/basic_stats.txt"
 
 #variable options
 setup=false
@@ -129,6 +137,7 @@ chemistry=""
 jobmode=""
 ncores=""
 mem=""
+percelldata=false
 
 next=false
 for op in "$@"; do
@@ -151,7 +160,7 @@ for op in "$@"; do
             next=false
             shift
             ;;
-           --testrun)
+        --testrun)
             testrun=true
             next=false
             shift
@@ -324,7 +333,12 @@ for op in "$@"; do
                 exit 1
             fi
             ;;
-        -p|--pass)
+        -p|--per-cell-data)
+            percelldata=true
+            next=false
+            shift
+            ;;
+        -a|--as-is)
             convert=false
             next=false
             shift
@@ -397,6 +411,10 @@ if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$techno
             echo "Error: when option -t is set as custom, a file with a list of barcodes needs to be specified with option -b."
 	    exit 1
         fi
+<<<<<<< HEAD
+=======
+	setup=true
+>>>>>>> e481352815fc31f706718d39de0143bcf0346b59
     fi
 fi
 
@@ -642,7 +660,6 @@ elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
     echo "Error: option --localmem or --mempercore must be a number (of GB)"
     exit 1
 fi
-
 
 #check if chemistry matches expected input
 if [[ -z "$chemistry" ]]; then
@@ -1119,6 +1136,16 @@ fi
 
 
 
+#####extracting per cell data#####
+if [[ $percelldata == true ]]; then
+    echo "generating basic run statistics and per cell data"
+    perl ${PERCELLSTATS} ${id}
+    echo "per cell data generated"
+fi
+##########
+
+
+
 #####printing out log#####
 log="
 #####Conversion tool log#####
@@ -1126,7 +1153,7 @@ cellranger ${cellrangerversion}
 
 Original barcode format: ${technology} (then converted to 10x)
 
-Runtime: ${runtime}s
+cellranger runtime: ${runtime}s
 ##########
 "
 echo "$log"
