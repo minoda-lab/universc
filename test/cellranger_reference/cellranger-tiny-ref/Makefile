@@ -2,9 +2,9 @@
 
 PWD=$(shell pwd)
 
-all: $(EXEC)
+all: reference
 
-louvain:
+reference:
 	echo "generating cellranger references"
 	cellranger mkref --genome=1.2.0 --fasta=genome-1.2.0.fa --genes=genes-1.2.0.gtf
 	rm -rf genome-1.2.0.fa genes-1.2.0.gtf
@@ -14,12 +14,6 @@ louvain:
 ##########################################
 # Generic rules
 ##########################################
-
-%.o: %.cpp %.h
-	$(CXX) -o  $@ -c $< $(CXXFLAGS)
-
-%.o: %.cpp
-	$(CXX) -o $@ -c $< $(CXXFLAGS)
 
 clean:
 	echo "moving fasta and gtf from cellranger reference"
