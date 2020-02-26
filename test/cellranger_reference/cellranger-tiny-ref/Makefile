@@ -29,4 +29,4 @@ clean:
 	mv 3.0.0/genes/genes.gtf genes-3.0.0.gtf
 
 mrproper: clean
-        rm -f *~ $(EXEC)
+	rm -f *~ $(EXEC)

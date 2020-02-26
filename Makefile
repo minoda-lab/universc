@@ -23,9 +23,6 @@ reference:
 
 reference-clean:
 	make -C  test/cellranger_reference/cellranger-tiny-ref clean
-        echo "removing pre-generated cellranger reference files"
-        rm -Rf  test/cellranger_reference/cellranger-tiny-ref/3.0.0
-        rm -Rf  test/cellranger_reference/cellranger-tiny-ref/1.2.0
-
-
-
+	echo "removing pre-generated cellranger reference files"
+	rm -Rf  test/cellranger_reference/cellranger-tiny-ref/3.0.0
+	rm -Rf  test/cellranger_reference/cellranger-tiny-ref/1.2.0
