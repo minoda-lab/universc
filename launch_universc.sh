@@ -3,7 +3,7 @@
 install=false
 
 ######convert version#####
-convertversion="0.3.0.90004"
+convertversion="0.3.0.90005"
 ##########
 
 
@@ -67,6 +67,8 @@ Mandatory arguments to long options are mandatory for short options too.
   -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
   -f,  --file NAME              Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
                                 e.g. /path/to/files/Example_S1_L001
+       --trim                   run adapter and quality trimming on R2 files prior to running cellranger
+  
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
@@ -203,7 +205,12 @@ for op in "$@"; do
                 exit 1
             fi
             ;;
-        -i|--id)
+        --trim)
+            trim=true
+            next=false
+            shift
+            ;;
+       -i|--id)
             shift
             if [[ "$1" != "" ]]; then
                 id="${1/%\//}"
