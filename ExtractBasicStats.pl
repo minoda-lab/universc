@@ -12,7 +12,9 @@ use warnings;
 use List::Util qw( min max sum);
 
 #####Options#####
-my $indir = $ARGV[0];
+my $barcodefile=$ARGV[0];
+my $adjust_length=$ARGV[1];
+my $indir = $ARGV[2];
 ##########
 
 
@@ -38,14 +40,37 @@ elsif (! -e $feature_file || ! -e $raw_barcode_file || ! -e $filtered_barcode_fi
 
 
 #####MAIN#####
+#make a hash of original and adjusted barcodes
+my %adjusted2original;
+open (ORIGINAL, "<$barcodefile") or die "cannot open $barcodefile.\n";
+while (my $line = <ORIGINAL>) {
+    my $original = $line;
+    $original =~ s/\r//sig;
+    $original =~ s/\n//sig;
+    
+    my $adjusted = $original;
+    if ($adjust_length >= 0) {
+        my $length = $adjust_length;
+        $adjusted = substr ($length, 0, $adjusted);
+    }
+    else {
+        my $length = abs ($adjust_length);
+        my $As = "A" x $length;
+        $adjusted = $As.$adjusted;
+    }
+    
+    $adjusted2original{$adjusted} = $original;
+}
+close (ORIGINAL);
+
 #gene count
-print "getting gene count.\n";
+print " getting gene count.\n";
 
 my $ref_gene_count = `zcat $feature_file | wc -l`;
 chomp $ref_gene_count;
 
 #cell count
-print "getting cell count.\n";
+print " getting cell count.\n";
 
 my $cellcount_raw;
 $cellcount_raw = `zcat $raw_barcode_file | wc -l`;
@@ -67,7 +92,7 @@ foreach my $barcode (@barcodes) {
 }
 
 #raw read count
-print "getting raw read count.\n";
+print " getting raw read count.\n";
 
 my $readcount_raw = `tail -n 1 $summary_file`;
 chomp $readcount_raw;
@@ -97,7 +122,7 @@ $readcount_raw = join ("", @readcount_raw);
 $readcount_raw = (split (/\,/, $readcount_raw))[3];
 
 #assigned read count
-print "getting assigned read count.\n";
+print " getting assigned read count.\n";
 
 my $assigned_reads_percell = `samtools view $bam_file | grep 'CB:Z:' | sed 's\/CB:Z:\\([ACGT]*\\).*/\\1/' | awk '{print \$1, \$NF}' | sort | uniq | cut -f2 -d' ' | sort | uniq -c`;
 chomp $assigned_reads_percell;
@@ -110,10 +135,10 @@ foreach my $barcode (@assigned_reads_percell) {
     $count =~ s/ $//;
     my @count = split (/ /, $count);
     
-    if (exists $percell{$count[1]}) {
+    if (exists $percell{ $adjusted2original{$count[1]} }) {
         my %count;
         $count{ASSIGNED} = $count[0];
-        $percell{$count[1]} = \%count;
+        $percell{ $adjusted2original{$count[1]} } = \%count;
     }
 }
 foreach my $barcode (sort keys %percell) {
@@ -125,7 +150,7 @@ foreach my $barcode (sort keys %percell) {
 }
 
 #mapped read count
-print "getting mapped read count.\n";
+print " getting mapped read count.\n";
 
 my $mapped_reads_percell = `samtools view -F 4 $bam_file | grep 'CB:Z:' | sed 's\/CB:Z:\\([ACGT]*\\).*/\\1/' | awk '{print \$1, \$NF}' | sort | uniq | cut -f2 -d' ' | sort | uniq -c`;
 chomp $mapped_reads_percell;
@@ -138,10 +163,10 @@ foreach my $barcode (@mapped_reads_percell) {
     $count =~ s/ $//;
     my @count = split (/ /, $count);
 
-    if (exists $percell{$count[1]}) {
-        my %count = %{ $percell{$count[1]} };
+    if (exists $percell{ $adjusted2original{$count[1]} }) {
+        my %count = %{ $percell{ $adjusted2original{$count[1]} } };
         $count{MAPPED} = $count[0];
-        $percell{$count[1]} = \%count;
+        $percell{ $adjusted2original{$count[1]} } = \%count;
     }
 }
 foreach my $barcode (sort keys %percell) {
@@ -153,7 +178,7 @@ foreach my $barcode (sort keys %percell) {
 }
 
 #UMI count
-print "getting mapped UMI count.\n";
+print " getting mapped UMI count.\n";
 
 my %barcodes;
 my $id = 0;
@@ -192,7 +217,7 @@ foreach my $barcode (sort keys %percell) {
 }
 
 #Gene count per cell
-print "getting gene count per cell.\n";
+print " getting gene count per cell.\n";
 
 my @genecount = @umicount;
 my %genecount;
@@ -222,13 +247,13 @@ foreach my $barcode (sort keys %percell) {
 }
 
 #Total gene count
-print "getting total gene count.\n";
+print " getting total gene count.\n";
 
 my $genes_total = `zcat $matrix_file | tail -n +4 | cut -f1 -d ' ' | sort | uniq | wc -l`;
 chomp $genes_total;
 
 #Total, means, and medinans
-print "getting total, mean, and medians.\n";
+print " getting total, mean, and medians.\n";
 
 my @reads_assigned;
 my @reads_mapped;
@@ -258,7 +283,7 @@ my $genes_mean = &mean (@genes);
 my $genes_median = &median (@genes);
 
 #getting percentages
-print "getting percentages.\n";
+print " getting percentages.\n";
 
 my $percent_assigned = sprintf("%.4f", $reads_assigned_total/$readcount_raw)*100;
 $percent_assigned = $percent_assigned."\%";
@@ -267,7 +292,7 @@ $percent_mapped = $percent_mapped."\%";
 my $reads_per_umi = sprintf("%.2f", $reads_mapped_total/$umis_total);
 
 #output
-print "printing out summary.\n";
+print " printing out summary.\n";
 
 open (OUT, ">$out_file") or die "cannot open $out_file.\n";
 print OUT "\#\#\#\#\#BASIC STATS\#\#\#\#\#\n";
