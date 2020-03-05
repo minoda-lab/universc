@@ -3,11 +3,12 @@
 install=false
 
 ######convert version#####
-convertversion="0.3.0.90004"
+convertversion="0.3.0.90008"
 ##########
 
 
-####cellrenger version#####
+
+#####cellrenger version#####
 cellrangerpath=`which cellranger` #location of cellranger
 if [[ -z $cellrangerpath ]]; then
     echo "cellranger command is not found."
@@ -42,6 +43,7 @@ if [[ $RDIR != $SDIR ]]; then
 fi
 echo "Running launch_universc.sh in '$SDIR'"
 
+BARCODERECOVER=${SDIR}/RecoverBarcodes.pl
 PERCELLSTATS=${SDIR}/ExtractBasicStats.pl
 ##########
 
@@ -67,6 +69,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
   -f,  --file NAME              Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
                                 e.g. /path/to/files/Example_S1_L001
+  
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
@@ -203,7 +206,7 @@ for op in "$@"; do
                 exit 1
             fi
             ;;
-        -i|--id)
+       -i|--id)
             shift
             if [[ "$1" != "" ]]; then
                 id="${1/%\//}"
@@ -897,7 +900,7 @@ if [[ $lock -eq 1 ]]; then
         cp ${v3}.backup.gz ${v3}.gz
     else
         #for version 2
-	cat ${barcodefile} > ${v2}
+        cat ${barcodefile} > ${v2}
         if [[ $barcodeadjust -gt 0 ]]; then
             sed -i "s/^.{${barcodeadjust}}//" ${v2} #Trim the first n characters from the beginning of the sequence and quality
         elif [[ 0 -gt $barcodeadjust ]]; then
@@ -1130,10 +1133,20 @@ fi
 
 
 
+#####Readjusting the barcodes in the cellranger output back to its original state##### 
+if [[ ${barcodefile} != "default" ]]; then
+    echo "replacing modified barcodes with the original in the output gene barcode matrix"
+    perl ${BARCODERECOVER} ${barcodefile} ${barcodeadjust} ${id}
+    echo "barcodes recovered"
+fi
+##########
+
+
+
 #####extracting per cell data#####
 if [[ $percelldata == true ]]; then
     echo "generating basic run statistics and per cell data"
-    perl ${PERCELLSTATS} ${id}
+    perl ${PERCELLSTATS} ${barcodefile} ${barcodeadjust} ${id}
     echo "per cell data generated"
 fi
 ##########
