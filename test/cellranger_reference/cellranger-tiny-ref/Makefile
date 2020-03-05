@@ -6,7 +6,9 @@ all: reference
 
 reference:
 	echo "generating cellranger references"
+	cellranger mkref --genome=1.2.0 --fasta=genome-1.2.0.fa --genes=genes-1.2.0.gtf
 	rm -rf genome-1.2.0.fa genes-1.2.0.gtf
+	cellranger mkref --genome=3.0.0 --fasta=genome-3.0.0.fa --genes=genes-3.0.0.gtf
 	rm -rf genome-3.0.0.fa genes-3.0.0.gtf
 
 ##########################################
