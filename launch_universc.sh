@@ -3,11 +3,8 @@
 install=false
 
 ######convert version#####
-convertversion="0.3.0.90003"
+convertversion="0.3.0.90008"
 ##########
-
-
-####cellrenger version#####
 cellrangerpath=`which cellranger` #location of cellranger
 if [[ -z $cellrangerpath ]]; then
     echo "cellranger command is not found."
@@ -18,7 +15,7 @@ cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 
 
 
 
-#####locate launch_universc.sh for importing barcodes######
+#####locate launch_universc.sh, barcode sources, and other tools######
 SOURCE="${BASH_SOURCE[0]}"
 SDIR=""
 RDIR=""
@@ -38,9 +35,12 @@ SDIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 RDIR="$( dirname "$SOURCE" )"
 
 if [[ $RDIR != $SDIR ]]; then
-    echo "DIR '$RDIR' resolves to '$SDIR'"
+    echo "'$RDIR' resolves to '$SDIR'"
 fi
 echo "Running launch_universc.sh in '$SDIR'"
+
+BARCODERECOVER=${SDIR}/RecoverBarcodes.pl
+PERCELLSTATS=${SDIR}/ExtractBasicStats.pl
 ##########
 
 
@@ -48,28 +48,31 @@ echo "Running launch_universc.sh in '$SDIR'"
 #####usage statement#####
 help='
 Usage:
+  bash '$(basename $0)' --testrun -t THECHNOLOGY
+  bash '$(basename $0)' -t TECHNOLOGY --setup
   bash '$(basename $0)' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
   bash '$(basename $0)' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
   bash '$(basename $0)' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
   bash '$(basename $0)' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
   bash '$(basename $0)' -v
   bash '$(basename $0)' -h
-  bash '$(basename $0)' -t TECHNOLOGY --setup
 
 Convert sequencing data (FASTQ) from Nadia or iCELL8 platforms for compatibility with 10x Genomics and run cellranger count
 
 Mandatory arguments to long options are mandatory for short options too.
-  -s,  --setup                  Set up whitelists for compatibility with new technology
-  -t,  --technology PLATFORM    Name of technology used to generate data (10x, nadia, icell8, or custom)
-                                e.g. custom_16_10
+       --testrun                Initiates a test trun with the test dataset
   -R1, --read1 FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
   -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
   -f,  --file NAME              Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
                                 e.g. /path/to/files/Example_S1_L001
-  -b,  --barcodefile FILE       Custom barcode list in plain text
+  
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
+  -t,  --technology PLATFORM    Name of technology used to generate data (10x, nadia, icell8, or custom)
+                                e.g. custom_16_10
+  -b,  --barcodefile FILE       Custom barcode list in plain text  
+  
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
@@ -79,7 +82,12 @@ Mandatory arguments to long options are mandatory for short options too.
                                     Only applies when --jobmode=local.
        --mempercore NUM         Set max GB each job may use at one time.
                                     Only applies in cluster jobmodes.
-  -p,  --pass                   Skips the FASTQ file conversion if converted files already exist
+  
+  -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data 
+  
+       --setup                  Set up whitelists for compatibility with new technology and exit
+       --as-is                  Skips the FASTQ file conversion if the file already exists
+  
   -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
        --verbose                Print additional outputs for debugging
@@ -108,15 +116,24 @@ fi
 #set options
 lockfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock #path for .lock file
 lastcallfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.last_called #path for .last_called
+<<<<<<< HEAD
 lastcall=`[ -e $lastcallfile ] &&  cat $lastcallfile || echo ""`
+=======
+lastcall=`[[ -e $lastcallfile ]] &&  cat $lastcallfile || echo ""`
+lastcall_b=`echo ${lastcall} | cut -f1 -d' '`
+lastcall_u=`echo ${lastcall} | cut -f2 -d' '`
+lastcall_p=`echo ${lastcall} | cut -f3 -d' '`
+>>>>>>> 9b5b3a75da1d9f04a8f8f70cf4fadd8c27a959e7
 barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
 barcodefile=""
 crIN=input4cellranger #name of the directory with all FASTQ files given to cellranger
+whitelistfile="outs/whitelist.txt" #name of the whitelist file added to the cellranger output
+percellfile="outs/basic_stats.txt" #name of the file with the basic statistics of the run added to the cellranger output
 
 #variable options
 setup=false
-testrun=false
 convert=true
+testrun=false
 read1=()
 read2=()
 SAMPLE=""
@@ -125,10 +142,11 @@ id=""
 description=""
 reference=""
 ncells=""
-chemistry=""
-jobmode=""
+chemistry="SC3Pv2"
+jobmode="local"
 ncores=""
 mem=""
+percelldata=false
 
 next=false
 for op in "$@"; do
@@ -137,36 +155,10 @@ for op in "$@"; do
         continue;
     fi
     case "$op" in
-        -v|--version)
-            echo "launch_universc.sh version ${convertversion}"
-            echo "cellranger version ${cellrangerversion}"
-            exit 0
-            ;;
-        -h|--help)
-            echo "$help"
-            exit 0
-            ;;
-        -s|--setup)
-            setup=true
-            next=false
-            shift
-            ;;
-           --testrun)
+        --testrun)
             testrun=true
             next=false
             shift
-            ;;
-        -t|--technology)
-        shift
-            if [[ $1 != "" ]]; then
-                technology="${1/%\//}"
-                technology=`echo "$technology" | tr '[:upper:]' '[:lower:]'`
-                next=true
-                shift
-            else
-                echo "Error: value missing for --technology"
-                exit 1
-            fi
             ;;
         -R1|--read1)
             shift
@@ -214,18 +206,7 @@ for op in "$@"; do
                 exit 1
             fi
             ;;
-        -b|--barcodefile)
-            shift
-            if [[ "$1" != "" ]]; then
-                barcodefile="${1/%\//}"
-                next=true
-                shift
-            else
-                echo "Error: value missing for --barcodefile"
-                exit 1
-            fi
-            ;;
-        -i|--id)
+       -i|--id)
             shift
             if [[ "$1" != "" ]]; then
                 id="${1/%\//}"
@@ -255,6 +236,29 @@ for op in "$@"; do
                 shift
             else
                 echo "Error: value missing for --reference: reference transcriptome generated by cellranger mkfastq required"
+                exit 1
+            fi
+            ;;
+        -t|--technology)
+            shift
+            if [[ $1 != "" ]]; then
+                technology="${1/%\//}"
+                technology=`echo "$technology" | tr '[:upper:]' '[:lower:]'`
+                next=true
+                shift
+            else
+                echo "Error: value missing for --technology"
+                exit 1
+            fi
+            ;;
+        -b|--barcodefile)
+            shift
+            if [[ "$1" != "" ]]; then
+                barcodefile="${1/%\//}"
+                next=true
+                shift
+            else
+                echo "Error: value missing for --barcodefile"
                 exit 1
             fi
             ;;
@@ -324,12 +328,31 @@ for op in "$@"; do
                 exit 1
             fi
             ;;
-        -p|--pass)
+        -p|--per-cell-data)
+            percelldata=true
+            next=false
+            shift
+            ;;
+        --setup)
+            setup=true
+            next=false
+            shift
+            ;;
+        --as-is)
             convert=false
             next=false
             shift
             ;;
-        --verbose)
+        -h|--help)
+            echo "$help"
+            exit 0
+            ;;
+        -v|--version)
+            echo "launch_universc.sh version ${convertversion}"
+            echo "cellranger version ${cellrangerversion}"
+            exit 0
+            ;;
+       --verbose)
             echo "debugging mode activated"
             verbose=true
             next=false
@@ -352,6 +375,7 @@ fi
 
 #check if this is a test run
 if [[ $testrun == "true" ]]; then
+<<<<<<< HEAD
     reference=${SDIR}/test/cellranger_reference/cellranger-tiny-ref/3.0.0
     if [[ -z $id ]]; then
         id=test-tiny-${technology}
@@ -368,6 +392,34 @@ if [[ $testrun == "true" ]]; then
         gunzip -k test/shared/mappa-test/test_FL_R[12].fastq.gz
         read1=("test/shared/mappa-test/test_FL_R1.fastq")
         read2=("test/shared/mappa-test/test_FL_R2.fastq")
+=======
+    if [[ ${#read1[@]} -gt 0 ]] || [[ ${#read2[@]} -gt 0 ]]; then
+        echo "Error: for test run, no R1 or R2 file can be selected."
+        exit 1
+    fi
+    
+    reference=${SDIR}/test/cellranger_reference/cellranger-tiny-ref/3.0.0
+    
+    percelldata=true
+    id=test-tiny-${technology}
+    description=${id}
+    
+    if [[ $technology == "10x" ]]; then
+        gunzip -k ${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L00[12]_R[12]_001.fastq.gz
+        read1=("${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq" "${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq")
+        read2=("${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_002.fastq" "${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq")
+    elif [[ $technology == "nadia" ]]; then
+        gunzip -k ${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq
+        read1=("${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq")
+        read2=("${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq")
+    elif [[ $technology == "icell8" ]]; then
+        gunzip -k ${SDIR}/test/shared/mappa-test/test_FL_R[12].fastq.gz
+        read1=("${SDIR}/test/shared/mappa-test/test_FL_R1.fastq")
+        read2=("${SDIR}/test/shared/mappa-test/test_FL_R2.fastq")
+    else
+        echo "Error: for test run, option --technology must be 10x, nadia, or icell8"
+	exit 1
+>>>>>>> 9b5b3a75da1d9f04a8f8f70cf4fadd8c27a959e7
     fi
 fi
 
@@ -381,6 +433,14 @@ if ! [[ -w "$barcodedir" ]]; then
     exit 1
 fi
 
+#check if convert is writable
+if ! [[ -w "$SDIR" ]]; then
+    echo "Error: Trying to run launch_universc.sh installed at $SDIR"
+    echo "$SDIR must be writable to run launch_universc.sh"
+    echo "Install launch_universc.sh in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
+    exit 1
+fi
+
 #check if technology matches expected inputs
 if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
     if [[ "$technology" != "custom"* ]]; then
@@ -388,14 +448,14 @@ if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$techno
         exit 1
     else
         b=`echo $technology | cut -f 2 -d'_'`
-	u=`echo $technology | cut -f 3 -d'_'`
-	if ! [[ "$b" =~ ^[0-9]+$ ]] || ! [[ "$u" =~ ^[0-9]+$ ]]; then
-	    echo "Error: option -t needs to be 10x, nadia, icell8, or custom_<barcode>_<UMI>"
-	    exit 1
+        u=`echo $technology | cut -f 3 -d'_'`
+        if ! [[ "$b" =~ ^[0-9]+$ ]] || ! [[ "$u" =~ ^[0-9]+$ ]]; then
+            echo "Error: option -t needs to be 10x, nadia, icell8, or custom_<barcode>_<UMI>"
+            exit 1
         fi
         if [[ -z $barcodefile ]]; then
             echo "Error: when option -t is set as custom, a file with a list of barcodes needs to be specified with option -b."
-	    exit 1
+            exit 1
         fi
     fi
 fi
@@ -601,12 +661,25 @@ for fq in "${read12[@]}"; do
 done
 LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
-#checking the quality of custom barcode file
+#select the input barcode file
 if [[ ! -z "$barcodefile" ]]; then
     if [[ ! -f $barcodefile ]]; then
         echo "Error: File selected for option --barcodefile does not exist"
+	exit 1
     else
         barcodefile=`readlink -f $barcodefile`
+    fi
+else
+    if [[ "$technology" == "10x" ]]; then
+        barcodefile=default
+    elif [[ "$technology" == "nadia" ]]; then
+        barcodefile=${SDIR}/nadia_barcode.txt
+        if [[ ! -f ${barcodefile} ]]; then
+            #creat a nadia barcode file
+            echo {A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
+        fi
+    elif [[ "$technology" == "icell8" ]]; then
+        barcodefile=${SDIR}/iCell8_barcode.txt
     fi
 fi
 
@@ -626,6 +699,7 @@ elif ! [[ $ncells =~ $int ]] && [[ $setup == "false" ]]; then
     echo "Error: option --force-cells must be an integer"
     exit 1
 fi
+
 #check if ncores is an integer
 int='^[0-9]+$'
 if [[ -z "$ncores" ]]; then
@@ -634,6 +708,7 @@ elif ! [[ $ncores =~ $int ]] && [[ $setup == "false" ]]; then
     echo "Error: option --localcores must be an integer"
     exit 1
 fi
+
 #check if mem is a number
 int='^[0-9]+([.][0-9]+)?$'
 if [[ -z "$mem" ]]; then
@@ -643,34 +718,16 @@ elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
     exit 1
 fi
 
-
 #check if chemistry matches expected input
-if [[ -z "$chemistry" ]]; then
-    chemistry="SC3Pv2"
-elif [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+if [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
     echo "Error: option --chemistry must be SC3Pv2, SC5P-PE , or SC5P-R2"
     exit 1
 fi
 
 #checking if jobmode matches expected input
-if [[ -z "$jobmode" ]]; then
-    jobmode="local"
-elif [[ "$jobmode" != "local" ]] && [[ "$jobmode" != "sge" ]] && [[ "$jobmode" != "lsf" ]] && [[ "$jobmode" != *"template" ]]; then
+if [[ "$jobmode" != "local" ]] && [[ "$jobmode" != "sge" ]] && [[ "$jobmode" != "lsf" ]] && [[ "$jobmode" != *"template" ]]; then
     echo "Error: option --jobmode must be local, sge, lsf, or a .template file"
     exit 1
-fi
-
-#check if setup needs to be run before analysis (potentially overriding the user input)
-if [[ -z $setup ]]; then
-    setup=false
-fi
-if [[ $lastcall != $technology ]]; then
-    setup=true
-fi
-
-#check if convertion is needs to be run before analysis (potentially overriding the user input)
-if [[ ! -d $crIN ]] || [[ $lastcall != $technology ]]; then
-    convert=true
 fi
 
 #check if ID is present
@@ -681,15 +738,17 @@ if [[ -z $id ]]; then
     fi
 fi
 crIN=${crIN}_${id}
-if [[ ! -d ${crIN} ]]; then
+
+#checking if crIN exists
+if [[ ! -d $crIN ]]; then
     convert=true
+    echo "***Warning: convertion was turned on because directory $crIN was not found***"
 fi
 ##########
 
 
 
-#####Selecting barcode file and setting parameter for barcode/UMI adjustments#####  
-#barcode and umi lengths expected by cellranger
+#####Get barcode/UMI length#####  
 barcode_default=16
 umi_default=10
 totallength=`echo $((${barcode_default}+${umi_default}))`
@@ -714,6 +773,7 @@ fi
 #adjustment lengths
 barcodeadjust=`echo $(($barcodelength-$barcode_default))`
 umiadjust=`echo $(($umilength-$umi_default))`
+<<<<<<< HEAD
 
 #prepare a proper barcode file
 if [[ "$technology" != "10x" ]] && [[ -z $barcodefile ]]; then
@@ -742,6 +802,8 @@ elif [[ ! -z $barcodefile ]]; then
         sed -i "s/^/$As/" ${barcodefile} #Trim the first n characters from the beginning of the quality
     fi
 fi
+=======
+>>>>>>> 9b5b3a75da1d9f04a8f8f70cf4fadd8c27a959e7
 ##########
 
 
@@ -750,40 +812,41 @@ fi
 #set up .lock file
 if [[ ! -f $lockfile ]]; then
     echo "creating .lock file"
-    echo 0 > $lockfile
+    echo 1 > $lockfile
+    lock=`cat $lockfile`
 else
-    #check if jobs running (check value in .lock file)
+    #check if jobs are running (check value in .lock file)
     echo "checking .lock file"
     lock=`cat $lockfile`
     
     if [[ $lock -le 0 ]]; then
         echo " call accepted: no other cellranger jobs running"
         lock=1
-        if [[ $setup == false ]]; then 
-             echo $lock > $lockfile
-        fi
     else
         if [[ -f $lastcallfile ]]; then
-            echo " total of $lock cellranger ${cellrangerversion} jobs already running in ${cellrangerpath} with technology $lastcall"
+	    echo " total of $lock cellranger ${cellrangerversion} jobs are already running in ${cellrangerpath} with barcode length (${lastcall_b}), UMI length (${lastcall_u}), and whitelist barcodes (${lastcall_p})"
             
 	    #check if a custom barcode is used for a run (which cannot be run in parallel)
+<<<<<<< HEAD
             if [[ $lastcall == "custom" ]]; then
                 echo "Error: cellranger is currently running with a custom barcode list"
                 echo "other jobs cannot be run until the current job is complete"
                 echo "remove $lockfile if $lastcall jobs have completed or aborted"
                 exit 1
             elif [[ $lastcall == $technology ]]; then
+=======
+            if [[ ${barcode_length} == ${lastcall_b} ]] && [[ ${umilength} == ${lastcall_u} ]] && [[ ${barcodefile} == ${lastcall_p} ]]; then
+>>>>>>> 9b5b3a75da1d9f04a8f8f70cf4fadd8c27a959e7
                 echo " call accepted: no conflict detected with other jobs currently running"
                 #add current job to lock
                 lock=$(($lock+1))
                 if [[ $setup == false ]]; then 
                     echo $lock > $lockfile
                 fi
-                setup=false
             else
-                echo "Error: conflict between technology selected for the new job ($technology) and other jobs currently running ($lastcall)"
-                echo "barcode whitelist configured and locked for currently running technology: $lastcall"
-                echo "remove $lockfile if $lastcall jobs have completed or aborted"
+                echo "Error: conflict between technology selected for the new job and other jobs currently running"
+                echo "make sure that the barcode length, UMI length, and the whitelist barcodes are the same as the other jobs currently running"
+                echo "if confident that no other jobs are running and still get this error, remove $lockfile and try again"
                 exit 1
             fi
         else
@@ -798,16 +861,15 @@ fi
 ####report inputs#####
 echo ""
 echo "#####Input information#####"
-echo "SETUP: $setup"
+echo "SETUP and exit: $setup"
+if [[ $setup == "true" ]]; then
+    echo "***Warning: launch_universc.sh will exit once whitelist is converted***"
+fi
 echo "FORMAT: $technology"
 if [[ $technology == "nadia" ]]; then
     echo "***Warning: whitelist is converted for compatibility with $technology, valid barcodes cannot be detected accurately with this technology***"
 fi
-if [[ -z $barcodefile ]]; then
-    echo "BARCODES: default"
-else
-    echo "BARCODES: (custom barcode file) $barcodefile"
-fi
+echo "BARCODES: ${barcodefile}"
 if [[ ${#read1[@]} -eq 0 ]] && [[ ${#read1[@]} -eq 0 ]]; then
     echo "***Warning: no FASTQ files were selected, launch_universc.sh will exit after setting up the whitelist***"
 fi
@@ -845,6 +907,9 @@ if [[ "$jobmode" == "local" ]]; then
     echo "***Warning: --jobmode \"sge\" is recommended if running script with qsub***"
 fi
 echo "CONVERSTION: $convert"
+if [[ $convert == "false" ]]; then
+    echo "***Warning: adjustment for barcode and UMI length was skipped***"
+fi
 echo "##########"
 echo ""
 ##########
@@ -852,8 +917,7 @@ echo ""
 
 
 ####setup whitelist#####
-#run setup if called
-if [[ $setup == "true" ]]; then
+if [[ $lock -eq 1 ]]; then
     echo "setup begin"
     echo "updating barcodes in $barcodedir for cellranger version ${cellrangerversion} installed in ${cellrangerpath} ..."
     
@@ -874,38 +938,68 @@ if [[ $setup == "true" ]]; then
         echo " ${cellrangerpath} set for $technology"
     fi
     
+<<<<<<< HEAD
     #generate backup for the default 10x whitelist
     if [[ ! -f 737K-august-2016.txt.backup ]] || [[ ! -f 3M-february-2018.txt.backup.gz ]]; then
         echo " generating backups for default 10x whitelist"
         cp -f 737K-august-2016.txt 737K-august-2016.txt.backup
        	cp -f 3M-february-2018.txt.gz 3M-february-2018.txt.backup.gz
+=======
+    #whitelist file name
+    v2=737K-august-2016.txt
+    v3=3M-february-2018.txt
+
+    #generate backup for the default 10x whitelist
+    if [[ ! -f 737K-august-2016.txt.backup ]] || [[ ! -f 3M-february-2018.txt.backup.gz ]]; then
+        echo " generating backups for default 10x whitelist"
+        cp -f ${v2} ${v2}.backup
+       	cp -f ${v3}.gz ${v3}.backup.gz
+>>>>>>> 9b5b3a75da1d9f04a8f8f70cf4fadd8c27a959e7
         echo " backup generated"
     fi
     
     #convert whitelist to the apropriate barcode
     echo " converting whitelist"
+<<<<<<< HEAD
     if [[ -z ${barcodefile} ]]; then
         #for version 2
         cp 737K-august-2016.txt.backup 737K-august-2016.txt
         #for version 3
         cp 3M-february-2018.txt.backup.gz 3M-february-2018.txt.gz
     else
+=======
+    if [[ ${barcodefile} == "default" ]]; then
+>>>>>>> 9b5b3a75da1d9f04a8f8f70cf4fadd8c27a959e7
         #for version 2
-        cat $barcodefile > 737K-august-2016.txt
+        cp ${v2}.backup ${v2}
         #for version 3
+<<<<<<< HEAD
         cat 737K-august-2016.txt > 3M-february-2018.txt
         gzip -f 3M-february-2018.txt
         rm translation/3M-february-2018.txt.gz
         ln -s 3M-february-2018.txt.gz translation/3M-february-2018.txt.gz
+=======
+        cp ${v3}.backup.gz ${v3}.gz
+    else
+        #for version 2
+        cat ${barcodefile} > ${v2}
+        if [[ $barcodeadjust -gt 0 ]]; then
+            sed -i "s/^.{${barcodeadjust}}//" ${v2} #Trim the first n characters from the beginning of the sequence and quality
+        elif [[ 0 -gt $barcodeadjust ]]; then
+            As=`printf '%0.sA' $(seq 1 $(($barcodeadjust * -1)))`
+            sed -i "s/^/$As/" ${v2} #Trim the first n characters from the beginning of the quality
+        fi
+        #for version 3
+        cat ${v2} > ${v3}
+        gzip -f ${v3}
+        rm translation/${v3}.gz
+        ln -s ${v3}.gz translation/${v3}.gz
+>>>>>>> 9b5b3a75da1d9f04a8f8f70cf4fadd8c27a959e7
     fi
     echo " whitelist converted"
     
     #change last call file
-    if [[ ! -z $barcodefile ]]; then
-        echo "custom" > $lastcallfile
-    else
-        echo $technology > $lastcallfile
-    fi
+    echo "${barcodelength} ${umilength} ${barcodefile}" > $lastcallfile
     
     cd - > /dev/null
     
@@ -916,11 +1010,11 @@ fi
 
 
 #####exiting when setup is all that is requested#####
-if [[ ${#read1[@]} -eq 0 ]] && [[ ${#read2[@]} -eq 0 ]]; then
+if [[ $setup == "ture" ]]; then
     lock=`cat $lockfile`
     lock=$(($lock-1))
     echo $lock > $lockfile
-    echo " whitelist converted and no FASTQ files are selected. exiting launch_universc.sh"
+    echo " setup complete. exiting launch_universc.sh"
     exit 0
 fi
 ##########
@@ -977,6 +1071,7 @@ done
 echo "converting input files to confer cellranger format ..."
 if [[ $convert == "false" ]]; then
     echo " input file format conversion skipped"
+<<<<<<< HEAD
 fi
 echo " barcodes: ${barcodeadjust}bps at its head"
 echo " UMIs: ${umiadjust}bps at its tail" 
@@ -997,10 +1092,50 @@ if [[ $barcodeadjust != 0 ]] && [[ $convert == "true" ]]; then
             toQ=`printf '%0.sI' $(seq 1 $(($barcodeadjust * -1)))`
             sed -i "2~4s/^/$toS/" $convFile #Trim the first n characters from the beginning of the sequence
             sed -i "4~4s/^/$toQ/" $convFile #Trim the first n characters from the beginning of the quality
+=======
+else
+    echo " adjustment parameters:"
+    echo "  barcodes: ${barcodeadjust}bps at its head"
+    echo "  UMIs: ${umiadjust}bps at its tail" 
+    
+    #converting barcodes
+    echo " adjusting barcodes of R1 files"
+    if [[ $barcodeadjust != 0 ]]; then
+        if [[ $barcodeadjust -gt 0 ]]; then
+            for convFile in "${convFiles[@]}"; do
+                echo " handling $convFile ..."
+                sed -i "2~2s/^.{${barcodeadjust}}//" $convFile #Trim the first n characters from the beginning of the sequence and quality
+                echo "  ${convFile} adjusted"
+           done
+        elif [[ 0 -gt $barcodeadjust ]]; then
+            for convFile in "${convFiles[@]}"; do
+                echo " handling $convFile ..."
+                toS=`printf '%0.sA' $(seq 1 $(($barcodeadjust * -1)))`
+                toQ=`printf '%0.sI' $(seq 1 $(($barcodeadjust * -1)))`
+                sed -i "2~4s/^/$toS/" $convFile #Trim the first n characters from the beginning of the sequence
+                sed -i "4~4s/^/$toQ/" $convFile #Trim the first n characters from the beginning of the quality
+                echo "  ${convFile} adjusted"
+            done
+        fi
+    fi
+    
+    #UMI
+    echo " adjusting UMIs of R1 files"
+    if [[ 0 -gt $umiadjust ]]; then 
+        for convFile in "${convFiles[@]}"; do
+            echo " handling $convFile ..."
+            toS=`printf '%0.sA' $(seq 1 $(($umiadjust * -1)))`
+            toQ=`printf '%0.sI' $(seq 1 $(($umiadjust * -1)))`
+            keeplength=`echo $((${barcode_default}+${umi_default}-($umiadjust * -1)))`
+            sed -i "2~2s/^\(.\{${keeplength}\}\).*/\1/" $convFile #Trim off everything beyond what is needed
+            sed -i "2~4s/$/$toS/" $convFile #Add n characters to the end of the sequence
+            sed -i "4~4s/$/$toQ/" $convFile #Add n characters to the end of the quality
+>>>>>>> 9b5b3a75da1d9f04a8f8f70cf4fadd8c27a959e7
             echo "  ${convFile} adjusted"
         done
     fi
 fi
+<<<<<<< HEAD
 #UMI
 echo " adjusting UMIs of R1 files"
 if [[ 0 -gt $umiadjust ]]; then 
@@ -1015,6 +1150,8 @@ if [[ 0 -gt $umiadjust ]]; then
         echo "  ${convFile} adjusted"
     done
 fi
+=======
+>>>>>>> 9b5b3a75da1d9f04a8f8f70cf4fadd8c27a959e7
 ##########
 
 
@@ -1119,6 +1256,26 @@ fi
 
 
 
+#####Readjusting the barcodes in the cellranger output back to its original state##### 
+if [[ ${barcodefile} != "default" ]]; then
+    echo "replacing modified barcodes with the original in the output gene barcode matrix"
+    perl ${BARCODERECOVER} ${barcodefile} ${barcodeadjust} ${id}
+    echo "barcodes recovered"
+fi
+##########
+
+
+
+#####extracting per cell data#####
+if [[ $percelldata == true ]]; then
+    echo "generating basic run statistics and per cell data"
+    perl ${PERCELLSTATS} ${barcodefile} ${barcodeadjust} ${id}
+    echo "per cell data generated"
+fi
+##########
+
+
+
 #####printing out log#####
 log="
 #####Conversion tool log#####
@@ -1126,10 +1283,11 @@ cellranger ${cellrangerversion}
 
 Original barcode format: ${technology} (then converted to 10x)
 
-Runtime: ${runtime}s
+cellranger runtime: ${runtime}s
 ##########
 "
 echo "$log"
 ##########
 
 exit 0
+
