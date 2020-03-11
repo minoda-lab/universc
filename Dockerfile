@@ -7,7 +7,8 @@ RUN apt-get update \
  git \
  git-lfs \
  make \
- gzip
+ gzip \
+ rename
 
 RUN apt-get install -y \
   curl \
