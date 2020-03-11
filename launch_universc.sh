@@ -5,10 +5,6 @@ install=false
 ######convert version#####
 convertversion="0.3.0.90008"
 ##########
-
-
-
-#####cellrenger version#####
 cellrangerpath=`which cellranger` #location of cellranger
 if [[ -z $cellrangerpath ]]; then
     echo "cellranger command is not found."
