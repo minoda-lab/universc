@@ -25,8 +25,7 @@ SOURCE="${BASH_SOURCE[0]}"
 
 
 #####usage statement#####
-statement='
-crconverter
+statement='crconverter
 
  Usage:
 
@@ -153,6 +152,12 @@ done
 if [[ -z $1 ]]; then
     echo "$statement"
     exit 1
+fi
+
+if [[ -z $help ]]; then
+    echo "$statement"
+    echo "$options"
+    exit 0
 fi
 
 if [[ -z $version ]]; then
