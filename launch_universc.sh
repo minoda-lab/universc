@@ -611,12 +611,12 @@ read12=("${read1[@]}" "${read2[@]}")
 for fq in "${read12[@]}"; do
     name=`basename $fq`
     name=${name%.*}
-    sn=`echo ${name} | cut -f1 -d'_'`
-    ln=`echo ${name} | cut -f3 -d'_' | sed 's/L00//'`
     fields=`echo ${name} | grep -o "_" | wc -l`
     fields=$(($fields+1))
-    LANE+=($ln)
-    if [[ ${fields} != 5 ]]; then
+    sn=`echo ${name} | cut -f1-$((${fields}-4))  -d'_'`
+    lane=`echo ${name} | cut -f$((${fields}-2)) -d'_' | sed 's/L00//'`
+    LANE+=($lane)
+    if [[ ${fields} -le 4 ]]; then
         echo "Error: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
         exit 1
     elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
