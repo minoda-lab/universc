@@ -5,6 +5,7 @@ RUN apt-get update \
  && apt-get upgrade -y \
  && apt-get install -y \
  git \
+ git-lfs \
  make \
  gzip
 
@@ -15,6 +16,10 @@ RUN apt-get install -y \
   && sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended"
 
 RUN git clone "https://github.com/TomKellyGenetics/cellranger_convert.git"
+
+RUN cd cellranger_convert/test/cellranger_reference/cellranger-tiny-ref/ \
+ && git lfs pull
+
 
 RUN cd cellranger_convert \
  && make reference \
