@@ -20,7 +20,6 @@ RUN git clone "https://github.com/TomKellyGenetics/cellranger_convert.git"
 RUN cd cellranger_convert/test/cellranger_reference/cellranger-tiny-ref/ \
  && git lfs pull
 
-
 RUN cd cellranger_convert \
  && make reference \
  && cd .. 
