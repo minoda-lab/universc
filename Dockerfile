@@ -34,5 +34,5 @@ RUN mkdir -p /cellranger-3.0.2.9001/cellranger-tiny-ref \
 
 ENV PATH cellranger_convert:$PATH
 
-RUN ln -s /cellranger_convert/convert.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/convert
+RUN ln -s /cellranger_convert/convert.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/conversion
 
