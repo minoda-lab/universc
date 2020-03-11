@@ -1,3 +1,11 @@
+![Docker Automated build](https://img.shields.io/docker/automated/tomkellygenetics/universc)
+![Docker Build Status](https://img.shields.io/docker/build/tomkellygenetics/universc)
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest)
+
+![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
+![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
+![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc)
+
 ### UniverSC version 0.3.0
 
 Conversion script to run Nadia, iCELL8, and custom libraries with cellranger (10x Genomics analysis tool)
