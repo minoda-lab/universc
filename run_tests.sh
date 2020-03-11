@@ -15,8 +15,8 @@ bash /universc/launch_universc.sh -v
 gunzip /universc/test/shared/cellranger-tiny-fastq/3.0.0/*fastq.gz
 # test cellranger call
 cellranger count --id="tiny-test" \
- --fastqs="/cellranger-3.1.0/cellranger-tiny-fastq/3.0.0/" --sample="tinygex" \
- --transcriptome="/cellranger-3.1.0/cellranger-tiny-ref/3.0.0/"
+ --fastqs="/cellranger-3.0.2.9001/cellranger-tiny-fastq/3.0.0/" --sample="tinygex" \
+ --transcriptome="/cellranger-3.0.2.9001/cellranger-tiny-ref/3.0.0/"
 
 # call convert on 10x with multiple lanes
 bash /universc/launch_universc.sh --id "test-10x" --technology "10x" \
