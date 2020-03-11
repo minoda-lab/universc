@@ -61,10 +61,22 @@ supported software be used for other purposes.
 
 The code in this repository is licensed under the MIT License.
 '
-
 ##########
 
-#variable optionsname=false
+
+
+
+#####print usage#####
+if [[ -z $1 ]]; then
+    echo "$statement"
+    exit 1
+fi
+##########
+
+
+
+
+#####declare variables#####
 name=$1
 type=$2
 inpath=""
@@ -95,7 +107,9 @@ if [[ $1 == "-v" ]] || [[ $2 == "-v" ]] || [[ $1 == "--version" ]] || [[ $2 == "
     end=true
     version=true
 fi
-for op in "${@:3}"; do
+shift
+shift
+for op in "${@}"; do
     if $next; then
         next=false;
         continue;
@@ -109,6 +123,7 @@ for op in "${@:3}"; do
                 shift
             else
                 echo "Explicit setting of input using other flags will override inputs found with --inpath"
+                shift
             fi
             ;;
            --output)
@@ -269,11 +284,6 @@ for op in "${@:3}"; do
     esac
 done
 ##########
-
-if [[ -z $1 ]]; then
-    echo "$statement"
-    exit 1
-fi
 
 if [[ $end  ]]; then
     if [[ ! -z $help ]]; then
