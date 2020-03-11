@@ -253,8 +253,7 @@ for op in "${@}"; do
                 next=true
                 shift
             else
-                echo "Error: value missing for --description"
-                exit 1
+                description=""
             fi
             ;;
         -v|--version)
