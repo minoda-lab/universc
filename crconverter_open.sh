@@ -67,19 +67,19 @@ The code in this repository is licensed under the MIT License.
 #variable optionsname=false
 name=$1
 type=$2
-read1=()
-read2=()
-SAMPLE=""
-LANE=()
-id=""
+inpath=""
+output=""
+pipestance=""
+metrics=""
+analysis=""
+aggregation=""
+gemgroups=""
+contiginfo=""
+peaks=""
+fragmentsindex=""
+geneannotations=""
+geneannotationtypes=""
 description=""
-reference=""
-ncells=""
-chemistry="SC3Pv2"
-jobmode="local"
-ncores=""
-mem=""
-percelldata=false
 
 next=false
 end=false
@@ -108,6 +108,116 @@ for op in "${@:3}"; do
                 shift
             else
                 echo "Explicit setting of input using other flags will override inputs found with --inpath"
+            fi
+            ;;
+           --output)
+            shift
+            if [[ "$1" != "" ]]; then
+                output="${1/%\//}"
+                next=true
+                shift
+            else
+                output=""
+            fi
+            ;;
+           --pipestance)
+            shift
+            if [[ "$1" != "" ]]; then
+                pipestance="${1/%\//}"
+                next=true
+                shift
+            else
+                pipestance=""
+            fi
+            ;;
+           --metrics)
+            shift
+            if [[ "$1" != "" ]]; then
+                metrics="${1/%\//}"
+                next=true
+                shift
+            else
+                metrics=""
+            fi
+            ;;
+           --analysis)
+            shift
+            if [[ "$1" != "" ]]; then
+                analysis="${1/%\//}"
+                next=true
+                shift
+            else
+                analysis=""
+            fi
+            ;;
+           --aggregation)
+            shift
+            if [[ "$1" != "" ]]; then
+                aggregation="${1/%\//}"
+                next=true
+                shift
+            else
+                aggregation=""
+            fi
+            ;;
+           --gemgroups)
+            shift
+            if [[ "$1" != "" ]]; then
+                gemgroups="${1/%\//}"
+                next=true
+                shift
+            else
+                gemgroups=""
+            fi
+            ;;
+           --contiginfo)
+            shift
+            if [[ "$1" != "" ]]; then
+                contiginfo="${1/%\//}"
+                next=true
+                shift
+            else
+                contiginfo=""
+            fi
+            ;;
+           --peaks)
+            shift
+            if [[ "$1" != "" ]]; then
+                peaks="${1/%\//}"
+                next=true
+                shift
+            else
+                peaks=""
+            fi
+            ;;
+           --fragmentsindex)
+            shift
+            if [[ "$1" != "" ]]; then
+                fragmentsindex="${1/%\//}"
+                next=true
+                shift
+            else
+                fragmentsindex=""
+            fi
+            ;;
+           --geneannotations)
+            shift
+            if [[ "$1" != "" ]]; then
+                geneannotations="${1/%\//}"
+                next=true
+                shift
+            else
+                geneannotations=""
+            fi
+            ;;
+           --geneannotationtypes)
+            shift
+            if [[ "$1" != "" ]]; then
+                geneannotationtypes="${1/%\//}"
+                next=true
+                shift
+            else
+                geneannotationtypes=""
             fi
             ;;
            --description)
