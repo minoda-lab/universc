@@ -72,6 +72,7 @@ output=""
 pipestance=""
 metrics=""
 analysis=""
+matrix=""
 aggregation=""
 gemgroups=""
 contiginfo=""
@@ -84,16 +85,16 @@ description=""
 next=false
 end=false
 
-# crconverter tiny SC_RNA_COUNTER_CS --matrix /root/tiny/SC_RNA_COUNTER_CS/SC_RNA_COUNTER/_BASIC_SC_RNA_COUNTER/FILTER_BARCODES/fork0/join-u00fa679091/files/filtered_matrices_h5.h5 \
-# --analysis /root/tiny/SC_RNA_COUNTER_CS/SC_RNA_COUNTER/SC_RNA_ANALYZER/SUMMARIZE_ANALYSIS/fork0/join-u00fa67911f/files/analysis/analysis.h5 \ 
-# --output /root/tiny/SC_RNA_COUNTER_CS/CLOUPE_PREPROCESS/fork0/chnk0-u3dd5684351/files/output_for_cloupe.cloupe \ 
-# --description CellRangerTest \ 
-# --metrics /root/tiny/SC_RNA_COUNTER_CS/SC_RNA_COUNTER/SUMMARIZE_REPORTS/fork0/join-u00fa679151/files/metrics_summary_json.json \
-# --gemgroups /root/tiny/SC_RNA_COUNTER_CS/CLOUPE_PREPROCESS/fork0/chnk0-u3dd5684351/files/gem_group_index_json.json
+if [[ $1 == "-h" ]] || [[ $2 == "-h" ]] || [[ $1 == "--help" ]] || [[ $2 == "--help" ]]; then
+    end=true
+    usage=true
+    help=true
+fi
 
-
-
-
+if [[ $1 == "-v" ]] || [[ $2 == "-v" ]] || [[ $1 == "--version" ]] || [[ $2 == "--version" ]]; then
+    end=true
+    version=true
+fi
 for op in "${@:3}"; do
     if $next; then
         next=false;
@@ -148,6 +149,16 @@ for op in "${@:3}"; do
                 shift
             else
                 analysis=""
+            fi
+            ;;
+          --matrix)
+            shift
+            if [[ "$1" != "" ]]; then
+                matrix="${1/%\//}"
+                next=true
+                shift
+            else
+                matrix=""
             fi
             ;;
            --aggregation)
@@ -252,7 +263,7 @@ for op in "${@:3}"; do
             shift
             ;;
         -*)
-            echo "$statement"
+            echo "Error: Invalid option: $op"
             exit 1
             ;;
     esac
@@ -264,29 +275,37 @@ if [[ -z $1 ]]; then
     exit 1
 fi
 
-if [[ -z $help ]]; then
-    echo "$statement"
-    echo "$options"
-    exit 0
+if [[ $end  ]]; then
+    if [[ ! -z $help ]]; then
+        echo "$statement"
+        echo "$options"
+        exit 0
+    fi
 fi
 
-if [[ -z $version ]]; then
-    echo "$crconverterversion"
-    exit 0
+if [[ $end ]]; then
+    if [[ ! -z $version ]]; then
+        echo "$crconverterversion"
+        exit 0
+    fi
 fi
 
 ##########
 
-echo "Cloupe File not generated"
+if [[ -z $output ]]; then
+    echo "An output file must be specified"
+    exit 1
+fi
+
+if [[ ! -f $output ]]; then
+    echo "#!/bin/bash" > $output
+    echo "echo \"Please use the supported release of cellranger if you wish to use .cloupe files\"" >> $output
+    chmod 755 $output
+else
+    echo ".cloupe file already exists in $output"
+fi
+
+echo "Wrote .cloupe file to $output"
+echo "Warning .cloupe file may be dysfunctional"
 exit 0
-
-#Wrote .cloupe file to /home/tom/datasets/20190717_Plant_Protoplast_fiveprime_HiSeq/test_AtRTD2_P09_PE/SC_RNA_COUNTER_CS/CLOUPE_PREPROCESS/fork0/chnk0-u4b566787c3/files/output_for_cloupe.cloupe
-
-# crconverter tiny SC_RNA_COUNTER_CS --matrix /root/tiny/SC_RNA_COUNTER_CS/SC_RNA_COUNTER/_BASIC_SC_RNA_COUNTER/FILTER_BARCODES/fork0/join-u00fa679091/files/filtered_matrices_h5.h5 \
-# --analysis /root/tiny/SC_RNA_COUNTER_CS/SC_RNA_COUNTER/SC_RNA_ANALYZER/SUMMARIZE_ANALYSIS/fork0/join-u00fa67911f/files/analysis/analysis.h5 \ 
-# --output /root/tiny/SC_RNA_COUNTER_CS/CLOUPE_PREPROCESS/fork0/chnk0-u3dd5684351/files/output_for_cloupe.cloupe \ 
-# --description CellRangerTest \ 
-# --metrics /root/tiny/SC_RNA_COUNTER_CS/SC_RNA_COUNTER/SUMMARIZE_REPORTS/fork0/join-u00fa679151/files/metrics_summary_json.json \
-# --gemgroups /root/tiny/SC_RNA_COUNTER_CS/CLOUPE_PREPROCESS/fork0/chnk0-u3dd5684351/files/gem_group_index_json.json
-
 
