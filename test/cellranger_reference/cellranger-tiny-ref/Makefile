@@ -5,7 +5,7 @@ PWD=$(shell pwd)
 all: reference
 
 reference:
-	echo "generating cellranger references"
+	@echo "generating cellranger references"
 	@if [ ! -d 1.2.0 ]; then\
 		echo cellranger mkref --genome=1.2.0 --fasta=genome-1.2.0.fa --genes=genes-1.2.0.gtf;\
 		rm -rf genome-1.2.0.fa genes-1.2.0.gtf;\
