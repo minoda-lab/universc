@@ -917,6 +917,7 @@ if [[ $lock -eq 1 ]]; then
     cd - > /dev/null
     
     echo "setup complete"
+    exit 0
 fi
 #########
 
