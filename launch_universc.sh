@@ -784,7 +784,7 @@ else
 	    echo " total of $lock cellranger ${cellrangerversion} jobs are already running in ${cellrangerpath} with barcode length (${lastcall_b}), UMI length (${lastcall_u}), and whitelist barcodes (${lastcall_p})"
             
 	    #check if a custom barcode is used for a run (which cannot be run in parallel)
-            if [[ ${barcode_length} == ${lastcall_b} ]] && [[ ${umilength} == ${lastcall_u} ]] && [[ ${barcodefile} == ${lastcall_p} ]]; then
+            if [[ ${barcodelength} == ${lastcall_b} ]] && [[ ${umilength} == ${lastcall_u} ]] && [[ ${barcodefile} == ${lastcall_p} ]]; then
                 echo " call accepted: no conflict detected with other jobs currently running"
                 #add current job to lock
                 lock=$(($lock+1))
@@ -796,7 +796,7 @@ else
                 echo "make sure that the barcode length, UMI length, and the whitelist barcodes are the same as the other jobs currently running"
                 echo "if confident that no other jobs are running and still get this error, remove $lockfile and try again"
                 if [[ $verbose ]]; then
-                    echo "Submitted configuration with barcode length (${barcode_length}), UMI length (${umilength}), and whitelist barcodes (${barcodefile})"
+                    echo "Submitted configuration with barcode length (${barcodelength}), UMI length (${umilength}), and whitelist barcodes (${barcodefile})"
                 fi
                 exit 1
             fi
