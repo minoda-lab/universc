@@ -785,7 +785,7 @@ else
                 echo "make sure that the barcode length, UMI length, and the whitelist barcodes are the same as the other jobs currently running"
                 echo "if confident that no other jobs are running and still get this error, remove $lockfile and try again"
                 if [[ $verbose ]]; then
-                    echo "Submitted configuration with barcode length (${barcode_length}), UMI length (${umilength), and whitelist barcodes (${barcodefile})"
+                    echo "Submitted configuration with barcode length (${barcode_length}), UMI length (${umilength}), and whitelist barcodes (${barcodefile})"
                 fi
                 exit 1
             fi
