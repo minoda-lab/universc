@@ -775,7 +775,7 @@ umiadjust=`echo $(($umilength-$umi_default))`
 #set up .lock file
 if [[ ! -f $lockfile ]]; then
     echo "creating .lock file"
-    echo 1 > $lockfile
+    echo 0 > $lockfile
     lock=`cat $lockfile`
 else
     #check if jobs are running (check value in .lock file)
@@ -794,7 +794,7 @@ else
                 echo " call accepted: no conflict detected with other jobs currently running"
                 #add current job to lock
                 lock=$(($lock+1))
-                if [[ $setup == false ]]; then 
+                if [[ $setup == "false" ]]; then 
                     echo $lock > $lockfile
                 fi
             else
@@ -937,7 +937,9 @@ if [[ $lock -eq 1 ]]; then
     cd - > /dev/null
     
     echo "setup complete"
-    exit 0
+    if [[ $setup == "true" ]]; then
+        exit 0
+    fi
 fi
 #########
 
