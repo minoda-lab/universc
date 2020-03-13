@@ -1,9 +1,0 @@
-Row	Col	Candidate	For dispense	Sample	Barcode	State	Cells1	Cells2	Signal1	Signal2	Size1	Size2	Integ Signal1	Integ Signal2	Circularity1	Circularity2	Confidence	Confidence1	Confidence2	Comment	Dispense tip	Drop index	Global drop index
-6	37	yes	yes	K562	CGTCGAGG+TCATGCTG	Good	1	0	390		59		23010		0.943399		1	1	1		4	159	430
-44	45	yes	yes	K562	TCATACCA+GTTCGGTT	Good	1	0	489		63		30807		0.9645678		1	1	1		6	25	639
-38	4	yes	yes	K562	TGGATCAA+GTTCAACT	Good	1	0	509		63		32067		0.9645678		1	1	1		1	5	176
-38	53	yes	yes	K562	TGGATCAA+GTAGAATG	Good	1	0	799		27		21573		1		1	1	1		2	124	161
-0	19	yes	yes	K562	AACCGGTT+TTAGGCGG	Good	1	0	504		58		29232		1		1	1	1		1	114	430
-4	37	yes	yes	Pos_Ctrl	CATTCGGT+TCATGCTG	Good	1	0	411		46		18906		1		1	1	1		7	87	169
-42	52	yes	yes	Pos_Ctrl	ATTCTACC+CTTCTTAC	Good	1	0	554		58		32132		1		1	1	1		1	98	150
-8	4	yes	yes	K562	TATACGGA+GTTCAACT	Good	1	0	493		63		31059		0.9645678		1	1	1		8	5	101

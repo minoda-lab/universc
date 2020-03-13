@@ -12,21 +12,27 @@ bash /universc/launch_universc.sh -t "10x" --setup
 
 ## test 10x data
 # unzip input data
-gzip /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/barcodes/3M-february-2018.txt
+if [[ ! -f /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/barcodes/3M-february-2018.txt.gz ]]; then
+    gzip /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/barcodes/3M-february-2018.txt
+fi
 # test cellranger call
 cellranger testrun --id="tiny-test"
 # unzip input data
-gunzip /universc/test/shared/cellranger-tiny-fastq/3.0.0/*fastq
-gunzip /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/barcodes/3M-february-2018.txt.gz 
+gunzip -fk /universc/test/shared/cellranger-tiny-fastq/3.0.0/*fastq.gz
+gunzip -fk /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/barcodes/3M-february-2018.txt.gz 
 # test cellranger call
-cellranger count --id="tiny-count" \
- --fastqs="/cellranger-3.0.2.9001/cellranger-tiny-fastq/3.0.0/" --sample="tinygex_S1" \
- --transcriptome="/cellranger-3.0.2.9001/cellranger-tiny-ref/3.0.0/" \
- --chemistry="SC3Pv2"
+cellranger count --id="tiny-count-v3" \
+ --fastqs="/cellranger-3.0.2.9001/cellranger-tiny-fastq/3.0.0/" --sample="tinygex" \
+ --transcriptome="/cellranger-3.0.2.9001/cellranger-tiny-ref/3.0.0"
+
+cellranger count --id="tiny-count-v2" \
+ --fastqs="/cellranger-3.0.2.9001/cellranger-tiny-fastq/1.2.0/" --sample="tinygex" \
+ --transcriptome="/cellranger-3.0.2.9001/cellranger-tiny-ref/1.2.0"
 
 # call convert on 10x with multiple lanes
 bash /universc/launch_universc.sh --id "test-10x" --technology "10x" \
  --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --chemistry "SC3Pv3" \
  --file "/universc/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
  "/universc/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002"
 
@@ -39,7 +45,8 @@ bash /universc/launch_universc.sh -t "nadia" --setup
 bash /universc/launch_universc.sh --id "test-dropseq" --technology "nadia" \
  --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --read1 "/universc/test/shared/dropseq-test/SRR1873277_S1_L001_R1_001" \
- --read2 "/universc/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001" 
+ --read2 "/universc/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001" \
+ --chemistry "SCP-V3"
 
 ## test icell8 data
 # unzip input data

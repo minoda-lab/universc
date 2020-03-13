@@ -69,9 +69,9 @@ Mandatory arguments to long options are mandatory for short options too.
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
-  -t,  --technology PLATFORM    Name of technology used to generate data (10x, nadia, icell8, or custom)
+  -t,  --technology PLATFORM    Name of technology used to generate data (10x, chromium, nadia, dropseq, icell8, or custom)
                                 e.g. custom_16_10
-  -b,  --barcodefile FILE       Custom barcode list in plain text  
+  -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
@@ -138,7 +138,13 @@ id=""
 description=""
 reference=""
 ncells=""
-chemistry="SC3Pv2"
+if [[ $technology == "10x" ]] || [[ $technology == "chromium" ]]; then
+    #set default chemistry to auto detect 10x version 2 or 3
+    chemistry="auto"
+else
+    #otherwise use version 2 configurations for other platforms
+    chemistry="SC3Pv2"
+fi
 jobmode="local"
 ncores=""
 mem=""
@@ -418,6 +424,17 @@ if ! [[ -w "$SDIR" ]]; then
     exit 1
 fi
 
+
+#aliases for technology with the same settings
+if [[ "$technology" == "chromium" ]]; then
+    echo "Running with technology 10x (chromium)" 
+    technology="10x"
+fi
+if [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
+    echo "Running with Nadia parameters (Drop-Seq)"
+    technology="nadia"
+fi
+
 #check if technology matches expected inputs
 if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
     if [[ "$technology" != "custom"* ]]; then
@@ -645,10 +662,12 @@ if [[ ! -z "$barcodefile" ]]; then
 	exit 1
     else
         barcodefile=`readlink -f $barcodefile`
+        #all barcodes upper case
+        sed -i 's/.*/\U&/g' $barcodefile
     fi
 else
     if [[ "$technology" == "10x" ]]; then
-        barcodefile=default
+        barcodefile="default"
     elif [[ "$technology" == "nadia" ]]; then
         barcodefile=${SDIR}/nadia_barcode.txt
         if [[ ! -f ${barcodefile} ]]; then
@@ -696,8 +715,8 @@ elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
 fi
 
 #check if chemistry matches expected input
-if [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
-    echo "Error: option --chemistry must be SC3Pv2, SC5P-PE , or SC5P-R2"
+if [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+    echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE , or SC5P-R2"
     exit 1
 fi
 
@@ -758,7 +777,7 @@ umiadjust=`echo $(($umilength-$umi_default))`
 #set up .lock file
 if [[ ! -f $lockfile ]]; then
     echo "creating .lock file"
-    echo 1 > $lockfile
+    echo 0 > $lockfile
     lock=`cat $lockfile`
 else
     #check if jobs are running (check value in .lock file)
@@ -768,22 +787,28 @@ else
     if [[ $lock -le 0 ]]; then
         echo " call accepted: no other cellranger jobs running"
         lock=1
+        if [[ $setup == "false" ]]; then 
+                    echo $lock > $lockfile
+        fi
     else
         if [[ -f $lastcallfile ]]; then
 	    echo " total of $lock cellranger ${cellrangerversion} jobs are already running in ${cellrangerpath} with barcode length (${lastcall_b}), UMI length (${lastcall_u}), and whitelist barcodes (${lastcall_p})"
             
 	    #check if a custom barcode is used for a run (which cannot be run in parallel)
-            if [[ ${barcode_length} == ${lastcall_b} ]] && [[ ${umilength} == ${lastcall_u} ]] && [[ ${barcodefile} == ${lastcall_p} ]]; then
+            if [[ ${barcodelength} == ${lastcall_b} ]] && [[ ${umilength} == ${lastcall_u} ]] && [[ ${barcodefile} == ${lastcall_p} ]]; then
                 echo " call accepted: no conflict detected with other jobs currently running"
                 #add current job to lock
                 lock=$(($lock+1))
-                if [[ $setup == false ]]; then 
+                if [[ $setup == "false" ]]; then 
                     echo $lock > $lockfile
                 fi
             else
                 echo "Error: conflict between technology selected for the new job and other jobs currently running"
                 echo "make sure that the barcode length, UMI length, and the whitelist barcodes are the same as the other jobs currently running"
                 echo "if confident that no other jobs are running and still get this error, remove $lockfile and try again"
+                if [[ $verbose ]]; then
+                    echo "Submitted configuration with barcode length (${barcodelength}), UMI length (${umilength}), and whitelist barcodes (${barcodefile})"
+                fi
                 exit 1
             fi
         else
@@ -854,7 +879,7 @@ echo ""
 
 
 ####setup whitelist#####
-if [[ $lock -eq 1 ]]; then
+if [[ $lock -eq 0 ]]; then
     echo "setup begin"
     echo "updating barcodes in $barcodedir for cellranger version ${cellrangerversion} installed in ${cellrangerpath} ..."
     
@@ -917,7 +942,9 @@ if [[ $lock -eq 1 ]]; then
     cd - > /dev/null
     
     echo "setup complete"
-    exit 0
+    if [[ $setup == "true" ]]; then
+        exit 0
+    fi
 fi
 #########
 
@@ -1114,9 +1141,10 @@ echo "cellranger run complete"
 #####remove files if convert is not running elsewhere#####
 echo "updating .lock file"
 
-#remove currewnt job from counter (successfully completed)
+#remove current job from counter (successfully completed)
 lock=`cat ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock`
 lock=$(($lock-1))
+echo $lock > $lockfile
 
 #check if jobs running
 if [[ $lock -ge 1 ]]; then
