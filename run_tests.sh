@@ -30,11 +30,15 @@ cellranger count --id="tiny-count-v2" \
  --transcriptome="/cellranger-3.0.2.9001/cellranger-tiny-ref/1.2.0"
 
 # call convert on 10x with multiple lanes
-bash /universc/launch_universc.sh --id "test-10x" --technology "10x" \
+bash /universc/launch_universc.sh --id "test-10x-v3" --technology "10x" \
  --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
- --chemistry "SC3Pv3" \
  --file "/universc/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
  "/universc/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002"
+
+bash /universc/launch_universc.sh --id "test-10x-v2" --technology "10x" \
+ --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/1.2.0" \
+ --file "/universc/test/shared/cellranger-tiny-fastq/1.2.0/tinygex_S1_L001" \
+ "/universc/test/shared/cellranger-tiny-fastq/1.2.0/tinygex_S1_L002"
 
 ## test drop-seq data
 # unzip input data
@@ -45,25 +49,34 @@ bash /universc/launch_universc.sh -t "nadia" --setup
 bash /universc/launch_universc.sh --id "test-dropseq" --technology "nadia" \
  --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --read1 "/universc/test/shared/dropseq-test/SRR1873277_S1_L001_R1_001" \
- --read2 "/universc/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001" \
- --chemistry "SCP-V3"
+ --read2 "/universc/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001" 
 
 ## test icell8 data
 # unzip input data
-gunzip /universc/test/shared/mappa-test/*fastq.gz
-# call on icell8 files with custom whitelist and non-standard file names
+gunzip -fk /universc/test/shared/mappa-test/*fastq.gz
+# call on icell8 files with default whitelist
 bash /universc/launch_universc.sh --id "test-icell8" --technology "iCell8" \
  --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --read1 "/universc/test/shared/mappa-test/test_FL_R1.fastq" \
  --read2 "/universc/test/shared/mappa-test/test_FL_R2.fastq" \
- --barcodefile "/universc/test/shared/mappa-test/99999_mappa_test_selected_WellList.TXT"
+ --chemistry "SC3Pv2"
+#restore file names for test job
+mv /universc/test/shared/mappa-test/test_FL_S1_L001_R1_001.fastq /universc/test/shared/mappa-test/test_FL_R1.fastq
+mv /universc/test/shared/mappa-test/test_FL_S1_L001_R2_001.fastq /universc/test/shared/mappa-test/test_FL_R2.fastq
 
+# call on icell8 files with custom whitelist and non-standard file names
+bash /universc/launch_universc.sh --id "test-icell8-custom" --technology "iCell8" \
+ --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --read1 "/universc/test/shared/mappa-test/test_FL_R1.fastq" \
+ --read2 "/universc/test/shared/mappa-test/test_FL_R2.fastq" \
+ --barcodefile "/universc/test/shared/mappa-test/mappa_barcodes.txt"  \
+ --chemistry "SC3Pv2"
 #restore file names for test job
 mv /universc/test/shared/mappa-test/test_FL_S1_L001_R1_001.fastq /universc/test/shared/mappa-test/test_FL_R1.fastq
 mv /universc/test/shared/mappa-test/test_FL_S1_L001_R2_001.fastq /universc/test/shared/mappa-test/test_FL_R2.fastq
 
 # compress all input files
-gzip /universc/test/shared/cellranger-tiny-fastq/3.0.0/*fastq
-gzip /universc/test/shared/dropseq-test/*fastq
-gzip /universc/test/shared/mappa-test/*fastq
+gzip -f /universc/test/shared/cellranger-tiny-fastq/3.0.0/*fastq
+gzip -f /universc/test/shared/dropseq-test/*fastq
+gzip -f /universc/test/shared/mappa-test/*fastq
 
