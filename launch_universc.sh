@@ -707,8 +707,8 @@ elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
 fi
 
 #check if chemistry matches expected input
-if [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
-    echo "Error: option --chemistry must be SC3Pv2, SC5P-PE , or SC5P-R2"
+if [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+    echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE , or SC5P-R2"
     exit 1
 fi
 

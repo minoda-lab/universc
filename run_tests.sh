@@ -32,6 +32,7 @@ cellranger count --id="tiny-count-v2" \
 # call convert on 10x with multiple lanes
 bash /universc/launch_universc.sh --id "test-10x" --technology "10x" \
  --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --chemistry "SC3Pv3" \
  --file "/universc/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
  "/universc/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002"
 
@@ -44,7 +45,8 @@ bash /universc/launch_universc.sh -t "nadia" --setup
 bash /universc/launch_universc.sh --id "test-dropseq" --technology "nadia" \
  --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --read1 "/universc/test/shared/dropseq-test/SRR1873277_S1_L001_R1_001" \
- --read2 "/universc/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001" 
+ --read2 "/universc/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001" \
+ --chemistry "SCP-V3"
 
 ## test icell8 data
 # unzip input data
