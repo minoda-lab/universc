@@ -69,7 +69,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
-  -t,  --technology PLATFORM    Name of technology used to generate data (10x, nadia, icell8, or custom)
+  -t,  --technology PLATFORM    Name of technology used to generate data (10x, chromium, nadia, dropseq, icell8, or custom)
                                 e.g. custom_16_10
   -b,  --barcodefile FILE       Custom barcode list in plain text  
   
@@ -418,6 +418,17 @@ if ! [[ -w "$SDIR" ]]; then
     exit 1
 fi
 
+
+#aliases for technology with the same settings
+if [[ "$technology" == "chromium" ]]; then
+    echo "Running with technology 10x (chromium)" 
+    technology="10x"
+fi
+if [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
+    echo "Running with Nadia parameters (Drop-Seq)"
+    technology="nadia"
+fi
+
 #check if technology matches expected inputs
 if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
     if [[ "$technology" != "custom"* ]]; then
@@ -648,7 +659,7 @@ if [[ ! -z "$barcodefile" ]]; then
     fi
 else
     if [[ "$technology" == "10x" ]]; then
-        barcodefile=default
+        barcodefile="default"
     elif [[ "$technology" == "nadia" ]]; then
         barcodefile=${SDIR}/nadia_barcode.txt
         if [[ ! -f ${barcodefile} ]]; then
