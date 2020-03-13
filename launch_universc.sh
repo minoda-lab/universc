@@ -138,7 +138,13 @@ id=""
 description=""
 reference=""
 ncells=""
-chemistry="SC3Pv2"
+if [[ $technology == "10x" ]] || [[ $technology == "chromium" ]]; then
+    #set default chemistry to auto detect 10x version 2 or 3
+    chemistry="auto"
+else
+    #otherwise use version 2 configurations for other platforms
+    chemistry="SC3Pv2"
+fi
 jobmode="local"
 ncores=""
 mem=""
