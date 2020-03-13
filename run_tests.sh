@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # run tests in home directory (writeable)
 cd ~
 
