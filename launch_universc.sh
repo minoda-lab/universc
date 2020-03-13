@@ -785,6 +785,9 @@ else
     if [[ $lock -le 0 ]]; then
         echo " call accepted: no other cellranger jobs running"
         lock=1
+        if [[ $setup == "false" ]]; then 
+                    echo $lock > $lockfile
+        fi
     else
         if [[ -f $lastcallfile ]]; then
 	    echo " total of $lock cellranger ${cellrangerversion} jobs are already running in ${cellrangerpath} with barcode length (${lastcall_b}), UMI length (${lastcall_u}), and whitelist barcodes (${lastcall_p})"
@@ -874,7 +877,7 @@ echo ""
 
 
 ####setup whitelist#####
-if [[ $lock -eq 1 ]]; then
+if [[ $lock -eq 0 ]]; then
     echo "setup begin"
     echo "updating barcodes in $barcodedir for cellranger version ${cellrangerversion} installed in ${cellrangerpath} ..."
     
@@ -1136,9 +1139,10 @@ echo "cellranger run complete"
 #####remove files if convert is not running elsewhere#####
 echo "updating .lock file"
 
-#remove currewnt job from counter (successfully completed)
+#remove current job from counter (successfully completed)
 lock=`cat ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock`
 lock=$(($lock-1))
+echo $lock > $lockfile
 
 #check if jobs running
 if [[ $lock -ge 1 ]]; then
