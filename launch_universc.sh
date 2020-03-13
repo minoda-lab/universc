@@ -71,7 +71,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
   -t,  --technology PLATFORM    Name of technology used to generate data (10x, chromium, nadia, dropseq, icell8, or custom)
                                 e.g. custom_16_10
-  -b,  --barcodefile FILE       Custom barcode list in plain text  
+  -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
@@ -662,6 +662,8 @@ if [[ ! -z "$barcodefile" ]]; then
 	exit 1
     else
         barcodefile=`readlink -f $barcodefile`
+        #all barcodes upper case
+        sed -i 's/.*/\U&/g' $barcodefile
     fi
 else
     if [[ "$technology" == "10x" ]]; then
