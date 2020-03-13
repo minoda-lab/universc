@@ -389,15 +389,15 @@ if [[ $testrun == "true" ]]; then
     description=${id}
     
     if [[ $technology == "10x" ]]; then
-        gunzip -k ${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L00[12]_R[12]_001.fastq.gz
+        gunzip -fk ${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L00[12]_R[12]_001.fastq.gz
         read1=("${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq" "${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq")
         read2=("${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_002.fastq" "${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq")
     elif [[ $technology == "nadia" ]]; then
-        gunzip -k ${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq
+        gunzip -fk ${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq.gz
         read1=("${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq")
         read2=("${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq")
     elif [[ $technology == "icell8" ]]; then
-        gunzip -k ${SDIR}/test/shared/mappa-test/test_FL_R[12].fastq.gz
+        gunzip -fk ${SDIR}/test/shared/mappa-test/test_FL_R[12].fastq.gz
         read1=("${SDIR}/test/shared/mappa-test/test_FL_R1.fastq")
         read2=("${SDIR}/test/shared/mappa-test/test_FL_R2.fastq")
     else
