@@ -1,3 +1,0 @@
-sut:
-  build: .
-  command: bash run_tests.sh

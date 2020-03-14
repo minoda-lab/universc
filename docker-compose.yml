@@ -1,3 +1,7 @@
 sut:
   build: .
   command: echo "build complete"
+
+test:
+  build: .
+  command: bash run_tests.sh
