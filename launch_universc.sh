@@ -707,7 +707,8 @@ else
             echo "Barcode length ($barcodelength) of 16 or more:"
             echo "    ...using barcode whitelist of 16bp"
         fi
-        minlength=`echo $(( $barcodelength < 16 ? $barcodelength : 16 ))`
+       
+        minlength=$(( $barcodelength < 16 ? $barcodelength : 16 ))
         # compute custom barcodes if barcode length is different
         barcodefile=${SDIR}/${customname}_${minlength}_barcode.txt
         if [[ ! -f ${barcodefile} ]]; then
