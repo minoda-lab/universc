@@ -723,7 +723,7 @@ else
                 strings=`for ii in {1..${minlength}}
                              do
                              echo "{A,T,C,G}"
-                             done |  tr "\n" " " | sed "s/ //g" | xargs -I {} echo {} | xargs -I {} echo {}`
+                             done |  tr "\n" " " | sed "s/ //g" | xargs -I {} echo {}`
                 eval "echo ${strings}" | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
             fi
         fi 
