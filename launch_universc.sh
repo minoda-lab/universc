@@ -441,12 +441,12 @@ if [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
     echo "Running with Nadia parameters (Drop-Seq)"
     technology="nadia"
 fi
-if [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]];; then
+if [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]]; then
     echo "Running with Quartz-Seq2 v3.1 parameters 384 wells (14bp barcode)"
     technology="quartz-seq2-384"
 fi
 
-if [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]];; then
+if [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]]; then
     echo "Running with Quartz-Seq2 v3.2 parameters 1536 wells (15bp barcode)"
     technology="quartz-seq2-1536"
 fi
