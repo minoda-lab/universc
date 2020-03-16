@@ -713,7 +713,7 @@ else
         if [[ ! -f ${barcodefile} ]]; then
             echo "No barcodes whitelists available for ${customname}: all possible barcodes accepted (valid barcodes will be 100% as a result)"
             echo "***Warning: giving a barcode whitelist --barcodefile is recommended where available.***"
-            if [[ -f ${SDIR}/*${barcodelength}_barcode.txt ]]
+            if [[ -f ${SDIR}/*${barcodelength}_barcode.txt ]]; then
                 pregeneratedfile=`ls ${SDIR}/*${barcodelength}_barcode.txt | awk '{print $1;}' | head -n 1`
                 echo "$pregeneratedfile for barcode(${barcodelength}) generated already"
                 ln -s $pregeneratedfile $barcodefile
