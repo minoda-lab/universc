@@ -74,6 +74,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                   10x Genomics (16bp barcode, 10bp UMI): 10x, chromium (v2 or v3 automatically detected)
                                   Drop-Seq (12pb barcode, 8pm UMI): nadia, dropseq
                                   iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
+                                  CEL-Seq (6bp barcode, 6bp UMI): celseq
+                                  SCRUB-Seq (6bp barcode, 10bp UMI): scrubseq
                                   Quartz-Seq2 (14bp barcodes, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcodes, 8bp UMI): quartzseq2-1536                                    
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
@@ -441,6 +443,19 @@ if [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
     echo "Running with Nadia parameters (Drop-Seq)"
     technology="nadia"
 fi
+if [[ "$technology" == "celseq" ]] || [[ "$technology" == "cel-seq" ]]; then
+    echo "Running with CEL-Seq parameters (version 1)"
+    technology="celseq"
+fi
+if [[ "$technology" == "celseq2" ]] || [[ "$technology" == "cel-seq2" ]]; then
+    echo "Running with CEL-Seq2 parameters"
+    technology="celseq2"
+fi
+if [[ "$technology" == "scrubseq" ]] || [[ "$technology" == "scrub-seq" ]]; then
+    echo "Running with SCRUB-Seq parameters"
+    technology="scrubseq"
+fi
+
 if [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]]; then
     echo "Running with Quartz-Seq2 v3.1 parameters 384 wells (14bp barcode)"
     technology="quartz-seq2-384"
@@ -701,18 +716,25 @@ else
         barcodefile=${SDIR}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
         barcodefile=${SDIR}/Quartz-Seq2-1536_barcode.txt
-    elif [[ "$technology" == "custom"* ]]; then
-        custom=`echo $technology | grep -o "_" | wc -l`
-        custom=$(($custom+1))
-        customname=`echo $technology | cut -f1-$((${custom}-2))  -d'_'`
-        barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
-        #check whether barcodes exceed 16bp (and reuse 16bp whitelist for all greater than 16bp)
-        if [[  $barcodelength -ge 16 ]]; then
-            echo "Barcode length ($barcodelength) of 16 or more:"
-            echo "    ...using barcode whitelist of 16bp"
+    elif [[ "$technology" == "custom"* ]] || [[ "$technology" == "celseq" ]] || [[ "$technology" == "scrubseq" ]]; then
+        if [[ "$technology" == "celseq" ]]; then
+            customname="celseq"
+            minlength=6
+        elif [[ "$technology" == "scrubseq" ]]; then
+            customname="scrubseq"
+            minlength=6
+        elif [[ "$technology" == "custom"* ]]; then
+            custom=`echo $technology | grep -o "_" | wc -l`
+            custom=$(($custom+1))
+            customname=`echo $technology | cut -f1-$((${custom}-2))  -d'_'`
+            barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
+            #check whether barcodes exceed 16bp (and reuse 16bp whitelist for all greater than 16bp)
+            if [[  $barcodelength -ge 16 ]]; then
+                echo "Barcode length ($barcodelength) of 16 or more:"
+                echo "    ...using barcode whitelist of 16bp"
+            fi
+            minlength=$(( $barcodelength < 16 ? $barcodelength : 16 ))
         fi
-       
-        minlength=$(( $barcodelength < 16 ? $barcodelength : 16 ))
         # compute custom barcodes if barcode length is different
         barcodefile=${SDIR}/${customname}_${minlength}_barcode.txt
         if [[ ! -f ${barcodefile} ]]; then
@@ -814,6 +836,12 @@ elif [[ "$technology" == "nadia" ]]; then
 elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
     umilength=14
+elif [[ "$technology" == "celseq" ]]; then
+    barcodelength=6
+    umilength=6
+elif [[ "$technology" == "scrubseq" ]]; then
+    barcodelength=6 
+    umilength=10 
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
