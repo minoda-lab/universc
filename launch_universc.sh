@@ -72,12 +72,14 @@ Mandatory arguments to long options are mandatory for short options too.
   -t,  --technology PLATFORM    Name of technology used to generate data.
                                 Supported technologies:
                                   10x Genomics (16bp barcode, 10bp UMI): 10x, chromium (v2 or v3 automatically detected)
+                                  CEL-Seq (6bp barcode, 6bp UMI): celseq
                                   Drop-Seq (12pb barcode, 8pm UMI): nadia, dropseq
                                   iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
-                                  CEL-Seq (6bp barcode, 6bp UMI): celseq
-                                  SCRUB-Seq (6bp barcode, 10bp UMI): scrubseq
+                                  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1
+                                  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2 
                                   Quartz-Seq2 (14bp barcodes, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcodes, 8bp UMI): quartzseq2-1536                                    
+                                  SCRUB-Seq (6bp barcode, 10bp UMI): scrubseq
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
@@ -439,10 +441,6 @@ if [[ "$technology" == "chromium" ]]; then
     echo "Running with technology 10x (chromium)" 
     technology="10x"
 fi
-if [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
-    echo "Running with Nadia parameters (Drop-Seq)"
-    technology="nadia"
-fi
 if [[ "$technology" == "celseq" ]] || [[ "$technology" == "cel-seq" ]]; then
     echo "Running with CEL-Seq parameters (version 1)"
     technology="celseq"
@@ -451,11 +449,27 @@ if [[ "$technology" == "celseq2" ]] || [[ "$technology" == "cel-seq2" ]]; then
     echo "Running with CEL-Seq2 parameters"
     technology="celseq2"
 fi
-if [[ "$technology" == "scrubseq" ]] || [[ "$technology" == "scrub-seq" ]]; then
-    echo "Running with SCRUB-Seq parameters"
-    technology="scrubseq"
+if [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
+    echo "Running with Nadia parameters (Drop-Seq)"
+    technology="nadia"
 fi
-
+if [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]]; then
+    echo "Running with iCELL8 parameters (version 3 with UMIs)"
+    technology="icell8"
+fi
+if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]]; then
+    echo "Running with inDrop parameters (version 1)"
+    technology="indrop-v1"
+fi
+if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]]; then
+    echo "Running with inDrop parameters (version 2 with reads inverted)"
+    technology="indrop-v2"    
+    #invert read1 and read2
+    tmp=$read1 
+    read1=$read2
+    read2=$tmp  
+    tmp=""
+fi
 if [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]]; then
     echo "Running with Quartz-Seq2 v3.1 parameters 384 wells (14bp barcode)"
     technology="quartz-seq2-384"
@@ -465,9 +479,14 @@ if [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-
     echo "Running with Quartz-Seq2 v3.2 parameters 1536 wells (15bp barcode)"
     technology="quartz-seq2-1536"
 fi
+if [[ "$technology" == "scrubseq" ]] || [[ "$technology" == "scrub-seq" ]]; then
+    echo "Running with SCRUB-Seq parameters"
+    technology="scrubseq"
+fi
+
 
 #check if technology matches expected inputs
-if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
+if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]] && [[ "$technology" != "celseq" ]] && [[ "$technology" != "scrubseq" ]] && [[ "$technology" != "quartz-seq2"* ]] && [[ "$technology" != "indrop"* ]]; then
     if [[ "$technology" != "custom"* ]]; then
         echo "Error: option -t needs to be 10x, nadia, icell8, or custom_<barcode>_<UMI>"
         exit 1
@@ -712,6 +731,8 @@ else
         fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${SDIR}/iCell8_barcode.txt
+    elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
+        barcodefile=${SDIR}/inDrops_barcodes.txt
     elif [[ "$technology" == "quartz-seq2-384" ]]; then
         barcodefile=${SDIR}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
@@ -830,24 +851,27 @@ umilength=""
 if [[ "$technology" == "10x" ]]; then
     barcodelength=16
     umilength=10
+elif [[ "$technology" == "celseq" ]]; then
+    barcodelength=6
+    umilength=6
 elif [[ "$technology" == "nadia" ]]; then
     barcodelength=12
     umilength=8
 elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
     umilength=14
-elif [[ "$technology" == "celseq" ]]; then
-    barcodelength=6
-    umilength=6
-elif [[ "$technology" == "scrubseq" ]]; then
-    barcodelength=6 
-    umilength=10 
+elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
+    barcodelength=19 
+    umilength=8
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
 elif [[ "$technology" == "quartz-seq2-1536" ]]; then
     barcodelength=15
     umilength=8 
+elif [[ "$technology" == "scrubseq" ]]; then
+    barcodelength=6 
+    umilength=10
 else
     custom=`echo $technology | grep -o "_" | wc -l`
     custom=$(($custom+1))
@@ -1106,6 +1130,16 @@ else
     echo "  barcodes: ${barcodeadjust}bps at its head"
     echo "  UMIs: ${umiadjust}bps at its tail" 
     
+    #remove adapter from inDrops
+    if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]];
+        for convFile in "${convFiles[@]}"; do
+             sed -E '2~2s/(.{38}).{4}/\1/' $convFile > ${crIN}/.temp
+             mv ${crIN}/.temp $convFile
+             sed -E 's/(.{10}).{22}/\1/' $convFile > ${crIN}/.temp
+             mv ${crIN}/.temp $convFile
+        done
+    fi
+
     #converting barcodes
     echo " adjusting barcodes of R1 files"
     if [[ $barcodeadjust != 0 ]]; then
