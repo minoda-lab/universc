@@ -3,12 +3,6 @@
 # run tests in home directory (writeable)
 cd ~
 
-## check cellranger installed
-cellranger count ---version
-
-## check convert is installed
-bash /universc/launch_universc.sh -v
-
 # reset barcodes for test
 bash /universc/launch_universc.sh -t "10x" --setup
 

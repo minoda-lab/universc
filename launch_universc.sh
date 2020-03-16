@@ -69,8 +69,15 @@ Mandatory arguments to long options are mandatory for short options too.
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
-  -t,  --technology PLATFORM    Name of technology used to generate data (10x, chromium, nadia, dropseq, icell8, or custom)
-                                e.g. custom_16_10
+  -t,  --technology PLATFORM    Name of technology used to generate data.
+                                Supported technologies:
+                                  10x Genomics (16bp barcode, 10bp UMI): 10x, chromium (v2 or v3 automatically detected)
+                                  Drop-Seq (12pb barcode, 8pm UMI): nadia, dropseq
+                                  iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
+                                  Quartz-Seq2 (14bp barcodes, 8bp UMI): quartzseq2-384
+                                  Quartz-Seq2 (15bp barcodes, 8bp UMI): quartzseq2-1536                                    
+                                Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
+                                  e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
@@ -434,6 +441,15 @@ if [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
     echo "Running with Nadia parameters (Drop-Seq)"
     technology="nadia"
 fi
+if [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]];; then
+    echo "Running with Quartz-Seq2 v3.1 parameters 384 wells (14bp barcode)"
+    technology="quartz-seq2-384"
+fi
+
+if [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]];; then
+    echo "Running with Quartz-Seq2 v3.2 parameters 1536 wells (15bp barcode)"
+    technology="quartz-seq2-1536"
+fi
 
 #check if technology matches expected inputs
 if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
@@ -671,11 +687,42 @@ else
     elif [[ "$technology" == "nadia" ]]; then
         barcodefile=${SDIR}/nadia_barcode.txt
         if [[ ! -f ${barcodefile} ]]; then
-            #creat a nadia barcode file
+            #create a nadia barcode file
+            echo "No barcodes whitelists available for Drop-Seq or Nadia: all possible barcodes accepted (valid barcodes will be 100% as a result)"
             echo {A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
         fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${SDIR}/iCell8_barcode.txt
+    elif [[ "$technology" != "custom"* ]]; then
+        custom=`echo $technology | grep -o "_" | wc -l`
+        custom=$(($custom+1))
+        customname=`echo $technology | cut -f1-$((${custom}-2))  -d'_'`
+        barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
+        #check whether barcodes exceed 16bp (and reuse 16bp whitelist for all greater than 16bp)
+        if [[  $barcodelength -ge 16 ]]; then
+            echo "Barcode length ($barcodelength) of 16 or more:"
+            echo "    ...using barcode whitelist of 16bp"
+        fi
+        minlength = `echo $(( $barcodelength < 16 ? $barcodelength : 16 ))`
+        # compute custom barcodes if barcode length is different
+        barcodefile=${SDIR}/${customname}_${minlength}_barcode.txt
+        if [[ ! -f ${barcodefile} ]]; then
+            echo "No barcodes whitelists available for ${customname}: all possible barcodes accepted (valid barcodes will be 100% as a result)"
+            echo "***Warning: giving a barcode whitelist --barcodefile is recommended where available.***"
+            if [[ -f ${SDIR}/*${barcodelength}_barcode.txt ]]
+                pregeneratedfile=`ls ${SDIR}/*${barcodelength}_barcode.txt | awk '{print $1;}' | head -n 1`
+                echo "$pregeneratedfile for barcode(${barcodelength}) generated already"
+                ln -s $pregeneratedfile $barcodefile
+                echo "    ...using this as $barcodefile"
+            else
+                echo "generating $barcodefile of barcode length $minlength"
+                strings=`for ii in {1..${minlength}}
+                             do
+                             echo "{A,T,C,G}"
+                             done |  tr "\n" " " | sed "s/ //g" | xargs -I {} echo {} | xargs -I {} echo {}`
+                eval "echo ${strings}" | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
+            fi
+        fi 
     fi
 fi
 
@@ -761,9 +808,17 @@ elif [[ "$technology" == "nadia" ]]; then
 elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
     umilength=14
+elif [[ "$technology" == "quartz-seq2-384" ]]; then
+    barcodelength=14
+    umilength=8
+elif [[ "$technology" == "quartz-seq2-1536" ]]; then
+    barcodelength=15
+    umilength=8 
 else
-    barcodelength=`echo $technology | cut -f 2 -d'_'`
-    umilength=`echo $technology | cut -f 3 -d'_'`
+    custom=`echo $technology | grep -o "_" | wc -l`
+    custom=$(($custom+1))
+    barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
+    umilength=`echo $technology | cut -f$((${custom}))  -d'_'`
 fi
 
 #adjustment lengths
