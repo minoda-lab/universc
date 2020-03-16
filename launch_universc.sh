@@ -441,6 +441,15 @@ if [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
     echo "Running with Nadia parameters (Drop-Seq)"
     technology="nadia"
 fi
+if [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]];; then
+    echo "Running with Quartz-Seq2 v3.1 parameters 384 wells (14bp barcode)"
+    technology="quartz-seq2-384"
+fi
+
+if [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]];; then
+    echo "Running with Quartz-Seq2 v3.2 parameters 1536 wells (15bp barcode)"
+    technology="quartz-seq2-1536"
+fi
 
 #check if technology matches expected inputs
 if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
@@ -768,6 +777,12 @@ elif [[ "$technology" == "nadia" ]]; then
 elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
     umilength=14
+elif [[ "$technology" == "quartz-seq2-384" ]]; then
+    barcodelength=14
+    umilength=8
+elif [[ "$technology" == "quartz-seq2-1536" ]]; then
+    barcodelength=15
+    umilength=8 
 else
     barcodelength=`echo $technology | cut -f 2 -d'_'`
     umilength=`echo $technology | cut -f 3 -d'_'`
