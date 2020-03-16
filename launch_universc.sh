@@ -457,15 +457,19 @@ if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$techno
         echo "Error: option -t needs to be 10x, nadia, icell8, or custom_<barcode>_<UMI>"
         exit 1
     else
-        b=`echo $technology | cut -f 2 -d'_'`
-        u=`echo $technology | cut -f 3 -d'_'`
+        custom=`echo $technology | grep -o "_" | wc -l`
+        custom=$(($custom+1))
+        if [[ $custom -le 2 ]]; then
+           echo "Error: custom input must have at least 3 fields, e.g., customA_10_16"
+        fi
+        b=`echo $technology | cut -f$((${custom}-1))  -d'_'`
+        u=`echo $technology | cut -f$((${custom}))  -d'_'`
         if ! [[ "$b" =~ ^[0-9]+$ ]] || ! [[ "$u" =~ ^[0-9]+$ ]]; then
             echo "Error: option -t needs to be 10x, nadia, icell8, or custom_<barcode>_<UMI>"
             exit 1
         fi
         if [[ -z $barcodefile ]]; then
-            echo "Error: when option -t is set as custom, a file with a list of barcodes needs to be specified with option -b."
-            exit 1
+            echo "Warning: when option -t is set as custom, a file with a list of barcodes can be specified with option -b."
         fi
     fi
 fi
