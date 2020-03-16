@@ -69,8 +69,15 @@ Mandatory arguments to long options are mandatory for short options too.
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
-  -t,  --technology PLATFORM    Name of technology used to generate data (10x, chromium, nadia, dropseq, icell8, or custom)
-                                e.g. custom_16_10
+  -t,  --technology PLATFORM    Name of technology used to generate data.
+                                Supported technologies:
+                                  10x Genomics (16bp barcode, 10bp UMI): 10x, chromium (v2 or v3 automatically detected)
+                                  Drop-Seq (12pb barcode, 8pm UMI): nadia, dropseq
+                                  iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
+                                  Quartz-Seq2 (14bp barcodes, 8bp UMI): quartzseq2-384
+                                  Quartz-Seq2 (15bp barcodes, 8bp UMI): quartzseq2-1536                                    
+                                Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
+                                  e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
