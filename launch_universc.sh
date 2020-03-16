@@ -697,7 +697,7 @@ else
         fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${SDIR}/iCell8_barcode.txt
-    elif [[ "$technology" != "custom"* ]]; then
+    elif [[ "$technology" == "custom"* ]]; then
         custom=`echo $technology | grep -o "_" | wc -l`
         custom=$(($custom+1))
         customname=`echo $technology | cut -f1-$((${custom}-2))  -d'_'`
@@ -707,7 +707,7 @@ else
             echo "Barcode length ($barcodelength) of 16 or more:"
             echo "    ...using barcode whitelist of 16bp"
         fi
-        minlength = `echo $(( $barcodelength < 16 ? $barcodelength : 16 ))`
+        minlength=`echo $(( $barcodelength < 16 ? $barcodelength : 16 ))`
         # compute custom barcodes if barcode length is different
         barcodefile=${SDIR}/${customname}_${minlength}_barcode.txt
         if [[ ! -f ${barcodefile} ]]; then
