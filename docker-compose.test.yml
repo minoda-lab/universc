@@ -1,3 +1,4 @@
-sut:
+test:
   build: .
-  command: bash run_tests.sh
+  command: pwd
+#bash run_tests.sh
