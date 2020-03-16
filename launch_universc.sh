@@ -687,11 +687,42 @@ else
     elif [[ "$technology" == "nadia" ]]; then
         barcodefile=${SDIR}/nadia_barcode.txt
         if [[ ! -f ${barcodefile} ]]; then
-            #creat a nadia barcode file
+            #create a nadia barcode file
+            echo "No barcodes whitelists available for Drop-Seq or Nadia: all possible barcodes accepted (valid barcodes will be 100% as a result)"
             echo {A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
         fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${SDIR}/iCell8_barcode.txt
+    elif [[ "$technology" != "custom"* ]]; then
+        custom=`echo $technology | grep -o "_" | wc -l`
+        custom=$(($custom+1))
+        customname=`echo $technology | cut -f1-$((${custom}-2))  -d'_'`
+        barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
+        #check whether barcodes exceed 16bp (and reuse 16bp whitelist for all greater than 16bp)
+        if [[  $barcodelength -ge 16 ]]; then
+            echo "Barcode length ($barcodelength) of 16 or more:"
+            echo "    ...using barcode whitelist of 16bp"
+        fi
+        minlength = `echo $(( $barcodelength < 16 ? $barcodelength : 16 ))`
+        # compute custom barcodes if barcode length is different
+        barcodefile=${SDIR}/${customname}_${minlength}_barcode.txt
+        if [[ ! -f ${barcodefile} ]]; then
+            echo "No barcodes whitelists available for ${customname}: all possible barcodes accepted (valid barcodes will be 100% as a result)"
+            echo "***Warning: giving a barcode whitelist --barcodefile is recommended where available.***"
+            if [[ -f ${SDIR}/*${barcodelength}_barcode.txt ]]
+                pregeneratedfile=`ls ${SDIR}/*${barcodelength}_barcode.txt | awk '{print $1;}' | head -n 1`
+                echo "$pregeneratedfile for barcode(${barcodelength}) generated already"
+                ln -s $pregeneratedfile $barcodefile
+                echo "    ...using this as $barcodefile"
+            else
+                echo "generating $barcodefile of barcode length $minlength"
+                strings=`for ii in {1..${minlength}}
+                             do
+                             echo "{A,T,C,G}"
+                             done |  tr "\n" " " | sed "s/ //g" | xargs -I {} echo {} | xargs -I {} echo {}`
+                eval "echo ${strings}" | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
+            fi
+        fi 
     fi
 fi
 
@@ -784,8 +815,10 @@ elif [[ "$technology" == "quartz-seq2-1536" ]]; then
     barcodelength=15
     umilength=8 
 else
-    barcodelength=`echo $technology | cut -f 2 -d'_'`
-    umilength=`echo $technology | cut -f 3 -d'_'`
+    custom=`echo $technology | grep -o "_" | wc -l`
+    custom=$(($custom+1))
+    barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
+    umilength=`echo $technology | cut -f$((${custom}))  -d'_'`
 fi
 
 #adjustment lengths
