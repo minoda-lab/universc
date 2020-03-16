@@ -697,6 +697,10 @@ else
         fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${SDIR}/iCell8_barcode.txt
+    elif [[ "$technology" == "quartz-seq2-384" ]]; then
+        barcodefile=${SDIR}/Quartz-Seq2-384_barcode.txt
+    elif [[ "$technology" == "quartz-seq2-1536" ]]; then
+        barcodefile=${SDIR}/Quartz-Seq2-1536_barcode.txt
     elif [[ "$technology" == "custom"* ]]; then
         custom=`echo $technology | grep -o "_" | wc -l`
         custom=$(($custom+1))
