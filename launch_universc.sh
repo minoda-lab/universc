@@ -720,10 +720,7 @@ else
                 echo "    ...using this as $barcodefile"
             else
                 echo "generating $barcodefile of barcode length $minlength"
-                strings=`for ii in {1..${minlength}}
-                             do
-                             echo "{A,T,C,G}"
-                             done |  tr "\n" " " | sed "s/ //g" | xargs -I {} echo {}`
+                strings=`for ii in {1..${minlength}}; do echo "{A,T,C,G}"; done |  tr "\n" " " | sed "s/ //g" | xargs -I {} echo {}`
                 eval "echo ${strings}" | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
             fi
         fi 
