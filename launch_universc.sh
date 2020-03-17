@@ -77,8 +77,9 @@ Mandatory arguments to long options are mandatory for short options too.
                                   iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1
                                   inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2 
-                                  Quartz-Seq2 (14bp barcodes, 8bp UMI): quartzseq2-384
-                                  Quartz-Seq2 (15bp barcodes, 8bp UMI): quartzseq2-1536                                    
+                                  Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
+                                  Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
+                                  Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq                                    
                                   SCRUB-Seq (6bp barcode, 10bp UMI): scrubseq
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
@@ -483,6 +484,10 @@ if [[ "$technology" == "scrubseq" ]] || [[ "$technology" == "scrub-seq" ]]; then
     echo "Running with SCRUB-Seq parameters"
     technology="scrubseq"
 fi
+if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]] ||  [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
+    echo "Running with Smart-Seq3 parameters (version 3 with UMIs)"
+    technology="smartseq"
+fi
 
 
 #check if technology matches expected inputs
@@ -729,7 +734,7 @@ else
             echo "No barcodes whitelists available for Drop-Seq or Nadia: all possible barcodes accepted (valid barcodes will be 100% as a result)"
             echo {A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
         fi
-    elif [[ "$technology" == "icell8" ]]; then
+    elif [[ "$technology" == "icell8" ]] ||  [[ "$technology" == "smartseq" ]]; then
         barcodefile=${SDIR}/iCell8_barcode.txt
     elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
         barcodefile=${SDIR}/inDrops_barcodes.txt
@@ -872,6 +877,9 @@ elif [[ "$technology" == "quartz-seq2-1536" ]]; then
 elif [[ "$technology" == "scrubseq" ]]; then
     barcodelength=6 
     umilength=10
+elif [[ "$technology" == "smartseq" ]]; then
+    barcodelength=11
+    umilength=8
 else
     custom=`echo $technology | grep -o "_" | wc -l`
     custom=$(($custom+1))
