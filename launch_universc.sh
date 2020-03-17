@@ -456,6 +456,7 @@ if [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
 fi
 if [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]]; then
     echo "Running with iCELL8 parameters (version 3 with UMIs)"
+    echo "***WARNING: iCELL8 settings should only be used for kits that have UMIs***"
     technology="icell8"
 fi
 if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]]; then
@@ -486,6 +487,7 @@ if [[ "$technology" == "scrubseq" ]] || [[ "$technology" == "scrub-seq" ]]; then
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]] ||  [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
     echo "Running with Smart-Seq3 parameters (version 3 with UMIs)"
+    echo "***WARNING: Smart-Seq settings should only be used for kits that have UMIs***"
     technology="smartseq"
 fi
 
@@ -816,9 +818,21 @@ elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
 fi
 
 #check if chemistry matches expected input
-if [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
-    echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE , or SC5P-R2"
-    exit 1
+#allow "auto" for 10x
+if [[ "$technology" != "10x" ]]; then
+    #use SC3Pv3 (umi length 12) 
+    if [[ $umilength -ge 11 ]] && [[ "$chemistry" == "SC3Pv1" ]] && [[ "$chemistry" == "SC3Pv2" ]]; then
+        echo "Using 10x version 3 chemistry to support longer UMIs"
+        chemistry="SC3Pv3"
+    else
+    #use SC3Pv2 (umi length 10)
+         echo "Using 10x version 2 chemistry to support UMIs"
+        chemistry="SC3Pv2"
+    fi
+    if [[ "$chemistry" != "SC3Pv1" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+        echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE , or SC5P-R2"
+       exit 1
+    fi
 fi
 
 #checking if jobmode matches expected input
@@ -847,7 +861,12 @@ fi
 
 #####Get barcode/UMI length#####  
 barcode_default=16
-umi_default=10
+if [[ "$chemistry" == *"v2" ]]; then
+    umi_default=10
+elif [[ "$chemistry" == *"v3" ]]; then
+    umi_default=12
+fi
+
 totallength=`echo $((${barcode_default}+${umi_default}))`
 
 #barcode and umi lengths given by options
@@ -856,6 +875,7 @@ umilength=""
 if [[ "$technology" == "10x" ]]; then
     barcodelength=16
     umilength=10
+    umi_default=10
 elif [[ "$technology" == "celseq" ]]; then
     barcodelength=6
     umilength=6
@@ -886,6 +906,7 @@ else
     barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
     umilength=`echo $technology | cut -f$((${custom}))  -d'_'`
 fi
+
 
 #adjustment lengths
 barcodeadjust=`echo $(($barcodelength-$barcode_default))`
