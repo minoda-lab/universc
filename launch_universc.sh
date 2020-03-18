@@ -757,8 +757,11 @@ else
         barcodefile=${SDIR}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
         barcodefile=${SDIR}/Quartz-Seq2-1536_barcode.txt
-    elif [[ "$technology" == "custom"* ]] || [[ "$technology" == "celseq" ]] || [[ "$technology" == "scrubseq" ]]; then
+    elif [[ "$technology" == "custom"* ]] || [[ "$technology" == "celseq"* ]] || [[ "$technology" == "scrubseq" ]]; then
         if [[ "$technology" == "celseq" ]]; then
+            customname="celseq"
+            minlength=8
+        elif [[ "$technology" == "celseq2" ]]; then
             customname="celseq"
             minlength=6
         elif [[ "$technology" == "scrubseq" ]]; then
@@ -890,6 +893,9 @@ if [[ "$technology" == "10x" ]]; then
     umilength=10
     umi_default=10
 elif [[ "$technology" == "celseq" ]]; then
+    barcodelength=8
+    umilength=4
+elif [[ "$technology" == "celseq2" ]]; then
     barcodelength=6
     umilength=6
 elif [[ "$technology" == "nadia" ]]; then
@@ -1175,6 +1181,15 @@ else
     echo "  barcodes: ${barcodeadjust}bps at its head"
     echo "  UMIs: ${umiadjust}bps at its tail" 
     
+    #for CEL-Seq2 swap barcode and UMI
+    if [[ "$technology" == "sciseq" ]]; then
+        for convFile in "${convFiles[@]}"; do
+            #swap UMI and barcode
+            sed -E '2~2s/(.{6})(.{6})/\2\1/' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+
     #remove adapter from inDrops
     if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]];
         for convFile in "${convFiles[@]}"; do
@@ -1185,7 +1200,7 @@ else
         done
     fi
 
-    #remove adapter from Sci-Seq
+    #remove adapter from Sci-Seq and swap barcode and UMI
     if [[ "$technology" == "sciseq" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected
