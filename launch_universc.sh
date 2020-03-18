@@ -75,9 +75,9 @@ Mandatory arguments to long options are mandatory for short options too.
                                   CEL-Seq (6bp barcode, 6bp UMI): celseq
                                   Drop-Seq (12pb barcode, 8pm UMI): nadia, dropseq
                                   iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
-                                  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1
-                                  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2 
-                                  inDrops version 3 (8bp barcodes, 6bp UMI): indrops-v3
+                                  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
+                                  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
+                                  inDrops version 3 (8bp barcodes, 6bp UMI): indrops-v3, 1cellbio-v3
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   Sci-Seq (8bp UMI, 10bp barcode): sciseq
@@ -461,15 +461,15 @@ if [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]]; then
     echo "***WARNING: iCELL8 settings should only be used for kits that have UMIs***"
     technology="icell8"
 fi
-if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]]; then
+if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
     echo "Running with inDrop parameters (version 1)"
     technology="indrop-v1"
 fi
-if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]]; then
+if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
     echo "Running with inDrop parameters (version 2 with reads inverted)"
     technology="indrop-v2"    
 fi
-if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]]; then
+if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]] || [[ "$technology" == "1cellbio-v3" ]] || [[ "$technology" == "1cellbiov3" ]]; then
     echo "Running with inDrop parameters (version 3 with reads inverted)"
     technology="indrop-v3"
 fi
