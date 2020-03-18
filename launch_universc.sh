@@ -493,7 +493,14 @@ fi
 
 
 #check if technology matches expected inputs
-if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]] && [[ "$technology" != "celseq" ]] && [[ "$technology" != "scrubseq" ]] && [[ "$technology" != "quartz-seq2"* ]] && [[ "$technology" != "indrop"* ]]; then
+if [[ "$technology" != "10x" ]] \
+&& [[ "$technology" != "celseq"* ]] \
+&& [[ "$technology" != "nadia" ]] \
+&& [[ "$technology" != "icell8" ]] \
+&& [[ "$technology" != "indrop"* ]] \
+&& [[ "$technology" != "quartz-seq2"* ]] \
+&& [[ "$technology" != "scrubseq" ]] \
+&& [[ "$technology" != "smart-seq"* ]]; then
     if [[ "$technology" != "custom"* ]]; then
         echo "Error: option -t needs to be 10x, nadia, icell8, or custom_<barcode>_<UMI>"
         exit 1
