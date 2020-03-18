@@ -496,6 +496,17 @@ if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[
     technology="smartseq"
 fi
 
+if [[ "$technology" == "indrop-v3" ]] \
+|| [[ "$technology" == "indrop"* ]] \
+|| [[ "$technology" == "smart-seq"* ]]; then
+    ## see the following issues from supporting inDrops-v3
+    # https://github.com/alexdobin/STAR/issues/825
+    # https://github.com/BUStools/bustools/issues/4
+    ## these workarounds could be implemented in the future
+    echo "***WARNING: dual indexes are not supported***"
+    echo "...samples should be demultiplexed into separate FASTQ files by index before running"
+fi
+
 
 #check if technology matches expected inputs
 if [[ "$technology" != "10x" ]] \
