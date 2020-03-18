@@ -72,10 +72,18 @@ Mandatory arguments to long options are mandatory for short options too.
   -t,  --technology PLATFORM    Name of technology used to generate data.
                                 Supported technologies:
                                   10x Genomics (16bp barcode, 10bp UMI): 10x, chromium (v2 or v3 automatically detected)
-                                  Drop-Seq (12pb barcode, 8pm UMI): nadia, dropseq
+                                  CEL-Seq (6bp barcode, 6bp UMI): celseq
+                                  Drop-Seq (12bp barcode, 8pm UMI): nadia, dropseq
                                   iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
-                                  Quartz-Seq2 (14bp barcodes, 8bp UMI): quartzseq2-384
-                                  Quartz-Seq2 (15bp barcodes, 8bp UMI): quartzseq2-1536                                    
+                                  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
+                                  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
+                                  inDrops version 3 (8bp barcodes, 6bp UMI): indrops-v3, 1cellbio-v3
+                                  Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
+                                  Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
+                                  Sci-Seq (8bp UMI, 10bp barcode): sciseq
+                                  Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq                                    
+                                  SCRUB-Seq (6bp barcode, 10bp UMI): scrubseq
+                                  SureCell (18bp barcode, 8bp UMI): surecell, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
@@ -437,9 +445,42 @@ if [[ "$technology" == "chromium" ]]; then
     echo "Running with technology 10x (chromium)" 
     technology="10x"
 fi
+if [[ "$technology" == "celseq" ]] || [[ "$technology" == "cel-seq" ]]; then
+    echo "Running with CEL-Seq parameters (version 1)"
+    technology="celseq"
+fi
+if [[ "$technology" == "celseq2" ]] || [[ "$technology" == "cel-seq2" ]]; then
+    echo "Running with CEL-Seq2 parameters"
+    technology="celseq2"
+fi
 if [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
     echo "Running with Nadia parameters (Drop-Seq)"
     technology="nadia"
+fi
+if [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]]; then
+    echo "Running with iCELL8 parameters (version 3 with UMIs)"
+    echo "***WARNING: iCELL8 settings should only be used for kits that have UMIs***"
+    technology="icell8"
+fi
+if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
+    echo "Running with inDrop parameters (version 1)"
+    technology="indrop-v1"
+fi
+if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
+    echo "Running with inDrop parameters (version 2 with reads inverted)"
+    technology="indrop-v2"    
+fi
+if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]] || [[ "$technology" == "1cellbio-v3" ]] || [[ "$technology" == "1cellbiov3" ]]; then
+    echo "Running with inDrop parameters (version 3 with reads inverted)"
+    technology="indrop-v3"
+fi
+if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+    #invert read1 and read2
+    echo "Using barcodes on Read 2"
+    tmp=$read1
+    read1=$read2
+    read2=$tmp
+    tmp=""
 fi
 if [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]]; then
     echo "Running with Quartz-Seq2 v3.1 parameters 384 wells (14bp barcode)"
@@ -450,9 +491,48 @@ if [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-
     echo "Running with Quartz-Seq2 v3.2 parameters 1536 wells (15bp barcode)"
     technology="quartz-seq2-1536"
 fi
+if [[ "$technology" == "sciseq" ]] || [[ "$technology" == "sci-seq" ]]; then
+    echo "Running with Sci-Seq parameters (single-cell combinatorial indexing RNA sequencing)"
+    technology="sciseq"
+fi
+if [[ "$technology" == "scrubseq" ]] || [[ "$technology" == "scrub-seq" ]]; then
+    echo "Running with SCRUB-Seq parameters"
+    technology="scrubseq"
+fi
+if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]] ||  [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
+    echo "Running with Smart-Seq3 parameters (version 3 with UMIs)"
+    echo "***WARNING: Smart-Seq settings should only be used for kits that have UMIs***"
+    technology="smartseq"
+fi
+if [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]]|| [[ "$technology" == "bioraad" ]]; then
+    echo "Running with SureCell parameters"
+    technology="surecell"
+fi
+
+
+if [[ "$technology" == "indrop-v3" ]] \
+|| [[ "$technology" == "sciseq" ]] \
+|| [[ "$technology" == "smart-seq"* ]]; then
+    ## see the following issues from supporting inDrops-v3
+    # https://github.com/alexdobin/STAR/issues/825
+    # https://github.com/BUStools/bustools/issues/4
+    ## these workarounds could be implemented in the future
+    echo "***WARNING: dual indexes are not supported***"
+    echo "...samples should be demultiplexed into separate FASTQ files by index before running"
+fi
+
 
 #check if technology matches expected inputs
-if [[ "$technology" != "10x" ]] && [[ "$technology" != "nadia" ]] && [[ "$technology" != "icell8" ]]; then
+if [[ "$technology" != "10x" ]] \
+&& [[ "$technology" != "celseq"* ]] \
+&& [[ "$technology" != "nadia" ]] \
+&& [[ "$technology" != "icell8" ]] \
+&& [[ "$technology" != "indrop"* ]] \
+&& [[ "$technology" != "quartz-seq2"* ]] \
+&& [[ "$technology" != "sciseq" ]] \
+&& [[ "$technology" != "scrubseq" ]] \
+&& [[ "$technology" != "smart-seq"* ]]\
+&& [[ "$technology" != "surecell" ]]; then
     if [[ "$technology" != "custom"* ]]; then
         echo "Error: option -t needs to be 10x, nadia, icell8, or custom_<barcode>_<UMI>"
         exit 1
@@ -697,18 +777,50 @@ else
         fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${SDIR}/iCell8_barcode.txt
-    elif [[ "$technology" == "custom"* ]]; then
-        custom=`echo $technology | grep -o "_" | wc -l`
-        custom=$(($custom+1))
-        customname=`echo $technology | cut -f1-$((${custom}-2))  -d'_'`
-        barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
-        #check whether barcodes exceed 16bp (and reuse 16bp whitelist for all greater than 16bp)
-        if [[  $barcodelength -ge 16 ]]; then
-            echo "Barcode length ($barcodelength) of 16 or more:"
-            echo "    ...using barcode whitelist of 16bp"
+    elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
+        # use bustools whitelist for inDrops-v2 with adapters removed https://github.com/BUStools/bustools/issues/4 
+        barcodefile=${SDIR}/inDrops_barcodes.txt
+    elif [[ "$technology" == "indrop-v3" ]];
+        # inDrops-v3 whitelist is a combination of v2 whitelists https://github.com/indrops/indrops/issues/32
+        ## version 2 whitelist will be used until dual indexing (i7) is supported for read I2: https://github.com/alexdobin/STAR/issues/825
+        barcodefile=${SDIR}/inDrops-v2_barcodes.txt 
+    elif [[ "$technology" == "quartz-seq2-384" ]]; then
+        barcodefile=${SDIR}/Quartz-Seq2-384_barcode.txt
+    elif [[ "$technology" == "quartz-seq2-1536" ]]; then
+        barcodefile=${SDIR}/Quartz-Seq2-1536_barcode.txt
+    elif [[ "$technology" == "smartseq" ]]; then
+        echo "***WARNING: barcodes not available for Smart-Seq 2 or 3, using iCELL8 whitelist (version 3)***"
+        echo "...valid barcodes may be an overestimate"
+        barcodefile=${SDIR}/iCell8_barcode.txt
+    elif [[ "$technology" == "custom"* ]] || [[ "$technology" == "celseq"* ]] ||  [[ "$technology" == "scrubseq" ]] || [[ "$technology" == "sciseq" ]] || [[ "$technology" == "surecell" ]]; then
+        if [[ "$technology" == "celseq" ]]; then
+            customname="celseq"
+            minlength=8
+        elif [[ "$technology" == "celseq2" ]]; then
+            customname="celseq"
+            minlength=6
+        elif [[ "$technology" == "sciseq" ]]; then
+            customname="sciseq"
+            minlength=10
+        elif [[ "$technology" == "scrubseq" ]]; then
+            customname="scrubseq"
+            minlength=6
+        elif [[ "$technology" == "surecell" ]]; then
+            customname="surecell"
+            barcodelength=18
+            minlength=$(( $barcodelength < 16 ? $barcodelength : 16 ))
+        elif [[ "$technology" == "custom"* ]]; then
+            custom=`echo $technology | grep -o "_" | wc -l`
+            custom=$(($custom+1))
+            customname=`echo $technology | cut -f1-$((${custom}-2))  -d'_'`
+            barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
+            #check whether barcodes exceed 16bp (and reuse 16bp whitelist for all greater than 16bp)
+            if [[  $barcodelength -ge 16 ]]; then
+                echo "Barcode length ($barcodelength) of 16 or more:"
+                echo "    ...using barcode whitelist of 16bp"
+            fi
+            minlength=$(( $barcodelength < 16 ? $barcodelength : 16 ))
         fi
-       
-        minlength=$(( $barcodelength < 16 ? $barcodelength : 16 ))
         # compute custom barcodes if barcode length is different
         barcodefile=${SDIR}/${customname}_${minlength}_barcode.txt
         if [[ ! -f ${barcodefile} ]]; then
@@ -721,6 +833,7 @@ else
                 echo "    ...using this as $barcodefile"
             else
                 echo "generating $barcodefile of barcode length $minlength"
+                # generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
                 echo $(eval echo $(for ii in $(eval echo {1..${minlength}}); do echo "{A,T,C,G}"; done |  tr "\n" " " | sed "s/ //g" | xargs -I {} echo {})) | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
             fi
         fi 
@@ -763,9 +876,21 @@ elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
 fi
 
 #check if chemistry matches expected input
-if [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
-    echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE , or SC5P-R2"
-    exit 1
+#allow "auto" for 10x
+if [[ "$technology" != "10x" ]]; then
+    #use SC3Pv3 (umi length 12) 
+    if [[ $umilength -ge 11 ]] && [[ "$chemistry" == "SC3Pv1" ]] && [[ "$chemistry" == "SC3Pv2" ]]; then
+        echo "Using 10x version 3 chemistry to support longer UMIs"
+        chemistry="SC3Pv3"
+    else
+    #use SC3Pv2 (umi length 10)
+         echo "Using 10x version 2 chemistry to support UMIs"
+        chemistry="SC3Pv2"
+    fi
+    if [[ "$chemistry" != "SC3Pv1" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+        echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE , or SC5P-R2"
+       exit 1
+    fi
 fi
 
 #checking if jobmode matches expected input
@@ -794,7 +919,12 @@ fi
 
 #####Get barcode/UMI length#####  
 barcode_default=16
-umi_default=10
+if [[ "$chemistry" == *"v2" ]]; then
+    umi_default=10
+elif [[ "$chemistry" == *"v3" ]]; then
+    umi_default=12
+fi
+
 totallength=`echo $((${barcode_default}+${umi_default}))`
 
 #barcode and umi lengths given by options
@@ -803,24 +933,50 @@ umilength=""
 if [[ "$technology" == "10x" ]]; then
     barcodelength=16
     umilength=10
+    umi_default=10
+elif [[ "$technology" == "celseq" ]]; then
+    barcodelength=8
+    umilength=4
+elif [[ "$technology" == "celseq2" ]]; then
+    barcodelength=6
+    umilength=6
 elif [[ "$technology" == "nadia" ]]; then
     barcodelength=12
     umilength=8
 elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
     umilength=14
+elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
+    barcodelength=19 
+    umilength=6
+elif [[ "$technology" == "indrop-v3" ]]; then
+    barcodelength=8
+    umilength=6
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
 elif [[ "$technology" == "quartz-seq2-1536" ]]; then
     barcodelength=15
     umilength=8 
+elif [[ "$technology" == "sciseq" ]]; then
+    barcodelength=10
+    umilength=8
+elif [[ "$technology" == "scrubseq" ]]; then
+    barcodelength=6 
+    umilength=10
+elif [[ "$technology" == "smartseq" ]]; then
+    barcodelength=11
+    umilength=8
+elif [[ "$technology" == "surecell" ]]; then
+    barcodelength=18
+    umilength=8
 else
     custom=`echo $technology | grep -o "_" | wc -l`
     custom=$(($custom+1))
     barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
     umilength=`echo $technology | cut -f$((${custom}))  -d'_'`
 fi
+
 
 #adjustment lengths
 barcodeadjust=`echo $(($barcodelength-$barcode_default))`
@@ -1073,6 +1229,65 @@ else
     echo "  barcodes: ${barcodeadjust}bps at its head"
     echo "  UMIs: ${umiadjust}bps at its tail" 
     
+    #for CEL-Seq2 swap barcode and UMI
+    if [[ "$technology" == "sciseq" ]]; then
+        for convFile in "${convFiles[@]}"; do
+            #swap UMI and barcode
+            sed -E '2~2s/(.{6})(.{6})/\2\1/' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+
+    #remove adapter from inDrops
+    if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]];
+        for convFile in "${convFiles[@]}"; do
+            #remove adapter if present
+            sed -E '
+                /^(.{8})GAGTGATTGCTTGTGACGCCTT(.{8})/ {
+                s/^(.{8})GAGTGATTGCTTGTGACGCCTT(.{8})/\1\2/g
+                n
+                n
+                s/^(.{8}).{22}(.{8})/\1\2/g
+                }' $convFile |
+            #remove linker between barcode and UMI
+            sed -E '2~2s/^(.{8})(.{8}).{4}(.{6})/\1\2\3/g' > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+
+    #remove adapter from Sci-Seq and swap barcode and UMI
+    if [[ "$technology" == "sciseq" ]]; then
+        for convFile in "${convFiles[@]}"; do
+            #remove adapter if detected
+            sed -E '
+                /^ACGACGCTCTTCCGATCT/ {
+                s/^(.{18})//g
+                n
+                n
+                s/^(.{18})//g
+                }'  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #swap UMI and barcode
+            sed -E '2~2s/(.{8})(.{10})/\2\1/' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile            
+        done
+    fi
+
+    #remove adapter from SureCell (and correct phase blocks)
+    if [[ "$technology" == "surecell" ]];
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC/ {
+                s/.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC.*/\1\2\3\4/g
+                n
+                n
+                s/.*(.{6}).{15}(.{6}).{15}(.{6}).{3}(.{8}).{3}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+
     #converting barcodes
     echo " adjusting barcodes of R1 files"
     if [[ $barcodeadjust != 0 ]]; then
