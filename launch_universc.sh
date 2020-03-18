@@ -73,7 +73,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                 Supported technologies:
                                   10x Genomics (16bp barcode, 10bp UMI): 10x, chromium (v2 or v3 automatically detected)
                                   CEL-Seq (6bp barcode, 6bp UMI): celseq
-                                  Drop-Seq (12pb barcode, 8pm UMI): nadia, dropseq
+                                  Drop-Seq (12bp barcode, 8pm UMI): nadia, dropseq
                                   iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
@@ -83,6 +83,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Sci-Seq (8bp UMI, 10bp barcode): sciseq
                                   Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq                                    
                                   SCRUB-Seq (6bp barcode, 10bp UMI): scrubseq
+                                  SureCell (18bp barcode, 8bp UMI): surecell, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
@@ -503,9 +504,14 @@ if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[
     echo "***WARNING: Smart-Seq settings should only be used for kits that have UMIs***"
     technology="smartseq"
 fi
+if [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]]|| [[ "$technology" == "bioraad" ]]; then
+    echo "Running with SureCell parameters"
+    technology="surecell"
+fi
+
 
 if [[ "$technology" == "indrop-v3" ]] \
-|| [[ "$technology" == "indrop"* ]] \
+|| [[ "$technology" == "sciseq" ]] \
 || [[ "$technology" == "smart-seq"* ]]; then
     ## see the following issues from supporting inDrops-v3
     # https://github.com/alexdobin/STAR/issues/825
@@ -525,7 +531,8 @@ if [[ "$technology" != "10x" ]] \
 && [[ "$technology" != "quartz-seq2"* ]] \
 && [[ "$technology" != "sciseq" ]] \
 && [[ "$technology" != "scrubseq" ]] \
-&& [[ "$technology" != "smart-seq"* ]]; then
+&& [[ "$technology" != "smart-seq"* ]]\
+&& [[ "$technology" != "surecell" ]]; then
     if [[ "$technology" != "custom"* ]]; then
         echo "Error: option -t needs to be 10x, nadia, icell8, or custom_<barcode>_<UMI>"
         exit 1
@@ -780,16 +787,23 @@ else
         echo "***WARNING: barcodes not available for Smart-Seq 2 or 3, using iCELL8 whitelist (version 3)***"
         echo "...valid barcodes may be an overestimate"
         barcodefile=${SDIR}/iCell8_barcode.txt
-    elif [[ "$technology" == "custom"* ]] || [[ "$technology" == "celseq"* ]] || [[ "$technology" == "scrubseq" ]]; then
+    elif [[ "$technology" == "custom"* ]] || [[ "$technology" == "celseq"* ]] ||  [[ "$technology" == "scrubseq" ]] || [[ "$technology" == "sciseq" ]] || [[ "$technology" == "surecell" ]]; then
         if [[ "$technology" == "celseq" ]]; then
             customname="celseq"
             minlength=8
         elif [[ "$technology" == "celseq2" ]]; then
             customname="celseq"
             minlength=6
+        elif [[ "$technology" == "sciseq" ]]; then
+            customname="sciseq"
+            minlength=10
         elif [[ "$technology" == "scrubseq" ]]; then
             customname="scrubseq"
             minlength=6
+        elif [[ "$technology" == "surecell" ]]; then
+            customname="surecell"
+            barcodelength=18
+            minlength=$(( $barcodelength < 16 ? $barcodelength : 16 ))
         elif [[ "$technology" == "custom"* ]]; then
             custom=`echo $technology | grep -o "_" | wc -l`
             custom=$(($custom+1))
@@ -947,6 +961,9 @@ elif [[ "$technology" == "scrubseq" ]]; then
     umilength=10
 elif [[ "$technology" == "smartseq" ]]; then
     barcodelength=11
+    umilength=8
+elif [[ "$technology" == "surecell" ]]; then
+    barcodelength=18
     umilength=8
 else
     custom=`echo $technology | grep -o "_" | wc -l`
@@ -1248,6 +1265,21 @@ else
             #swap UMI and barcode
             sed -E '2~2s/(.{8})(.{10})/\2\1/' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile            
+        done
+    fi
+
+    #remove adapter from SureCell (and correct phase blocks)
+    if [[ "$technology" == "surecell" ]];
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC/ {
+                s/.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC.*/\1\2\3\4/g
+                n
+                n
+                s/.*(.{6}).{15}(.{6}).{15}(.{6}).{3}(.{8}).{3}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
         done
     fi
 
