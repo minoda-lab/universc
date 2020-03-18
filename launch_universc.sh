@@ -77,6 +77,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1
                                   inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2 
+                                  inDrops version 3 (8bp barcodes, 6bp UMI): indrops-v3
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   Sci-Seq (8bp UMI, 10bp barcode): sciseq
@@ -467,10 +468,17 @@ fi
 if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]]; then
     echo "Running with inDrop parameters (version 2 with reads inverted)"
     technology="indrop-v2"    
+fi
+if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]]; then
+    echo "Running with inDrop parameters (version 3 with reads inverted)"
+    technology="indrop-v3"
+fi
+if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
     #invert read1 and read2
-    tmp=$read1 
+    echo "Using barcodes on Read 2"
+    tmp=$read1
     read1=$read2
-    read2=$tmp  
+    read2=$tmp
     tmp=""
 fi
 if [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]]; then
@@ -921,7 +929,10 @@ elif [[ "$technology" == "icell8" ]]; then
     umilength=14
 elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
     barcodelength=19 
-    umilength=8
+    umilength=6
+elif [[ "$technology" == "indrop-v3" ]]; then
+    barcodelength=8
+    umilength=6
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
