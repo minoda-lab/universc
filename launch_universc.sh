@@ -74,7 +74,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   10x Genomics (16bp barcode, 10bp UMI): 10x, chromium (v2 or v3 automatically detected)
                                   CEL-Seq (8bp barcode, 4bp UMI): celseq
                                   CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
-                                  Drop-Seq (12bp barcode, 8pm UMI): nadia, dropseq
+                                  Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
                                   iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
