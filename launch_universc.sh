@@ -79,6 +79,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2 
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
+                                  Sci-Seq (8bp UMI, 10bp barcode): sciseq
                                   Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq                                    
                                   SCRUB-Seq (6bp barcode, 10bp UMI): scrubseq
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
@@ -481,6 +482,10 @@ if [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-
     echo "Running with Quartz-Seq2 v3.2 parameters 1536 wells (15bp barcode)"
     technology="quartz-seq2-1536"
 fi
+if [[ "$technology" == "sciseq" ]] || [[ "$technology" == "sci-seq" ]]; then
+    echo "Running with Sci-Seq parameters (single-cell combinatorial indexing RNA sequencing)"
+    technology="sciseq"
+fi
 if [[ "$technology" == "scrubseq" ]] || [[ "$technology" == "scrub-seq" ]]; then
     echo "Running with SCRUB-Seq parameters"
     technology="scrubseq"
@@ -499,6 +504,7 @@ if [[ "$technology" != "10x" ]] \
 && [[ "$technology" != "icell8" ]] \
 && [[ "$technology" != "indrop"* ]] \
 && [[ "$technology" != "quartz-seq2"* ]] \
+&& [[ "$technology" != "sciseq" ]] \
 && [[ "$technology" != "scrubseq" ]] \
 && [[ "$technology" != "smart-seq"* ]]; then
     if [[ "$technology" != "custom"* ]]; then
@@ -901,6 +907,9 @@ elif [[ "$technology" == "quartz-seq2-384" ]]; then
 elif [[ "$technology" == "quartz-seq2-1536" ]]; then
     barcodelength=15
     umilength=8 
+elif [[ "$technology" == "sciseq" ]]; then
+    barcodelength=10
+    umilength=8
 elif [[ "$technology" == "scrubseq" ]]; then
     barcodelength=6 
     umilength=10
@@ -1173,6 +1182,24 @@ else
              mv ${crIN}/.temp $convFile
              sed -E 's/(.{10}).{22}/\1/' $convFile > ${crIN}/.temp
              mv ${crIN}/.temp $convFile
+        done
+    fi
+
+    #remove adapter from Sci-Seq
+    if [[ "$technology" == "sciseq" ]]; then
+        for convFile in "${convFiles[@]}"; do
+            #remove adapter if detected
+            sed -E '
+                /^ACGACGCTCTTCCGATCT/ {
+                s/^(.{18})//g
+                n
+                n
+                s/^(.{18})//g
+                }'  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #swap UMI and barcode
+            sed -E '2~2s/(.{8})(.{10})/\2\1/' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile            
         done
     fi
 
