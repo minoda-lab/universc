@@ -749,7 +749,7 @@ else
             echo "No barcodes whitelists available for Drop-Seq or Nadia: all possible barcodes accepted (valid barcodes will be 100% as a result)"
             echo {A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
         fi
-    elif [[ "$technology" == "icell8" ]] ||  [[ "$technology" == "smartseq" ]]; then
+    elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${SDIR}/iCell8_barcode.txt
     elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
         barcodefile=${SDIR}/inDrops_barcodes.txt
@@ -757,6 +757,10 @@ else
         barcodefile=${SDIR}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
         barcodefile=${SDIR}/Quartz-Seq2-1536_barcode.txt
+    elif [[ "$technology" == "smartseq" ]]; then
+        echo "***WARNING: barcodes not available for Smart-Seq 2 or 3, using iCELL8 whitelist (version 3)***"
+        echo "...valid barcodes may be an overestimate"
+        barcodefile=${SDIR}/iCell8_barcode.txt
     elif [[ "$technology" == "custom"* ]] || [[ "$technology" == "celseq"* ]] || [[ "$technology" == "scrubseq" ]]; then
         if [[ "$technology" == "celseq" ]]; then
             customname="celseq"
