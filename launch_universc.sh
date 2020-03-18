@@ -1219,10 +1219,17 @@ else
     #remove adapter from inDrops
     if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]];
         for convFile in "${convFiles[@]}"; do
-             sed -E '2~2s/(.{38}).{4}/\1/' $convFile > ${crIN}/.temp
-             mv ${crIN}/.temp $convFile
-             sed -E 's/(.{10}).{22}/\1/' $convFile > ${crIN}/.temp
-             mv ${crIN}/.temp $convFile
+            #remove adapter if present
+            sed -E '
+                /^(.{8})GAGTGATTGCTTGTGACGCCTT(.{8})/ {
+                s/^(.{8})GAGTGATTGCTTGTGACGCCTT(.{8})/\1\2/g
+                n
+                n
+                s/^(.{8}).{22}(.{8})/\1\2/g
+                }' $convFile |
+            #remove linker between barcode and UMI
+            sed -E '2~2s/^(.{8})(.{8}).{4}(.{6})/\1\2\3/g' > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
         done
     fi
 
