@@ -1194,6 +1194,13 @@ crR1s=()
 for fq in "${read1[@]}"; do
     to=`basename $fq`
     to="${crIN}/${to}"
+
+    #invert read1 and read2
+    if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+        #where converted "read1" is R2 in source files (corrected names for cellranger)
+        to=`echo $to | sed -e "s/_R2_/_R1_/g"
+    fi
+
     crR1s+=($to)
     
     echo " handling $fq ..."
@@ -1210,6 +1217,13 @@ for fq in "${read2[@]}"; do
     to=`basename $fq`
     to="${crIN}/${to}"
     to=$(echo "$to" | sed 's/\.gz$//')
+
+    #invert read1 and read2
+    if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+        #where converted "read2" is R1 in source files
+        to=`echo $to | sed -e "s/_R1_/_R2_/g"
+    fi
+
     crR2s+=($to)
     
     echo " handling $fq ..."
