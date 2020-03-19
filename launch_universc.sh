@@ -82,8 +82,9 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   Sci-Seq (8bp UMI, 10bp barcode): sciseq
+                                  SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
+                                  SeqWell (12bp barcode, 8bp UMI): seqwell
                                   Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq                                    
-                                  SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq 
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
@@ -500,6 +501,10 @@ if [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "scrb-seq" ]] || [[ "
     echo "Running with SCRB-Seq / mcSCRB-seq parameters"
     technology="scrbseq"
 fi
+if [[ "$technology" == "seqwell" ]] || [[ "$technology" == "seq-well" ]]; then
+    echo "Running with Sci-Seq-Well parameters"
+    technology="seqwell"
+fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]] ||  [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
     echo "Running with Smart-Seq3 parameters (version 3 with UMIs)"
     echo "***WARNING: Smart-Seq settings should only be used for kits that have UMIs***"
@@ -532,6 +537,7 @@ if [[ "$technology" != "10x" ]] \
 && [[ "$technology" != "quartz-seq2"* ]] \
 && [[ "$technology" != "sciseq" ]] \
 && [[ "$technology" != "scrbseq" ]] \
+&& [[ "$technology" != "seqwell" ]] \
 && [[ "$technology" != "smart-seq"* ]]\
 && [[ "$technology" != "surecell" ]]; then
     if [[ "$technology" != "custom"* ]]; then
@@ -793,7 +799,7 @@ else
         echo "***WARNING: barcodes not available for Smart-Seq 2 or 3, using iCELL8 whitelist (version 3)***"
         echo "...valid barcodes may be an overestimate"
         barcodefile=${SDIR}/iCell8_barcode.txt
-    elif [[ "$technology" == "custom"* ]] || [[ "$technology" == "celseq"* ]] ||  [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "sciseq" ]] || [[ "$technology" == "surecell" ]]; then
+    elif [[ "$technology" == "custom"* ]] || [[ "$technology" == "celseq"* ]] ||  [[ "$technology" == "sciseq" ]] || [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "surecell" ]]; then
         if [[ "$technology" == "celseq" ]]; then
             customname="celseq"
             minlength=8
@@ -806,6 +812,9 @@ else
         elif [[ "$technology" == "scrbseq" ]]; then
             customname="scrbseq"
             minlength=6
+        elif [[ "$technology" == "seqwell" ]]; then
+            customname="seqwell"
+            minlength=12
         elif [[ "$technology" == "surecell" ]]; then
             customname="surecell"
             barcodelength=18
