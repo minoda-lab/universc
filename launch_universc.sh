@@ -781,7 +781,7 @@ else
     elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
         # use bustools whitelist for inDrops-v2 with adapters removed https://github.com/BUStools/bustools/issues/4 
         barcodefile=${SDIR}/inDrops_barcodes.txt
-    elif [[ "$technology" == "indrop-v3" ]];
+    elif [[ "$technology" == "indrop-v3" ]]; then
         # inDrops-v3 whitelist is a combination of v2 whitelists https://github.com/indrops/indrops/issues/32
         ## version 2 whitelist will be used until dual indexing (i7) is supported for read I2: https://github.com/alexdobin/STAR/issues/825
         barcodefile=${SDIR}/inDrops-v2_barcodes.txt 
