@@ -84,7 +84,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Sci-Seq (8bp UMI, 10bp barcode): sciseq
                                   Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq                                    
                                   SCRUB-Seq (6bp barcode, 10bp UMI): scrubseq
-                                  SureCell (18bp barcode, 8bp UMI): surecell, biorad
+                                  SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
@@ -505,7 +505,7 @@ if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[
     echo "***WARNING: Smart-Seq settings should only be used for kits that have UMIs***"
     technology="smartseq"
 fi
-if [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]]|| [[ "$technology" == "bioraad" ]]; then
+if [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]] || [[ "$technology" == "ddseq" ]] || [[ "$technology" == "dd-seq" ]] || [[ "$technology" == "bioraad" ]]; then
     echo "Running with SureCell parameters"
     technology="surecell"
 fi
