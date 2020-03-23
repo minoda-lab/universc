@@ -541,7 +541,8 @@ if [[ "$technology" != "10x" ]] \
 && [[ "$technology" != "smart-seq"* ]]\
 && [[ "$technology" != "surecell" ]]; then
     if [[ "$technology" != "custom"* ]]; then
-        echo "Error: option -t needs to be 10x, nadia, icell8, or custom_<barcode>_<UMI>"
+        echo "Error: option -t needs to be a technology listed or custom_<barcode>_<UMI>"
+        echo "$help"
         exit 1
     else
         custom=`echo $technology | grep -o "_" | wc -l`
@@ -1348,7 +1349,7 @@ else
     fi
 
     #remove adapter from SCRB-Seq
-    if [[ "$technology" == "scrbseq" ]];
+    if [[ "$technology" == "scrbseq" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove adapters
             sed -E '
