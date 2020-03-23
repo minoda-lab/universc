@@ -877,7 +877,7 @@ elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
 fi
 
 #check if chemistry matches expected input
-#allow "auto" for 10x
+#allow "auto" only for 10x
 if [[ "$technology" != "10x" ]]; then
     #use SC3Pv3 (umi length 12) 
     if [[ $umilength -ge 11 ]] && [[ "$chemistry" == "SC3Pv1" ]] && [[ "$chemistry" == "SC3Pv2" ]]; then
@@ -920,6 +920,7 @@ fi
 
 #####Get barcode/UMI length#####  
 barcode_default=16
+# default UMI depends on chemistry selected above (unless auto is used for 10x)
 if [[ "$chemistry" == *"v2" ]]; then
     umi_default=10
 elif [[ "$chemistry" == *"v3" ]]; then
@@ -933,6 +934,7 @@ barcodelength=""
 umilength=""
 if [[ "$technology" == "10x" ]]; then
     barcodelength=16
+    #set umi length to default (no conversion so auto detection will work)
     umilength=10
     umi_default=10
 elif [[ "$technology" == "celseq" ]]; then
@@ -1289,7 +1291,7 @@ else
     fi
 
     #remove adapter from SureCell (and correct phase blocks)
-    if [[ "$technology" == "surecell" ]];
+    if [[ "$technology" == "surecell" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
             sed -E '
