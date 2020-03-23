@@ -388,7 +388,7 @@ done
 
 
 #####check if input maches expected formats#####
-if [[ $verbose == "true" ]]; then
+if [[ $verbose  ]]; then
     echo "checking options ..."
 fi
 
@@ -585,7 +585,7 @@ for i in {1..2}; do
     
     for j in ${!list[@]}; do
         read=${list[$j]}
-        if [[ $verbose == "true" ]]; then
+        if [[ $verbose  ]]; then
             echo "checking file format for $read ..."
         fi
         if [[ -f $read ]] && [[ -h $read ]]; then
@@ -624,7 +624,7 @@ for i in {1..2}; do
             exit 1
         fi
         
-        if [[ $verbose == "true" ]]; then
+        if [[ $verbose  ]]; then
              echo "  $read"
         fi
         
@@ -650,13 +650,13 @@ for i in {1..2}; do
     
     for j in ${!list[@]}; do
         read=${list[$j]}
-        if [[ $verbose == "true" ]]; then
+        if [[ $verbose  ]]; then
             echo " checking file name for $read ..."
         fi
         
         if [[ -h $read ]]; then
             path=`readlink -f $read`
-            if [[ $verbose == "true" ]]; then
+            if [[ $verbose  ]]; then
                 echo " ***Warning: file $read not in current directory. Path to the file captured instead.***"
                 echo "  (file) $read"
                 echo "  (path) $path"
@@ -666,13 +666,13 @@ for i in {1..2}; do
         case $read in
             #check if contains lane before read
             *_L0[0123456789][0123456789]_$readkey*)
-                if [[ $verbose == "true" ]]; then
+                if [[ $verbose  ]]; then
                     echo "  $read compatible with lane"
                 fi
             ;;
             *) 
                 #rename file
-                if [[ $verbose == "true" ]]; then
+                if [[ $verbose  ]]; then
                     echo "***Warning: file $read does not have lane value in its name. Lane 1 is assumed.***"
                 echo "  renaming $read ..."
                 fi
@@ -685,13 +685,13 @@ for i in {1..2}; do
         case $read in
             #check if contains sample before lane
             *_S[0123456789]_L0*)
-                if [[ $verbose == "true" ]]; then
+                if [[ $verbose  ]]; then
                     echo "  $read compatible with sample"
                 fi
             ;;
             *)
                 #rename file
-                if [[ $verbose == "true" ]]; then
+                if [[ $verbose  ]]; then
                     echo "***Warning: file $read does not have sample value in its name. Sample $k is assumed.***"
                     echo "  renaming $read ..."
                 fi
@@ -705,13 +705,13 @@ for i in {1..2}; do
         case $read in
             #check if contains sample before lane
             *_${readkey}_001.*)
-                if [[ $verbose == "true" ]]; then
+                if [[ $verbose  ]]; then
                     echo "  $read compatible with suffix"
                 fi
             ;;
             *)
                 #rename file
-                if [[ $verbose == "true" ]]; then
+                if [[ $verbose  ]]; then
                     echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
                     echo "  renaming $read ..."
                 fi
@@ -1178,7 +1178,7 @@ fi
 
 
 #####exiting when setup is all that is requested#####
-if [[ $setup == "ture" ]]; then
+if [[ $setup == "true" ]]; then
     lock=`cat $lockfile`
     lock=$(($lock-1))
     echo $lock > $lockfile
@@ -1200,15 +1200,26 @@ else
     echo " directory $crIN already exists"
 fi
 
+
+if [[ $verbose == true ]]; then
+    echo "convert: $convert"
+fi
 if [[ $convert == "true" ]]; then
     echo "moving file to new location"
 fi
 
+
 crR1s=()
-if [[ $verbose == true]]; then
+
+if [[ $verbose == true ]]; then
+    echo "Processing Read1"
+    echo "Fastqs: ${read1[@]}"
+fi
+if [[ $verbose == true ]]; then
     echo "${read1[@]}"
 fi
 for fq in "${read1[@]}"; do
+    if [[ $verbose == true ]]; then echo $fq; fi
     to=`basename $fq`
     to="${crIN}/${to}"
 
@@ -1216,13 +1227,16 @@ for fq in "${read1[@]}"; do
     if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
         #where converted "read1" is R2 in source files (corrected names for cellranger)
         echo "using transcripts in Read 2 for ${technology}"
-        to=`echo $to | sed -e "s/_R2_/_R1_/g"
+        to=`echo $to | sed -e "s/_R2_/_R1_/g"`
     fi
 
+
+    if [[ $verbose == true ]]; then echo $to; fi
     crR1s+=($to)
-    
+
     echo " handling $fq ..."
     if [[ ! -f $to ]] || [[ $convert == "true" ]]; then
+        if [[ $verbose == true ]]; then echo "cp -f $fq $to"; fi
         cp -f $fq $to
     fi
     if [[ $convert == "true" ]]; then
@@ -1231,10 +1245,16 @@ for fq in "${read1[@]}"; do
 done
 
 crR2s=()
-if [[ $verbose == true]]; then
+
+if [[ $verbose == true ]]; then
+     echo "Processing Read2"
+     echo "Fastqs: ${read2[@]}"
+fi
+if [[ $verbose == true ]]; then
     echo "${read2[@]}"
 fi
 for fq in "${read2[@]}"; do
+    if [[ $verbose == true ]]; then echo "$fq"; fi
     to=`basename $fq`
     to="${crIN}/${to}"
     to=$(echo "$to" | sed 's/\.gz$//')
@@ -1243,13 +1263,15 @@ for fq in "${read2[@]}"; do
     if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
         #where converted "read2" is R1 in source files
         echo "using transcripts in Read 1 for ${technology}"
-        to=`echo $to | sed -e "s/_R1_/_R2_/g"
+        to=`echo $to | sed -e "s/_R1_/_R2_/g"`
     fi
 
+    if [[ $verbose == true ]]; then echo "$to"; fi
     crR2s+=($to)
-    
+
     echo " handling $fq ..."
     if [[ ! -f $to ]] || [[ $convert == "true" ]]; then
+        if [[ $verbose == true ]]; then echo "cp -f $fq $to"; fi
         cp -f $fq $to
     fi
 done
