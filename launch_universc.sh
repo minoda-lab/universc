@@ -784,7 +784,7 @@ else
     elif [[ "$technology" == "indrop-v3" ]]; then
         # inDrops-v3 whitelist is a combination of v2 whitelists https://github.com/indrops/indrops/issues/32
         ## version 2 whitelist will be used until dual indexing (i7) is supported for read I2: https://github.com/alexdobin/STAR/issues/825
-        barcodefile=${SDIR}/inDrops-v2_barcodes.txt 
+        barcodefile=${SDIR}/inDrops-v2_barcodes.txt
     elif [[ "$technology" == "quartz-seq2-384" ]]; then
         barcodefile=${SDIR}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
@@ -1254,7 +1254,7 @@ else
     fi
 
     #remove adapter from inDrops
-    if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]];
+    if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove adapter if present
             sed -E '
