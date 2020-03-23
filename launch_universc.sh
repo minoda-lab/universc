@@ -886,7 +886,7 @@ elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
 fi
 
 #check if chemistry matches expected input
-#allow "auto" for 10x
+#allow "auto" only for 10x
 if [[ "$technology" != "10x" ]]; then
     #use SC3Pv3 (umi length 12) 
     if [[ $umilength -ge 11 ]] && [[ "$chemistry" == "SC3Pv1" ]] && [[ "$chemistry" == "SC3Pv2" ]]; then
@@ -929,6 +929,7 @@ fi
 
 #####Get barcode/UMI length#####  
 barcode_default=16
+# default UMI depends on chemistry selected above (unless auto is used for 10x)
 if [[ "$chemistry" == *"v2" ]]; then
     umi_default=10
 elif [[ "$chemistry" == *"v3" ]]; then
@@ -942,6 +943,7 @@ barcodelength=""
 umilength=""
 if [[ "$technology" == "10x" ]]; then
     barcodelength=16
+    #set umi length to default (no conversion so auto detection will work)
     umilength=10
     umi_default=10
 elif [[ "$technology" == "celseq" ]]; then
@@ -1297,20 +1299,17 @@ else
         done
     fi
 
-    #remove adapter from Sci-Seq and swap barcode and UMI
-    if [[ "$technology" == "sciseq" ]]; then
+    #remove adapter from SureCell (and correct phase blocks)
+    if [[ "$technology" == "surecell" ]]; then
         for convFile in "${convFiles[@]}"; do
-            #remove adapter if detected
+            #remove phase blocks and linkers
             sed -E '
-                /^ACGACGCTCTTCCGATCT/ {
-                s/^(.{18})//g
+                /.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC/ {
+                s/.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC.*/\1\2\3\4/g
                 n
                 n
-                s/^(.{18})//g
-                }'  $convFile > ${crIN}/.temp
-            mv ${crIN}/.temp $convFile
-            #swap UMI and barcode
-            sed -E '2~2s/(.{8})(.{10})/\2\1/' $convFile > ${crIN}/.temp
+                s/.*(.{6}).{15}(.{6}).{15}(.{6}).{3}(.{8}).{3}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
     fi
