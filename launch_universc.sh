@@ -418,7 +418,7 @@ if [[ $testrun == "true" ]]; then
         read1=("${SDIR}/test/shared/mappa-test/test_FL_R1.fastq")
         read2=("${SDIR}/test/shared/mappa-test/test_FL_R2.fastq")
     else
-        echo "Error: for test run, option --technology must be 10x, nadia, or icell8"
+        echo "Error: option -t needs to be a technology listed or custom_<barcode>_<UMI>"
 	exit 1
     fi
 fi
@@ -553,7 +553,7 @@ if [[ "$technology" != "10x" ]] \
         b=`echo $technology | cut -f$((${custom}-1))  -d'_'`
         u=`echo $technology | cut -f$((${custom}))  -d'_'`
         if ! [[ "$b" =~ ^[0-9]+$ ]] || ! [[ "$u" =~ ^[0-9]+$ ]]; then
-            echo "Error: option -t needs to be 10x, nadia, icell8, or custom_<barcode>_<UMI>"
+            echo "Error: option -t needs to be a technology listed or custom_<barcode>_<UMI>"
             exit 1
         fi
         if [[ -z $barcodefile ]]; then
@@ -772,12 +772,19 @@ if [[ ! -z "$barcodefile" ]]; then
         barcodefile=`readlink -f $barcodefile`
         #all barcodes upper case
         sed -i 's/.*/\U&/g' $barcodefile
+        #full path for custom barcodes
+        current_barcode=$barcodefile
     fi
 else
     if [[ "$technology" == "10x" ]]; then
-        barcodefile="default"
+        barcodefile="default:10x"
+        current_barcode=$barcodefile
     elif [[ "$technology" == "nadia" ]]; then
-        barcodefile=${SDIR}/nadia_barcode.txt
+        barcodefile=${SDIR}/all_barcodes_12bp.txt
+        if [[ ! -f ${SDIR}/nadia_barcodes.txt ]]; then
+            ln -s ${SDIR}/all_barcodes_12bp.txt ${SDIR}/nadia_barcodes.txt
+        fi
+        current_barcode="default:all_barcodes_12bp.txt"
         if [[ ! -f ${barcodefile} ]]; then
             #create a nadia barcode file
             echo "No barcodes whitelists available for Drop-Seq or Nadia: all possible barcodes accepted (valid barcodes will be 100% as a result)"
@@ -785,21 +792,27 @@ else
         fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${SDIR}/iCell8_barcode.txt
+        current_barcode="default:iCell8_barcode.txt"
     elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
         # use bustools whitelist for inDrops-v2 with adapters removed https://github.com/BUStools/bustools/issues/4 
         barcodefile=${SDIR}/inDrops_barcodes.txt
+        current_barcode="default:inDrops_barcodes.txt"
     elif [[ "$technology" == "indrop-v3" ]]; then
         # inDrops-v3 whitelist is a combination of v2 whitelists https://github.com/indrops/indrops/issues/32
         ## version 2 whitelist will be used until dual indexing (i7) is supported for read I2: https://github.com/alexdobin/STAR/issues/825
         barcodefile=${SDIR}/inDrops-v2_barcodes.txt
+        current_barcode="default:inDrops-v2_barcodes.txt"
     elif [[ "$technology" == "quartz-seq2-384" ]]; then
         barcodefile=${SDIR}/Quartz-Seq2-384_barcode.txt
+        current_barcode="default:Quartz-Seq2-384_barcodes.txt"
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
         barcodefile=${SDIR}/Quartz-Seq2-1536_barcode.txt
+        current_barcode="default:Quartz-Seq2-1536_barcodes.txt"
     elif [[ "$technology" == "smartseq" ]]; then
         echo "***WARNING: barcodes not available for Smart-Seq 2 or 3, using iCELL8 whitelist (version 3)***"
         echo "...valid barcodes may be an overestimate"
         barcodefile=${SDIR}/iCell8_barcode.txt
+        current_barcode="default:iCell8_barcode.txt"
     elif [[ "$technology" == "custom"* ]] || [[ "$technology" == "celseq"* ]] ||  [[ "$technology" == "sciseq" ]] || [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "surecell" ]]; then
         if [[ "$technology" == "celseq" ]]; then
             customname="celseq"
@@ -833,12 +846,16 @@ else
             minlength=$(( $barcodelength < 16 ? $barcodelength : 16 ))
         fi
         # compute custom barcodes if barcode length is different
-        barcodefile=${SDIR}/${customname}_${minlength}_barcode.txt
+        barcodefile=${SDIR}/all_barcodes_${minlength}bp.txt
+        if [[ ! -f ${SDIR}/${customname}_barcodes.txt ]]; then
+            ln -s ${SDIR}/all_barcodes_${minlength}bp.txt ${SDIR}/${customname}_barcodes.txt
+        fi
+        current_barcode=`echo "default:all_barcodes_${minlength}bp.txt"`
         if [[ ! -f ${barcodefile} ]]; then
             echo "No barcodes whitelists available for ${customname}: all possible barcodes accepted (valid barcodes will be 100% as a result)"
             echo "***Warning: giving a barcode whitelist --barcodefile is recommended where available.***"
             if [[ -f ${SDIR}/*${barcodelength}_barcode.txt ]]; then
-                pregeneratedfile=`ls ${SDIR}/*${barcodelength}_barcode.txt | awk '{print $1;}' | head -n 1`
+                pregeneratedfile=`ls ${SDIR}/*barcodes_${minlength}bp.txt | awk '{print $1;}' | head -n 1`
                 echo "$pregeneratedfile for barcode(${barcodelength}) generated already"
                 ln -s $pregeneratedfile $barcodefile
                 echo "    ...using this as $barcodefile"
@@ -847,8 +864,13 @@ else
                 # generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
                 echo $(eval echo $(for ii in $(eval echo {1..${minlength}}); do echo "{A,T,C,G}"; done |  tr "\n" " " | sed "s/ //g" | xargs -I {} echo {})) | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
             fi
-        fi 
+        fi
     fi
+fi
+
+#full path for other barcodes
+if [[ -z $current_barcode ]]; then
+    current_barcode=$barcodefile
 fi
 
 #check if reference is present
@@ -1023,7 +1045,7 @@ else
 	    echo " total of $lock cellranger ${cellrangerversion} jobs are already running in ${cellrangerpath} with barcode length (${lastcall_b}), UMI length (${lastcall_u}), and whitelist barcodes (${lastcall_p})"
             
 	    #check if a custom barcode is used for a run (which cannot be run in parallel)
-            if [[ ${barcodelength} == ${lastcall_b} ]] && [[ ${umilength} == ${lastcall_u} ]] && [[ ${barcodefile} == ${lastcall_p} ]]; then
+            if [[ ${barcodelength} == ${lastcall_b} ]] && [[ ${umilength} == ${lastcall_u} ]] && [[ ${current_barcode} == ${lastcall_p} ]]; then
                 echo " call accepted: no conflict detected with other jobs currently running"
                 #add current job to lock
                 lock=$(($lock+1))
@@ -1142,7 +1164,7 @@ if [[ $lock -eq 0 ]]; then
     
     #convert whitelist to the apropriate barcode
     echo " converting whitelist"
-    if [[ ${barcodefile} == "default" ]]; then
+    if [[ ${barcodefile} == "default:10x" ]]; then
         #for version 2
         cp ${v2}.backup ${v2}
         #for version 3
@@ -1163,12 +1185,12 @@ if [[ $lock -eq 0 ]]; then
         ln -s ${v3}.gz translation/${v3}.gz
     fi
     echo " whitelist converted"
-    
+
     #change last call file
-    echo "${barcodelength} ${umilength} ${barcodefile}" > $lastcallfile
-    
+    echo "${barcodelength} ${umilength} ${current_barcode}" > $lastcallfile
+
     cd - > /dev/null
-    
+
     echo "setup complete"
     if [[ $setup == "true" ]]; then
         exit 0
@@ -1505,7 +1527,7 @@ fi
 
 
 #####Readjusting the barcodes in the cellranger output back to its original state##### 
-if [[ ${barcodefile} != "default" ]]; then
+if [[ ${barcodefile} != "default:10x" ]]; then
     echo "replacing modified barcodes with the original in the output gene barcode matrix"
     perl ${BARCODERECOVER} ${barcodefile} ${barcodeadjust} ${id}
     echo "barcodes recovered"
