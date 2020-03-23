@@ -64,8 +64,8 @@ Mandatory arguments to long options are mandatory for short options too.
   -R1, --read1 FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
   -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
   -f,  --file NAME              Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
-                                e.g. /path/to/files/Example_S1_L001
-  
+                                  e.g. /path/to/files/Example_S1_L001
+
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
@@ -82,13 +82,13 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   Sci-Seq (8bp UMI, 10bp barcode): sciseq
-                                  Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq                                    
+                                  Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq
                                   SCRUB-Seq (6bp barcode, 10bp UMI): scrubseq
                                   SureCell (18bp barcode, 8bp UMI): surecell, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
-  
+
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
@@ -98,12 +98,12 @@ Mandatory arguments to long options are mandatory for short options too.
                                     Only applies when --jobmode=local.
        --mempercore NUM         Set max GB each job may use at one time.
                                     Only applies in cluster jobmodes.
-  
-  -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data 
-  
+
+  -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data
+
        --setup                  Set up whitelists for compatibility with new technology and exit
        --as-is                  Skips the FASTQ file conversion if the file already exists
-  
+
   -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
        --verbose                Print additional outputs for debugging
@@ -1193,6 +1193,9 @@ if [[ $convert == "true" ]]; then
 fi
 
 crR1s=()
+if [[ $verbose == true]]; then
+    echo "${read1[@]}"
+fi
 for fq in "${read1[@]}"; do
     to=`basename $fq`
     to="${crIN}/${to}"
@@ -1200,6 +1203,7 @@ for fq in "${read1[@]}"; do
     #invert read1 and read2
     if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
         #where converted "read1" is R2 in source files (corrected names for cellranger)
+        echo "using transcripts in Read 2 for ${technology}"
         to=`echo $to | sed -e "s/_R2_/_R1_/g"
     fi
 
@@ -1215,6 +1219,9 @@ for fq in "${read1[@]}"; do
 done
 
 crR2s=()
+if [[ $verbose == true]]; then
+    echo "${read2[@]}"
+fi
 for fq in "${read2[@]}"; do
     to=`basename $fq`
     to="${crIN}/${to}"
@@ -1223,6 +1230,7 @@ for fq in "${read2[@]}"; do
     #invert read1 and read2
     if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
         #where converted "read2" is R1 in source files
+        echo "using transcripts in Read 1 for ${technology}"
         to=`echo $to | sed -e "s/_R1_/_R2_/g"
     fi
 
