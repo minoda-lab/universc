@@ -5,6 +5,10 @@ install=false
 ######convert version#####
 convertversion="0.3.0.90008"
 ##########
+
+
+
+#####locate cellranger and get cellranger version#####
 cellrangerpath=`which cellranger` #location of cellranger
 if [[ -z $cellrangerpath ]]; then
     echo "cellranger command is not found."
@@ -39,8 +43,49 @@ if [[ $RDIR != $SDIR ]]; then
 fi
 echo "Running launch_universc.sh in '$SDIR'"
 
-BARCODERECOVER=${SDIR}/RecoverBarcodes.pl
-PERCELLSTATS=${SDIR}/ExtractBasicStats.pl
+TOOLS=${SDIR}/sub
+BARCODERECOVER=${TOOLS}/RecoverBarcodes.pl
+MAKEINDROPBARCODES=${TOOLS}/MakeIndropBarcodes.pl
+PERCELLSTATS=${TOOLS}/ExtractBasicStats.pl
+##########
+
+
+
+#####define set options#####
+lockfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock #path for .lock file
+lastcallfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.last_called #path for .last_called
+lastcall=`[[ -e $lastcallfile ]] &&  cat $lastcallfile || echo ""`
+lastcall_b=`echo ${lastcall} | cut -f1 -d' '`
+lastcall_u=`echo ${lastcall} | cut -f2 -d' '`
+lastcall_p=`echo ${lastcall} | cut -f3 -d' '`
+barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
+barcodefile=""
+crIN=input4cellranger #name of the directory with all FASTQ files given to cellranger
+whitelistdir=${SDIR}/whitelists #path to whitelists
+whitelistfile="outs/whitelist.txt" #name of the whitelist file added to the cellranger output
+percellfile="outs/basic_stats.txt" #name of the file with the basic statistics of the run added to the cellranger output
+##########
+
+
+
+#####checki if convert and cellranger are writable#####
+#cellranger
+if ! [[ -w "$barcodedir" ]]; then
+    echo "Error: Trying to run cellranger installed at ${cellrangerpath}"
+    echo "launch_universc.sh can only run with cellranger installed locally"
+    echo "Install cellranger in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
+    echo "The following versions of cellranger are found:"
+    echo " `whereis cellranger`"
+    exit 1
+fi
+
+#convert
+if ! [[ -w "$SDIR" ]]; then
+    echo "Error: Trying to run launch_universc.sh installed at $SDIR"
+    echo "$SDIR must be writable to run launch_universc.sh"
+    echo "Install launch_universc.sh in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
+    exit 1
+fi
 ##########
 
 
@@ -71,14 +116,16 @@ Mandatory arguments to long options are mandatory for short options too.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
   -t,  --technology PLATFORM    Name of technology used to generate data.
                                 Supported technologies:
-                                  10x Genomics (16bp barcode, 10bp UMI): 10x, chromium (v2 or v3 automatically detected)
+                                  10x Genomics (version automatically detected): 10x, chromium
+				  10x Genomics version 2 (16bp barcode, 10bp UMI): 10x-v2, chromium-v2
+				  10x Genomics version 3 (16bp barcode, 12bp UMI): 10x-v3, chromium-v3
                                   CEL-Seq (8bp barcode, 4bp UMI): celseq
                                   CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
                                   Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
                                   iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
-                                  inDrops version 3 (8bp barcodes, 6bp UMI): indrops-v3, 1cellbio-v3
+                                  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   Sci-Seq (8bp UMI, 10bp barcode): sciseq
@@ -130,19 +177,6 @@ fi
 
 
 #####options#####
-#set options
-lockfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock #path for .lock file
-lastcallfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.last_called #path for .last_called
-lastcall=`[[ -e $lastcallfile ]] &&  cat $lastcallfile || echo ""`
-lastcall_b=`echo ${lastcall} | cut -f1 -d' '`
-lastcall_u=`echo ${lastcall} | cut -f2 -d' '`
-lastcall_p=`echo ${lastcall} | cut -f3 -d' '`
-barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
-barcodefile=""
-crIN=input4cellranger #name of the directory with all FASTQ files given to cellranger
-whitelistfile="outs/whitelist.txt" #name of the whitelist file added to the cellranger output
-percellfile="outs/basic_stats.txt" #name of the file with the basic statistics of the run added to the cellranger output
-
 #variable options
 setup=false
 convert=true
@@ -155,13 +189,7 @@ id=""
 description=""
 reference=""
 ncells=""
-if [[ $technology == "10x" ]] || [[ $technology == "chromium" ]]; then
-    #set default chemistry to auto detect 10x version 2 or 3
-    chemistry="auto"
-else
-    #otherwise use version 2 configurations for other platforms
-    chemistry="SC3Pv2"
-fi
+chemistry=""
 jobmode="local"
 ncores=""
 mem=""
@@ -387,23 +415,23 @@ done
 
 
 
-#####check if input maches expected formats#####
-if [[ $verbose  ]]; then
-    echo "checking options ..."
-fi
-
-#check if this is a test run
+#####check if this is a test run#####
 if [[ $testrun == "true" ]]; then
     if [[ ${#read1[@]} -gt 0 ]] || [[ ${#read2[@]} -gt 0 ]]; then
         echo "Error: for test run, no R1 or R2 file can be selected."
         exit 1
+    elif [[ -n $reference ]]; then
+        echo "Error: for test run, reference will be set automatically."
+        exit 1
+    elif [[ -n $id ]]; then
+        echo "Error: for test run, id will be set automatically."
+        exit 1
     fi
-    
+     
     reference=${SDIR}/test/cellranger_reference/cellranger-tiny-ref/3.0.0
-    
-    percelldata=true
     id=test-tiny-${technology}
     description=${id}
+    percelldata=true
     
     if [[ $technology == "10x" ]]; then
         gunzip -fk ${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L00[12]_R[12]_001.fastq.gz
@@ -418,148 +446,231 @@ if [[ $testrun == "true" ]]; then
         read1=("${SDIR}/test/shared/mappa-test/test_FL_R1.fastq")
         read2=("${SDIR}/test/shared/mappa-test/test_FL_R2.fastq")
     else
-        echo "Error: option -t needs to be a technology listed or custom_<barcode>_<UMI>"
-	exit 1
+        echo "Error: for test run, -t needs to be 10x, nadia, or icell8"
+        exit 1
     fi
 fi
+##########
 
-#check if cellranger is writable
-if ! [[ -w "$barcodedir" ]]; then
-    echo "Error: Trying to run cellranger installed at ${cellrangerpath}"
-    echo "launch_universc.sh can only run with cellranger installed locally"
-    echo "Install cellranger in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
-    echo "The following versions of cellranger are found:"
-    echo " `whereis cellranger`"
-    exit 1
+
+
+#####Check if technology matches expected inputs#####
+if [[ $verbose ]]; then
+    echo " checking option: --technology"
 fi
-
-#check if convert is writable
-if ! [[ -w "$SDIR" ]]; then
-    echo "Error: Trying to run launch_universc.sh installed at $SDIR"
-    echo "$SDIR must be writable to run launch_universc.sh"
-    echo "Install launch_universc.sh in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
-    exit 1
-fi
-
-
-#aliases for technology with the same settings
-if [[ "$technology" == "chromium" ]]; then
-    echo "Running with technology 10x (chromium)" 
+if [[ "$technology" == "10x" ]] || [[ "$technology" == "chromium" ]]; then
     technology="10x"
-fi
-if [[ "$technology" == "celseq" ]] || [[ "$technology" == "cel-seq" ]]; then
-    echo "Running with CEL-Seq parameters (version 1)"
+elif [[ "$technology" == "10x-v2" ]] || [[ "$technology" == "chromium-v2" ]]; then
+    technology="10x-v2"
+elif [[ "$technology" == "10x-v3" ]] || [[ "$technology" == "chromium-v3" ]]; then
+    technology="10x-v3"
+elif [[ "$technology" == "celseq" ]] || [[ "$technology" == "cel-seq" ]]; then
     technology="celseq"
-fi
-if [[ "$technology" == "celseq2" ]] || [[ "$technology" == "cel-seq2" ]]; then
-    echo "Running with CEL-Seq2 parameters"
+elif [[ "$technology" == "celseq2" ]] || [[ "$technology" == "cel-seq2" ]]; then
     technology="celseq2"
-fi
-if [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
-    echo "Running with Nadia parameters (Drop-Seq)"
+elif [[ "$technology" == "nadia" ]] || [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
     technology="nadia"
-fi
-if [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]]; then
-    echo "Running with iCELL8 parameters (version 3 with UMIs)"
-    echo "***WARNING: iCELL8 settings should only be used for kits that have UMIs***"
+elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]]; then
     technology="icell8"
-fi
-if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
-    echo "Running with inDrop parameters (version 1)"
+elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
     technology="indrop-v1"
-fi
-if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
-    echo "Running with inDrop parameters (version 2 with reads inverted)"
+elif [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
     technology="indrop-v2"    
-fi
-if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]] || [[ "$technology" == "1cellbio-v3" ]] || [[ "$technology" == "1cellbiov3" ]]; then
-    echo "Running with inDrop parameters (version 3 with reads inverted)"
+elif [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]] || [[ "$technology" == "1cellbio-v3" ]] || [[ "$technology" == "1cellbiov3" ]]; then
     technology="indrop-v3"
-fi
-if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
-    #invert read1 and read2
-    echo "Using barcodes on Read 2"
-    tmp=$read1
-    read1=$read2
-    read2=$tmp
-    tmp=""
-fi
-if [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]]; then
-    echo "Running with Quartz-Seq2 v3.1 parameters 384 wells (14bp barcode)"
+elif [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]]; then
     technology="quartz-seq2-384"
-fi
-
-if [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]]; then
-    echo "Running with Quartz-Seq2 v3.2 parameters 1536 wells (15bp barcode)"
+elif [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]]; then
     technology="quartz-seq2-1536"
-fi
-if [[ "$technology" == "sciseq" ]] || [[ "$technology" == "sci-seq" ]]; then
-    echo "Running with Sci-Seq parameters (single-cell combinatorial indexing RNA sequencing)"
+elif [[ "$technology" == "sciseq" ]] || [[ "$technology" == "sci-seq" ]]; then
     technology="sciseq"
-fi
-if [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "scrb-seq" ]] || [[ "$technology" == "mcscrbseq" ]] || [[ "$technology" == "mcscrb-seq" ]]; then
-    echo "Running with SCRB-Seq / mcSCRB-seq parameters"
+elif [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "scrb-seq" ]] || [[ "$technology" == "mcscrbseq" ]] || [[ "$technology" == "mcscrb-seq" ]]; then
     technology="scrbseq"
-fi
-if [[ "$technology" == "seqwell" ]] || [[ "$technology" == "seq-well" ]]; then
-    echo "Running with Sci-Seq-Well parameters"
+elif [[ "$technology" == "seqwell" ]] || [[ "$technology" == "seq-well" ]]; then
     technology="seqwell"
-fi
-if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]] ||  [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
-    echo "Running with Smart-Seq3 parameters (version 3 with UMIs)"
-    echo "***WARNING: Smart-Seq settings should only be used for kits that have UMIs***"
+elif [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]] ||  [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
     technology="smartseq"
-fi
-if [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]] || [[ "$technology" == "ddseq" ]] || [[ "$technology" == "dd-seq" ]] || [[ "$technology" == "bioraad" ]]; then
-    echo "Running with SureCell parameters"
+elif [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]] || [[ "$technology" == "ddseq" ]] || [[ "$technology" == "dd-seq" ]] || [[ "$technology" == "bioraad" ]]; then
     technology="surecell"
-fi
-
-
-if [[ "$technology" == "indrop-v3" ]] \
-|| [[ "$technology" == "sciseq" ]] \
-|| [[ "$technology" == "smart-seq"* ]]; then
-    ## see the following issues from supporting inDrops-v3
-    # https://github.com/alexdobin/STAR/issues/825
-    # https://github.com/BUStools/bustools/issues/4
-    ## these workarounds could be implemented in the future
-    echo "***WARNING: dual indexes are not supported***"
-    echo "...samples should be demultiplexed into separate FASTQ files by index before running"
-fi
-
-
-#check if technology matches expected inputs
-if [[ "$technology" != "10x" ]] \
-&& [[ "$technology" != "celseq"* ]] \
-&& [[ "$technology" != "nadia" ]] \
-&& [[ "$technology" != "icell8" ]] \
-&& [[ "$technology" != "indrop"* ]] \
-&& [[ "$technology" != "quartz-seq2"* ]] \
-&& [[ "$technology" != "sciseq" ]] \
-&& [[ "$technology" != "scrbseq" ]] \
-&& [[ "$technology" != "seqwell" ]] \
-&& [[ "$technology" != "smart-seq"* ]]\
-&& [[ "$technology" != "surecell" ]]; then
-    if [[ "$technology" != "custom"* ]]; then
-        echo "Error: option -t needs to be a technology listed or custom_<barcode>_<UMI>"
-        echo "$help"
-        exit 1
+elif [[ "$technology" == "custom"* ]]; then
+    fields=$((`echo $technology | grep -o "_" | wc -l`+1))
+    if [[ $fields -ne 3 ]]; then
+        echo "Error: custom input must have exactly 3 fields separated by '_', e.g. custom_10_16"
     else
-        custom=`echo $technology | grep -o "_" | wc -l`
-        custom=$(($custom+1))
-        if [[ $custom -le 2 ]]; then
-           echo "Error: custom input must have at least 3 fields, e.g., customA_10_16"
-        fi
-        b=`echo $technology | cut -f$((${custom}-1))  -d'_'`
-        u=`echo $technology | cut -f$((${custom}))  -d'_'`
+        b=`echo $technology | cut -f2 -d'_'`
+        u=`echo $technology | cut -f3 -d'_'`
         if ! [[ "$b" =~ ^[0-9]+$ ]] || ! [[ "$u" =~ ^[0-9]+$ ]]; then
             echo "Error: option -t needs to be a technology listed or custom_<barcode>_<UMI>"
             exit 1
         fi
-        if [[ -z $barcodefile ]]; then
-            echo "Warning: when option -t is set as custom, a file with a list of barcodes can be specified with option -b."
-        fi
     fi
+else
+    echo "Error: option -t needs to be a technology listed or custom_<barcode>_<UMI>"
+    exit 1
+fi
+
+if [[ $verbose ]]; then
+    echo " technology set to ${technology}"
+fi
+
+if [[ "$technology" == "icell8" ]]; then
+    echo "***WARNING: ${technology} should only be used for kits that have valid UMIs***"
+fi
+if [[ "$technology" == "smartseq" ]]; then
+    echo "***WARNING: ${technology} should only be used for kits that have UMIs***"
+fi
+if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+    echo "***WARNING: launch_universc.sh does not support dual index. Make sure that the R1 file is adjusted accordingly prior to running launch_universc.sh***"
+fi
+##########
+
+
+
+#####Setting barcode and UMI length according to the set technology#####
+if [[ $verbose ]]; then
+    echo " setting barcode and UMI lengths for ${technology}"
+fi
+
+#barcode and umi lengths given by options
+barcodelength=""
+umilength=""
+minlength=""
+if [[ "$technology" == "10x" ]]; then
+    barcodelength=16
+    umilength=10
+    minlength=16
+elif [[ "$technology" == "10x-v2" ]]; then
+    barcodelength=16
+    umilength=10
+    minlength=16
+elif [[ "$technology" == "10x-v3" ]]; then
+    barcodelength=16
+    umilength=12
+    minlength=16
+elif [[ "$technology" == "celseq" ]]; then
+    barcodelength=8
+    umilength=4
+    minlength=8
+elif [[ "$technology" == "celseq2" ]]; then
+    barcodelength=6
+    umilength=6
+    minlength=6
+elif [[ "$technology" == "nadia" ]]; then
+    barcodelength=12
+    umilength=8
+    minlength=12
+elif [[ "$technology" == "icell8" ]]; then
+    barcodelength=11
+    umilength=14
+    minlength=11
+elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+    barcodelength=19 
+    umilength=6
+    minlength=16
+elif [[ "$technology" == "quartz-seq2-384" ]]; then
+    barcodelength=14
+    umilength=8
+    minlength=14
+elif [[ "$technology" == "quartz-seq2-1536" ]]; then
+    barcodelength=15
+    umilength=8
+    minlength=15
+elif [[ "$technology" == "sciseq" ]]; then
+    barcodelength=10
+    umilength=8
+    minlength=10
+elif [[ "$technology" == "scrbseq" ]]; then
+    barcodelength=6 
+    umilength=10
+    minlength=6
+elif [[ "$technology" == "seqwell" ]]; then
+    barcodelength=8
+    umilength=12
+    minlength=8
+elif [[ "$technology" == "smartseq" ]]; then
+    barcodelength=11
+    umilength=8
+    minlength=11
+elif [[ "$technology" == "surecell" ]]; then
+    barcodelength=18
+    umilength=8
+    minlength=18
+elif [[ "$technology" == "custom"* ]]; then
+    barcodelength=`echo $technology | cut -f2 -d'_'`
+    umilength=`echo $technology | cut -f3 -d'_'`
+    minlength=${barcodelength}
+fi
+
+if [[ $minlength -gt 16 ]]; then
+    minlength=16
+fi
+
+if [[ $verbose ]]; then
+    echo " barcode and UMI lengths set as ${barcodelength} and ${umilength} respectively"
+fi
+##########
+
+
+
+#####Setting chemisty#####
+#check if chemistry matches expected inputs
+if [[ $verbose ]]; then
+    echo " checking option: --chemistry"
+fi
+
+if [[ -n $chemistry ]]; then
+    if [[ "$chemistry" != "auto" ]] && \
+    [[ "$chemistry" != "threeprime" ]] && \
+    [[ "$chemistry" != "fiveprime" ]] && \
+    [[ "$chemistry" != "SC3Pv1" ]] && \
+    [[ "$chemistry" != "SC3Pv2" ]] && \
+    [[ "$chemistry" != "SC3Pv3" ]] && \
+    [[ "$chemistry" != "SC5P-PE" ]] && \
+    [[ "$chemistry" != "SC5P-R2" ]] && \
+    [[ "$chemistry" != "SC-FB" ]]; then
+        echo "Error: option -c can be auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC5P-PE, SC5P-R2, or SC-FB"
+	exit 1
+    fi
+fi
+
+#determine what chemistry is recommended
+temp_chemistry="SC3Pv2"
+if [[ $umilength -gt 10 ]]; then
+    temp_chemistry="SC3Pv3"
+fi
+if [[ "$technology" == "10x" ]]; then
+    temp_chemistry="auto"
+fi
+
+#set chemistry
+if [[ -z ${chemistry} ]]; then
+    chemistry=${temp_chemistry}
+elif [[ "$chemistry" != "$temp_chemistry" ]]; then
+    echo "***WARNING: chemistry is set to ${chemistry} where ${temp_chemistry} would have been chosen automatically. proceed with causion.***"
+fi
+
+#set default barcode and umi lengths
+barcode_default=16
+umi_default=10
+if [[ "$chemistry" == "SC3Pv3" ]]; then
+    umi_default=12
+fi
+totallength=`echo $((${barcode_default}+${umi_default}))`
+
+#adjustment lengths
+barcodeadjust=`echo $(($barcodelength-$barcode_default))`
+umiadjust=`echo $(($umilength-$umi_default))`
+
+if [[ $verbose ]]; then
+    echo " chemisty set to ${chemistry}"
+fi
+##########
+
+
+
+#####Collecting R1 and R2 files#####
+if [[ $verbose ]]; then
+    echo " checking option: --read1 and --read2"
 fi
 
 #check for presence of read1 and read2 files
@@ -587,7 +698,7 @@ for i in {1..2}; do
     for j in ${!list[@]}; do
         read=${list[$j]}
         if [[ $verbose  ]]; then
-            echo "checking file format for $read ..."
+            echo "  checking file format for $read ..."
         fi
         if [[ -f $read ]] && [[ -h $read ]]; then
             if [[ $read == *"gz" ]]; then
@@ -652,28 +763,28 @@ for i in {1..2}; do
     for j in ${!list[@]}; do
         read=${list[$j]}
         if [[ $verbose  ]]; then
-            echo " checking file name for $read ..."
+            echo "  checking file name for $read ..."
         fi
         
         if [[ -h $read ]]; then
             path=`readlink -f $read`
             if [[ $verbose  ]]; then
-                echo " ***Warning: file $read not in current directory. Path to the file captured instead.***"
-                echo "  (file) $read"
-                echo "  (path) $path"
+                echo "***Warning: file $read not in current directory. Path to the file captured instead.***"
+                echo " (file) $read"
+                echo " (path) $path"
             fi
             read=${path}
         fi
         case $read in
             #check if contains lane before read
             *_L0[0123456789][0123456789]_$readkey*)
-                if [[ $verbose  ]]; then
+                if [[ $verbose ]]; then
                     echo "  $read compatible with lane"
                 fi
             ;;
             *) 
                 #rename file
-                if [[ $verbose  ]]; then
+                if [[ $verbose ]]; then
                     echo "***Warning: file $read does not have lane value in its name. Lane 1 is assumed.***"
                 echo "  renaming $read ..."
                 fi
@@ -686,13 +797,13 @@ for i in {1..2}; do
         case $read in
             #check if contains sample before lane
             *_S[0123456789]_L0*)
-                if [[ $verbose  ]]; then
+                if [[ $verbose ]]; then
                     echo "  $read compatible with sample"
                 fi
             ;;
             *)
                 #rename file
-                if [[ $verbose  ]]; then
+                if [[ $verbose ]]; then
                     echo "***Warning: file $read does not have sample value in its name. Sample $k is assumed.***"
                     echo "  renaming $read ..."
                 fi
@@ -706,13 +817,13 @@ for i in {1..2}; do
         case $read in
             #check if contains sample before lane
             *_${readkey}_001.*)
-                if [[ $verbose  ]]; then
+                if [[ $verbose ]]; then
                     echo "  $read compatible with suffix"
                 fi
             ;;
             *)
                 #rename file
-                if [[ $verbose  ]]; then
+                if [[ $verbose ]]; then
                     echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
                     echo "  renaming $read ..."
                 fi
@@ -730,6 +841,16 @@ for i in {1..2}; do
         read2=("${list[@]}")
     fi
 done
+
+#inverting R1 and R2 for specific technologies
+if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+    #invert read1 and read2
+    echo "***WARNING: technology is set to ${technology}. barcodes on Read 2 will be used***"
+    tmp=$read1
+    read1=$read2
+    read2=$tmp
+    tmp=""
+fi
 
 #checking the quality of fastq file names
 read12=("${read1[@]}" "${read2[@]}")
@@ -763,125 +884,120 @@ for fq in "${read12[@]}"; do
 done
 LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
-#select the input barcode file
-if [[ ! -z "$barcodefile" ]]; then
+if [[ $verbose ]]; then
+     echo " read1 and read2 files checked"
+fi
+##########
+
+
+
+#####Set the input barcode file#####
+if [[ $verbose ]]; then
+    echo " setting whitelist barcode file."
+fi
+
+if [[ -n "$barcodefile" ]]; then
     if [[ ! -f $barcodefile ]]; then
         echo "Error: File selected for option --barcodefile does not exist"
 	exit 1
     else
+        #getting absolute path
         barcodefile=`readlink -f $barcodefile`
-        #all barcodes upper case
-        sed -i 's/.*/\U&/g' $barcodefile
-        #full path for custom barcodes
-        current_barcode=$barcodefile
     fi
 else
-    if [[ "$technology" == "10x" ]]; then
+    if [[ "$technology" == "10x"* ]]; then
         barcodefile="default:10x"
-        current_barcode=$barcodefile
-    elif [[ "$technology" == "nadia" ]]; then
-        barcodefile=${SDIR}/all_barcodes_12bp.txt
-        if [[ ! -f ${SDIR}/nadia_barcodes.txt ]]; then
-            ln -s ${SDIR}/all_barcodes_12bp.txt ${SDIR}/nadia_barcodes.txt
-        fi
-        current_barcode="default:all_barcodes_12bp.txt"
-        if [[ ! -f ${barcodefile} ]]; then
-            #create a nadia barcode file
-            echo "No barcodes whitelists available for Drop-Seq or Nadia: all possible barcodes accepted (valid barcodes will be 100% as a result)"
-            echo {A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G}{A,T,C,G} | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
-        fi
     elif [[ "$technology" == "icell8" ]]; then
-        barcodefile=${SDIR}/iCell8_barcode.txt
-        current_barcode="default:iCell8_barcode.txt"
-    elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
-        # use bustools whitelist for inDrops-v2 with adapters removed https://github.com/BUStools/bustools/issues/4 
-        barcodefile=${SDIR}/inDrops_barcodes.txt
-        current_barcode="default:inDrops_barcodes.txt"
-    elif [[ "$technology" == "indrop-v3" ]]; then
-        # inDrops-v3 whitelist is a combination of v2 whitelists https://github.com/indrops/indrops/issues/32
-        ## version 2 whitelist will be used until dual indexing (i7) is supported for read I2: https://github.com/alexdobin/STAR/issues/825
-        barcodefile=${SDIR}/inDrops-v2_barcodes.txt
-        current_barcode="default:inDrops-v2_barcodes.txt"
+        barcodefile=${whitelistdir}/iCell8_barcode.txt
+	echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in iCell8. valid barcode will be an overestimate***"
     elif [[ "$technology" == "quartz-seq2-384" ]]; then
-        barcodefile=${SDIR}/Quartz-Seq2-384_barcode.txt
-        current_barcode="default:Quartz-Seq2-384_barcodes.txt"
+        barcodefile=${whitelistdir}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
-        barcodefile=${SDIR}/Quartz-Seq2-1536_barcode.txt
-        current_barcode="default:Quartz-Seq2-1536_barcodes.txt"
-    elif [[ "$technology" == "smartseq" ]]; then
-        echo "***WARNING: barcodes not available for Smart-Seq 2 or 3, using iCELL8 whitelist (version 3)***"
-        echo "...valid barcodes may be an overestimate"
-        barcodefile=${SDIR}/iCell8_barcode.txt
-        current_barcode="default:iCell8_barcode.txt"
-    elif [[ "$technology" == "custom"* ]] || [[ "$technology" == "celseq"* ]] ||  [[ "$technology" == "sciseq" ]] || [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "surecell" ]]; then
-        if [[ "$technology" == "celseq" ]]; then
-            customname="celseq"
-            minlength=8
-        elif [[ "$technology" == "celseq2" ]]; then
-            customname="celseq"
-            minlength=6
-        elif [[ "$technology" == "sciseq" ]]; then
-            customname="sciseq"
-            minlength=10
-        elif [[ "$technology" == "scrbseq" ]]; then
-            customname="scrbseq"
-            minlength=6
-        elif [[ "$technology" == "seqwell" ]]; then
-            customname="seqwell"
-            minlength=12
-        elif [[ "$technology" == "surecell" ]]; then
-            customname="surecell"
-            barcodelength=18
-            minlength=$(( $barcodelength < 16 ? $barcodelength : 16 ))
-        elif [[ "$technology" == "custom"* ]]; then
-            custom=`echo $technology | grep -o "_" | wc -l`
-            custom=$(($custom+1))
-            customname=`echo $technology | cut -f1-$((${custom}-2))  -d'_'`
-            barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
-            #check whether barcodes exceed 16bp (and reuse 16bp whitelist for all greater than 16bp)
-            if [[  $barcodelength -ge 16 ]]; then
-                echo "Barcode length ($barcodelength) of 16 or more:"
-                echo "    ...using barcode whitelist of 16bp"
-            fi
-            minlength=$(( $barcodelength < 16 ? $barcodelength : 16 ))
+        barcodefile=${whitelistdir}/Quartz-Seq2-1536_barcode.txt
+    elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+        echo "***WARNING: whitelist for ${technology} is modified from the original barcodes (https://github.com/indrops/indrops/tree/master/ref/barcode_lists), first 8bp of list1 and list2 are joind to generate a 16bp barcode***"
+        barcodelength=${minlength}
+        if [[ $verbose ]]; then
+            echo "  barcode adjusted to ${barcodelength}bp to match the length in the default whitelist for ${technology}"
         fi
-        # compute custom barcodes if barcode length is different
-        barcodefile=${SDIR}/all_barcodes_${minlength}bp.txt
-        if [[ ! -f ${SDIR}/${customname}_barcodes.txt ]]; then
-            ln -s ${SDIR}/all_barcodes_${minlength}bp.txt ${SDIR}/${customname}_barcodes.txt
+        if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
+            barcodefile=${whitelistdir}/inDrop-v2_barcodes.txt
+        elif [[ "$technology" == "indrop-v3" ]]; then
+            barcodefile=${whitelistdir}/inDrop-v3_barcodes.txt
+            echo "***WARNING: ***combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
         fi
-        current_barcode=`echo "default:all_barcodes_${minlength}bp.txt"`
-        if [[ ! -f ${barcodefile} ]]; then
-            echo "No barcodes whitelists available for ${customname}: all possible barcodes accepted (valid barcodes will be 100% as a result)"
-            echo "***Warning: giving a barcode whitelist --barcodefile is recommended where available.***"
-            if [[ -f ${SDIR}/*${barcodelength}_barcode.txt ]]; then
-                pregeneratedfile=`ls ${SDIR}/*barcodes_${minlength}bp.txt | awk '{print $1;}' | head -n 1`
-                echo "$pregeneratedfile for barcode(${barcodelength}) generated already"
-                ln -s $pregeneratedfile $barcodefile
-                echo "    ...using this as $barcodefile"
-            else
-                echo "generating $barcodefile of barcode length $minlength"
-                # generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
-                echo $(eval echo $(for ii in $(eval echo {1..${minlength}}); do echo "{A,T,C,G}"; done |  tr "\n" " " | sed "s/ //g" | xargs -I {} echo {})) | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
+    else
+        echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength}bp. valid barcode will be 100% as a result***"
+        barcodelength=${minlength}
+	barcodefile=${whitelistdir}/AllPossibilities_${barcodelength}_barcodes.txt
+    fi
+fi
+
+if [[ $verbose ]]; then
+    echo " barcode file set to ${barcodefile}"
+fi
+##########
+
+
+
+#####Generate whitelist file (if absent)#####
+if [[ $verbose ]]; then
+    echo " generating the selected barcode file"
+fi
+if [[ -f ${barcodefile} ]]; then
+    if [[ $verbose ]]; then
+        echo "  barcodefile file exists"
+    fi
+    if ! [[ "${barcodefile}" == "${whitelsitdir}"* ]]; then
+        if [[ $verbose ]]; then
+            echo "  ensuring all barcode within selected whitelist are in upper case"
+        fi
+        sed -i 's/.*/\U&/g' $barcodefile
+    fi
+else
+    if [[ ${barcodefile} == "default:10x" ]]; then
+        if [[ $verbose ]]; then
+            echo "  default 10x barcoe whitelist will be used"
+        fi
+    elif ! [[ "${barcodefile}" == "${whitelistdir}"* ]]; then
+        echo "Error: user selected barcode file (${barcodefile}) does not exist"
+        exit 1
+    else
+        if [[ $verbose ]]; then
+            echo "  generating a new barcode whitelist for ${technology}"
+        fi
+        if [[ "$technology" == "indrop-v"* ]]; then
+            if [[ "$technology" == "indrop-v1" ]] || [[ $technology"" == "indrop-v2" ]]; then
+                ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v2 ${whitelistdir}
+            elif [[ "$technology" == "indrop-v3" ]]; then
+                ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
             fi
+        else
+            #generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
+            echo $(eval echo $(for ii in $(eval echo {1..${barcodelength}}); do echo "{A,T,C,G}"; done | tr "\n" " " | sed "s/ //g" | xargs -I {} echo {})) | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
         fi
     fi
 fi
 
-#full path for other barcodes
-if [[ -z $current_barcode ]]; then
-    current_barcode=$barcodefile
+if [[ $verbose ]]; then
+    echo " barcodefile generated"
 fi
+##########
 
-#check if reference is present
+
+
+#####check if reference is present#####
 if [[ -z $reference ]]; then
     if [[ $setup == "false" ]] || [[ ${#read1[@]} -ne 0 ]] || [[ ${#read2[@]} -ne 0 ]]; then
         echo "Error: option --reference is required";
         exit 1
     fi
 fi
+##########
 
-#check if ncells is an integer
+
+
+#####check if ncells is an integer#####
 int='^[0-9]+$'
 if [[ -z "$ncells" ]]; then
     ncells=""
@@ -889,8 +1005,11 @@ elif ! [[ $ncells =~ $int ]] && [[ $setup == "false" ]]; then
     echo "Error: option --force-cells must be an integer"
     exit 1
 fi
+##########
 
-#check if ncores is an integer
+
+
+#####check if ncores is an integer#####
 int='^[0-9]+$'
 if [[ -z "$ncores" ]]; then
     ncores=""
@@ -898,8 +1017,11 @@ elif ! [[ $ncores =~ $int ]] && [[ $setup == "false" ]]; then
     echo "Error: option --localcores must be an integer"
     exit 1
 fi
+##########
 
-#check if mem is a number
+
+
+#####check if mem is a number#####
 int='^[0-9]+([.][0-9]+)?$'
 if [[ -z "$mem" ]]; then
     mem=""
@@ -907,32 +1029,20 @@ elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
     echo "Error: option --localmem or --mempercore must be a number (of GB)"
     exit 1
 fi
+##########
 
-#check if chemistry matches expected input
-#allow "auto" only for 10x
-if [[ "$technology" != "10x" ]]; then
-    #use SC3Pv3 (umi length 12) 
-    if [[ $umilength -ge 11 ]] && [[ "$chemistry" == "SC3Pv1" ]] && [[ "$chemistry" == "SC3Pv2" ]]; then
-        echo "Using 10x version 3 chemistry to support longer UMIs"
-        chemistry="SC3Pv3"
-    else
-    #use SC3Pv2 (umi length 10)
-         echo "Using 10x version 2 chemistry to support UMIs"
-        chemistry="SC3Pv2"
-    fi
-    if [[ "$chemistry" != "SC3Pv1" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
-        echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE , or SC5P-R2"
-       exit 1
-    fi
-fi
 
-#checking if jobmode matches expected input
+
+#####checking if jobmode matches expected input#####
 if [[ "$jobmode" != "local" ]] && [[ "$jobmode" != "sge" ]] && [[ "$jobmode" != "lsf" ]] && [[ "$jobmode" != *"template" ]]; then
     echo "Error: option --jobmode must be local, sge, lsf, or a .template file"
     exit 1
 fi
+##########
 
-#check if ID is present
+
+
+#####check if ID is present#####
 if [[ -z $id ]]; then
     if [[ ${#read1[@]} -ne 0 ]] || [[ ${#read2[@]} -ne 0 ]]; then
         echo "Error: option --id is required"
@@ -940,8 +1050,10 @@ if [[ -z $id ]]; then
     fi
 fi
 crIN=${crIN}_${id}
+##########
 
-#checking if crIN exists
+
+#####checking if crIN exists#####
 if [[ ! -d $crIN ]]; then
     convert=true
     echo "***Warning: convertion was turned on because directory $crIN was not found***"
@@ -950,102 +1062,31 @@ fi
 
 
 
-#####Get barcode/UMI length#####  
-barcode_default=16
-# default UMI depends on chemistry selected above (unless auto is used for 10x)
-if [[ "$chemistry" == *"v2" ]]; then
-    umi_default=10
-elif [[ "$chemistry" == *"v3" ]]; then
-    umi_default=12
-fi
-
-totallength=`echo $((${barcode_default}+${umi_default}))`
-
-#barcode and umi lengths given by options
-barcodelength=""
-umilength=""
-if [[ "$technology" == "10x" ]]; then
-    barcodelength=16
-    #set umi length to default (no conversion so auto detection will work)
-    umilength=10
-    umi_default=10
-elif [[ "$technology" == "celseq" ]]; then
-    barcodelength=8
-    umilength=4
-elif [[ "$technology" == "celseq2" ]]; then
-    barcodelength=6
-    umilength=6
-elif [[ "$technology" == "nadia" ]]; then
-    barcodelength=12
-    umilength=8
-elif [[ "$technology" == "icell8" ]]; then
-    barcodelength=11
-    umilength=14
-elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
-    barcodelength=19 
-    umilength=6
-elif [[ "$technology" == "indrop-v3" ]]; then
-    barcodelength=8
-    umilength=6
-elif [[ "$technology" == "quartz-seq2-384" ]]; then
-    barcodelength=14
-    umilength=8
-elif [[ "$technology" == "quartz-seq2-1536" ]]; then
-    barcodelength=15
-    umilength=8 
-elif [[ "$technology" == "sciseq" ]]; then
-    barcodelength=10
-    umilength=8
-elif [[ "$technology" == "scrbseq" ]]; then
-    barcodelength=6 
-    umilength=10
-elif [[ "$technology" == "seqwell" ]]; then
-    barcodelength=8
-    umilength=12
-elif [[ "$technology" == "smartseq" ]]; then
-    barcodelength=11
-    umilength=8
-elif [[ "$technology" == "surecell" ]]; then
-    barcodelength=18
-    umilength=8
-else
-    custom=`echo $technology | grep -o "_" | wc -l`
-    custom=$(($custom+1))
-    barcodelength=`echo $technology | cut -f$((${custom}-1))  -d'_'`
-    umilength=`echo $technology | cut -f$((${custom}))  -d'_'`
-fi
-
-
-#adjustment lengths
-barcodeadjust=`echo $(($barcodelength-$barcode_default))`
-umiadjust=`echo $(($umilength-$umi_default))`
-##########
-
-
-
 #####check if UniverSC is running already#####
+echo " checking if UniverSC is running already"
+
 #set up .lock file
 if [[ ! -f $lockfile ]]; then
-    echo "creating .lock file"
+    echo "  creating .lock file"
     echo 0 > $lockfile
     lock=`cat $lockfile`
 else
     #check if jobs are running (check value in .lock file)
-    echo "checking .lock file"
+    echo "  checking .lock file"
     lock=`cat $lockfile`
     
     if [[ $lock -le 0 ]]; then
-        echo " call accepted: no other cellranger jobs running"
+        echo "  call accepted: no other cellranger jobs running"
         lock=1
         if [[ $setup == "false" ]]; then 
                     echo $lock > $lockfile
         fi
     else
         if [[ -f $lastcallfile ]]; then
-	    echo " total of $lock cellranger ${cellrangerversion} jobs are already running in ${cellrangerpath} with barcode length (${lastcall_b}), UMI length (${lastcall_u}), and whitelist barcodes (${lastcall_p})"
+	    echo "  total of $lock cellranger ${cellrangerversion} jobs are already running in ${cellrangerpath} with barcode length (${lastcall_b}), UMI length (${lastcall_u}), and whitelist barcodes (${lastcall_p})"
             
 	    #check if a custom barcode is used for a run (which cannot be run in parallel)
-            if [[ ${barcodelength} == ${lastcall_b} ]] && [[ ${umilength} == ${lastcall_u} ]] && [[ ${current_barcode} == ${lastcall_p} ]]; then
+            if [[ ${barcodelength} == ${lastcall_b} ]] && [[ ${umilength} == ${lastcall_u} ]] && [[ ${barcodefile} == ${lastcall_p} ]]; then
                 echo " call accepted: no conflict detected with other jobs currently running"
                 #add current job to lock
                 lock=$(($lock+1))
