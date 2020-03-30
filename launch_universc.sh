@@ -917,7 +917,7 @@ if [[ "$technology" != "10x" ]]; then
         chemistry="SC3Pv3"
     else
     #use SC3Pv2 (umi length 10)
-         echo "Using 10x version 2 chemistry to support UMIs"
+        echo "Using 10x version 2 chemistry to support UMIs"
         chemistry="SC3Pv2"
     fi
     if [[ "$chemistry" != "SC3Pv1" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
