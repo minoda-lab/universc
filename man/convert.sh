@@ -195,3 +195,5 @@ No known bugs.
 .SH AUTHOR
 S. Thomas Kelly (tom.kelly [at] riken.jp)
 Kai Battenberg (kai.batenberg [at] riken.jp)
+.SH LICENSE
+Released under the GNU General Public License GPLv3
