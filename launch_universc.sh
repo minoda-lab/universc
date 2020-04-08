@@ -1031,6 +1031,23 @@ elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
 fi
 ##########
 
+#check if chemistry matches expected input
+#allow "auto" only for 10x
+if [[ "$technology" != "10x" ]]; then
+    #use SC3Pv3 (umi length 12) 
+    if [[ $umilength -ge 11 ]] && [[ "$chemistry" == "SC3Pv1" ]] && [[ "$chemistry" == "SC3Pv2" ]]; then
+        echo "Using 10x version 3 chemistry to support longer UMIs"
+        chemistry="SC3Pv3"
+    else
+    #use SC3Pv2 (umi length 10)
+        echo "Using 10x version 2 chemistry to support UMIs"
+        chemistry="SC3Pv2"
+    fi
+    if [[ "$chemistry" != "SC3Pv1" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+        echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE , or SC5P-R2"
+       exit 1
+    fi
+fi
 
 
 #####checking if jobmode matches expected input#####
