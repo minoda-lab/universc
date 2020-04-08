@@ -1395,6 +1395,35 @@ else
         done
     fi
 
+    #remove adapter from QuartzSeq
+    if [[ "$technology" == "quartz-seq2-384" ]]; then
+        for convFile in "${convFiles[@]}"; do
+            #remove adapter if detected
+            sed -E '
+                /^TATAGAATTCGCGGCCGCTCGCGATAC(.{14})(.{8})/ {
+                s/^TATAGAATTCGCGGCCGCTCGCGATAC(.{14})(.{8})/\1\2/g
+                n
+                n
+                s/^.{27}(.{14})(.{8})/\1\2//g
+                }'  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    if [[ "$technology" == "quartz-seq2-1536" ]]; then
+        for convFile in "${convFiles[@]}"; do
+            #remove adapter if detected
+            sed -E '
+                /^TATAGAATTCGCGGCCGCTCGCGATAC(.{15})(.{8})/ {
+                s/^TATAGAATTCGCGGCCGCTCGCGATAC(.{15})(.{8})/\1\2/g
+                n
+                n
+                s/^.{27}(.{15})(.{8})/\1\2//g
+                }'  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+
+
     #remove adapter from Sci-Seq and swap barcode and UMI
     if [[ "$technology" == "sciseq" ]]; then
         for convFile in "${convFiles[@]}"; do
