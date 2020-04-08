@@ -1,2 +1,4 @@
 test/internal
 test-*
+GH_TOKEN.txt
+^*txt$
