@@ -1,0 +1,30 @@
+docker-build-master:
+  # Official docker image.
+  image: cellranger_convert:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
+    - docker push "$CI_REGISTRY_IMAGE"
+  only:
+    - master
+
+docker-build:
+  # Official docker image.
+  image: cellranger_convert:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - VERSION=$(cat .version)
+    - docker build --pull -t "${CI_REGISTRY_IMAGE}:${VERSION}" .
+    - docker push ${CI_REGISTRY_IMAGE}:${VERSION}
+    - docker tag ${CI_REGISTRY_IMAGE}:${VERSION} ${CI_REGISTRY_IMAGE}:latest
+    - docker push ${CI_REGISTRY_IMAGE}:latest
+  except:
+    - master
