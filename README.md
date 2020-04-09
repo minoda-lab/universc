@@ -120,6 +120,16 @@ This script will run in bash on any OS (but it has only been tested on Linux Deb
 with this configuration requires a lot of memory (40Gb) so running on server is recommended.
 SGE job modes are supported to run cellranger with multiple threads.
 
+-> migrate to Makefile?
+
+### System Requirements
+
+...Unix systems with cellranger installed.
+
+### Docker image
+
+...
+
 ## Usage <span id="Usage"><span>
 
 The script will:
@@ -145,6 +155,64 @@ The script will:
 Please note that this script alters the barcode whitelist. Known iCELL8 barcodes are supported but this is not possible with Nadia or DropSeq chemistry so 100% valid barcodes will be returned.
 
 ### Manual <span id="Help"><span>
+
+#### Locally instaleld manual
+
+You can display a manual from the locally installed universc directory with:
+
+```
+ man man/launch_universc.sh 
+```
+
+Note that the working directory must be `universc` or the full path to the man directory must be given.
+
+#### Installing the manual with root priviliges:
+
+The manual can be installed as follows on Mac and Linux.
+
+```
+# add manual directory to PATH if not already found
+## check config for Linux
+if [[ -f /etc/manpath.config ]]
+    then CONFIG="/etc/manpath.config"
+fi
+## check config for Mac
+if [[ -f /etc/manpaths ]]
+    then CONFIG="/etc/manpaths"
+fi
+if [[ ! -z $CONFIG ]]
+    then MANDIR=`tail -n 1 ${CONFIG}`
+else if [[ ! -z $MANPATH ]]
+    then
+    SHELL_RC=`echo ~/.${0}rc`
+    echo "export MANPATH=/usr/local/man" >> $SHELL_RC
+    MANDIR=`echo ${MANPATH} | cut -d: -f1`
+    fi
+fi
+sudo mkdir -p ${MANDIR}/man1
+cp man/launch_universc.sh man/launch_universc.sh.1
+sudo mv man/launch_universc.sh.1 ${MANDIR}/man1/launch_universc.sh.1
+gzip ${MANDIR}/man1/launch_universc.sh.1
+```
+
+Alternatively the man can be installed with:
+
+```
+cp man/launch_universc.sh man/launch_universc.sh.1
+sudo install -g 0 -o 0 -m 0644 man/launch_universc.sh.1 ${MANDIR}/man1
+```
+
+The manual can then be called from any directory as follows:
+
+```
+man launch_universc.sh
+```
+`
+-> change to make?
+
+#### Help menu
+
+You can access the following help menu with `launch_universc.sh --help` in the terminal.
 
 ```
 Usage:
@@ -245,3 +313,4 @@ data generated from other platforms.
 
 Therefore 'launch_universc.sh' does not support Cloupe files and you should not use them with
 technologies other than 10x Genomics.  
+
