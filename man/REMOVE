@@ -1,0 +1,33 @@
+#! /bin/sh
+
+# add manual directory to PATH if not already found
+## check config for Linux
+if [[ -f /etc/manpath.config ]]
+    then CONFIG="/etc/manpath.config"
+fi
+## check config for Mac
+if [[ -f /etc/manpaths ]]
+    then CONFIG="/etc/manpaths"
+fi
+if [[ ! -z $CONFIG ]]
+    then MANDIR=`tail -n 1 ${CONFIG}`
+else if [[ ! -z $MANPATH ]]
+    then
+    SHELL_RC=`echo ~/.${0}rc`
+    echo "export MANPATH=/usr/local/man" >> $SHELL_RC
+    MANDIR=`echo ${MANPATH} | cut -d: -f1`
+    fi
+fi
+if [[ -f  man/launch_universc.sh.1 ]]
+    then
+    rm man/launch_universc.sh.1
+fi
+if [[ -f ${MANDIR}/man1/launch_universc.sh.1 ]]
+    then
+    rm ${MANDIR}/man1/launch_universc.sh.1
+fi
+if [[ -f ${MANDIR}/man1/launch_universc.sh.1.gz ]] 
+    then
+    rm ${MANDIR}/man1/launch_universc.sh.1.gz
+fi
+

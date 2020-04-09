@@ -7,7 +7,7 @@ export ROOT_DIR=$(shell pwd)
 #
 all: reference
 
-clean: reference-clean
+clean: reference-clean manual-clean
 
 # Targets for python builds
 
@@ -27,10 +27,9 @@ reference-clean:
 	rm -Rf  test/cellranger_reference/cellranger-tiny-ref/3.0.0
 	rm -Rf  test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
+# Copy to manuals (requires root priviledges
 manual:
 	bash man/INSTALL
 
-.PHONY: print_vars
-
-print_vars: manual
-	echo $(CONFIG)	
+manual-clean:
+	bash man/REMOVE
