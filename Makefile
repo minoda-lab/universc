@@ -41,3 +41,5 @@ remove:
 	@bash inst/REMOVE
 
 uninstall: remove clean
+
+reinstall: uninstall install

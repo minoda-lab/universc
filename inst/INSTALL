@@ -1,7 +1,7 @@
 #! /bin/sh
 
 #default install location (root)
-if [[ -z $prefix ]]; then prefix="/"; fi
+if [[ -z $prefix ]]; then prefix="/usr/local/share"; fi
 echo "installing to: $prefix"
 
 if [[ $1 == "--prefix" ]]
@@ -28,37 +28,44 @@ if [[ ! -w $prefix ]]
     exit 1
 fi
 
+if [[ -f inst/.installed ]]
+    then
+    echo "universc is already installed in `cat inst/.installed`"
+    echo "run the following to remove it"
+    echo "    make remove"
+    exit 1
+fi
+echo $prefix > inst/.installed
+
 echo prefix=$prefix
 
-exit 0
-if [[ -f /etc/manpath.config ]]
-    then 
-fi
-## check config for Mac
-if [[ -f /etc/manpaths ]]
-    then CONFIG="/etc/manpaths"
-    MANDIR=`tail -n 1 ${CONFIG}`
-fi
-if [[ -z $CONFIG ]]
-    then
-    if [[ ! -z $MANPATH ]]
-        then
-        SHELL_RC=`echo ~/.${0}rc`
-        echo "export MANPATH=/usr/local/man" >> $SHELL_RC
-        MANDIR=`echo ${MANPATH} | cut -d: -f1`
-    fi
-fi
+version=`cat .version`
+
+# create install directory
+INSTALLDIR="${prefix}/universc-${version}"
+mkdir -p ${prefix}/universc-${version}
+
+
 #requires root priviledges
-if [[ -w ${MANDIR} ]]
+if [[ -w ${INSTALLDIR} ]]
     then
-    mkdir -p ${MANDIR}/man1
-    cp man/launch_universc.sh man/launch_universc.sh.1
-    mv man/launch_universc.sh.1 ${MANDIR}/man1/launch_universc.sh.1
-    gzip ${MANDIR}/man1/launch_universc.sh.1
+    rsync -arutvxz * ${prefix}/universc-${version}
+    export PATH=${prefix}/universc-${version}:$PATH
+    echo "universc-${version} added to PATH"
+    SHELL_RC=`echo ~/.${0}rc`
+    echo "export PATH=${prefix}/universc-${version}:$PATH" >> $SHELL_RC
+    echo "universc-${version} added to PATH automatically in new $0 shell session"
+    echo "run the following to add it to your shell of choice"
+    echo "    export PATH=${prefix}/universc-${version}:$PATH >> ~/.bashrc"
+    echo "universc-${version} has been installed it can be run as follows"
+    echo "    launch_universc.sh"
+    launch_universc.sh --version
+    launch_universc.sh --help
+    which launch_universc.sh
 else
-    echo "Directory ${MANDIR} not writeable"
+    echo "Directory ${INSTALLDIR} not writeable"
     echo "Warning: installing manual requires root priviledges"
     echo "  Try running of the following:"
     echo "      sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/INSTALL"
-    echo "      sudo make manual"
+    echo "      sudo make install"
 fi

@@ -1,5 +1,18 @@
 #! /bin/sh
 
+#check for existing install
+if [[ ! -f inst/.installed ]]
+    then
+    echo "universc is not installed"
+    echo "run the following to install it"
+    echo "    make install"
+    exit 1
+fi
+prefix=`cat inst/.installed`
+echo "uninstalling from: $prefix"
+
+exit 0
+
 # add manual directory to PATH if not already found
 ## check config for Linux
 if [[ -f /etc/manpath.config ]]
@@ -40,5 +53,7 @@ else
     echo "Warning: installing manual requires root priviledges"
     echo "  Try running of the following:"
     echo "      sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/REMOVE"
-    echo "      sudo make manual-clean"
+    echo "      sudo make remove"
 fi
+
+rm inst/.installed
