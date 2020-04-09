@@ -1,0 +1,64 @@
+#! /bin/sh
+
+#default install location (root)
+if [[ -z $prefix ]]; then prefix="/"; fi
+echo "installing to: $prefix"
+
+if [[ $1 == "--prefix" ]]
+     then
+     prefix=$2
+     if [[ ! -d $prefix ]]
+         then
+         echo "--prefix $prefix must be a directory"
+         exit 1
+     fi
+    if [[ ! -w $prefix ]]
+        then
+        echo "--prefix $prefix must be a writeable"
+        exit 1
+    fi
+fi
+
+if [[ ! -w $prefix ]]
+    then
+    echo "$prefix must be a writeable directory"
+    echo "try running:"
+    echo "    sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/INSTALL"
+    echo "    sudo make install"
+    exit 1
+fi
+
+echo prefix=$prefix
+
+exit 0
+if [[ -f /etc/manpath.config ]]
+    then 
+fi
+## check config for Mac
+if [[ -f /etc/manpaths ]]
+    then CONFIG="/etc/manpaths"
+    MANDIR=`tail -n 1 ${CONFIG}`
+fi
+if [[ -z $CONFIG ]]
+    then
+    if [[ ! -z $MANPATH ]]
+        then
+        SHELL_RC=`echo ~/.${0}rc`
+        echo "export MANPATH=/usr/local/man" >> $SHELL_RC
+        MANDIR=`echo ${MANPATH} | cut -d: -f1`
+    fi
+fi
+#requires root priviledges
+if [[ -w ${MANDIR} ]]
+    then
+    mkdir -p ${MANDIR}/man1
+    cp man/launch_universc.sh man/launch_universc.sh.1
+    mv man/launch_universc.sh.1 ${MANDIR}/man1/launch_universc.sh.1
+    gzip ${MANDIR}/man1/launch_universc.sh.1
+else
+    echo "Directory ${MANDIR} not writeable"
+    echo "Warning: installing manual requires root priviledges"
+    echo "  Try running of the following:"
+    echo "      sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/INSTALL"
+    echo "      sudo make manual"
+fi

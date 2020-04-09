@@ -1,0 +1,44 @@
+#! /bin/sh
+
+# add manual directory to PATH if not already found
+## check config for Linux
+if [[ -f /etc/manpath.config ]]
+    then CONFIG="/etc/manpath.config"
+    MANDIR=`grep "^MANDATORY_MANPATH" /etc/manpath.config | tail -n 1 | cut -f4`
+fi
+## check config for Mac
+if [[ -f /etc/manpaths ]]
+    then CONFIG="/etc/manpaths"
+    MANDIR=`tail -n 1 ${CONFIG}`
+fi
+if [[ -z $CONFIG ]]
+    then
+    if [[ ! -z $MANPATH ]]
+        then
+        SHELL_RC=`echo ~/.${0}rc`
+        echo "export MANPATH=/usr/local/man" >> $SHELL_RC
+        MANDIR=`echo ${MANPATH} | cut -d: -f1`
+    fi
+fi
+if [[ -f  man/launch_universc.sh.1 ]]
+    then
+    rm man/launch_universc.sh.1
+fi
+#requires root priviledges
+if [[ -w ${MANDIR} ]]
+    then
+    if [[ -f ${MANDIR}/man1/launch_universc.sh.1 ]]
+    then
+        rm ${MANDIR}/man1/launch_universc.sh.1
+    fi
+    if [[ -f ${MANDIR}/man1/launch_universc.sh.1.gz ]] 
+        then
+        rm ${MANDIR}/man1/launch_universc.sh.1.gz
+    fi
+else
+    echo "Directory ${MANDIR} not writeable"
+    echo "Warning: installing manual requires root priviledges"
+    echo "  Try running of the following:"
+    echo "      sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/REMOVE"
+    echo "      sudo make manual-clean"
+fi
