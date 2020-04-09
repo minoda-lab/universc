@@ -33,3 +33,11 @@ manual:
 
 manual-clean:
 	bash man/REMOVE
+
+install:
+	bash inst/INSTALL
+
+remove:
+	bash inst/REMOVE
+
+uninstall: remove clean
