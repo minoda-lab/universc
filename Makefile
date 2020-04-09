@@ -35,6 +35,8 @@ manual-clean:
 	bash man/REMOVE
 
 install:
+	@if [[ -z $(prefix) ]]; then echo "TRUE"; fi
+	@echo "installing to: $(prefix)"
 	bash inst/INSTALL
 
 remove:
