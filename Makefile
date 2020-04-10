@@ -23,21 +23,23 @@ reference:
 
 reference-clean:
 	make -C  test/cellranger_reference/cellranger-tiny-ref clean
-	echo "removing pre-generated cellranger reference files"
+	@echo "removing pre-generated cellranger reference files"
 	rm -Rf  test/cellranger_reference/cellranger-tiny-ref/3.0.0
 	rm -Rf  test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
 # Copy to manuals (requires root priviledges
 manual:
-	bash man/INSTALL
+	@bash man/INSTALL
 
 manual-clean:
-	bash man/REMOVE
+	@bash man/REMOVE
 
 install:
-	bash inst/INSTALL
+	@bash inst/INSTALL prefix=$(prefix)
 
 remove:
-	bash inst/REMOVE
+	@bash inst/REMOVE
 
 uninstall: remove clean
+
+reinstall: uninstall install

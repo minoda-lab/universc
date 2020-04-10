@@ -120,6 +120,19 @@ This script will run in bash on any OS (but it has only been tested on Linux Deb
 with this configuration requires a lot of memory (40Gb) so running on server is recommended.
 SGE job modes are supported to run cellranger with multiple threads.
 
+```
+make
+```
+
+
+```
+sudo make install manual
+```
+
+```
+make install prefix=$HOME/local
+```
+
 -> migrate to Makefile?
 
 ### System Requirements

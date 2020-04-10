@@ -1,0 +1,71 @@
+#! /bin/sh
+
+#default install location (root)
+if [[ -z $prefix ]]; then prefix="/usr/local/share"; fi
+echo "installing to: $prefix"
+
+if [[ $1 == "--prefix" ]]
+     then
+     prefix=$2
+     if [[ ! -d $prefix ]]
+         then
+         echo "--prefix $prefix must be a directory"
+         exit 1
+     fi
+    if [[ ! -w $prefix ]]
+        then
+        echo "--prefix $prefix must be a writeable"
+        exit 1
+    fi
+fi
+
+if [[ ! -w $prefix ]]
+    then
+    echo "$prefix must be a writeable directory"
+    echo "try running:"
+    echo "    sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/INSTALL"
+    echo "    sudo make install"
+    exit 1
+fi
+
+if [[ -f inst/.installed ]]
+    then
+    echo "universc is already installed in `cat inst/.installed`"
+    echo "run the following to remove it"
+    echo "    make remove"
+    exit 1
+fi
+echo $prefix > inst/.installed
+
+echo prefix=$prefix
+
+version=`cat .version`
+
+# create install directory
+INSTALLDIR="${prefix}/universc-${version}"
+mkdir -p ${prefix}/universc-${version}
+
+
+#requires root priviledges
+if [[ -w ${INSTALLDIR} ]]
+    then
+    rsync -arutvxz * ${prefix}/universc-${version}
+    export PATH=${prefix}/universc-${version}:$PATH
+    echo "universc-${version} added to PATH"
+    SHELL_RC=`echo ~/.${0}rc`
+    echo "export PATH=${prefix}/universc-${version}:$PATH" >> $SHELL_RC
+    echo "universc-${version} added to PATH automatically in new $0 shell session"
+    echo "run the following to add it to your shell of choice"
+    echo "    export PATH=${prefix}/universc-${version}:$PATH >> ~/.bashrc"
+    echo "universc-${version} has been installed it can be run as follows"
+    echo "    launch_universc.sh"
+    launch_universc.sh --version
+    launch_universc.sh --help
+    which launch_universc.sh
+else
+    echo "Directory ${INSTALLDIR} not writeable"
+    echo "Warning: installing manual requires root priviledges"
+    echo "  Try running of the following:"
+    echo "      sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/INSTALL"
+    echo "      sudo make install"
+fi
