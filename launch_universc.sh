@@ -1593,6 +1593,17 @@ echo "cellranger run complete"
 
 
 
+#####process output#####
+cloupefile=${SDIR}/${id}/outs/cloupe.cloupe
+echo "Removing file ${cloupefile}"
+if [[ -f $cloupefile ]]; then
+    rm -rf $cloupefile
+fi
+echo "Cloupe file cannot be computed"
+##########
+
+
+
 #####remove files if convert is not running elsewhere#####
 echo "updating .lock file"
 
