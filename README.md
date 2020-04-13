@@ -21,7 +21,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
 We've developed a bash script that will run cellranger on FASTQ files for these technologies. See below for details on how to use it.
 
 If you use this tools, please [cite](#Citation) to acknowledge the efforts of the authors. You can report problems and request
-new features to the maintainers with and [issue](#Issues) on GitHub. Details on how to [install](#Install) and [run](#Usage) are provided
+new features to the maintainers with an [issue](#Issues) on GitHub. Details on how to [install](#Install) and [run](#Usage) are provided
 below. Please see the [help](#Help) and [examples](#Examples) to try solve your problem before submitting an issue.
 
 ### Supported Technologies
@@ -36,9 +36,9 @@ to the GitHub repository: https://github.com/TomKellyGenetics/universc/issues] a
 
 Some changes to the cellranger install are required to run other technologies. Therefore we provide settings for 10x Genomics
 which restores settings for the Chromium instrument. We therefore recommend using 'convert' for processing all data from different
-technologies as the tool manages these changes. Please note that multiple technologies cannot be run on the same install of cellranger
-at the same time (the tool will also check for this to avoid causing problems with existing runs). Multiple samples of the same technology
-can be run simultaneously.
+technologies as the tool manages these changes. Please note that on a single install of cellranger, multiple technologies or multiple samples 
+of the same technology with different whitelist barcodes cannot be run cannot be run simultaneousely (the tool will also check for this to
+avoid causing problems with existing runs). Multiple samples of the same technology with the same barcode whitelist can be run simultaneously.
 
 #### Pre-set configurations
 
@@ -72,7 +72,7 @@ technologies to demutliplex based on the wells.
 ## Release
 
 At the moment, we have not released the script publicly but we do intend to. We welcome any feedback on it. 
-Hopefully it will save people time as make it easier to compare technologies.
+Hopefully it will save people time by making it easier to compare technologies.
 
 We plan to make this open-source with the agreement of everyone in the project.
 
@@ -100,7 +100,9 @@ It is also helpful to describe the technology, such as:
 
 Technologies that may be difficult to support are those with:
 
-- barcodes longer than 16bp or varying length 
+- barcodes longer than 16bp (only up to 16bp at the end will be used with the rest trimmed off)
+- UMIs longer than 12bp (only upto 12bp at the begging will be used with the rest trimmed off)
+- barcodes longer or varying length
 - combinatorial indexing
 - dual indexing 
 
@@ -109,12 +111,11 @@ it could take significant resources to add support for these.
 
 ## Installation <span id="Install"><span>
 
-This script requires cellranger to be installed and exported to the PATH (version 3.0.0 of higher recommended).
-The script itself is exectuable and does not require installation to run but you can put it in your PATH or 
-bin of your cellranger install if you wish to do so.
-
-The conversion process requires write-access to to the cellranger install directory so
-an install on your user directory is recommended.
+This script requires cellranger (version 3.0.0 or higher recommended) to be installed and have write-access
+to the cellranger install directory, so an install on your user directory is recommended.
+This script also requires cellranger eported to the PATH.
+The script itself is exectuable and does not require installation to run but you can put it
+in your PATH or bin of your cellranger install if you wish to do so.
 
 This script will run in bash on any OS (but it has only been tested on Linux Debian). Running cellranger 
 with this configuration requires a lot of memory (40Gb) so running on server is recommended.
