@@ -1197,13 +1197,21 @@ if [[ $lock -eq 0 ]]; then
     echo " restoring cellranger"
     if [[ `printf '%s\n' '${cellrangerversion} 3.0.0' | sort -V | head -n 1` != ${cellrangerversion} ]]; then
         if [[ $technology == "10x" ]] && [[ -z $barcodefile ]]; then
+            #restore checking barcodes
             sed -i "s/#if gem_group == prev_gem_group/if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/#assert barcode_idx >= prev_barcode_idx/assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
+            #restore cloupe generation
+            sed -i '/output_for_cloupe/s/^#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+            sed -i '/out cloupe cloupe/ {s/^#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         elif [[ $lastcall == "10x" ]] || [[ ! -f $lastcallfile ]]; then
+            #disable checking barcodes
             sed -i "s/if gem_group == prev_gem_group/#if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
+            #disable cloupe generation
+            sed -i '/output_for_cloupe/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+            sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         fi
         echo " ${cellrangerpath} set for $technology"
     fi
@@ -1596,8 +1604,11 @@ echo "cellranger run complete"
 #####process output#####
 cloupefile=${SDIR}/${id}/outs/cloupe.cloupe
 if [[ $technology != "10x" ]]; then
-    echo "Removing file ${cloupefile}"
+    #should not be necessary if setup is run correctly (will be omitted from Martian output)
+    #this is kept to comply with the 10x End User License Agreement
+    ###do not remove this code###
     if [[ -f $cloupefile ]]; then
+        echo "Removing file ${cloupefile}"
         rm -rf $cloupefile
     fi
     echo "***Notice: Cloupe file cannot be computed for $technology"
