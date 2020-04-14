@@ -91,17 +91,24 @@ fi
 
 
 #####usage statement#####
-SHELL=`readlink -f /proc/$$/exe | cut -d/ -f3`
+if [[ $(which launch_universc.sh) != *"not found" ]]
+    then
+    SHELL='' 
+    invocation=$0
+else
+    SHELL=$(readlink -f /proc/$$/exe | cut -d'/' -f3)
+    invocation=$(echo $(basename $0))
+fi
 help='
 Usage:
-  '$SHELL' '$(basename $0)' --testrun -t TECHNOLOGY
-  '$SHELL' '$(basename $0)' -t TECHNOLOGY --setup
-  '$SHELL' '$(basename $0)' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$(basename $0)' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$(basename $0)' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$(basename $0)' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$(basename $0)' -v
-  '$SHELL' '$(basename $0)' -h
+  '$SHELL' '$invocation' --testrun -t TECHNOLOGY
+  '$SHELL' '$invocation' -t TECHNOLOGY --setup
+  '$SHELL' '$invocation' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -v
+  '$SHELL' '$invocation' -h
 
 Convert sequencing data (FASTQ) from Nadia or iCELL8 platforms for compatibility with 10x Genomics and run cellranger count
 
