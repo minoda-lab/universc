@@ -80,7 +80,7 @@ if [[ -w ${INSTALLDIR} ]]
     #echo "${INSTALLDIR} added to PATH"
     for SHELL_RC in `ls ~/.*rc`
         do
-        echo "export PATH=:${INSTALLDIR}:\$PATH" >> $SHELL_RC
+        echo "export PATH=${INSTALLDIR}:\$PATH" >> $SHELL_RC
         echo "universc-${version} added to PATH automatically in new ${SHELL} shell session"
     done
     echo "run the following to add it to your shell of choice"
