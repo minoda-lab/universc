@@ -4,21 +4,34 @@ SHELL=`readlink -f /proc/$$/exe | cut -d/ -f3`
 
 #default install location (root)
 if [[ -z $prefix ]]; then prefix="/usr/local/share"; fi
-echo "installing to: $prefix"
 
 if [[ $1 == "--prefix" ]]
      then
      prefix=$2
-     if [[ ! -d $prefix ]]
-         then
-         echo "--prefix $prefix must be a directory"
-         exit 1
-     fi
-    if [[ ! -w $prefix ]]
-        then
-        echo "--prefix $prefix must be a writeable"
+fi
+
+if [[ $prefix=="." ]]
+    then
+    echo "wd"
+    prefix=`pwd`
+fi
+
+if [[ "universc" == $(echo $prefix | rev | cut -d'/' -f1 | rev) ]]
+    then
+    echo "prefix in existing convert directory"
+    prefix=$(echo $prefix | cut -d'/' -f1-$(($( echo $prefix | grep -o "/" | wc -l))))
+    echo $prefix
+fi
+
+if [[ ! -d $prefix ]]
+    then
+        echo "--prefix $prefix must be a directory"
         exit 1
-    fi
+fi
+if [[ ! -w $prefix ]]
+    then
+    echo "--prefix $prefix must be a writeable"
+    exit 1
 fi
 
 if [[ ! -w $prefix ]]
@@ -29,6 +42,8 @@ if [[ ! -w $prefix ]]
     echo "    sudo make install"
     exit 1
 fi
+
+echo "installing to: $prefix"
 
 version=$( cat .version )
 
@@ -50,8 +65,6 @@ fi
 echo $prefix > inst/.installed
 
 echo prefix=$prefix
-
-version=`cat .version`
 
 # create install directory
 INSTALLDIR="${prefix}/universc-${version}"
