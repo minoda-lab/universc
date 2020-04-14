@@ -31,10 +31,21 @@ else
     else
        prefix=$( ls -d ${prefix}/universc*/ | head -n 1)
     fi
+    prefix=$(readlink -f $prefix)
     current_version=$(cat ${prefix}/.version)
 fi
 
 echo "uninstalling universc ${current_version} from: $prefix"
+
+if [[ $prefix == $(pwd) ]] || [[ $prefix == "." ]]
+   then
+    echo "Current directory not removed"
+else
+    echo "Removing install in $prefix"
+    echo "rm -rf $prefix"
+fi
+
+exit 0
 
 # add manual directory to PATH if not already found
 ## check config for Linux
