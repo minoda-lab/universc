@@ -1,5 +1,7 @@
 #! /bin/sh
 
+SHELL=`readlink -f /proc/$$/exe | cut -d/ -f3`
+
 #default install location (root)
 if [[ -z $prefix ]]; then prefix="/usr/local/share"; fi
 echo "installing to: $prefix"
@@ -43,20 +45,21 @@ version=`cat .version`
 
 # create install directory
 INSTALLDIR="${prefix}/universc-${version}"
+echo "Installing to $INSTALLDIR"
 mkdir -p ${prefix}/universc-${version}
 
 
 #requires root priviledges
 if [[ -w ${INSTALLDIR} ]]
     then
-    rsync -arutvxz * ${prefix}/universc-${version}
-    export PATH=${prefix}/universc-${version}:$PATH
-    echo "universc-${version} added to PATH"
-    SHELL_RC=`echo ~/.${0}rc`
-    echo "export PATH=${prefix}/universc-${version}:$PATH" >> $SHELL_RC
-    echo "universc-${version} added to PATH automatically in new $0 shell session"
+    rsync -arutvxz * $INSTALLDIR
+    export PATH=$INSTALLDIR:$PATH
+    echo "${INSTALLDIR} added to PATH"
+    SHELL_RC=`echo ~/.${SHELL}rc`
+    echo "export PATH=:${INSTALLDIR}:\$PATH" >> $SHELL_RC
+    echo "universc-${version} added to PATH automatically in new ${SHELL} shell session"
     echo "run the following to add it to your shell of choice"
-    echo "    export PATH=${prefix}/universc-${version}:$PATH >> ~/.bashrc"
+    echo "    export PATH=${INSTALLDIR}:\$PATH >> ~/.${SHELL}rc"
     echo "universc-${version} has been installed it can be run as follows"
     echo "    launch_universc.sh"
     launch_universc.sh --version
@@ -69,3 +72,5 @@ else
     echo "      sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/INSTALL"
     echo "      sudo make install"
 fi
+
+source ~/.${SHELL}rc

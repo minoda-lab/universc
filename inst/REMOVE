@@ -11,8 +11,6 @@ fi
 prefix=`cat inst/.installed`
 echo "uninstalling from: $prefix"
 
-exit 0
-
 # add manual directory to PATH if not already found
 ## check config for Linux
 if [[ -f /etc/manpath.config ]]
