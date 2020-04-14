@@ -1,15 +1,40 @@
 #! /bin/sh
 
-#check for existing install
-if [[ ! -f inst/.installed ]]
+if [[ -z $prefix ]]
     then
-    echo "universc is not installed"
-    echo "run the following to install it"
-    echo "    make install"
-    exit 1
+    #check for existing install
+    if [[ -f inst/.installed ]]
+        then
+        prefix=$(cat inst/.installed)
+        current_version=$(cat .version)
+    elif [[ $(which launch_universc.sh) != *"not found" ]]
+        then
+        prefix=$(which convert)
+        current_version=$(launch_universc.sh --version | tail -n 2 | head -n 1 | cut -d" " -f3)
+    else
+        echo "universc is not installed"
+        echo "run the following to install it"
+        echo "    make install"
+        exit 1
+    fi
+else
+    #check prefix
+    if [[ $prefix == *"universc" ]]
+        then
+        prefix=$(echo $prefix | cut -d'/' -f1-$(($( echo $prefix | grep -o "/" | wc -l))))
+        prefix=${prefix}/universc
+        current_version=$(cat ${prefix}/.version)
+    elif [[ $prefix == *"universc-" ]]
+       then
+       prefix=$(echo $prefix | cut -d'/' -f1-$(($( echo $prefix | grep -o "/" | wc -l))))
+       prefix=$( ls -d ${prefix}/universc-*/ | head -n 1 )
+    else
+       prefix=$( ls -d ${prefix}/universc*/ | head -n 1)
+    fi
+    current_version=$(cat ${prefix}/.version)
 fi
-prefix=`cat inst/.installed`
-echo "uninstalling from: $prefix"
+
+echo "uninstalling universc ${current_version} from: $prefix"
 
 # add manual directory to PATH if not already found
 ## check config for Linux
