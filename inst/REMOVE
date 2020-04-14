@@ -35,9 +35,27 @@ else
     #requires full path
     prefix=$(readlink -f $prefix)
     current_version=$(cat ${prefix}/.version)
+    if [[ ! -d $prefix ]]
+        then
+        echo "--prefix $prefix must be a directory"
+    fi
+    if [[ ! -w $prefix ]]
+        then
+        echo "--prefix $prefix must be a writeable"
+    fi
 fi
 
 echo "uninstalling universc ${current_version} from: $prefix"
+
+if [[ ! -w $prefix ]]
+    then
+    echo "$prefix must be a writeable directory"
+    echo "try running:"
+    echo "    sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/REMOVE"
+    echo "    sudo make remove"
+    exit 1
+fi
+
 
 if [[ $prefix == $(pwd) ]] || [[ $prefix == "." ]] || [ $prefix == "../"* ]] || [[ $prefix == "./"* ]]
    then

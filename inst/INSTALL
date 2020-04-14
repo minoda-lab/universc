@@ -8,6 +8,14 @@ if [[ -z $prefix ]]; then prefix="/usr/local/share"; fi
 if [[ $1 == "--prefix" ]]
      then
      prefix=$2
+     if [[ ! -d $prefix ]]
+        then
+        echo "--prefix $prefix must be a directory"
+    fi
+    if [[ ! -w $prefix ]]
+        then
+        echo "--prefix $prefix must be a writeable"
+    fi
 fi
 
 if [[ $prefix=="." ]]
@@ -20,17 +28,6 @@ if [[ "universc" == $(echo $prefix | rev | cut -d'/' -f1 | rev) ]]
     echo "installing to universc"
     prefix=$(echo $prefix | cut -d'/' -f1-$(($( echo $prefix | grep -o "/" | wc -l))))
     INSTALLDIR=${prefix}/universc
-fi
-
-if [[ ! -d $prefix ]]
-    then
-        echo "--prefix $prefix must be a directory"
-        exit 1
-fi
-if [[ ! -w $prefix ]]
-    then
-    echo "--prefix $prefix must be a writeable"
-    exit 1
 fi
 
 if [[ ! -w $prefix ]]
