@@ -135,6 +135,12 @@ make install prefix=$HOME/local
 
 -> migrate to Makefile?
 
+#### Custom shell
+
+```
+zsh inst/INSTALL --prefix $HOME/local
+```
+
 ### System Requirements
 
 ...Unix systems with cellranger installed.

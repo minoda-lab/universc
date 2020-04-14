@@ -63,7 +63,7 @@ if [[ -w ${INSTALLDIR} ]]
     echo "universc-${version} has been installed it can be run as follows"
     echo "    launch_universc.sh"
     launch_universc.sh --version
-    launch_universc.sh --help
+    #launch_universc.sh --help
     which launch_universc.sh
 else
     echo "Directory ${INSTALLDIR} not writeable"
@@ -73,4 +73,4 @@ else
     echo "      sudo make install"
 fi
 
-source ~/.${SHELL}rc
+echo source ~/.${SHELL}rc
