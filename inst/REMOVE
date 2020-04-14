@@ -31,15 +31,16 @@ else
     else
        prefix=$( ls -d ${prefix}/universc*/ | head -n 1)
     fi
+    #requires full path
     prefix=$(readlink -f $prefix)
     current_version=$(cat ${prefix}/.version)
 fi
 
 echo "uninstalling universc ${current_version} from: $prefix"
 
-if [[ $prefix == $(pwd) ]] || [[ $prefix == "." ]]
+if [[ $prefix == $(pwd) ]] || [[ $prefix == "." ]] || [ $prefix == "../"* ]] || [[ $prefix == "./"* ]]
    then
-    echo "Current directory not removed"
+   echo "Current directory not removed"
 else
     echo "Removing install in $prefix"
     echo "rm -rf $prefix"
