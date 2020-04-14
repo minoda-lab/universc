@@ -53,18 +53,30 @@ mkdir -p ${prefix}/universc-${version}
 if [[ -w ${INSTALLDIR} ]]
     then
     rsync -arutvxz * $INSTALLDIR
+    #note does not apply to parent process (only within script for testing version call)
     export PATH=$INSTALLDIR:$PATH
-    echo "${INSTALLDIR} added to PATH"
-    SHELL_RC=`echo ~/.${SHELL}rc`
-    echo "export PATH=:${INSTALLDIR}:\$PATH" >> $SHELL_RC
-    echo "universc-${version} added to PATH automatically in new ${SHELL} shell session"
+    #echo "${INSTALLDIR} added to PATH"
+    for SHELL_RC in `ls ~/.*rc`
+        do
+        echo "export PATH=:${INSTALLDIR}:\$PATH" >> $SHELL_RC
+        echo "universc-${version} added to PATH automatically in new ${SHELL} shell session"
+    done
     echo "run the following to add it to your shell of choice"
-    echo "    export PATH=${INSTALLDIR}:\$PATH >> ~/.${SHELL}rc"
+    echo "    export PATH=${INSTALLDIR}:\$PATH >> ~/.\${SHELL}rc"
     echo "universc-${version} has been installed it can be run as follows"
     echo "    launch_universc.sh"
     launch_universc.sh --version
     #launch_universc.sh --help
     which launch_universc.sh
+    echo "To add convert to your current shell sesssion by running the following:"
+    echo " "
+    echo "    PATH=${INSTALLDIR}:\$PATH"
+    echo " "
+    echo "convert has been added to the $SHELL configuration and will be automatically loaded"
+    echo "run the following to load a fresh environment"
+    echo " "
+    echo "    source $HOME/.${SHELL}rc"
+    echo " "
 else
     echo "Directory ${INSTALLDIR} not writeable"
     echo "Warning: installing manual requires root priviledges"
@@ -73,4 +85,7 @@ else
     echo "      sudo make install"
 fi
 
+echo "INSTALL COMPLETE"
+#Note this does not affect the variables in a parent process (interactive shell)
+#This must be run there (by the user)
 echo source ~/.${SHELL}rc
