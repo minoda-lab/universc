@@ -30,12 +30,22 @@ if [[ ! -w $prefix ]]
     exit 1
 fi
 
+version=$( cat .version )
+
 if [[ -f inst/.installed ]]
     then
-    echo "universc is already installed in `cat inst/.installed`"
-    echo "run the following to remove it"
-    echo "    make remove"
+    current_version=$( launch_universc.sh --version | tail -n 2 | head -n 1 | cut -d' ' -f3 )
+    if [[ $version == $current_version ]]
+    then
+        echo "universc ${version} is already installed in `cat inst/.installed`"
+        echo "run the following to remove it"
+        echo "    make remove"
     exit 1
+    else
+        echo "universc ${current_version} is already installed in `which launch_universc.sh`"
+        #echo "run the following to upgrade it"
+        #echo "    make upgrade"
+    fi
 fi
 echo $prefix > inst/.installed
 
