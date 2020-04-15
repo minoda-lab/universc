@@ -6,6 +6,7 @@ if [[ $VENDOR != "apple" ]]
 else
     SHELL=$(ps -p $$ | awk '$1 == PP {print $4}' PP=$$)
 fi
+
 if [[ $(which launch_universc.sh) != *"not found" ]]
     then
     SHELL=$SHELL
@@ -29,6 +30,9 @@ else
     invocation=$(echo $(basename $0))
 fi
 
+#default install location (root)
+if [[ -z $prefix ]]; then default="true"; prefix="/usr/local/share"; fi
+
 if [[ $1 == "--prefix" ]]
      then
      prefix=$2
@@ -41,12 +45,11 @@ if [[ $1 == "--prefix" ]]
         echo "--prefix $prefix must be a writeable"
     fi
 fi
+
 echo $prefix
-#default install location (root)
-if [[ -z $prefix ]]; then default="true"; prefix="/usr/local/share"; fi
-echo $prefix
-if [[ $prefix=="\." ]]
+if [[ $prefix == "." ]]
     then
+    echo "wd"
     echo "$prefix"
     prefix=`pwd`
 fi
@@ -57,7 +60,7 @@ if [[ "universc" == $(echo $prefix | rev | cut -d'/' -f1 | rev) ]]
     prefix=$(echo $prefix | cut -d'/' -f1-$(($( echo $prefix | grep -o "/" | wc -l))))
     INSTALLDIR=${prefix}/universc
 fi
-echo $prefix
+
 if [[ ! -w $prefix ]]
     then
     echo "$prefix must be a writeable directory"
@@ -103,10 +106,7 @@ else
     $(eval echo $SHELL inst/REMOVE)
 fi
 
-exit 0
 echo $prefix > inst/.installed
-
-echo prefix=$prefix
 
 # create install directory
 if [[ -z $INSTALLDIR ]]
@@ -153,7 +153,7 @@ else
     echo "      sudo make install"
 fi
 
-echo "INSTALL COMPLETE"
+echo "UPGRADE COMPLETE"
 #Note this does not affect the variables in a parent process (interactive shell)
 #This must be run there (by the user)
 echo source ~/.${SHELL}rc

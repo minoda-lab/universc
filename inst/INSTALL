@@ -29,6 +29,9 @@ else
     invocation=$(echo $(basename $0))
 fi
 
+#default install location (root)
+if [[ ! -z $prefix ]]; then prefix="/usr/local/share"; fi
+
 if [[ $1 == "--prefix" ]]
      then
      prefix=$2
@@ -42,11 +45,7 @@ if [[ $1 == "--prefix" ]]
     fi
 fi
 
-#default install location (root)
-if [[ -z $prefix ]]; then prefix="/usr/local/share"; fi
-
-
-if [[ $prefix=="\." ]]
+if [[ $prefix == "." ]]
     then
     prefix=`pwd`
 fi
