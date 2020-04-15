@@ -44,4 +44,5 @@ uninstall: remove clean
 
 reinstall: uninstall install
 
-upgrade: remove install
+upgrade:
+	 @./inst/UPGRADE prefix=$(prefix)
