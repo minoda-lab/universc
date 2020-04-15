@@ -83,7 +83,7 @@ if [[ -f inst/.installed ]]  || [[ $(which launch_universc.sh) != *"not found" ]
     if [[ $((10#$(ver $version))) == $((10#$(ver $current_version))) ]]
         then
         echo "universc ${current_version} is already installed in `which launch_universc.sh`"
-        #exit 0${hour#0}
+        exit 0
     elif [[ $((10#$(ver $version))) -lt $((10#$(ver $current_version))) ]]
         then
         echo "universc ${current_version} is already installed in `which launch_universc.sh`"

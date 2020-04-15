@@ -107,38 +107,36 @@ else
     if [[ -w ${prefix} ]]
         then
         echo "rm -rf $prefix"
+     else
+         echo "Directory ${INSTALLDIR} not writeable"
+         echo "Warning: installing manual requires root priviledges"
+         echo "  Try running of the following:"
+         echo "      sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/REMOVE"
+         echo "      sudo make remove"
     fi
 fi
 
-#requires root priviledges if not installed in home directory
-if [[ ! -d ${prefix} ]]
-    then
-    #note does not apply to parent process (only within script for testing version call)
-    export PATH=$(echo $PATH | sed -e 's;$INSTALLDIR:;;g')
-    #echo "${INSTALLDIR} removed from PATH"
-    for SHELL_RC in `ls ~/.*rc`
-        do
-        sed "/^export PATH=:${INSTALLDIR}:\$PATH$" $SHELL_RC
-        echo "universc-${version} will not added to PATH automatically in new ${SHELL} shell session"
-    done
-    echo "remove the following from ${Home}/.${SHELL}rc to remove it to your shell of choice"
-    echo "    export PATH=${INSTALLDIR}:\$PATH >> ~/.\${SHELL}rc"
-    echo "To remove convert from your current shell sesssion by running the following:"
-    echo " "
-    echo "    PATH=\$(echo \$PATH | sed -e 's/;$INSTALLDIR:;;g')"
-    echo " "
-    echo "convert has been remove from to the $SHELL configuration and will not be automatically loaded"
-    echo "run the following to load a fresh environment"
-    echo " "
-    echo "    source $HOME/.${SHELL}rc"
-    echo " "
-else
-    echo "Directory ${INSTALLDIR} not writeable"
-    echo "Warning: installing manual requires root priviledges"
-    echo "  Try running of the following:"
-    echo "      sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/REMOVE"
-    echo "      sudo make remove"
-fi
+INSTALLDIR=$prefix
+
+#note does not apply to parent process (only within script for testing version call)
+export PATH=$(echo $PATH | sed -e 's;$INSTALLDIR:;;g')
+#echo "${INSTALLDIR} removed from PATH"
+for SHELL_RC in `ls ~/.*rc`
+    do
+    sed -i "s;^export PATH=${INSTALLDIR}:\$PATH$;;g" $SHELL_RC
+    echo "universc-${current_version} will not added to PATH automatically in new ${SHELL} shell session"
+done
+echo "remove the following from ${Home}/.${SHELL}rc to remove it to your shell of choice"
+echo "    export PATH=${INSTALLDIR}:\$PATH >> ~/.\${SHELL}rc"
+echo "To remove convert from your current shell sesssion by running the following:"
+echo " "
+echo "    PATH=\$(echo \$PATH | sed -e 's/;$INSTALLDIR:;;g')"
+echo " "
+echo "convert has been remove from to the $SHELL configuration and will not be automatically loaded"
+echo "run the following to load a fresh environment"
+echo " "
+echo "    source $HOME/.${SHELL}rc"
+echo " "
 
 echo "UNINSTALL COMPLETE"
 #Note this does not affect the variables in a parent process (interactive shell)
