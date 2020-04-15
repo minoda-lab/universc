@@ -9,18 +9,19 @@
 
 ### UniverSC version 0.3.0
 
-Single-cell processing across technologies.
+#### Single-cell processing across technologies
+
+------------------------------------------
 
 Provides a conversion script to run multiple technologies and custom libraries with cellranger (10x Genomics analysis tool).
 
-
-#### Tom Kelly (RIKEN IMS) and Kai Battenberg (RIKEN CSRS/IMS)
+##### Tom Kelly (RIKEN IMS) and Kai Battenberg (RIKEN CSRS/IMS)
 
 ## Purpose
 
 We've developed a bash script that will run cellranger on FASTQ files for these technologies. See below for details on how to use it.
 
-If you use this tools, please [cite](#Citation) to acknowledge the efforts of the authors. You can report problems and request
+If you use this tool, please [cite](#Citation) to acknowledge the efforts of the authors. You can report problems and request
 new features to the maintainers with and [issue](#Issues) on GitHub. Details on how to [install](#Install) and [run](#Usage) are provided
 below. Please see the [help](#Help) and [examples](#Examples) to try solve your problem before submitting an issue.
 
@@ -77,6 +78,24 @@ Hopefully it will save people time as make it easier to compare technologies.
 We plan to make this open-source with the agreement of everyone in the project.
 
 ### Citation <span id="Citation"><span>
+
+A submission to a jounral and biorXiv is in progress. Please cite this
+when it becomes available. In the meantime, the package can be cited
+as follows:
+
+Kelly, S.T., Battenberg, K., Hayashi, K., and Minoda, A. (2020)
+launch_universc.sh: single-cell processing across technologies.
+package version 0.3.0. https://github.com/TomKellyGenetics/universc
+
+```
+@Manual{,
+    title = {{launch_universc.sh}: single-cell processing across technologies},
+    author = {S. Thomas Kelly, Kai Battenbery, Makoto Hayashi, and Aki Minoda},
+    year = {2020},
+    note = {package version 0.3.0},
+    url = {https://github.com/TomKellyGenetics/universc},
+  }
+```
 
 ### Bug Reports <span id="Issues"><span>
 
