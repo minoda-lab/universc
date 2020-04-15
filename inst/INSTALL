@@ -8,7 +8,7 @@ else
 fi
 if [[ $(which launch_universc.sh) != *"not found" ]]
     then
-    SHELL='' 
+    SHELL=$SHELL
     invocation=$0
 else
     if [[ -z $ZSH_VERSION ]]
@@ -29,9 +29,6 @@ else
     invocation=$(echo $(basename $0))
 fi
 
-#default install location (root)
-if [[ -z $prefix ]]; then prefix="/usr/local/share"; fi
-
 if [[ $1 == "--prefix" ]]
      then
      prefix=$2
@@ -45,7 +42,11 @@ if [[ $1 == "--prefix" ]]
     fi
 fi
 
-if [[ $prefix=="." ]]
+#default install location (root)
+if [[ -z $prefix ]]; then prefix="/usr/local/share"; fi
+
+
+if [[ $prefix=="\." ]]
     then
     prefix=`pwd`
 fi

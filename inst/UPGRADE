@@ -8,7 +8,7 @@ else
 fi
 if [[ $(which launch_universc.sh) != *"not found" ]]
     then
-    SHELL='' 
+    SHELL=$SHELL
     invocation=$0
 else
     if [[ -z $ZSH_VERSION ]]
@@ -29,9 +29,6 @@ else
     invocation=$(echo $(basename $0))
 fi
 
-#default install location (root)
-if [[ -z $prefix ]]; then prefix="/usr/local/share"; fi
-
 if [[ $1 == "--prefix" ]]
      then
      prefix=$2
@@ -44,9 +41,13 @@ if [[ $1 == "--prefix" ]]
         echo "--prefix $prefix must be a writeable"
     fi
 fi
-
-if [[ $prefix=="." ]]
+echo $prefix
+#default install location (root)
+if [[ -z $prefix ]]; then default="true"; prefix="/usr/local/share"; fi
+echo $prefix
+if [[ $prefix=="\." ]]
     then
+    echo "$prefix"
     prefix=`pwd`
 fi
 
@@ -56,13 +57,13 @@ if [[ "universc" == $(echo $prefix | rev | cut -d'/' -f1 | rev) ]]
     prefix=$(echo $prefix | cut -d'/' -f1-$(($( echo $prefix | grep -o "/" | wc -l))))
     INSTALLDIR=${prefix}/universc
 fi
-
+echo $prefix
 if [[ ! -w $prefix ]]
     then
     echo "$prefix must be a writeable directory"
     echo "try running:"
-    echo "    sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/INSTALL"
-    echo "    sudo make install"
+    echo "    sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/UPGRADE"
+    echo "    sudo make upgrade"
     exit 1
 fi
 
@@ -95,7 +96,12 @@ if [[ -f inst/.installed ]]  || [[ $(which launch_universc.sh) != *"not found" ]
     fi
 fi
 
-echo $SHELL inst/REMOVE
+if [[ -w $prefix ]]
+    then
+    $(eval echo $SHELL inst/REMOVE --prefix $prefix)
+else
+    $(eval echo $SHELL inst/REMOVE)
+fi
 
 exit 0
 echo $prefix > inst/.installed

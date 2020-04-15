@@ -8,7 +8,7 @@ else
 fi
 if [[ $(which launch_universc.sh) != *"not found" ]]
     then
-    SHELL='' 
+    SHELL=$SHELL
     invocation=$0
 else
     if [[ -z $ZSH_VERSION ]]
@@ -27,6 +27,19 @@ else
        SHELL=$SHELL
     fi
     invocation=$(echo $(basename $0))
+fi
+
+if [[ $1 == "--prefix" ]]
+     then
+     prefix=$2
+     if [[ ! -d $prefix ]]
+        then
+        echo "--prefix $prefix must be a directory"
+    fi
+    if [[ ! -w $prefix ]]
+        then
+        echo "--prefix $prefix must be a writeable"
+    fi
 fi
 
 if [[ -z $prefix ]]
@@ -85,7 +98,7 @@ if [[ ! -w $prefix ]]
 fi
 
 
-if [[ $prefix == $(pwd) ]] || [[ $prefix == "." ]] || [ $prefix == "../"* ]] || [[ $prefix == "./"* ]]
+if [[ $prefix == $(pwd) ]] || [[ $prefix == "\." ]] || [[ $prefix == "\.\.\/"* ]] || [[ $prefix == "\.\/"* ]]
    then
    echo "Current directory not removed"
 else
@@ -133,4 +146,7 @@ echo "UNINSTALL COMPLETE"
 echo source ~/.${SHELL}rc
 
 #remove install file
-rm inst/.installed
+if [[ -f inst/.installed ]]
+    then
+    rm inst/.installed
+fi

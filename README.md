@@ -141,6 +141,10 @@ make install prefix=$HOME/local
 zsh inst/INSTALL --prefix $HOME/local
 ```
 
+```
+bash inst/UPGRADE --prefix "/home/tom/local"
+```
+
 ### System Requirements
 
 ...Unix systems with cellranger installed.
