@@ -33,7 +33,8 @@ The following technologies have been tested to ensure that they give the expecte
 
 We provide the following preset configurations for convenience based on published data and configurations used by other pipelines 
 (e.g, DropSeqPipe and Kallisto/Bustools). To add further support for other technologies or troubleshoot problems, please submit an Issue
-to the GitHub repository: https://github.com/TomKellyGenetics/universc/issues] as described in [Bug Reports](#Issues) below.
+to the GitHub repository: [TomKellyGenetics/universc](https://github.com/TomKellyGenetics/universc/issues)
+as described in [Bug Reports](#Issues) below.
 
 Some changes to the cellranger install are required to run other technologies. Therefore we provide settings for 10x Genomics
 which restores settings for the Chromium instrument. We therefore recommend using 'convert' for processing all data from different
@@ -44,15 +45,16 @@ can be run simultaneously.
 #### Pre-set configurations
 
 -  10x Genomics (version automatically detected): 10x, chromium
---  10x Genomics version 2 (16bp barcode, 10bp UMI): 10x-v2, chromium-v2
---  10x Genomics version 3 (16bp barcode, 12bp UMI): 10x-v3, chromium-v3
+    -  10x Genomics version 2 (16bp barcode, 10bp UMI): 10x-v2, chromium-v2
+    -  10x Genomics version 3 (16bp barcode, 12bp UMI): 10x-v3, chromium-v3
 -  CEL-Seq (8bp barcode, 4bp UMI): celseq
 -  CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
 -  Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
 -  iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
--  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
--  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
--  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
+- inDrops
+    -  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
+    -  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
+    -  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
 -  Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
 -  Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
 -  Sci-Seq (8bp UMI, 10bp barcode): sciseq
@@ -72,10 +74,12 @@ technologies to demutliplex based on the wells.
 
 ## Release
 
-At the moment, we have not released the script publicly but we do intend to. We welcome any feedback on it. 
-Hopefully it will save people time as make it easier to compare technologies.
+This tool will be released open-source. We welcome any feedback on it.
 
-We plan to make this open-source with the agreement of everyone in the project.
+We have tested it on several technologies but we need users like you
+to let us know how we can improve it. We hope that it will save you
+time by handing tedious parts of data formatting so that you can
+focus on the results.
 
 ### Citation <span id="Citation"><span>
 
@@ -104,6 +108,11 @@ package version 0.3.0. https://github.com/TomKellyGenetics/universc
 To add further support for other technologies or troubleshoot problems, please submit an Issue 
 to the GitHub repository: https://github.com/TomKellyGenetics/universc/issues
 
+Please submit [issues](https://github.com/TomKellyGenetics/graphsim/issues) on GitHub to report
+problems or suggest features. [Pull requests](https://github.com/TomKellyGenetics/graphsim/pulls)
+to the `dev` branch on GitHub are also welcome to add features or correct problems. Please see
+the [contributor guide](CONTRIBUTING.md) for more details.
+
 ### Requesting new technologies
 
 Where possible, please provide an minimal example of the first few lines of each FASTQ file for testing purposes.
@@ -128,17 +137,109 @@ it could take significant resources to add support for these.
 
 ## Installation <span id="Install"><span>
 
-This script requires cellranger to be installed and exported to the PATH (version 3.0.0 of higher recommended).
-The script itself is exectuable and does not require installation to run but you can put it in your PATH or 
-bin of your cellranger install if you wish to do so.
+
+This script requires cellranger to be installed and exported to the PATH (version 3.0.0 or higher recommended).
+The script itself is exectuable and does not require installation to run but you can put it in your PATH or
+bin of your cellranger install if you wish to do so. We provide scripts to do this for your convenience.
+
+### System Requirements
+
+In principle, the script can run on any Unix systems with cellranger installed. You can check whether
+cellranger is already availble by running:
+
+```
+whereis cellranger
+```
+
+You can see which cellranger installation will run as follows:
+
+```
+which cellranger
+cellranger count --version
+```
+
+If cellranger is already installed on your system, you can add it to your $PATH as follows:
+
+```
+export PATH=/home/username/path/to/cellranger-x.x.x:$PATH    
+```
+
+#### Installing dependencies
+
+If cellranger is not installed on your system, you must install it before running launch_universc.sh.
+
+Please see the [manual for cellranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger)
+on the 10x Genomics website for more details on how to use it. We provide support for
+passing various options to cellranger and sensible defaults for each technology.
+
+This script is compatible with the installation of cellranger that you can
+[download](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest)
+from the 10x Genomics website and gives the same output formats.
+
+However, we recommend to use the open-source release of cellranger on GitHub. This is
+release on an MIT License and is not subject to the 10x Genomics End User
+License Agreement.
+
+We provide open-source repositories with minor updates for compatibility
+with current versions of dependencies.
+
+The code is available here:
+
+[https://github.com/TomKellyGenetics/cellranger/releases](https://github.com/TomKellyGenetics/cellranger/releases)
+
+We also provide Docker images for cellranger versions 2.0.2, 2.1.0, 2.1.1, and 3.0.2:
+
+[https://github.com/TomKellyGenetics/cellranger_clean/packages](https://github.com/TomKellyGenetics/cellranger_clean/packages)
+
+[https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags](https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags)
+
+#### Cluster Mode configuration
+
+#### Software Requirements
+
+These have been pre-installed in the Docker image described above.
+
+A full example of installation is available in the [GitHub repository](https://github.com/TomKellyGenetics/cellranger)
+and on [DockerHub](https://hub.docker.com/r/tomkellygenetics/cellranger_clean/dockerfile).
+
+- Python 2.7.13
+
+- rust 1.28.0
+
+- clang 6.0
+
+- go 1.11
+
+- node v8.11.4
+
+#### Harware requirements
+
+- 8-core Intel or AMD processor (16 cores recommended)
+- 64GB RAM (128GB recommended)
+- 1TB free disk space
+- 64-bit CentOS/RedHat 6.0 or Ubuntu 12.04
+
+#### Ensuring write-access to cellranger
 
 The conversion process requires write-access to to the cellranger install directory so
-an install on your user directory is recommended.
+an install on your user directory is recommended. 
 
 This script will run in bash on any OS (but it has only been tested on Linux Debian). Running cellranger 
 with this configuration requires a lot of memory (40Gb) so running on server is recommended.
 SGE job modes are supported to run cellranger with multiple threads.
 
+- local install
+
+- copy from root and add to PATH
+
+#### Installing launch_universc.sh
+
+##### Running the script
+
+git clone
+bash launch_universc.sh
+
+####
 ```
 make
 ```
@@ -163,10 +264,6 @@ zsh inst/INSTALL --prefix $HOME/local
 ```
 bash inst/UPGRADE --prefix "/home/tom/local"
 ```
-
-### System Requirements
-
-...Unix systems with cellranger installed.
 
 ### Docker image
 
