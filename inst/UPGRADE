@@ -76,11 +76,11 @@ function ver { printf "%03d%03d%03d%03d%03d" $(echo "$1" | tr '.' ' ' | sed 's/\
 if [[ -f inst/.installed ]]  || [[ $(which launch_universc.sh) != *"not found" ]]
     then
     current_version=$( launch_universc.sh --version | tail -n 2 | head -n 1 | cut -d' ' -f3 )
-    if [[ $(ver $version) == $(ver $current_version) ]]
+    if [[ $((10#$(ver $version))) == $((10#$(ver $current_version))) ]]
         then
         echo "universc ${current_version} is already installed in `which launch_universc.sh`"
-        #exit 0
-    elif [[ $(ver $version) -le $(ver $current_version) ]]
+        #exit 0${hour#0}
+    elif [[ $((10#$(ver $version))) -lt $((10#$(ver $current_version))) ]]
         then
         echo "universc ${current_version} is already installed in `which launch_universc.sh`"
         echo "a newer version of universc is installed"
@@ -88,7 +88,7 @@ if [[ -f inst/.installed ]]  || [[ $(which launch_universc.sh) != *"not found" ]
         echo "    make remove --prefix=$(cat inst/.installed)"
         echo "    make install --prefix=${prefix}"
         exit 1
-    elif [[ $(ver $version) -ge $(ver $current_version) ]]
+    elif [[ $((10#$(ver $version))) -gt $((10#$(ver $current_version))) ]]
        then
         echo "universc ${current_version} is already installed in `which launch_universc.sh`"
         echo "Upgrading to universc ${version}"
