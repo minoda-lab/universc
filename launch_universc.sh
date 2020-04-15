@@ -91,12 +91,32 @@ fi
 
 
 #####usage statement#####
+if [[ $VENDOR != "apple" ]]
+    then
+    SHELL=$(readlink -f /proc/$$/exe | cut -d'/' -f3)
+else
+    SHELL=$(ps -p $$ | awk '$1 == PP {print $4}' PP=$$)
+fi
 if [[ $(which launch_universc.sh) != *"not found" ]]
     then
     SHELL='' 
     invocation=$0
 else
-    SHELL=$(readlink -f /proc/$$/exe | cut -d'/' -f3)
+    if [[ -z $ZSH_VERSION ]]
+        then
+        SHELL="zsh"
+    elif [[ -z $KSH_VERSION ]]
+       then
+       SHELL="ksh"
+    elif [[ -z $FISH_VERSION ]]
+       then
+       SHELL="fish"
+    elif [[ -z $BASH_VERSION ]]
+        then
+        SHELL="bash"
+    else
+       SHELL=$SHELL
+    fi
     invocation=$(echo $(basename $0))
 fi
 help='
