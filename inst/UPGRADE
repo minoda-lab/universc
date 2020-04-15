@@ -4,21 +4,30 @@ SHELL=`readlink -f /proc/$$/exe | cut -d/ -f3`
 
 #default install location (root)
 if [[ -z $prefix ]]; then prefix="/usr/local/share"; fi
-echo "installing to: $prefix"
 
 if [[ $1 == "--prefix" ]]
      then
      prefix=$2
      if [[ ! -d $prefix ]]
-         then
-         echo "--prefix $prefix must be a directory"
-         exit 1
-     fi
+        then
+        echo "--prefix $prefix must be a directory"
+    fi
     if [[ ! -w $prefix ]]
         then
         echo "--prefix $prefix must be a writeable"
-        exit 1
     fi
+fi
+
+if [[ $prefix=="." ]]
+    then
+    prefix=`pwd`
+fi
+
+if [[ "universc" == $(echo $prefix | rev | cut -d'/' -f1 | rev) ]]
+    then
+    echo "installing to universc"
+    prefix=$(echo $prefix | cut -d'/' -f1-$(($( echo $prefix | grep -o "/" | wc -l))))
+    INSTALLDIR=${prefix}/universc
 fi
 
 if [[ ! -w $prefix ]]
@@ -29,6 +38,8 @@ if [[ ! -w $prefix ]]
     echo "    sudo make install"
     exit 1
 fi
+
+echo "installing to: $prefix"
 
 version=$( cat .version )
 
@@ -51,10 +62,11 @@ echo $prefix > inst/.installed
 
 echo prefix=$prefix
 
-version=`cat .version`
-
 # create install directory
-INSTALLDIR="${prefix}/universc-${version}"
+if [[ -z $INSTALLDIR ]]
+    then
+    INSTALLDIR="${prefix}/universc-${version}"
+fi
 echo "Installing to $INSTALLDIR"
 mkdir -p ${prefix}/universc-${version}
 
@@ -68,7 +80,7 @@ if [[ -w ${INSTALLDIR} ]]
     #echo "${INSTALLDIR} added to PATH"
     for SHELL_RC in `ls ~/.*rc`
         do
-        echo "export PATH=:${INSTALLDIR}:\$PATH" >> $SHELL_RC
+        echo "export PATH=${INSTALLDIR}:\$PATH" >> $SHELL_RC
         echo "universc-${version} added to PATH automatically in new ${SHELL} shell session"
     done
     echo "run the following to add it to your shell of choice"

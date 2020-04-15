@@ -26,9 +26,8 @@ else
         current_version=$(cat ${prefix}/.version)
     elif [[ $prefix == *"universc-"* ]]
        then
-
        prefix=$(echo $prefix | cut -d'/' -f1-$(($( echo $prefix | grep -o "/" | wc -l))))
-       prefix=$( ls -d ${prefix}/universc/ | head -n 1 )
+       prefix=$( ls -d ${prefix}/universc-*/ | head -n 1 )
     else
        prefix=$( ls -d ${prefix}/universc-*/ | head -n 1)
     fi
