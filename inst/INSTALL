@@ -70,7 +70,7 @@ echo "installing to: $prefix"
 
 version=$( cat .version )
 
-if [[ -f inst/.installed ]]
+if [[ -f inst/.installed ]]  || [[ $(which launch_universc.sh) != *"not found" ]]
     then
     current_version=$( launch_universc.sh --version | tail -n 2 | head -n 1 | cut -d' ' -f3 )
     if [[ $version == $current_version ]]

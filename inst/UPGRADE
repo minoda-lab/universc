@@ -70,19 +70,23 @@ echo "installing to: $prefix"
 
 version=$( cat .version )
 
-if [[ -f inst/.installed ]]
+if [[ -f inst/.installed ]]  || [[ $(which launch_universc.sh) != *"not found" ]]
     then
     current_version=$( launch_universc.sh --version | tail -n 2 | head -n 1 | cut -d' ' -f3 )
     if [[ $version == $current_version ]]
     then
-        echo "universc ${version} is already installed in `cat inst/.installed`"
-        echo "run the following to remove it"
-        echo "    make remove"
-    exit 1
-    else
         echo "universc ${current_version} is already installed in `which launch_universc.sh`"
-        #echo "run the following to upgrade it"
-        #echo "    make upgrade"
+        exit 0
+    elif [[ $version -le $current_version ]]
+        echo "universc ${current_version} is already installed in `which launch_universc.sh`"
+        echo "a newer version of universc is installed"
+        echo "run the following to remove it and downgrade to version ${version}"
+        echo "    make remove --prefix=$(cat inst/.installed)"
+        echo "    make install --prefix=${prefix}"
+        exit 1
+    elif [[ $version -ge $current_version ]]
+        echo "universc ${current_version} is already installed in `which launch_universc.sh`"
+        echo "Upgrading to universc ${version}"
     fi
 fi
 echo $prefix > inst/.installed
