@@ -64,11 +64,11 @@ done
 
 Then simply copy these into GitHub with code blocks:
 
-\`\`\`
 ```
+\`\`\`
 your code here
-```
 \`\`\`
+```
 
 1. Please include error messages with the full backtrace of
    commands that failed.
@@ -80,9 +80,9 @@ tail -n 25  my-id/outs/_log
 Copy the output from the cellranger logs or the terminal
 and paste is as a quote
 
-\>
-> your quote here
-\>
+> \>
+> \> your quote here
+> \>
 
 1.  Spend a little bit of time ensuring that your **code** is easy for others to
 read:
