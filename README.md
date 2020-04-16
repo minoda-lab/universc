@@ -383,6 +383,134 @@ cd universc
 bash launch_universc.sh
 ```
 
+##### Automated configuration
+
+We provide a Makefile with all necessary configurations to automatically
+check whether launch_universc.sh is installed correctly.
+
+You can specify any directory to install as a "prefix". This will
+create a directory "$HOME/local/universc-0.3" where
+the files needed will be stored.
+
+```
+cd $HOME/Downloads
+git clone https://github.com/TomKellyGenetics/universc.git
+make
+make install prefix=$HOME/local
+```
+
+It is also possible to add the current working directory as 
+the installed directory.
+
+```
+make install prefix="."
+```
+
+In this case *do not* delete the installed directory after you
+install it or the script will fail to run.
+
+By default it will be installed in a root directory with
+read-only access. This requires administrator priviledges.
+Note that the manual can onlly be installed with root
+priviledges.
+
+```
+sudo make install
+sudo make manual
+```
+
+You can verify that launch_universc.sh has been added to the PATH.
+
+```
+echo $PATH
+which launch_universc.sh
+```
+
+You can then run `launch_universc.sh` from any working directory.
+
+##### Updating
+
+If launch_universc.sh is already installed and you wish to update it,
+first you need to pull the changes from GitHub from the
+universc directory.
+
+```
+cd universc
+git pull origin master
+make
+```
+
+Then you can update to the directory of your choice using
+the same options for `--prefix` as to install.
+
+```
+make install prefix=$HOME/local
+```
+
+This is remove previous versions of launch_universc.sh and install
+the latest version.
+
+The manual can be updated with:
+
+```
+sudo make manual
+```
+
+##### Uninstalling
+
+We provide an automated script to reverse these changes.
+
+```
+make uninstall
+```
+
+This is will automatically detect the installation of launch_universc.sh.
+
+If multiple versions of cellranger are present, you can
+specify which to remove with.
+
+```
+make remove prefix=$HOME/local
+```
+
+#### Custom shell
+
+Make will install the script with `bash` by default but
+alternative shells are supported. You will need to run the
+install script or run it with your shell of choice.
+
+```
+sh launch_universc.sh
+sh inst/INSTALL --prefix $HOME/local
+launch_universc.sh
+```
+
+```
+ksh launch_universc.sh
+ksh inst/INSTALL --prefix $HOME/local
+launch_universc.sh
+```
+
+```
+zsh launch_universc.sh
+zsh inst/INSTALL --prefix $HOME/local
+launch_universc.sh
+```
+
+```
+fish launch_universc.sh
+fish inst/INSTALL --prefix $HOME/local
+launch_universc.sh
+```
+
+The help menu should reflect the shell used to run it.
+
+To update, similarly run the `inst/UPGRADE` script with
+your chosen shell.
+
+### Docker image <span id="Docker"><span>
+
+
 ##### Manual configuration
 
 You can manually add the script here to the PATH, for example:
@@ -405,40 +533,9 @@ to load a new session. This means that you do not need to add the
 sript to the PATH in future sessions.
 
 ```
-export PATH=$HOME/Downloads/universc:$PATH 
+export PATH=$HOME/Downloads/universc:$PATH
 ```
 
-
-
-####
-```
-make
-```
-
-
-```
-sudo make install manual
-```
-
-```
-make install prefix=$HOME/local
-```
-
--> migrate to Makefile?
-
-#### Custom shell
-
-```
-zsh inst/INSTALL --prefix $HOME/local
-```
-
-```
-bash inst/UPGRADE --prefix "/home/tom/local"
-```
-
-### Docker image <span id="Docker"><span>
-
-...
 
 ## Usage <span id="Usage"><span>
 
@@ -466,7 +563,7 @@ Please note that this script alters the barcode whitelist. Known iCELL8 barcodes
 
 ### Manual <span id="Help"><span>
 
-#### Locally instaleld manual
+#### Locally install manual
 
 You can display a manual from the locally installed universc directory with:
 
@@ -477,6 +574,22 @@ You can display a manual from the locally installed universc directory with:
 Note that the working directory must be `universc` or the full path to the man directory must be given.
 
 #### Installing the manual with root priviliges:
+
+##### Automated Configuration
+
+We provide an automated script to install the manual.
+
+```
+sudo make manual
+```
+
+You can remove the manual with:
+
+```
+sudo make manual-clean
+```
+
+##### Configuration
 
 The manual can be installed as follows on Mac and Linux.
 
@@ -517,8 +630,6 @@ The manual can then be called from any directory as follows:
 ```
 man launch_universc.sh
 ```
-`
--> change to make?
 
 #### Help menu
 
