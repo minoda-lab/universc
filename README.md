@@ -510,8 +510,71 @@ your chosen shell.
 
 ### Docker image <span id="Docker"><span>
 
+We provide a docker image with all software needed
+to run UniverSC.
 
-##### Manual configuration
+This requires "docker" to be installed and a valid DockerHub account.
+
+You can check whether docker is available by running:
+
+```
+which docker
+docker run hello-world    
+```
+
+This may require you to login to your account.
+
+```
+docker login -u "myusername"
+```
+
+If you cannot run docker on a remote server, contact
+your systems administrator.
+
+#### Pulling from remote DockerHub repository
+
+We provide a docker image for universc version 0.3.
+
+You can import it if you have docker installed.
+
+```
+docker pull tomkellygenetics/universc:latest
+```
+
+Then you can run convert with:
+
+```
+run -it tomkellygenetics/universc:latest launch_universc.sh
+```
+
+You can open a shell in the docker image with:
+
+```
+run -it tomkellygenetics/universc:latest /bin/bash
+``
+
+```
+run -it tomkellygenetics/universc:latest /bin/zsh 
+``
+
+Either of these shells are supported.
+
+##### Building the Docker image locally
+
+The Dockerfile is provided in the repository so it can be built from
+source. This will build a Docker image with the latest version of
+universc provided that updates to dependencies on GitHub
+are still compatible.
+
+```
+git clone https://github.com/TomKellyGenetics/universc.git
+docker build -t universc:latest .  
+```
+
+Please bear mind that it can take considerable time to install
+all necessary dependencies. A stable internet connection is required.
+
+### Manual configuration
 
 You can manually add the script here to the PATH, for example:
 
@@ -714,6 +777,73 @@ Files will be renamed if they do not follow this format. File extension will be 
 ```
 
 ### Examples <span id="Examples"><span>
+
+#### Running cellranger
+
+```
+cellranger testrun --id="tiny-test"
+```
+```
+# open gzip files from test data
+gunzip -fk universc/test/shared/cellranger-tiny-fastq/3.0.0/*fastq.gz
+gunzip -fk cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/barcodes/3M-february-2018.txt.gz 
+# cellranger call
+cellranger count --id="tiny-count-v3" \
+ --fastqs="cellranger-3.0.2.9001/cellranger-tiny-fastq/3.0.0/" --sample="tinygex" \
+ --transcriptome="cellranger-3.0.2.9001/cellranger-tiny-ref/3.0.0"
+```
+
+#### Running launch_universc.sh on 10x data
+
+```
+# call convert on 10x with multiple lanes
+bash /universc/launch_universc.sh --id "test-10x-v3" --technology "10x" \
+ --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --file "/universc/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
+ "/universc/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002"
+```
+
+#### Running launch_universc.sh on DropSeq data
+
+Obtain DropSeq data from public database:
+
+```
+wget https://www.ncbi.nlm.nih.gov/geo/download/\?acc\=GSM1629192\&format\=file\&file\=GSM1629192%5FPure%5FHumanMouse%2Ebam
+mv index.html\?acc=GSM1629192\&format=file\&file=GSM1629192%5FPure%5FHumanMouse%2Ebam GSM162919.bam
+samtools sort -n GSM162919.bam > GSM162919.qsort
+samtools view  GSM162919.qsort  HUMAN_21:9825832-48085036 > GSM162919.qsort2
+samtools sort -O BAM GSM162919.bam > GSM162919.sort.bam
+samtools index GSM162919.sort.bam
+samtools view  GSM162919.sort.bam  HUMAN_21:9825832-48085036 > GSM162919.chr21.bam
+samtools view -O BAM  GSM162919.sort.bam  HUMAN_21:9825832-48085036 > GSM162919.chr21.sort.bam
+samtools sort -n GSM162919.chr21.sort.bam -o GSM162919.chr21.qsort.bam
+bedtools bamtofastq -i GSM162919.chr21.qsort.bam -fq GSM1629192_chr21_R1.fastq
+mv GSM1629192_chr21_R1.fastq GSM1629192_chr21_R2.fastq
+fastq-dump -F --split-files SRR1873277
+fastq_pair GSM1629192_chr21_R2.fastq SRR1873277_1.fastq
+head -n 117060 SRR1873277_1.fastq.paired.fq 117060 > SRR1873277_1.fastq.paired.fq
+head -n 117060 GSM1629192_chr21_R2.fastq.paired.fq > GSM1629192_chr21_R2.fastq.paired.fq
+cp SRR1873277_1.fastq.paired.fq  GSM1629192_chr21_R2.fastq.paired.fq ~/repos/universc/test/shared/dropseq-test
+cp SRR1873277_1.fastq.paired.fq  GSM1629192_chr21_R2.fastq.paired.fq ~/repos/universc/test/shared/dropseq-test
+mv SRR1873277_1.fastq.paired.fq SRR1873277_R1.fastq
+mv GSM1629192_chr21_R2.fastq.paired.fq  universc/test/shared/dropseq-test/SRR1873277_R2.fastq
+mv GSM1629192_chr21_R2.fastq.paired.fq  universc/test/shared/dropseq-test/SRR1873277_R2.fastq
+```
+
+Run UniverSC:
+
+```
+bash universc/launch_universc.sh -t "DropSeq" --setup
+# call on dropseq with files
+bash universc/launch_universc.sh --id "test-dropseq" --technology "nadia" \
+ --reference "universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --read1 "universc/test/shared/dropseq-test/SRR1873277_S1_L001_R1_001" \
+ --read2 "universc/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001" 
+```
+
+#### Running launch_universc.sh on iCELL8 data
+
+- add example running on custom barcode whitelist
 
 ### Licensing
 
