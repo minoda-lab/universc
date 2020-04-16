@@ -137,10 +137,49 @@ it could take significant resources to add support for these.
 
 ## Installation <span id="Install"><span>
 
-
 This script requires cellranger to be installed and exported to the PATH (version 3.0.0 or higher recommended).
 The script itself is exectuable and does not require installation to run but you can put it in your PATH or
 bin of your cellranger install if you wish to do so. We provide scripts to do this for your convenience.
+
+See the details below on how set up cellranger and launch_universc.sh.
+
+#### Download UniverSC
+
+To download UniverSC open a terminal prompt and enter the following commands.
+
+```
+cd $HOME/Downloads
+git clone https://github.com/TomKellyGenetics/universc.git
+cd universc
+```
+
+### Quick Start
+
+If you already have cellranger installed, then you can run the script without installing it.
+
+```
+bash launch_universc.sh
+```
+
+You can call it in another directory by giving the path to the script.
+
+```
+cd $/HOME/my_project
+bash $HOME/Downloads/universc/launch_universc.sh
+```
+
+See the details below on how to install cellranger and launch_universc.sh add them
+to the PATH so that `launch_universc.sh` can be run from any directory. 
+
+### Runnning in a git repository
+
+If you are running code in a git repository you can add universc as a submodule.
+
+```
+cd $/HOME/my_git_repo
+git submodule add https://github.com/TomKellyGenetics/universc.git
+bash universc/launch_universc.sh
+```
 
 ### System Requirements
 
@@ -203,16 +242,55 @@ A full example of installation is available in the [GitHub repository](https://g
 and on [DockerHub](https://hub.docker.com/r/tomkellygenetics/cellranger_clean/dockerfile).
 
 - Python 2.7.13
-
 - rust 1.28.0
-
 - clang 6.0
-
 - go 1.11
+- node 8.11.4
+- Cython 0.28.0
+- STAR 2.5.1b
+- bcl2fastq 2.19.1.403
+- tsne 0.15
 
-- node v8.11.4
+The following additional shell utilities are required. Mac OS and
+most Linux distributions come with these pre-installed.
 
-#### Harware requirements
+- make 3.81
+- git 2.20.1 
+- sed (GNU sed) 4.4
+- tar  2.8.3
+- rename 0.20 (perl-rename)
+- perl 5.26.1
+- rsync 2.6.9 
+
+Note that rename is installed by default on Mac, Ubuntu and Debian
+but a different version must be used on other Linux distrubutions.
+
+CentOS and Fedora:
+
+```
+sudo yum install prename
+```
+```
+sudo dnf install prename
+```
+
+Ret Hat Linux:
+
+```
+sudo rpm install prename
+```
+
+Arch Linux:
+
+```
+yay perl-rename
+```
+
+##### Recommended software
+
+- git-lfs 2.10.0
+
+#### Hardware requirements
 
 - 8-core Intel or AMD processor (16 cores recommended)
 - 64GB RAM (128GB recommended)
