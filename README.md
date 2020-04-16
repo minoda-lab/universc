@@ -25,6 +25,8 @@ If you use this tool, please [cite](#Citation) to acknowledge the efforts of the
 new features to the maintainers with and [issue](#Issues) on GitHub. Details on how to [install](#Install) and [run](#Usage) are provided
 below. Please see the [help](#Help) and [examples](#Examples) to try solve your problem before submitting an issue.
 
+Details on the [Docker image](#Docker) are given below.
+
 ### Supported Technologies
 
 In principle, any technology with a cell barcode and unique molecular identifier (UMI) can be supported.
@@ -343,7 +345,7 @@ zsh inst/INSTALL --prefix $HOME/local
 bash inst/UPGRADE --prefix "/home/tom/local"
 ```
 
-### Docker image
+### Docker image <span id="Docker"><span>
 
 ...
 
