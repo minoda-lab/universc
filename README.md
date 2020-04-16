@@ -308,11 +308,41 @@ This script will run in bash on any OS (but it has only been tested on Linux Deb
 with this configuration requires a lot of memory (40Gb) so running on server is recommended.
 SGE job modes are supported to run cellranger with multiple threads.
 
-- local install
+##### Local install
 
-- copy from root and add to PATH
+If cellranger is not already installed we recommend installing it in a directory that
+you have write access to such as `$HOME/local`.
 
-#### Installing launch_universc.sh
+##### Importing an installed version of cellranger
+
+If cellranger has been installed by a system administrator, you will only have read-access
+to that installation. You can still use rather than installing a new version but you
+will need to copy it to your home directory and add this version to your PATH.
+
+```
+mkdir -p $HOME/local
+cd ~/local
+installed_version=$(echo $(which cellranger) | rev | cut -d"/" -f2- | rev)
+cp -rv $installed_version  .
+installed_directory=$(echo $(which cellranger) | rev | cut -d"/" -f2 | rev) 
+cd $installed_directory
+new_version=$(pwd)
+#remove previous version from PATH
+export PATH=$(echo $PATH |  sed "s;$installed_version:;;g")
+#add new version to PATH
+eval $(echo export PATH=$new_version:\$PATH)
+cd ..
+```
+
+You should be able to see that the locally installed version can be called as follows:
+
+```
+echo $PATH
+which cellranger
+bash launch_universc.sh
+```
+
+#### Installing launch_universc.sh to the PATH
 
 ##### Running the script
 
