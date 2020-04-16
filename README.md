@@ -308,6 +308,19 @@ This script will run in bash on any OS (but it has only been tested on Linux Deb
 with this configuration requires a lot of memory (40Gb) so running on server is recommended.
 SGE job modes are supported to run cellranger with multiple threads.
 
+This is required because launch_universc.sh will make changes to the cellranger install
+to ensure compatibility with the technology running. A local install in
+you user home directory is needed to make these changes. This ensures
+that these changes do not affect jobs run by other users and allows
+launch_universc.sh to change the whitelist and source code as needed.
+
+These changes are reversible but mean that only one technology can be
+run at the same time. You can restore original configurations with:
+
+```
+bash launch_universc.sh -t "10x" --setup
+```
+
 ##### Local install
 
 If cellranger is not already installed we recommend installing it in a directory that
