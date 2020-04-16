@@ -304,6 +304,20 @@ yay perl-rename
 The conversion process requires write-access to to the cellranger install directory so
 an install on your user directory is recommended. 
 
+You can check where cellranger is installed with:
+
+```
+which cellranger
+```
+
+If calling the script gives the help menu, launch_universc.sh has sucessfully run
+with access to the directories that it needs. It will give an error
+message if the cellranger directory is not writeable.
+
+```
+bash launch_universc.sh
+```
+
 This script will run in bash on any OS (but it has only been tested on Linux Debian). Running cellranger 
 with this configuration requires a lot of memory (40Gb) so running on server is recommended.
 SGE job modes are supported to run cellranger with multiple threads.
