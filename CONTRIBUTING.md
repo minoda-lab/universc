@@ -81,7 +81,9 @@ Copy the output from the cellranger logs or the terminal
 and paste is as a quote
 
 > \> your
+>
 > \> quote
+>
 > \> here
 
 1.  Spend a little bit of time ensuring that your **code** is easy for others to
