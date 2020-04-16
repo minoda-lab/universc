@@ -373,8 +373,42 @@ bash launch_universc.sh
 
 ##### Running the script
 
-git clone
+Adding the script to the PATH is not absolutely neccessary, it can
+be called as follows from the directory that it is downloaded in.
+
+```
+cd $HOME/Downloads
+git clone https://github.com/TomKellyGenetics/universc.git
+cd universc
 bash launch_universc.sh
+```
+
+##### Manual configuration
+
+You can manually add the script here to the PATH, for example:
+
+```
+PATH=$HOME/Downloads/universc:$PATH
+```
+
+This means that the directory where the script is can be found
+from the shell.
+
+```
+echo $PATH
+cd ~
+launch_universc.sh
+```
+
+Add the following line to the `~/.bashrc` file and use `source ~/.bashrc`
+to load a new session. This means that you do not need to add the
+sript to the PATH in future sessions.
+
+```
+export PATH=$HOME/Downloads/universc:$PATH 
+```
+
+
 
 ####
 ```
