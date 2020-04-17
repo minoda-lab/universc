@@ -40,9 +40,9 @@ as described in [Bug Reports](#Issues) below.
 
 Some changes to the cellranger install are required to run other technologies. Therefore we provide settings for 10x Genomics
 which restores settings for the Chromium instrument. We therefore recommend using 'convert' for processing all data from different
-technologies as the tool manages these changes. Please note that multiple technologies cannot be run on the same install of cellranger
-at the same time (the tool will also check for this to avoid causing problems with existing runs). Multiple samples of the same technology
-can be run simultaneously.
+technologies as the tool manages these changes. Please note that on a single install of cellranger, multiple technologies or multiple samples 
+of the same technology with different whitelist barcodes cannot be run cannot be run simultaneousely (the tool will also check for this to
+avoid causing problems with existing runs). Multiple samples of the same technology with the same barcode whitelist can be run simultaneously.
 
 #### Pre-set configurations
 
@@ -76,7 +76,8 @@ technologies to demutliplex based on the wells.
 
 ## Release
 
-This tool will be released open-source. We welcome any feedback on it.
+At the moment, we have not released the script publicly but we do intend to. We welcome any feedback on it. 
+Hopefully it will save people time by making it easier to compare technologies.
 
 We have tested it on several technologies but we need users like you
 to let us know how we can improve it. We hope that it will save you
@@ -130,7 +131,9 @@ It is also helpful to describe the technology, such as:
 
 Technologies that may be difficult to support are those with:
 
-- barcodes longer than 16bp or varying length 
+- barcodes longer than 16bp (only up to 16bp at the end will be used with the rest trimmed off)
+- UMIs longer than 12bp (only upto 12bp at the begging will be used with the rest trimmed off)
+- barcodes longer or varying length
 - combinatorial indexing
 - dual indexing 
 
@@ -317,6 +320,12 @@ message if the cellranger directory is not writeable.
 ```
 bash launch_universc.sh
 ```
+
+This script requires cellranger (version 3.0.0 or higher recommended) to be installed and have write-access
+to the cellranger install directory, so an install on your user directory is recommended.
+This script also requires cellranger to be exported to the PATH.
+The script itself is exectuable and does not require installation to run but you can put it
+in your PATH or bin of your cellranger install if you wish to do so.
 
 This script will run in bash on any OS (but it has only been tested on Linux Debian). Running cellranger 
 with this configuration requires a lot of memory (40Gb) so running on server is recommended.
