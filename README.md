@@ -76,7 +76,7 @@ technologies to demutliplex based on the wells.
 
 ## Release
 
-At the moment, we have not released the script publicly but we do intend to. We welcome any feedback on it. 
+This tool will be released open-source. We welcome any feedback on it.
 Hopefully it will save people time by making it easier to compare technologies.
 
 We have tested it on several technologies but we need users like you
