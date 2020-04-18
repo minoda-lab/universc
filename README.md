@@ -9,20 +9,23 @@
 
 ### UniverSC version 0.3.0
 
-Single-cell processing across technologies.
+#### Single-cell processing across technologies
+
+------------------------------------------
 
 Provides a conversion script to run multiple technologies and custom libraries with cellranger (10x Genomics analysis tool).
 
-
-#### Tom Kelly (RIKEN IMS) and Kai Battenberg (RIKEN CSRS/IMS)
+##### Tom Kelly (RIKEN IMS) and Kai Battenberg (RIKEN CSRS/IMS)
 
 ## Purpose
 
 We've developed a bash script that will run cellranger on FASTQ files for these technologies. See below for details on how to use it.
 
-If you use this tools, please [cite](#Citation) to acknowledge the efforts of the authors. You can report problems and request
+If you use this tool, please [cite](#Citation) to acknowledge the efforts of the authors. You can report problems and request
 new features to the maintainers with and [issue](#Issues) on GitHub. Details on how to [install](#Install) and [run](#Usage) are provided
 below. Please see the [help](#Help) and [examples](#Examples) to try solve your problem before submitting an issue.
+
+Details on the [Docker image](#Docker) are given below.
 
 ### Supported Technologies
 
@@ -32,26 +35,28 @@ The following technologies have been tested to ensure that they give the expecte
 
 We provide the following preset configurations for convenience based on published data and configurations used by other pipelines 
 (e.g, DropSeqPipe and Kallisto/Bustools). To add further support for other technologies or troubleshoot problems, please submit an Issue
-to the GitHub repository: https://github.com/TomKellyGenetics/universc/issues] as described in [Bug Reports](#Issues) below.
+to the GitHub repository: [TomKellyGenetics/universc](https://github.com/TomKellyGenetics/universc/issues)
+as described in [Bug Reports](#Issues) below.
 
 Some changes to the cellranger install are required to run other technologies. Therefore we provide settings for 10x Genomics
 which restores settings for the Chromium instrument. We therefore recommend using 'convert' for processing all data from different
-technologies as the tool manages these changes. Please note that multiple technologies cannot be run on the same install of cellranger
-at the same time (the tool will also check for this to avoid causing problems with existing runs). Multiple samples of the same technology
-can be run simultaneously.
+technologies as the tool manages these changes. Please note that on a single install of cellranger, multiple technologies or multiple samples 
+of the same technology with different whitelist barcodes cannot be run cannot be run simultaneousely (the tool will also check for this to
+avoid causing problems with existing runs). Multiple samples of the same technology with the same barcode whitelist can be run simultaneously.
 
 #### Pre-set configurations
 
 -  10x Genomics (version automatically detected): 10x, chromium
---  10x Genomics version 2 (16bp barcode, 10bp UMI): 10x-v2, chromium-v2
---  10x Genomics version 3 (16bp barcode, 12bp UMI): 10x-v3, chromium-v3
+    -  10x Genomics version 2 (16bp barcode, 10bp UMI): 10x-v2, chromium-v2
+    -  10x Genomics version 3 (16bp barcode, 12bp UMI): 10x-v3, chromium-v3
 -  CEL-Seq (8bp barcode, 4bp UMI): celseq
 -  CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
 -  Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
 -  iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
--  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
--  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
--  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
+- inDrops
+    -  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
+    -  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
+    -  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
 -  Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
 -  Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
 -  Sci-Seq (8bp UMI, 10bp barcode): sciseq
@@ -71,12 +76,33 @@ technologies to demutliplex based on the wells.
 
 ## Release
 
-At the moment, we have not released the script publicly but we do intend to. We welcome any feedback on it. 
-Hopefully it will save people time as make it easier to compare technologies.
+This tool will be released open-source. We welcome any feedback on it.
+Hopefully it will save people time by making it easier to compare technologies.
 
-We plan to make this open-source with the agreement of everyone in the project.
+We have tested it on several technologies but we need users like you
+to let us know how we can improve it. We hope that it will save you
+time by handing tedious parts of data formatting so that you can
+focus on the results.
 
 ### Citation <span id="Citation"><span>
+
+A submission to a jounral and biorXiv is in progress. Please cite this
+when it becomes available. In the meantime, the package can be cited
+as follows:
+
+Kelly, S.T., Battenberg, K., Hayashi, K., and Minoda, A. (2020)
+launch_universc.sh: single-cell processing across technologies.
+package version 0.3.0. https://github.com/TomKellyGenetics/universc
+
+```
+@Manual{,
+    title = {{launch_universc.sh}: single-cell processing across technologies},
+    author = {S. Thomas Kelly, Kai Battenbery, Makoto Hayashi, and Aki Minoda},
+    year = {2020},
+    note = {package version 0.3.0},
+    url = {https://github.com/TomKellyGenetics/universc},
+  }
+```
 
 ### Bug Reports <span id="Issues"><span>
 
@@ -84,6 +110,11 @@ We plan to make this open-source with the agreement of everyone in the project.
 
 To add further support for other technologies or troubleshoot problems, please submit an Issue 
 to the GitHub repository: https://github.com/TomKellyGenetics/universc/issues
+
+Please submit [issues](https://github.com/TomKellyGenetics/graphsim/issues) on GitHub to report
+problems or suggest features. [Pull requests](https://github.com/TomKellyGenetics/graphsim/pulls)
+to the `dev` branch on GitHub are also welcome to add features or correct problems. Please see
+the [contributor guide](CONTRIBUTING.md) for more details.
 
 ### Requesting new technologies
 
@@ -100,7 +131,9 @@ It is also helpful to describe the technology, such as:
 
 Technologies that may be difficult to support are those with:
 
-- barcodes longer than 16bp or varying length 
+- barcodes longer than 16bp (only up to 16bp at the end will be used with the rest trimmed off)
+- UMIs longer than 12bp (only upto 12bp at the begging will be used with the rest trimmed off)
+- barcodes longer or varying length
 - combinatorial indexing
 - dual indexing 
 
@@ -109,39 +142,472 @@ it could take significant resources to add support for these.
 
 ## Installation <span id="Install"><span>
 
-This script requires cellranger to be installed and exported to the PATH (version 3.0.0 of higher recommended).
-The script itself is exectuable and does not require installation to run but you can put it in your PATH or 
-bin of your cellranger install if you wish to do so.
+This script requires cellranger to be installed and exported to the PATH (version 3.0.0 or higher recommended).
+The script itself is exectuable and does not require installation to run but you can put it in your PATH or
+bin of your cellranger install if you wish to do so. We provide scripts to do this for your convenience.
+
+See the details below on how set up cellranger and launch_universc.sh.
+
+#### Download UniverSC
+
+To download UniverSC open a terminal prompt and enter the following commands.
+
+```
+cd $HOME/Downloads
+git clone https://github.com/TomKellyGenetics/universc.git
+cd universc
+```
+
+### Quick Start
+
+If you already have cellranger installed, then you can run the script without installing it.
+
+```
+bash launch_universc.sh
+```
+
+You can call it in another directory by giving the path to the script.
+
+```
+cd $/HOME/my_project
+bash $HOME/Downloads/universc/launch_universc.sh
+```
+
+See the details below on how to install cellranger and launch_universc.sh add them
+to the PATH so that `launch_universc.sh` can be run from any directory. 
+
+### Runnning in a git repository
+
+If you are running code in a git repository you can add universc as a submodule.
+
+```
+cd $/HOME/my_git_repo
+git submodule add https://github.com/TomKellyGenetics/universc.git
+bash universc/launch_universc.sh
+```
+
+### System Requirements
+
+In principle, the script can run on any Unix systems with cellranger installed. You can check whether
+cellranger is already availble by running:
+
+```
+whereis cellranger
+```
+
+You can see which cellranger installation will run as follows:
+
+```
+which cellranger
+cellranger count --version
+```
+
+If cellranger is already installed on your system, you can add it to your $PATH as follows:
+
+```
+export PATH=/home/username/path/to/cellranger-x.x.x:$PATH    
+```
+
+#### Installing dependencies
+
+If cellranger is not installed on your system, you must install it before running launch_universc.sh.
+
+Please see the [manual for cellranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger)
+on the 10x Genomics website for more details on how to use it. We provide support for
+passing various options to cellranger and sensible defaults for each technology.
+
+This script is compatible with the installation of cellranger that you can
+[download](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest)
+from the 10x Genomics website and gives the same output formats.
+
+However, we recommend to use the open-source release of cellranger on GitHub. This is
+release on an MIT License and is not subject to the 10x Genomics End User
+License Agreement.
+
+We provide open-source repositories with minor updates for compatibility
+with current versions of dependencies.
+
+The code is available here:
+
+[https://github.com/TomKellyGenetics/cellranger/releases](https://github.com/TomKellyGenetics/cellranger/releases)
+
+We also provide Docker images for cellranger versions 2.0.2, 2.1.0, 2.1.1, and 3.0.2:
+
+[https://github.com/TomKellyGenetics/cellranger_clean/packages](https://github.com/TomKellyGenetics/cellranger_clean/packages)
+
+[https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags](https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags)
+
+#### Cluster Mode configuration
+
+#### Software Requirements
+
+These have been pre-installed in the Docker image described above.
+
+A full example of installation is available in the [GitHub repository](https://github.com/TomKellyGenetics/cellranger)
+and on [DockerHub](https://hub.docker.com/r/tomkellygenetics/cellranger_clean/dockerfile).
+
+- Python 2.7.13
+- rust 1.28.0
+- clang 6.0
+- go 1.11
+- node 8.11.4
+- Cython 0.28.0
+- STAR 2.5.1b
+- bcl2fastq 2.19.1.403
+- tsne 0.15
+
+The following additional shell utilities are required. Mac OS and
+most Linux distributions come with these pre-installed.
+
+- make 3.81
+- git 2.20.1 
+- sed (GNU sed) 4.4
+- tar  2.8.3
+- rename 0.20 (perl-rename)
+- perl 5.26.1
+- rsync 2.6.9 
+
+Note that rename is installed by default on Mac, Ubuntu and Debian
+but a different version must be used on other Linux distrubutions.
+
+CentOS and Fedora:
+
+```
+sudo yum install prename
+```
+```
+sudo dnf install prename
+```
+
+Ret Hat Linux:
+
+```
+sudo rpm install prename
+```
+
+Arch Linux:
+
+```
+yay perl-rename
+```
+
+##### Recommended software
+
+- git-lfs 2.10.0
+
+#### Hardware requirements
+
+- 8-core Intel or AMD processor (16 cores recommended)
+- 64GB RAM (128GB recommended)
+- 1TB free disk space
+- 64-bit CentOS/RedHat 6.0 or Ubuntu 12.04
+
+#### Ensuring write-access to cellranger
 
 The conversion process requires write-access to to the cellranger install directory so
-an install on your user directory is recommended.
+an install on your user directory is recommended. 
+
+You can check where cellranger is installed with:
+
+```
+which cellranger
+```
+
+If calling the script gives the help menu, launch_universc.sh has sucessfully run
+with access to the directories that it needs. It will give an error
+message if the cellranger directory is not writeable.
+
+```
+bash launch_universc.sh
+```
+
+This script requires cellranger (version 3.0.0 or higher recommended) to be installed and have write-access
+to the cellranger install directory, so an install on your user directory is recommended.
+This script also requires cellranger to be exported to the PATH.
+The script itself is exectuable and does not require installation to run but you can put it
+in your PATH or bin of your cellranger install if you wish to do so.
 
 This script will run in bash on any OS (but it has only been tested on Linux Debian). Running cellranger 
 with this configuration requires a lot of memory (40Gb) so running on server is recommended.
 SGE job modes are supported to run cellranger with multiple threads.
 
+This is required because launch_universc.sh will make changes to the cellranger install
+to ensure compatibility with the technology running. A local install in
+you user home directory is needed to make these changes. This ensures
+that these changes do not affect jobs run by other users and allows
+launch_universc.sh to change the whitelist and source code as needed.
+
+These changes are reversible but mean that only one technology can be
+run at the same time. You can restore original configurations with:
+
 ```
+bash launch_universc.sh -t "10x" --setup
+```
+
+##### Local install
+
+If cellranger is not already installed we recommend installing it in a directory that
+you have write access to such as `$HOME/local`.
+
+##### Importing an installed version of cellranger
+
+If cellranger has been installed by a system administrator, you will only have read-access
+to that installation. You can still use rather than installing a new version but you
+will need to copy it to your home directory and add this version to your PATH.
+
+```
+mkdir -p $HOME/local
+cd ~/local
+installed_version=$(echo $(which cellranger) | rev | cut -d"/" -f2- | rev)
+cp -rv $installed_version  .
+installed_directory=$(echo $(which cellranger) | rev | cut -d"/" -f2 | rev) 
+cd $installed_directory
+new_version=$(pwd)
+#remove previous version from PATH
+export PATH=$(echo $PATH |  sed "s;$installed_version:;;g")
+#add new version to PATH
+eval $(echo export PATH=$new_version:\$PATH)
+cd ..
+```
+
+You should be able to see that the locally installed version can be called as follows:
+
+```
+echo $PATH
+which cellranger
+bash launch_universc.sh
+```
+
+#### Installing launch_universc.sh to the PATH
+
+##### Running the script
+
+Adding the script to the PATH is not absolutely neccessary, it can
+be called as follows from the directory that it is downloaded in.
+
+```
+cd $HOME/Downloads
+git clone https://github.com/TomKellyGenetics/universc.git
+cd universc
+bash launch_universc.sh
+```
+
+##### Automated configuration
+
+We provide a Makefile with all necessary configurations to automatically
+check whether launch_universc.sh is installed correctly.
+
+You can specify any directory to install as a "prefix". This will
+create a directory "$HOME/local/universc-0.3" where
+the files needed will be stored.
+
+```
+cd $HOME/Downloads
+git clone https://github.com/TomKellyGenetics/universc.git
+make
+make install prefix=$HOME/local
+```
+
+It is also possible to add the current working directory as 
+the installed directory.
+
+```
+make install prefix="."
+```
+
+In this case *do not* delete the installed directory after you
+install it or the script will fail to run.
+
+By default it will be installed in a root directory with
+read-only access. This requires administrator priviledges.
+Note that the manual can onlly be installed with root
+priviledges.
+
+```
+sudo make install
+sudo make manual
+```
+
+You can verify that launch_universc.sh has been added to the PATH.
+
+```
+echo $PATH
+which launch_universc.sh
+```
+
+You can then run `launch_universc.sh` from any working directory.
+
+##### Updating
+
+If launch_universc.sh is already installed and you wish to update it,
+first you need to pull the changes from GitHub from the
+universc directory.
+
+```
+cd universc
+git pull origin master
 make
 ```
 
-
-```
-sudo make install manual
-```
+Then you can update to the directory of your choice using
+the same options for `--prefix` as to install.
 
 ```
 make install prefix=$HOME/local
 ```
 
--> migrate to Makefile?
+This is remove previous versions of launch_universc.sh and install
+the latest version.
 
-### System Requirements
+The manual can be updated with:
 
-...Unix systems with cellranger installed.
+```
+sudo make manual
+```
 
-### Docker image
+##### Uninstalling
 
-...
+We provide an automated script to reverse these changes.
+
+```
+make uninstall
+```
+
+This is will automatically detect the installation of launch_universc.sh.
+
+If multiple versions of cellranger are present, you can
+specify which to remove with.
+
+```
+make remove prefix=$HOME/local
+```
+
+#### Custom shell
+
+Make will install the script with `bash` by default but
+alternative shells are supported. You will need to run the
+install script or run it with your shell of choice.
+
+```
+sh launch_universc.sh
+sh inst/INSTALL --prefix $HOME/local
+launch_universc.sh
+```
+
+```
+ksh launch_universc.sh
+ksh inst/INSTALL --prefix $HOME/local
+launch_universc.sh
+```
+
+```
+zsh launch_universc.sh
+zsh inst/INSTALL --prefix $HOME/local
+launch_universc.sh
+```
+
+```
+fish launch_universc.sh
+fish inst/INSTALL --prefix $HOME/local
+launch_universc.sh
+```
+
+The help menu should reflect the shell used to run it.
+
+To update, similarly run the `inst/UPGRADE` script with
+your chosen shell.
+
+### Docker image <span id="Docker"><span>
+
+We provide a docker image with all software needed
+to run UniverSC.
+
+This requires "docker" to be installed and a valid DockerHub account.
+
+You can check whether docker is available by running:
+
+```
+which docker
+docker run hello-world    
+```
+
+This may require you to login to your account.
+
+```
+docker login -u "myusername"
+```
+
+If you cannot run docker on a remote server, contact
+your systems administrator.
+
+#### Pulling from remote DockerHub repository
+
+We provide a docker image for universc version 0.3.
+
+You can import it if you have docker installed.
+
+```
+docker pull tomkellygenetics/universc:latest
+```
+
+Then you can run convert with:
+
+```
+run -it tomkellygenetics/universc:latest launch_universc.sh
+```
+
+You can open a shell in the docker image with:
+
+```
+run -it tomkellygenetics/universc:latest /bin/bash
+``
+
+```
+run -it tomkellygenetics/universc:latest /bin/zsh 
+``
+
+Either of these shells are supported.
+
+##### Building the Docker image locally
+
+The Dockerfile is provided in the repository so it can be built from
+source. This will build a Docker image with the latest version of
+universc provided that updates to dependencies on GitHub
+are still compatible.
+
+```
+git clone https://github.com/TomKellyGenetics/universc.git
+docker build -t universc:latest .  
+```
+
+Please bear mind that it can take considerable time to install
+all necessary dependencies. A stable internet connection is required.
+
+### Manual configuration
+
+You can manually add the script here to the PATH, for example:
+
+```
+PATH=$HOME/Downloads/universc:$PATH
+```
+
+This means that the directory where the script is can be found
+from the shell.
+
+```
+echo $PATH
+cd ~
+launch_universc.sh
+```
+
+Add the following line to the `~/.bashrc` file and use `source ~/.bashrc`
+to load a new session. This means that you do not need to add the
+sript to the PATH in future sessions.
+
+```
+export PATH=$HOME/Downloads/universc:$PATH
+```
+
 
 ## Usage <span id="Usage"><span>
 
@@ -169,7 +635,7 @@ Please note that this script alters the barcode whitelist. Known iCELL8 barcodes
 
 ### Manual <span id="Help"><span>
 
-#### Locally instaleld manual
+#### Locally install manual
 
 You can display a manual from the locally installed universc directory with:
 
@@ -180,6 +646,22 @@ You can display a manual from the locally installed universc directory with:
 Note that the working directory must be `universc` or the full path to the man directory must be given.
 
 #### Installing the manual with root priviliges:
+
+##### Automated Configuration
+
+We provide an automated script to install the manual.
+
+```
+sudo make manual
+```
+
+You can remove the manual with:
+
+```
+sudo make manual-clean
+```
+
+##### Configuration
 
 The manual can be installed as follows on Mac and Linux.
 
@@ -220,8 +702,6 @@ The manual can then be called from any directory as follows:
 ```
 man launch_universc.sh
 ```
-`
--> change to make?
 
 #### Help menu
 
@@ -306,6 +786,73 @@ Files will be renamed if they do not follow this format. File extension will be 
 ```
 
 ### Examples <span id="Examples"><span>
+
+#### Running cellranger
+
+```
+cellranger testrun --id="tiny-test"
+```
+```
+# open gzip files from test data
+gunzip -fk universc/test/shared/cellranger-tiny-fastq/3.0.0/*fastq.gz
+gunzip -fk cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/barcodes/3M-february-2018.txt.gz 
+# cellranger call
+cellranger count --id="tiny-count-v3" \
+ --fastqs="cellranger-3.0.2.9001/cellranger-tiny-fastq/3.0.0/" --sample="tinygex" \
+ --transcriptome="cellranger-3.0.2.9001/cellranger-tiny-ref/3.0.0"
+```
+
+#### Running launch_universc.sh on 10x data
+
+```
+# call convert on 10x with multiple lanes
+bash /universc/launch_universc.sh --id "test-10x-v3" --technology "10x" \
+ --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --file "/universc/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
+ "/universc/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002"
+```
+
+#### Running launch_universc.sh on DropSeq data
+
+Obtain DropSeq data from public database:
+
+```
+wget https://www.ncbi.nlm.nih.gov/geo/download/\?acc\=GSM1629192\&format\=file\&file\=GSM1629192%5FPure%5FHumanMouse%2Ebam
+mv index.html\?acc=GSM1629192\&format=file\&file=GSM1629192%5FPure%5FHumanMouse%2Ebam GSM162919.bam
+samtools sort -n GSM162919.bam > GSM162919.qsort
+samtools view  GSM162919.qsort  HUMAN_21:9825832-48085036 > GSM162919.qsort2
+samtools sort -O BAM GSM162919.bam > GSM162919.sort.bam
+samtools index GSM162919.sort.bam
+samtools view  GSM162919.sort.bam  HUMAN_21:9825832-48085036 > GSM162919.chr21.bam
+samtools view -O BAM  GSM162919.sort.bam  HUMAN_21:9825832-48085036 > GSM162919.chr21.sort.bam
+samtools sort -n GSM162919.chr21.sort.bam -o GSM162919.chr21.qsort.bam
+bedtools bamtofastq -i GSM162919.chr21.qsort.bam -fq GSM1629192_chr21_R1.fastq
+mv GSM1629192_chr21_R1.fastq GSM1629192_chr21_R2.fastq
+fastq-dump -F --split-files SRR1873277
+fastq_pair GSM1629192_chr21_R2.fastq SRR1873277_1.fastq
+head -n 117060 SRR1873277_1.fastq.paired.fq 117060 > SRR1873277_1.fastq.paired.fq
+head -n 117060 GSM1629192_chr21_R2.fastq.paired.fq > GSM1629192_chr21_R2.fastq.paired.fq
+cp SRR1873277_1.fastq.paired.fq  GSM1629192_chr21_R2.fastq.paired.fq ~/repos/universc/test/shared/dropseq-test
+cp SRR1873277_1.fastq.paired.fq  GSM1629192_chr21_R2.fastq.paired.fq ~/repos/universc/test/shared/dropseq-test
+mv SRR1873277_1.fastq.paired.fq SRR1873277_R1.fastq
+mv GSM1629192_chr21_R2.fastq.paired.fq  universc/test/shared/dropseq-test/SRR1873277_R2.fastq
+mv GSM1629192_chr21_R2.fastq.paired.fq  universc/test/shared/dropseq-test/SRR1873277_R2.fastq
+```
+
+Run UniverSC:
+
+```
+bash universc/launch_universc.sh -t "DropSeq" --setup
+# call on dropseq with files
+bash universc/launch_universc.sh --id "test-dropseq" --technology "nadia" \
+ --reference "universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --read1 "universc/test/shared/dropseq-test/SRR1873277_S1_L001_R1_001" \
+ --read2 "universc/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001" 
+```
+
+#### Running launch_universc.sh on iCELL8 data
+
+- add example running on custom barcode whitelist
 
 ### Licensing
 

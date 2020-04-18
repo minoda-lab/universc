@@ -29,17 +29,20 @@ reference-clean:
 
 # Copy to manuals (requires root priviledges
 manual:
-	@bash man/INSTALL
+	@./man/INSTALL
 
 manual-clean:
-	@bash man/REMOVE
+	@./man/REMOVE
 
 install:
-	@bash inst/INSTALL prefix=$(prefix)
+	@./inst/INSTALL prefix=$(prefix)
 
 remove:
-	@bash inst/REMOVE
+	@./inst/REMOVE
 
 uninstall: remove clean
 
 reinstall: uninstall install
+
+upgrade:
+	 @./inst/UPGRADE prefix=$(prefix)

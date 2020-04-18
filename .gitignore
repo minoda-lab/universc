@@ -2,3 +2,4 @@ test/internal
 test-*
 GH_TOKEN.txt
 ^*txt$
+inst/.installed

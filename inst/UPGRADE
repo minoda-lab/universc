@@ -6,6 +6,7 @@ if [[ $VENDOR != "apple" ]]
 else
     SHELL=$(ps -p $$ | awk '$1 == PP {print $4}' PP=$$)
 fi
+
 if [[ $(which launch_universc.sh) != *"not found" ]]
     then
     SHELL=$SHELL
@@ -30,7 +31,7 @@ else
 fi
 
 #default install location (root)
-if [[ ! -z $prefix ]]; then prefix="/usr/local/share"; fi
+if [[ -z $prefix ]]; then default="true"; prefix="/usr/local/share"; fi
 
 if [[ $1 == "--prefix" ]]
      then
@@ -45,8 +46,11 @@ if [[ $1 == "--prefix" ]]
     fi
 fi
 
+echo $prefix
 if [[ $prefix == "." ]]
     then
+    echo "wd"
+    echo "$prefix"
     prefix=`pwd`
 fi
 
@@ -61,8 +65,8 @@ if [[ ! -w $prefix ]]
     then
     echo "$prefix must be a writeable directory"
     echo "try running:"
-    echo "    sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/INSTALL"
-    echo "    sudo make install"
+    echo "    sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/UPGRADE"
+    echo "    sudo make upgrade"
     exit 1
 fi
 
@@ -70,24 +74,39 @@ echo "installing to: $prefix"
 
 version=$( cat .version )
 
+#compare versions as numerics
+function ver { printf "%03d%03d%03d%03d%03d" $(echo "$1" | tr '.' ' ' | sed 's/\(^\| \)0\([0-9][0-9]*\)/\1\2/g'); }
+
 if [[ -f inst/.installed ]]  || [[ $(which launch_universc.sh) != *"not found" ]]
     then
     current_version=$( launch_universc.sh --version | tail -n 2 | head -n 1 | cut -d' ' -f3 )
-    if [[ $version == $current_version ]]
-    then
-        echo "universc ${version} is already installed in `cat inst/.installed`"
-        echo "run the following to remove it"
-        echo "    make remove"
-    exit 1
-    else
+    if [[ $((10#$(ver $version))) == $((10#$(ver $current_version))) ]]
+        then
         echo "universc ${current_version} is already installed in `which launch_universc.sh`"
-        #echo "run the following to upgrade it"
-        #echo "    make upgrade"
+        exit 0
+    elif [[ $((10#$(ver $version))) -lt $((10#$(ver $current_version))) ]]
+        then
+        echo "universc ${current_version} is already installed in `which launch_universc.sh`"
+        echo "a newer version of universc is installed"
+        echo "run the following to remove it and downgrade to version ${version}"
+        echo "    make remove --prefix=$(cat inst/.installed)"
+        echo "    make install --prefix=${prefix}"
+        exit 1
+    elif [[ $((10#$(ver $version))) -gt $((10#$(ver $current_version))) ]]
+       then
+        echo "universc ${current_version} is already installed in `which launch_universc.sh`"
+        echo "Upgrading to universc ${version}"
     fi
 fi
-echo $prefix > inst/.installed
 
-echo prefix=$prefix
+if [[ -w $prefix ]]
+    then
+    $(eval echo $SHELL inst/REMOVE --prefix $prefix)
+else
+    $(eval echo $SHELL inst/REMOVE)
+fi
+
+echo $prefix > inst/.installed
 
 # create install directory
 if [[ -z $INSTALLDIR ]]
@@ -134,7 +153,7 @@ else
     echo "      sudo make install"
 fi
 
-echo "INSTALL COMPLETE"
+echo "UPGRADE COMPLETE"
 #Note this does not affect the variables in a parent process (interactive shell)
 #This must be run there (by the user)
 echo source ~/.${SHELL}rc

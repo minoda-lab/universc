@@ -1,59 +1,150 @@
 #! /bin/sh
 
-#check for existing install
-if [[ ! -f inst/.installed ]]
+if [[ $VENDOR != "apple" ]]
     then
-    echo "universc is not installed"
-    echo "run the following to install it"
-    echo "    make install"
-    exit 1
+    SHELL=$(readlink -f /proc/$$/exe | cut -d'/' -f3)
+else
+    SHELL=$(ps -p $$ | awk '$1 == PP {print $4}' PP=$$)
 fi
-prefix=`cat inst/.installed`
-echo "uninstalling from: $prefix"
-
-exit 0
-
-# add manual directory to PATH if not already found
-## check config for Linux
-if [[ -f /etc/manpath.config ]]
-    then CONFIG="/etc/manpath.config"
-    MANDIR=`grep "^MANDATORY_MANPATH" /etc/manpath.config | tail -n 1 | cut -f4`
-fi
-## check config for Mac
-if [[ -f /etc/manpaths ]]
-    then CONFIG="/etc/manpaths"
-    MANDIR=`tail -n 1 ${CONFIG}`
-fi
-if [[ -z $CONFIG ]]
+if [[ $(which launch_universc.sh) != *"not found" ]]
     then
-    if [[ ! -z $MANPATH ]]
+    SHELL=$SHELL
+    invocation=$0
+else
+    if [[ -z $ZSH_VERSION ]]
         then
-        SHELL_RC=`echo ~/.${0}rc`
-        echo "export MANPATH=/usr/local/man" >> $SHELL_RC
-        MANDIR=`echo ${MANPATH} | cut -d: -f1`
+        SHELL="zsh"
+    elif [[ -z $KSH_VERSION ]]
+       then
+       SHELL="ksh"
+    elif [[ -z $FISH_VERSION ]]
+       then
+       SHELL="fish"
+    elif [[ -z $BASH_VERSION ]]
+        then
+        SHELL="bash"
+    else
+       SHELL=$SHELL
+    fi
+    invocation=$(echo $(basename $0))
+fi
+
+if [[ $1 == "--prefix" ]]
+     then
+     prefix=$2
+     if [[ ! -d $prefix ]]
+        then
+        echo "--prefix $prefix must be a directory"
+    fi
+    if [[ ! -w $prefix ]]
+        then
+        echo "--prefix $prefix must be a writeable"
     fi
 fi
-if [[ -f  man/launch_universc.sh.1 ]]
+
+if [[ -z $prefix ]]
     then
-    rm man/launch_universc.sh.1
-fi
-#requires root priviledges
-if [[ -w ${MANDIR} ]]
-    then
-    if [[ -f ${MANDIR}/man1/launch_universc.sh.1 ]]
-    then
-        rm ${MANDIR}/man1/launch_universc.sh.1
-    fi
-    if [[ -f ${MANDIR}/man1/launch_universc.sh.1.gz ]] 
+    #check for existing install
+    if [[ -f inst/.installed ]]
         then
-        rm ${MANDIR}/man1/launch_universc.sh.1.gz
+        prefix=$(cat inst/.installed)
+        current_version=$(cat .version)
+    elif [[ $(which launch_universc.sh) != *"not found" ]]
+        then
+        prefix=$(which convert)
+        current_version=$(launch_universc.sh --version | tail -n 2 | head -n 1 | cut -d" " -f3)
+    else
+        echo "universc is not installed"
+        echo "run the following to install it"
+        echo "    make install"
+        exit 1
     fi
 else
-    echo "Directory ${MANDIR} not writeable"
-    echo "Warning: installing manual requires root priviledges"
-    echo "  Try running of the following:"
-    echo "      sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/REMOVE"
-    echo "      sudo make remove"
+    #check prefix
+    if [[ $prefix == *"universc" ]]
+        then
+        prefix=$(echo $prefix | cut -d'/' -f1-$(($( echo $prefix | grep -o "/" | wc -l))))
+        prefix=${prefix}/universc
+        current_version=$(cat ${prefix}/.version)
+    elif [[ $prefix == *"universc-"* ]]
+       then
+       prefix=$(echo $prefix | cut -d'/' -f1-$(($( echo $prefix | grep -o "/" | wc -l))))
+       prefix=$( ls -d ${prefix}/universc-*/ | head -n 1 )
+    else
+       prefix=$( ls -d ${prefix}/universc-*/ | head -n 1)
+    fi
+    #requires full path
+    prefix=$(readlink -f $prefix)
+    current_version=$(cat ${prefix}/.version)
+    if [[ ! -d $prefix ]]
+        then
+        echo "--prefix $prefix must be a directory"
+    fi
+    if [[ ! -w $prefix ]]
+        then
+        echo "--prefix $prefix must be a writeable"
+    fi
 fi
 
-rm inst/.installed
+echo "uninstalling universc ${current_version} from: $prefix"
+
+if [[ ! -w $prefix ]]
+    then
+    echo "$prefix must be a writeable directory"
+    echo "try running:"
+    echo "    sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/REMOVE"
+    echo "    sudo make remove"
+    exit 1
+fi
+
+
+if [[ $prefix == $(pwd) ]] || [[ $prefix == "\." ]] || [[ $prefix == "\.\.\/"* ]] || [[ $prefix == "\.\/"* ]]
+   then
+   echo "Current directory not removed"
+else
+    echo "Removing install in $prefix"
+    #requires root priviledges for some installations
+    if [[ -w ${prefix} ]]
+        then
+        echo "rm -rf $prefix"
+     else
+         echo "Directory ${INSTALLDIR} not writeable"
+         echo "Warning: installing manual requires root priviledges"
+         echo "  Try running of the following:"
+         echo "      sudo bash $( cd -P "$( dirname ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd )/REMOVE"
+         echo "      sudo make remove"
+    fi
+fi
+
+INSTALLDIR=$prefix
+
+#note does not apply to parent process (only within script for testing version call)
+export PATH=$(echo $PATH | sed -e 's;$INSTALLDIR:;;g')
+#echo "${INSTALLDIR} removed from PATH"
+for SHELL_RC in `ls ~/.*rc`
+    do
+    sed -i "s;^export PATH=${INSTALLDIR}:\$PATH$;;g" $SHELL_RC
+    echo "universc-${current_version} will not added to PATH automatically in new ${SHELL} shell session"
+done
+echo "remove the following from ${Home}/.${SHELL}rc to remove it to your shell of choice"
+echo "    export PATH=${INSTALLDIR}:\$PATH >> ~/.\${SHELL}rc"
+echo "To remove convert from your current shell sesssion by running the following:"
+echo " "
+echo "    PATH=\$(echo \$PATH | sed -e 's/;$INSTALLDIR:;;g')"
+echo " "
+echo "convert has been remove from to the $SHELL configuration and will not be automatically loaded"
+echo "run the following to load a fresh environment"
+echo " "
+echo "    source $HOME/.${SHELL}rc"
+echo " "
+
+echo "UNINSTALL COMPLETE"
+#Note this does not affect the variables in a parent process (interactive shell)
+#This must be run there (by the user)
+echo source ~/.${SHELL}rc
+
+#remove install file
+if [[ -f inst/.installed ]]
+    then
+    rm inst/.installed
+fi

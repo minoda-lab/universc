@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 install=false
 
@@ -91,16 +91,44 @@ fi
 
 
 #####usage statement#####
+if [[ $VENDOR != "apple" ]]
+    then
+    SHELL=$(readlink -f /proc/$$/exe | cut -d'/' -f3)
+else
+    SHELL=$(ps -p $$ | awk '$1 == PP {print $4}' PP=$$)
+fi
+if [[ $(which launch_universc.sh) != *"not found" ]]
+    then
+    SHELL='' 
+    invocation=$0
+else
+    if [[ -z $ZSH_VERSION ]]
+        then
+        SHELL="zsh"
+    elif [[ -z $KSH_VERSION ]]
+       then
+       SHELL="ksh"
+    elif [[ -z $FISH_VERSION ]]
+       then
+       SHELL="fish"
+    elif [[ -z $BASH_VERSION ]]
+        then
+        SHELL="bash"
+    else
+       SHELL=$SHELL
+    fi
+    invocation=$(echo $(basename $0))
+fi
 help='
 Usage:
-  bash '$(basename $0)' --testrun -t TECHNOLOGY
-  bash '$(basename $0)' -t TECHNOLOGY --setup
-  bash '$(basename $0)' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  bash '$(basename $0)' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  bash '$(basename $0)' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  bash '$(basename $0)' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  bash '$(basename $0)' -v
-  bash '$(basename $0)' -h
+  '$SHELL' '$invocation' --testrun -t TECHNOLOGY
+  '$SHELL' '$invocation' -t TECHNOLOGY --setup
+  '$SHELL' '$invocation' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -v
+  '$SHELL' '$invocation' -h
 
 Convert sequencing data (FASTQ) from Nadia or iCELL8 platforms for compatibility with 10x Genomics and run cellranger count
 
@@ -1197,13 +1225,21 @@ if [[ $lock -eq 0 ]]; then
     echo " restoring cellranger"
     if [[ `printf '%s\n' '${cellrangerversion} 3.0.0' | sort -V | head -n 1` != ${cellrangerversion} ]]; then
         if [[ $technology == "10x" ]] && [[ -z $barcodefile ]]; then
+            #restore checking barcodes
             sed -i "s/#if gem_group == prev_gem_group/if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/#assert barcode_idx >= prev_barcode_idx/assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
+            #restore cloupe generation
+            sed -i '/output_for_cloupe/s/^#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+            sed -i '/out cloupe cloupe/ {s/^#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         elif [[ $lastcall == "10x" ]] || [[ ! -f $lastcallfile ]]; then
+            #disable checking barcodes
             sed -i "s/if gem_group == prev_gem_group/#if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
+            #disable cloupe generation
+            sed -i '/output_for_cloupe/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+            sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         fi
         echo " ${cellrangerpath} set for $technology"
     fi
@@ -1596,8 +1632,11 @@ echo "cellranger run complete"
 #####process output#####
 cloupefile=${SDIR}/${id}/outs/cloupe.cloupe
 if [[ $technology != "10x" ]]; then
-    echo "Removing file ${cloupefile}"
+    #should not be necessary if setup is run correctly (will be omitted from Martian output)
+    #this is kept to comply with the 10x End User License Agreement
+    ###do not remove this code###
     if [[ -f $cloupefile ]]; then
+        echo "Removing file ${cloupefile}"
         rm -rf $cloupefile
     fi
     echo "***Notice: Cloupe file cannot be computed for $technology"
