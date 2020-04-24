@@ -1414,7 +1414,9 @@ else
         done
     fi
 
-    #remove adapter from inDrops
+    #remove adapter from inDrops see here for details:
+     ## https://github.com/BUStools/bustools/issues/4
+     ## https://teichlab.github.io/scg_lib_structs/methods_html/inDrop.html
     if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove adapter if present
