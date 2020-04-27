@@ -160,6 +160,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
                                   Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq
+                                  SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
@@ -518,6 +519,8 @@ elif [[ "$technology" == "seqwell" ]] || [[ "$technology" == "seq-well" ]]; then
     technology="seqwell"
 elif [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]] ||  [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
     technology="smartseq"
+elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "split-seq" ]]; then
+    technology="splitseq"
 elif [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]] || [[ "$technology" == "ddseq" ]] || [[ "$technology" == "dd-seq" ]] || [[ "$technology" == "bioraad" ]]; then
     technology="surecell"
 elif [[ "$technology" == "custom"* ]]; then
@@ -619,6 +622,10 @@ elif [[ "$technology" == "smartseq" ]]; then
     barcodelength=11
     umilength=8
     minlength=11
+elif [[ "$technology" == "splitseq" ]]; then
+    barcodelength=18
+    umilength=10
+    minlength=18
 elif [[ "$technology" == "surecell" ]]; then
     barcodelength=18
     umilength=8
@@ -1490,6 +1497,22 @@ else
                 n
                 n
                 s/.*(.{6}).{15}(.{6}).{15}(.{6}).{3}(.{8}).{3}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+
+    # SPLiT-Seq can be set up similarly if a whitelist and 18bp barcode can be supported
+    ## https://github.com/hms-dbmi/dropEst/issues/80
+    if [[ "$technology" == "surecell" ]]; then
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers (swap UMI and barcode)
+            sed -E '
+                /^([ATCGA]{92})/ {
+                s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8})*/\2\3\4\1/g
+                n
+                n
+                s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8})*/\2\3\4\1/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
