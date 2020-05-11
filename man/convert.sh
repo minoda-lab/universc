@@ -100,7 +100,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   CEL-Seq (8bp barcode, 4bp UMI): celseq
                                   CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
                                   Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
-                                  iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
+                                  ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
@@ -117,7 +117,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
 
            A barcode whitelist is provided for all beads or wells for the following technologies:
 
-                 10x Genomics, iCell8, inDrops-v2, and QuartzSeq2
+                 10x Genomics, ICELL8, inDrops-v2, and QuartzSeq2
 
             Where no known barcodes are available all possible barcodes of the expected length are
             generated and converted if the permutations have not been computed already.

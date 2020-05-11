@@ -130,7 +130,7 @@ Usage:
   '$SHELL' '$invocation' -v
   '$SHELL' '$invocation' -h
 
-Convert sequencing data (FASTQ) from Nadia or iCELL8 platforms for compatibility with 10x Genomics and run cellranger count
+Convert sequencing data (FASTQ) from Nadia or ICELL8 platforms for compatibility with 10x Genomics and run cellranger count
 
 Mandatory arguments to long options are mandatory for short options too.
        --testrun                Initiates a test trun with the test dataset
@@ -150,7 +150,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   CEL-Seq (8bp barcode, 4bp UMI): celseq
                                   CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
                                   Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
-                                  iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
+                                  ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
@@ -943,8 +943,8 @@ else
     if [[ "$technology" == "10x"* ]]; then
         barcodefile="default:10x"
     elif [[ "$technology" == "icell8" ]]; then
-        barcodefile=${whitelistdir}/iCell8_barcode.txt
-	echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in iCell8. valid barcode will be an overestimate***"
+        barcodefile=${whitelistdir}/ICELL8_barcode.txt
+	echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in ICELL8. valid barcode will be an overestimate***"
     elif [[ "$technology" == "quartz-seq2-384" ]]; then
         barcodefile=${whitelistdir}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then

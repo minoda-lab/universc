@@ -31,7 +31,7 @@ Details on the [Docker image](#Docker) are given below.
 
 In principle, any technology with a cell barcode and unique molecular identifier (UMI) can be supported.
 
-The following technologies have been tested to ensure that they give the expected results: 10x Genomics, Nadia (DropSeq), iCELL8 version 3 
+The following technologies have been tested to ensure that they give the expected results: 10x Genomics, Nadia (DropSeq), ICELL8 version 3 
 
 We provide the following preset configurations for convenience based on published data and configurations used by other pipelines 
 (e.g, DropSeqPipe and Kallisto/Bustools). To add further support for other technologies or troubleshoot problems, please submit an Issue
@@ -52,7 +52,7 @@ avoid causing problems with existing runs). Multiple samples of the same technol
 -  CEL-Seq (8bp barcode, 4bp UMI): celseq
 -  CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
 -  Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
--  iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
+-  ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
 - inDrops
     -  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
     -  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
@@ -631,7 +631,7 @@ The script will:
 
 ### Valid barcodes
 
-Please note that this script alters the barcode whitelist. Known iCELL8 barcodes are supported but this is not possible with Nadia or DropSeq chemistry so 100% valid barcodes will be returned.
+Please note that this script alters the barcode whitelist. Known ICELL8 barcodes are supported but this is not possible with Nadia or DropSeq chemistry so 100% valid barcodes will be returned.
 
 ### Manual <span id="Help"><span>
 
@@ -718,7 +718,7 @@ Usage:
   bash launch_universc.sh -v
   bash launch_universc.sh -h
 
-Convert sequencing data (FASTQ) from Nadia or iCELL8 platforms for compatibility with 10x Genomics and run cellranger count
+Convert sequencing data (FASTQ) from Nadia or ICELL8 platforms for compatibility with 10x Genomics and run cellranger count
 
 Mandatory arguments to long options are mandatory for short options too.
        --testrun                Initiates a test trun with the test dataset
@@ -738,7 +738,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   CEL-Seq (8bp barcode, 4bp UMI): celseq
                                   CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
                                   Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
-                                  iCell8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
+                                  ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
@@ -850,7 +850,7 @@ bash universc/launch_universc.sh --id "test-dropseq" --technology "nadia" \
  --read2 "universc/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001" 
 ```
 
-#### Running launch_universc.sh on iCELL8 data
+#### Running launch_universc.sh on ICELL8 data
 
 - add example running on custom barcode whitelist
 
