@@ -534,6 +534,7 @@ elif [[ "$technology" == "custom"* ]]; then
             echo "Error: option -t needs to be a technology listed or custom_<barcode>_<UMI>"
             exit 1
         fi
+	setup=true
     fi
 else
     echo "Error: option -t needs to be a technology listed or custom_<barcode>_<UMI>"
