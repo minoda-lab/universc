@@ -7,7 +7,7 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc)
 
-### UniverSC version 0.3.0
+### UniverSC version 1.0.0
 
 #### Single-cell processing across technologies
 
@@ -86,20 +86,20 @@ focus on the results.
 
 ### Citation <span id="Citation"><span>
 
-A submission to a jounral and biorXiv is in progress. Please cite this
+A submission to a journal and biorXiv is in progress. Please cite this
 when it becomes available. In the meantime, the package can be cited
 as follows:
 
 Kelly, S.T., Battenberg, K., Hayashi, K., and Minoda, A. (2020)
-launch_universc.sh: single-cell processing across technologies.
-package version 0.3.0. https://github.com/TomKellyGenetics/universc
+launch_universc.sh : single-cell processing across technologies.
+package version 1.0.0. https://github.com/TomKellyGenetics/universc
 
 ```
 @Manual{,
     title = {{launch_universc.sh}: single-cell processing across technologies},
     author = {S. Thomas Kelly, Kai Battenbery, Makoto Hayashi, and Aki Minoda},
     year = {2020},
-    note = {package version 0.3.0},
+    note = {package version 1.0.0},
     url = {https://github.com/TomKellyGenetics/universc},
   }
 ```
