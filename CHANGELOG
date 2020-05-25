@@ -1,14 +1,26 @@
-### 0.3.0 (in development)
+### 1.0.0
 
-- custom whitelists for other technologies
+- full documentation of all features
 
-- configure custom input technology (kai)
-
-- test data for checking technologies (tom)
+- scripts for installation
 
 - bundle as docker with cellranger for install (w.i.p.)
 
 - configure automated tested for GitLab or Travis CI
+
+- support for additional technologies (16 presets)
+
+- barcodes restored in output
+
+- trimming script bundled
+
+### 0.3.0
+
+- custom whitelists for other technologies
+
+- configure custom input technology
+
+- test data for checking technologies (10x, DropSeq)
 
 ### 0.2.2
 
