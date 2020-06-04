@@ -938,6 +938,17 @@ if [[ -n "$barcodefile" ]]; then
     else
         #getting absolute path
         barcodefile=`readlink -f $barcodefile`
+        #checking barcode file format (requires 1 column of barcodes)
+        n_col_tsv=$(awk -F'\t'  '{print NF}' $barcodefile | sort -nu | tail -n 1)
+        if [[ $n_col_tsv -gt 1 ]]; then
+             tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -f6 > ${barcodefile}_barcodes
+             $barcodefile=${barcodefile}_barcodes
+        fi
+        n_col_csv=$(awk -F','  '{print NF}' $barcodefile | sort -nu | tail -n 1)
+        if [[ $n_col_tsv -gt 1 ]]; then
+              tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -d"," -f6 > ${barcodefile}_barcodes
+              $barcodefile=${barcodefile}_barcodes
+        fi
     fi
 else
     if [[ "$technology" == "10x"* ]]; then
