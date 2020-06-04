@@ -1,30 +1,36 @@
 #!/bin/bash
 
 # run tests in home directory (writeable)
-cd ~
+#cd ~
+
+export PATH=/home/tom/local/bin/cellranger-3.1.0:$PATH
+
 
 ## test icell8 data
 # unzip input data
-gunzip -fk /universc/test/shared/icell8-test/*fastq.gz
+#gzip -fk test/shared/icell8-test/*fastq
+#gunzip -fk test/shared/icell8-test/*fastq.gz
 # call on icell8 files with default whitelist
-bash /universc/launch_universc.sh --id "test-icell8-default" --technology "iCell8" \
- --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
- --read1 "/universc/test/shared/icell8-test/iCELL8_01_S1_L001_R1_001 /universc/test/shared/icell8-test/iCELL8_01_S1_L002_R1_001" \
- --read2 "/universc/test/shared/icell8-test/iCELL8_01_S1_L001_R2_001 /universc/test/shared/icell8-test/iCELL8_01_S1_L002_R2_001" 
+bash launch_universc.sh --id "test-icell8-default" --technology "iCell8" \
+ --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --read1 "test/shared/icell8-test/iCELL8_01_S1_L001_R1_001.fastq" "test/shared/icell8-test/iCELL8_01_S1_L002_R1_001.fastq" \
+ --read2 "test/shared/icell8-test/iCELL8_01_S1_L001_R2_001.fastq" "test/shared/icell8-test/iCELL8_01_S1_L002_R2_001.fastq" \
+ --jobmode "sge"
 #restore file names for test job
 #mv /universc/test/shared/icell8-test/test_FL_S1_L001_R1_001.fastq /universc/test/shared/icell8-test/test_FL_R1.fastq
 #mv /universc/test/shared/icell8-test/test_FL_S1_L001_R2_001.fastq /universc/test/shared/icell8-test/test_FL_R2.fastq
 
 # call on icell8 files with custom whitelist and non-standard file names
-bash /universc/launch_universc.sh --id "test-icell8-custom" --technology "iCell8" \
- --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
- --read1 "/universc/test/shared/icell8-test/iCELL8_01_S1_L001_R1_001 /universc/test/shared/icell8-test/iCELL8_01_S1_L002_R1_001" \
- --read2 "/universc/test/shared/icell8-test/iCELL8_01_S1_L001_R2_001 /universc/test/shared/icell8-test/iCELL8_01_S1_L002_R2_001" 
- --barcodefile "/universc/test/shared/icell8-test/WellList.txt"
+bash launch_universc.sh --id "test-icell8-custom" --technology "iCell8" \
+ --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --read1 "test/shared/icell8-test/iCELL8_01_S1_L001_R1_001.fastq" "test/shared/icell8-test/iCELL8_01_S1_L002_R1_001.fastq" \
+ --read2 "test/shared/icell8-test/iCELL8_01_S1_L001_R2_001.fastq" "test/shared/icell8-test/iCELL8_01_S1_L002_R2_001.fastq" \
+ --barcodefile "test/shared/icell8-test/WellList.txt" \
+ --jobmode "sge"
 #restore file names for test job
 #mv /universc/test/shared/icell8-test/test_FL_S1_L001_R1_001.fastq /universc/test/shared/icell8-test/test_FL_R1.fastq
 #mv /universc/test/shared/icell8-test/test_FL_S1_L001_R2_001.fastq /universc/test/shared/icell8-test/test_FL_R2.fastq
 
 # compress all input files
-gzip -f /universc/test/shared/icell8-test/*fastq
+#gzip -f test/shared/icell8-test/*fastq
 
