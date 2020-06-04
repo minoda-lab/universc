@@ -941,12 +941,14 @@ if [[ -n "$barcodefile" ]]; then
         #checking barcode file format (requires 1 column of barcodes)
         n_col_tsv=$(awk -F'\t'  '{print NF}' $barcodefile | sort -nu | tail -n 1)
         if [[ $n_col_tsv -gt 1 ]]; then
-             tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -f6 > ${barcodefile}_barcodes
+             col_n=$(head -n 1 test/shared/icell8-test/WellList.txt | tr "\t" "\n" | grep -n "[Bb]arcode" | head -n 1 | cut -d":" -f1)
+             tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -f$col_n > ${barcodefile}_barcodes
              $barcodefile=${barcodefile}_barcodes
         fi
         n_col_csv=$(awk -F','  '{print NF}' $barcodefile | sort -nu | tail -n 1)
         if [[ $n_col_tsv -gt 1 ]]; then
-              tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -d"," -f6 > ${barcodefile}_barcodes
+              col_n=$(head -n 1 test/shared/icell8-test/WellList.txt | tr "," "\n" | grep -n "[Bb]arcode" | head -n 1 | cut -d":" -f1)
+              tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -d"," -f$col_n > ${barcodefile}_barcodes
               $barcodefile=${barcodefile}_barcodes
         fi
     fi
