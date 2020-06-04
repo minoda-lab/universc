@@ -560,11 +560,11 @@ You can open a shell in the docker image with:
 
 ```
 run -it tomkellygenetics/universc:latest /bin/bash
-``
+```
 
 ```
 run -it tomkellygenetics/universc:latest /bin/zsh 
-``
+```
 
 Either of these shells are supported.
 
