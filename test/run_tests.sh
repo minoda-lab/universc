@@ -22,7 +22,7 @@ cellranger count --id="tiny-count-v3" \
  --transcriptome="/cellranger-3.0.2.9001/cellranger-tiny-ref/3.0.0"
 
 cellranger count --id="tiny-count-v2" \
- --fastqs="/cellranger-3.0.2.9001/cellranger-tiny-fastq/1.2.0/" --sample="tinygex" \
+ --fastqs="/cellranger-3.0.2.9001/cellranger-tiny-fastq/1.2.0/" --sample="" --chemistry="threeprime" \
  --transcriptome="/cellranger-3.0.2.9001/cellranger-tiny-ref/1.2.0"
 
 # call convert on 10x with multiple lanes
