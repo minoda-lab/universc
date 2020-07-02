@@ -3,7 +3,7 @@
 install=false
 
 ######convert version#####
-convertversion="1.0.0.9001"
+convertversion="1.0.0.9002"
 ##########
 
 
@@ -937,19 +937,19 @@ if [[ -n "$barcodefile" ]]; then
 	exit 1
     else
         #getting absolute path
-        barcodefile=`readlink -f $barcodefile`
+	barcodefile=$(readlink -f $barcodefile)
         #checking barcode file format (requires 1 column of barcodes)
-        n_col_tsv=$(awk -F'\t'  '{print NF}' $barcodefile | sort -nu | tail -n 1)
+        n_col_tsv=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
         if [[ $n_col_tsv -gt 1 ]]; then
              col_n=$(head -n 1 test/shared/icell8-test/WellList.txt | tr "\t" "\n" | grep -n "[Bb]arcode" | head -n 1 | cut -d":" -f1)
-             tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -f$col_n > ${barcodefile}_barcodes
-             $barcodefile=${barcodefile}_barcodes
+             tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -f$col_n > ${barcodefile}_barcod.txt
+             barcodefile=${barcodefile}_barcode.txt
         fi
-        n_col_csv=$(awk -F','  '{print NF}' $barcodefile | sort -nu | tail -n 1)
-        if [[ $n_col_tsv -gt 1 ]]; then
+        n_col_csv=$(awk -F',' '{print NF}' $barcodefile | sort -nu | tail -n 1)
+        if [[ $n_col_csv -gt 1 ]]; then
               col_n=$(head -n 1 test/shared/icell8-test/WellList.txt | tr "," "\n" | grep -n "[Bb]arcode" | head -n 1 | cut -d":" -f1)
-              tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -d"," -f$col_n > ${barcodefile}_barcodes
-              $barcodefile=${barcodefile}_barcodes
+              tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -d"," -f$col_n > ${barcodefile}_barcode.txt
+              barcodefile=${barcodefile}_barcode.txt
         fi
     fi
 else
