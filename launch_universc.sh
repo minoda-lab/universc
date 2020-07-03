@@ -3,7 +3,7 @@
 install=false
 
 ######convert version#####
-convertversion="1.0.0.9002"
+convertversion="1.0.0.9003"
 ##########
 
 
@@ -938,17 +938,37 @@ if [[ -n "$barcodefile" ]]; then
     else
         #getting absolute path
 	barcodefile=$(readlink -f $barcodefile)
-        #allowing WellList from ICELL8
-        if [[ "$technology" == "icell8" ]]; then
+        #allowing WellList from ICELL8 and other well-based techniques
+        if [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq" ]] || [[ "$technology" == "custom" ]]; then
 	    n_col_tsv=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             n_col_csv=$(awk -F',' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             if [[ $n_col_tsv -gt 1 ]]; then
-                col_n=$(head -n 1 test/shared/icell8-test/WellList.txt | tr "\t" "\n" | grep -n "[Bb]arcode" | head -n 1 | cut -d":" -f1)
-                tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -f$col_n > ${barcodefile}_barcod.txt
+                if [[ $(head -n $barcodefile | grep -q "[Bb]arcode") ]]; then
+                    col_n=$(head -n 1 test/shared/icell8-test/WellList.txt | tr "\t" "\n" | grep -n "[Bb]arcode" | head -n 1 | cut -d":" -f1)
+                    #removes header (1st line) containing colname "barcode"
+                    tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -f$col_n > ${barcodefile}_barcode.txt
+                else
+                    col_n=1
+                    echo "***WARNING: barcode file has multiple columns and none named 'barcode(s)':"
+                    echo "Note: please check that column 1 of the barcode file contains the barcodes as required"
+                    head $barcodefile | cut -f1
+                    #assumes no headers
+                    cut -f$col_n $barcodefile > ${barcodefile}_barcode.txt
+                fi
                 barcodefile=${barcodefile}_barcode.txt
             elif [[ $n_col_csv -gt 1 ]]; then
-                col_n=$(head -n 1 test/shared/icell8-test/WellList.txt | tr "," "\n" | grep -n "[Bb]arcode" | head -n 1 | cut -d":" -f1)
-                tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -d"," -f$col_n > ${barcodefile}_barcode.txt
+                if [[ $(head -n $barcodefile | grep -q "[Bb]arcode") ]]; then
+                    col_n=$(head -n 1 test/shared/icell8-test/WellList.txt | tr "," "\n" | grep -n "[Bb]arcode" | head -n 1 | cut -d":" -f1)
+                     #removes header (1st line) containing colname "barcode"
+                    tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -d"," -f$col_n > ${barcodefile}_barcode.txt
+                else
+                     col_n=1
+                     echo "***WARNING: barcode file has multiple columns and none named 'barcode(s)':"
+                     echo "Note: please check that column 1 of the barcode file contains the barcodes as required"
+                     head $barcodefile | cut -d"," -f1
+                     #assumes no headers
+                     cut -d"," -f$col_n $barcodefile > ${barcodefile}_barcode.txt
+                fi
                 barcodefile=${barcodefile}_barcode.txt
             fi
         fi

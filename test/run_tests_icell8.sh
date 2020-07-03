@@ -24,6 +24,7 @@ gunzip -fk test/shared/icell8-test/*fastq.gz
 #mv /universc/test/shared/icell8-test/test_FL_S1_L001_R2_001.fastq /universc/test/shared/icell8-test/test_FL_R2.fastq
 
 # call on icell8 files with custom whitelist and non-standard file names
+bash launch_universc.sh --setup -t "icell8"  --barcodefile "test/shared/icell8-test/BarcodeList.txt"
 bash launch_universc.sh --id "test-icell8-custom" --technology "iCell8" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --read1 "test/shared/icell8-test/iCELL8_01_S1_L001_R1_001.fastq" "test/shared/icell8-test/iCELL8_01_S1_L002_R1_001.fastq" \
