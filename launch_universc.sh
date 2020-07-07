@@ -769,6 +769,7 @@ fi
 if [[ ${#index[@]} -eq ${#read1[@]} ]] || [[ ${#index[@]} -eq 0 ]]; then
     if [[ ${#index[@]} -eq ${#read1[@]} ]]; then
         echo "... accepted index file: ${index[@]}"
+        keys=("R1" "R2" "I1")
     elif [[ ${#index[@]} -eq 0 ]]; then
         echo "... index files not found (optional)"
     else
@@ -780,13 +781,15 @@ fi
 
 #check read1 and read2 files for their extensions
 ##allows incomplete file names and processing compressed files
-for i in {1..2}; do
-    readkey=R$i
+for key in ${keys[@]}; do
+    readkey=$key
     list=""
     if [[ $readkey == "R1" ]]; then
         list=("${read1[@]}")
     elif [[ $readkey == "R2" ]]; then
         list=("${read2[@]}")
+    elif [[ $readkey == "I1" ]]; then
+        list=("${index[@]}")
     fi
     
     for j in ${!list[@]}; do
@@ -841,17 +844,21 @@ for i in {1..2}; do
         read1=("${list[@]}")
     elif [[ $readkey == "R2" ]]; then
         read2=("${list[@]}")
+    elif [[ $readkey == "I1" ]]; then
+        index=("${list[@]}")
     fi
 done
 
 #renaming read1 and read2 files if not compatible with the convention
-for i in {1..2}; do
-    readkey=R$i
+for i in ${keys[@]}; do
+    readkey=$key
     list=""
     if [[ $readkey == "R1" ]]; then
         list=("${read1[@]}")
     elif [[ $readkey == "R2" ]]; then
         list=("${read2[@]}")
+    elif [[ $readkey == "I1" ]]; then
+         list=("${index[@]}")
     fi
     
     for j in ${!list[@]}; do
@@ -933,6 +940,8 @@ for i in {1..2}; do
         read1=("${list[@]}")
     elif [[ $readkey == "R2" ]]; then
         read2=("${list[@]}")
+     elif [[ $readkey == "I1" ]]; then
+        index=("${list[@]}")
     fi
 done
 
