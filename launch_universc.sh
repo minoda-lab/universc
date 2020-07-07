@@ -462,6 +462,11 @@ done
 
 
 #####check if this is a test run#####
+## Note that tests are currently   ##
+##       called the in the         ##
+##       ./test directory          ##
+##   This is a work-in-progress    ##
+#####################################
 if [[ $testrun == "true" ]]; then
     if [[ ${#read1[@]} -gt 0 ]] || [[ ${#read2[@]} -gt 0 ]]; then
         echo "Error: for test run, no R1 or R2 file can be selected."
@@ -488,9 +493,9 @@ if [[ $testrun == "true" ]]; then
         read1=("${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq")
         read2=("${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq")
     elif [[ $technology == "icell8" ]]; then
-        gunzip -fk ${SDIR}/test/shared/mappa-test/test_FL_R[12].fastq.gz
-        read1=("${SDIR}/test/shared/mappa-test/test_FL_R1.fastq")
-        read2=("${SDIR}/test/shared/mappa-test/test_FL_R2.fastq")
+        gunzip -fk ${SDIR}/test/shared/icell8-test/ICELL8_01_S1_L00[12]_R[12]_001.fastq.gz
+        read1=("${SDIR}/test/shared/icell8-test/iCELL8_01_S1_L001_R1_001.fastq" "${SDIR}/test/shared/icell8-test/iCELL8_01_S1_L002_R1_001.fastq")
+        read2=("${SDIR}/test/shared/icell8-test/iCELL8_01_S1_L001_R2_001.fastq" "${SDIR}/test/shared/icell8-test/iCELL8_01_S1_L002_R2_001.fastq")
     else
         echo "Error: for test run, -t needs to be 10x, nadia, or icell8"
         exit 1
