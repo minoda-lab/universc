@@ -761,7 +761,7 @@ else
         #derive I1 filename for R1 filename
         indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I1/' )
         #only add index files to list variable if file exists
-        if [[ -f $indexfile ]]; then
+        if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
             index+=("$indexfile")
         fi
         #check for dual indexing (I2 files)
@@ -770,12 +770,20 @@ else
              indexfile=${read1[$(( $ii -1 ))]}
              #derive I2 filename for R1 filename
              indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I2/' )
-             if [[ -f $indexfile ]]; then
+             if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
                  index2+=("$indexfile")
              fi
         fi
     done
 fi
+
+if [[ $verbose = "true" ]]; then
+    echo "${#read1[@]} read1s: ${read1[@]}"
+    echo "${#read2[@]} read2s: ${read2[@]}"
+    echo "${#index[@]} I1s: ${index[@]}"
+    echo "${#index2[@]} I2s: ${index2[@]}"
+fi
+
 #check number of index files is 0 or number of read1 files
 if [[ ${#index[@]} -eq ${#read1[@]} ]] || [[ ${#index[@]} -eq 0 ]]; then
     if [[ ${#index[@]} -eq ${#read1[@]} ]]; then
