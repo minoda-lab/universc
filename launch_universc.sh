@@ -957,6 +957,9 @@ fi
 
 #checking the quality of fastq file names
 read12=("${read1[@]}" "${read2[@]}")
+if [[ ${#index[@]} -ge 1 ]]; then
+    read12=("${read1[@]}" "${read2[@]}" "${index[@]}")
+fi
 for fq in "${read12[@]}"; do
     name=`basename $fq`
     name=${name%.*}
@@ -1501,6 +1504,33 @@ for fq in "${read2[@]}"; do
         cp -f $fq $to
     fi
 done
+
+if [[ ${#index[@]} -ge 1 ]]; then
+    crI1s=()
+    
+    if [[ $verbose == true ]]; then
+         echo "Processing Index"
+         echo "Fastqs: ${index[@]}"
+    fi
+    if [[ $verbose == true ]]; then
+        echo "${index[@]}"
+    fi
+    for fq in "${index[@]}"; do
+        if [[ $verbose  == true ]]; then echo "$fq" ; fi
+        to=`basename $fq`
+        to="${crIN}/${to}"
+        to=$(echo "$to" | sed 's/\.gz$//')
+    
+        if [[ $verbose == true ]]; then echo "$to" ; fi
+        crI1s+=($to)
+    
+        echo  "handling $fq ..."
+        if [[ ! -f $to ]] || [[$convert  == true ]]; then
+            if [[ $verbose == true ]]; then echo "cp -f $fq $to" ; fi
+            cp -f $fq $to
+        fi
+    done
+fi
 ##########
 
 
