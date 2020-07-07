@@ -749,6 +749,13 @@ elif [[ ${#index} -ge 2 ]]; then
     echo " indices $index passes"
 else
     echo " checking for index files..."
+    for ii in $(seq 1 1 ${#read1[@]}); do
+        #iterate over read1 inputs
+        indexfile=${read1[$(( $ii -1 ))]}
+        #derive I1 filename for R1 filename
+        indexfile=$(echo $indexfile | sed 's/\(.*\)_R1/\1_I1/' )
+        index+=("$indexfile");
+    done
 fi
 
 
