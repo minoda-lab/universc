@@ -743,7 +743,7 @@ fi
 keys=("R1" "R2")
 
 # check if indexes given
-if [[ ${#index[@]} -eq ${#read1[@]} ]] && [[ ${#index[@]} -eq 1 ]]; then
+if [[ ${#index[@]} -eq ${#read1[@]} ]] && [[ ${#index[@]} -ge 1 ]]; then
     if [[ ${#index[@]} -eq 1 ]]; then
         echo " index $index passes"
     elif [[ ${#index[@]} -ge 2 ]]; then
@@ -759,8 +759,22 @@ else
         indexfile=${read1[$(( $ii -1 ))]}
         #derive I1 filename for R1 filename
         indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I1/' )
-        index+=("$indexfile");
+        #only add index files to list variable if file exists
+        if [[ -f $indexfile ]];
+            index+=("$indexfile");
+        fi
     done
+fi
+#check number of index files is 0 or number of read1 files
+if [[ ${#index[@]} -eq ${#read1[@]} ]] || [[ ${#index[@]} -eq 0 ]]; then
+    if [[ ${#index[@]} -eq ${#read1[@]} ]]; then
+        echo "... accepted index file: ${index[@]}"
+    elif [[ ${#index[@]} -eq 0 ]]; then
+        echo "... index files not found (optional)"
+    else
+        echo "... index files missing for some samples or lanes (will be skipped)"
+       index=()
+    fi
 fi
 
 
