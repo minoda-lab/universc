@@ -765,7 +765,7 @@ else
             index+=("$indexfile")
         fi
         #check for dual indexing (I2 files)
-        if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]
+        if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
              #iterate over read1 inputs
              indexfile=${read1[$(( $ii -1 ))]}
              #derive I2 filename for R1 filename
