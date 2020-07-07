@@ -741,6 +741,7 @@ if [[ $setup == "false" ]]; then
     fi
 fi
 keys=("R1" "R2")
+index2=()
 
 # check if indexes given
 if [[ ${#index[@]} -eq ${#read1[@]} ]] && [[ ${#index[@]} -ge 1 ]]; then
@@ -760,8 +761,18 @@ else
         #derive I1 filename for R1 filename
         indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I1/' )
         #only add index files to list variable if file exists
-        if [[ -f $indexfile ]];
-            index+=("$indexfile");
+        if [[ -f $indexfile ]]; then
+            index+=("$indexfile")
+        fi
+        #check for dual indexing (I2 files)
+        if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]
+             #iterate over read1 inputs
+             indexfile=${read1[$(( $ii -1 ))]}
+             #derive I2 filename for R1 filename
+             indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I2/' )
+             if [[ -f $indexfile ]]; then
+                 index2+=("$indexfile")
+             fi
         fi
     done
 fi
@@ -774,8 +785,14 @@ if [[ ${#index[@]} -eq ${#read1[@]} ]] || [[ ${#index[@]} -eq 0 ]]; then
         echo "... index files not found (optional)"
     else
         echo "... index files missing for some samples or lanes (will be skipped)"
-       index=()
+        index=()
     fi
+elif [[ ${#index[@]} -eq $(( ${#read1[@]} * 2 )) ]]; then 
+     echo "... accepted index file: ${index[@]}"
+     keys=("R1" "R2" "I1" "I2")
+else
+    echo "... index files missing for some samples or lanes (will be skipped)"
+    index=()
 fi
 
 
@@ -790,6 +807,8 @@ for key in ${keys[@]}; do
         list=("${read2[@]}")
     elif [[ $readkey == "I1" ]]; then
         list=("${index[@]}")
+     elif [[ $readkey == "I2" ]]; then
+         list=("${index2[@]}")
     fi
     
     for j in ${!list[@]}; do
@@ -846,6 +865,8 @@ for key in ${keys[@]}; do
         read2=("${list[@]}")
     elif [[ $readkey == "I1" ]]; then
         index=("${list[@]}")
+     elif [[ $readkey == "I2" ]]; then
+        index2=("${list[@]}")
     fi
 done
 
@@ -859,6 +880,8 @@ for i in ${keys[@]}; do
         list=("${read2[@]}")
     elif [[ $readkey == "I1" ]]; then
          list=("${index[@]}")
+    elif [[ $readkey == "I2" ]]; then
+         list=("${index2[@]}")
     fi
     
     for j in ${!list[@]}; do
@@ -942,6 +965,8 @@ for i in ${keys[@]}; do
         read2=("${list[@]}")
      elif [[ $readkey == "I1" ]]; then
         index=("${list[@]}")
+      elif [[ $readkey == "I2" ]]; then
+        index2=("${list[@]}")
     fi
 done
 
@@ -959,6 +984,9 @@ fi
 read12=("${read1[@]}" "${read2[@]}")
 if [[ ${#index[@]} -ge 1 ]]; then
     read12=("${read1[@]}" "${read2[@]}" "${index[@]}")
+    if [[ ${#index2[@]} -ge 1 ]]; then
+        read12=("${read1[@]}" "${read2[@]}" "${index[@]}" "${index2[@]}")
+    fi
 fi
 for fq in "${read12[@]}"; do
     name=`basename $fq`
@@ -1523,6 +1551,33 @@ if [[ ${#index[@]} -ge 1 ]]; then
     
         if [[ $verbose == true ]]; then echo "$to" ; fi
         crI1s+=($to)
+    
+        echo  "handling $fq ..."
+        if [[ ! -f $to ]] || [[$convert  == true ]]; then
+            if [[ $verbose == true ]]; then echo "cp -f $fq $to" ; fi
+            cp -f $fq $to
+        fi
+    done
+fi
+
+if [[ ${#index2[@]} -ge 1 ]]; then
+    crI2s=()
+    
+    if [[ $verbose == true ]]; then
+         echo "Processing Index"
+         echo "Fastqs: ${index2[@]}"
+    fi
+    if [[ $verbose == true ]]; then
+        echo "${index2[@]}"
+    fi
+    for fq in "${index2[@]}"; do
+        if [[ $verbose  == true ]]; then echo "$fq" ; fi
+        to=`basename $fq`
+        to="${crIN}/${to}"
+        to=$(echo "$to" | sed 's/\.gz$//')
+    
+        if [[ $verbose == true ]]; then echo "$to" ; fi
+        crI2s+=($to)
     
         echo  "handling $fq ..."
         if [[ ! -f $to ]] || [[$convert  == true ]]; then
