@@ -743,11 +743,16 @@ fi
 keys=("R1" "R2")
 
 # check if indexes given
-if [[ ${#index} -eq 1 ]]; then
-    echo " index $index passes"
-elif [[ ${#index} -ge 2 ]]; then
-    echo " indices $index passes"
+if [[ ${#index[@]} -eq ${#read1[@]} ]] && [[ ${#index[@]} -eq 1 ]]; then
+    if [[ ${#index[@]} -eq 1 ]]; then
+        echo " index $index passes"
+    elif [[ ${#index[@]} -ge 2 ]]; then
+        echo " indices $index passes"
+    else
+        echo "WARNING: mismatch in number of files (check index files)"
+    fi
 else
+    #if number of files mismatch or no index given
     echo " checking for index files..."
     for ii in $(seq 1 1 ${#read1[@]}); do
         #iterate over read1 inputs
