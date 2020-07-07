@@ -753,7 +753,7 @@ else
         #iterate over read1 inputs
         indexfile=${read1[$(( $ii -1 ))]}
         #derive I1 filename for R1 filename
-        indexfile=$(echo $indexfile | sed 's/\(.*\)_R1/\1_I1/' )
+        indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I1/' )
         index+=("$indexfile");
     done
 fi
