@@ -3,7 +3,7 @@
 install=false
 
 ######convert version#####
-convertversion="1.0.0.9003"
+convertversion="1.0.0.9004"
 ##########
 
 
@@ -136,6 +136,7 @@ Mandatory arguments to long options are mandatory for short options too.
        --testrun                Initiates a test trun with the test dataset
   -R1, --read1 FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
   -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
+  -I1, --index FILE             Index FASTQ file to pass to cellranger (OPTIONAL)
   -f,  --file NAME              Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
                                   e.g. /path/to/files/Example_S1_L001
 
@@ -212,6 +213,7 @@ convert=true
 testrun=false
 read1=()
 read2=()
+index=()
 SAMPLE=""
 LANE=()
 id=""
@@ -263,6 +265,21 @@ for op in "$@"; do
                 next=true
             elif [[ -z $read2 ]]; then
                 echo "Error: file input missing for --read2"
+                exit 1
+            fi
+            ;;
+        -I1|--index)
+            shift
+            if [[ "$1" != "" ]]; then
+                arg=$1
+                while [[ ! "$arg" == "-"* ]] && [[ "$arg" != "" ]]; do
+                    index+=("${1/%\//}")
+                    shift
+                    arg=$1
+                done
+                next=true
+            elif [[ -z $index ]]; then
+                echo "Error: file input missing for --index"
                 exit 1
             fi
             ;;
