@@ -740,6 +740,17 @@ if [[ $setup == "false" ]]; then
         exit 1
     fi
 fi
+keys=("R1" "R2")
+
+# check if indexes given
+if [[ ${#index} -eq 1 ]]; then
+    echo " index $index passes"
+elif [[ ${#index} -ge 2 ]]; then
+    echo " indices $index passes"
+else
+    echo " checking for index files..."
+fi
+
 
 #check read1 and read2 files for their extensions
 ##allows incomplete file names and processing compressed files
