@@ -1561,7 +1561,7 @@ if [[ ${#index[@]} -ge 1 ]]; then
         crI1s+=($to)
     
         echo  "handling $fq ..."
-        if [[ ! -f $to ]] || [[$convert  == true ]]; then
+        if [[ ! -f $to ]] || [[ $convert  == true ]]; then
             if [[ $verbose == true ]]; then echo "cp -f $fq $to" ; fi
             cp -f $fq $to
         fi
@@ -1588,7 +1588,7 @@ if [[ ${#index2[@]} -ge 1 ]]; then
         crI2s+=($to)
     
         echo  "handling $fq ..."
-        if [[ ! -f $to ]] || [[$convert  == true ]]; then
+        if [[ ! -f $to ]] || [[ $convert  == true ]]; then
             if [[ $verbose == true ]]; then echo "cp -f $fq $to" ; fi
             cp -f $fq $to
         fi
