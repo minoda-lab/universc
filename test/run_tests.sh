@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run tests in home directory (writeable)
-cd /universc
+cd $(dirname ${BASH_SOURCE[0]})/..
 
 # reset barcodes for test
 bash /universc/launch_universc.sh -t "10x" --setup
