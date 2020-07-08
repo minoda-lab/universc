@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Wednesday 08 July 2020"
+date: "`r  format(Sys.time(), '%A %d %B %Y')`"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -125,8 +125,8 @@ technologies to demutliplex based on the wells.
 
 ## Release
 
-This tool will be released open-source (see [legal stuff](## Licensing) below).
-We welcome any feedback on it.
+This tool will be released open-source (see [legal stuff](#licensing) below).
+We welcome any feedback on it and any contributions to improve it.
 Hopefully it will save people time by making it easier to compare technologies.
 
 We have tested it on several technologies but we need users like you
