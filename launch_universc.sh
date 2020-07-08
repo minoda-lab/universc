@@ -136,7 +136,8 @@ Mandatory arguments to long options are mandatory for short options too.
        --testrun                Initiates a test trun with the test dataset
   -R1, --read1 FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
   -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
-  -I1, --index FILE             Index FASTQ file to pass to cellranger (OPTIONAL)
+  -I1, --index1 FILE            Index (I1) FASTQ file to pass to cellranger (OPTIONAL)
+  -I2, --index2 FILE            Index (I2) FASTQ file to pass to cellranger (OPTIONAL and EXPERIMENTAL)
   -f,  --file NAME              Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
                                   e.g. /path/to/files/Example_S1_L001
 
@@ -213,7 +214,8 @@ convert=true
 testrun=false
 read1=()
 read2=()
-index=()
+index1=()
+index2=()
 SAMPLE=""
 LANE=()
 id=""
@@ -268,22 +270,36 @@ for op in "$@"; do
                 exit 1
             fi
             ;;
-        -I1|--index)
+        -I1|--index1|--index)
             shift
             if [[ "$1" != "" ]]; then
                 arg=$1
                 while [[ ! "$arg" == "-"* ]] && [[ "$arg" != "" ]]; do
-                    index+=("${1/%\//}")
+                    index1+=("${1/%\//}")
                     shift
                     arg=$1
                 done
                 next=true
-            elif [[ -z $index ]]; then
-                echo "Error: file input missing for --index"
+            elif [[ -z $index1 ]]; then
+                echo "Error: file input missing for --index1"
                 exit 1
             fi
             ;;
-        -f|--file)
+        -I2|--index2)
+            shift
+            if [[ "$1" != "" ]]; then
+                arg=$1
+                while [[ ! "$arg" == "-"* ]] && [[ "$arg" != "" ]]; do
+                    index2+=("${1/%\//}")
+                    shift
+                    arg=$1
+                done
+                next=true
+            elif [[ -z $index1 ]]; then
+                echo "Error: file input missing for --index1"
+                exit 1
+            fi
+            ;;        -f|--file)
             shift
             if [[ "$1" != "" ]]; then
                 arg=$1
@@ -573,7 +589,7 @@ if [[ "$technology" == "smartseq" ]]; then
     echo "***WARNING: ${technology} should only be used for kits that have UMIs***"
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
-    echo "***WARNING: launch_universc.sh does not support dual index. Make sure that the R1 file is adjusted accordingly prior to running launch_universc.sh***"
+    echo "***WARNING: launch_universc.sh does not support barcodes in dual indexes. Make sure that the R1 file is adjusted accordingly prior to running launch_universc.sh***"
 fi
 ##########
 
@@ -741,30 +757,52 @@ if [[ $setup == "false" ]]; then
     fi
 fi
 keys=("R1" "R2")
-index2=()
 
 # check if indexes given
-if [[ ${#index[@]} -eq ${#read1[@]} ]] && [[ ${#index[@]} -ge 1 ]]; then
-    if [[ ${#index[@]} -eq 1 ]]; then
-        echo " index $index passes"
-    elif [[ ${#index[@]} -ge 2 ]]; then
-        echo " indices $index passes"
+#####check if indexes are given #####
+##   Note that indexes are not     ##
+##    supported by conversion      ##
+##  You must demultiplex before    ##
+##         calling cellranger      ##
+##   This is a work-in-progress    ##
+#####################################
+if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index1[@]} -ge 1 ]]; then
+    if [[ ${#index1[@]} -eq 1 ]]; then
+        echo " index1 $index1 passes"
+    elif [[ ${#index1[@]} -ge 2 ]]; then
+        echo " indices $index1 passes"
     else
-        echo "WARNING: mismatch in number of files (check index files)"
+        echo "WARNING: mismatch in number of files (check index I1 files)"
+        echo "NOTE: if no index files are specified, these can be detected from R1 file names"
     fi
+elif [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
+     if [[ ${#index2[@]} -eq 1 ]]; then
+         echo " index2 $index2 passes"
+     elif [[ ${#index2[@]} -ge 2 ]]; then
+         echo " indices $index2 passes"
+     else
+         echo "WARNING: mismatch in number of files (check index I2 files)"
+         echo "NOTE: if no index files are specified, these can be detected from R1 file names"
+     fi
 else
-    #if number of files mismatch or no index given
-    echo " checking for index files..."
+    #if number of files mismatch or no index1 given
+    echo " checking for index1 files..."
     for ii in $(seq 1 1 ${#read1[@]}); do
         #iterate over read1 inputs
         indexfile=${read1[$(( $ii -1 ))]}
         #derive I1 filename for R1 filename
         indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I1/' )
-        #only add index files to list variable if file exists
+        #only add index1 files to list variable if file exists
         if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
-            index+=("$indexfile")
+            index1+=("$indexfile")
         fi
         #check for dual indexing (I2 files)
+        #####check dual index(I1 and I2)#####
+        ##  Note that indexes are copied   ##
+        ##     but are not converted       ##
+        ##   Demultiplex with bcl2fastq    ##
+        ##   This is a work-in-progress    ##
+        #####################################
         if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
              #iterate over read1 inputs
              indexfile=${read1[$(( $ii -1 ))]}
@@ -780,27 +818,35 @@ fi
 if [[ $verbose = "true" ]]; then
     echo "${#read1[@]} read1s: ${read1[@]}"
     echo "${#read2[@]} read2s: ${read2[@]}"
-    echo "${#index[@]} I1s: ${index[@]}"
+    echo "${#index1[@]} I1s: ${index1[@]}"
     echo "${#index2[@]} I2s: ${index2[@]}"
 fi
 
-#check number of index files is 0 or number of read1 files
-if [[ ${#index[@]} -eq ${#read1[@]} ]] || [[ ${#index[@]} -eq 0 ]]; then
-    if [[ ${#index[@]} -eq ${#read1[@]} ]]; then
-        echo "... accepted index file: ${index[@]}"
+#check number of index1 files is 0 or number of read1 files
+if [[ ${#index1[@]} -eq ${#read1[@]} ]] || [[ ${#index1[@]} -eq 0 ]]; then
+    if [[ ${#index1[@]} -eq ${#read1[@]} ]]; then
+        echo "... accepted index1 file: ${index1[@]}"
         keys=("R1" "R2" "I1")
-    elif [[ ${#index[@]} -eq 0 ]]; then
-        echo "... index files not found (optional)"
-    else
-        echo "... index files missing for some samples or lanes (will be skipped)"
-        index=()
     fi
-elif [[ ${#index[@]} -eq $(( ${#read1[@]} * 2 )) ]]; then 
-     echo "... accepted index file: ${index[@]}"
-     keys=("R1" "R2" "I1" "I2")
+    if [[ ${#index1[@]} -eq 0 ]]; then
+        echo "... index1 files not found (optional)"
+    fi
 else
-    echo "... index files missing for some samples or lanes (will be skipped)"
-    index=()
+    echo "... index1 files missing for some samples or lanes (will be skipped)"
+    index1=()
+    fi
+fi
+if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -eq ${#read1[@]} ]] || [[ ${#index2[@]} -eq 0 ]]; then
+    if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -eq ${#read1[@]} ]]; then
+        echo "... accepted index1 file: ${index1[@]}"
+        keys=("R1" "R2" "I1" "I2")
+    fi
+    if [[ ${#index2[@]} -eq 0 ]]; then 
+        echo "... index2 files not found (optional)"
+    fi
+else
+    echo "... index2 files missing for some samples or lanes (will be skipped)"
+    index2=()
 fi
 
 
@@ -814,7 +860,7 @@ for key in ${keys[@]}; do
     elif [[ $readkey == "R2" ]]; then
         list=("${read2[@]}")
     elif [[ $readkey == "I1" ]]; then
-        list=("${index[@]}")
+        list=("${index1[@]}")
      elif [[ $readkey == "I2" ]]; then
          list=("${index2[@]}")
     fi
@@ -872,7 +918,7 @@ for key in ${keys[@]}; do
     elif [[ $readkey == "R2" ]]; then
         read2=("${list[@]}")
     elif [[ $readkey == "I1" ]]; then
-        index=("${list[@]}")
+        index1=("${list[@]}")
      elif [[ $readkey == "I2" ]]; then
         index2=("${list[@]}")
     fi
@@ -887,7 +933,7 @@ for i in ${keys[@]}; do
     elif [[ $readkey == "R2" ]]; then
         list=("${read2[@]}")
     elif [[ $readkey == "I1" ]]; then
-         list=("${index[@]}")
+         list=("${index1[@]}")
     elif [[ $readkey == "I2" ]]; then
          list=("${index2[@]}")
     fi
@@ -972,7 +1018,7 @@ for i in ${keys[@]}; do
     elif [[ $readkey == "R2" ]]; then
         read2=("${list[@]}")
      elif [[ $readkey == "I1" ]]; then
-        index=("${list[@]}")
+        index1=("${list[@]}")
       elif [[ $readkey == "I2" ]]; then
         index2=("${list[@]}")
     fi
@@ -990,10 +1036,10 @@ fi
 
 #checking the quality of fastq file names
 read12=("${read1[@]}" "${read2[@]}")
-if [[ ${#index[@]} -ge 1 ]]; then
-    read12=("${read1[@]}" "${read2[@]}" "${index[@]}")
+if [[ ${#index1[@]} -ge 1 ]]; then
+    read12=("${read1[@]}" "${read2[@]}" "${index1[@]}")
     if [[ ${#index2[@]} -ge 1 ]]; then
-        read12=("${read1[@]}" "${read2[@]}" "${index[@]}" "${index2[@]}")
+        read12=("${read1[@]}" "${read2[@]}" "${index1[@]}" "${index2[@]}")
     fi
 fi
 for fq in "${read12[@]}"; do
@@ -1550,17 +1596,17 @@ for fq in "${read2[@]}"; do
     fi
 done
 
-if [[ ${#index[@]} -ge 1 ]]; then
+if [[ ${#index1[@]} -ge 1 ]]; then
     crI1s=()
     
     if [[ $verbose == true ]]; then
          echo "Processing Index"
-         echo "Fastqs: ${index[@]}"
+         echo "Fastqs: ${index1[@]}"
     fi
     if [[ $verbose == true ]]; then
-        echo "${index[@]}"
+        echo "${index1[@]}"
     fi
-    for fq in "${index[@]}"; do
+    for fq in "${index1[@]}"; do
         if [[ $verbose  == true ]]; then echo "$fq" ; fi
         to=`basename $fq`
         to="${crIN}/${to}"

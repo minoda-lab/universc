@@ -724,6 +724,8 @@ Mandatory arguments to long options are mandatory for short options too.
        --testrun                Initiates a test trun with the test dataset
   -R1, --read1 FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
   -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
+  -I1, --index1 FILE            Index (I1) FASTQ file to pass to cellranger (OPTIONAL)
+  -I2, --index2 FILE            Index (I2) FASTQ file to pass to cellranger (OPTIONAL and EXPERIMENTAL)
   -f,  --file NAME              Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
                                   e.g. /path/to/files/Example_S1_L001
 
