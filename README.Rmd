@@ -62,6 +62,25 @@ Contact: &lt;first name&gt;.&lt;family name&gt;[at]riken.jp
 
 ------------------------------------------
 
+## Getting Started
+
+### Advanced users
+
+If you have `cellranger` already installed, then all you need to do is clone or download this git repository. You can then run the script in this directory or add it your `PATH`. See the [Quick Start](#quick-start) guide below.
+
+If you wish to install `cellranger` and configure this script to run on a Linux environment, we provide details on [installation](#installation) below. Note that `launch_universc.sh` requires write-access a cellranger installation so it needs to be installed in a user's "home" directory on a server. No admin powers needed!
+
+Note that `cellranger` installations that are pre-compiled on Linux will not run on Mac or Windows. Note that Mac OS and some Linux distributions also have different version of sed and rename. It is possible to compile an open-source version of cellranger but it is tricky to install the dependencies so we recommend using our docker [image](#Docker) if you wish to do this. 
+
+### Beginners
+
+If you are a beginner bioinformatician or wish to run this on a local computer (Mac or Windows), no problem! We provide a "docker" image containing everything needed to run it without installing the software needed. All you need to do is install [docker](https://docs.docker.com/desktop/) and follow our guide to use the [image](#Docker). This comes bundled with all the compatible versions needed to run it.
+
+Note that you need to run the shell commands given in a unix-like command-line interface (the "Terminal" application on Mac or Linux systems). Many shells are supported but we recommend the "bash" shell for beginners (this is the default on most systems). Windows 10 includes a [subsystem](https://docs.microsoft.com/en-us/windows/wsl/install-win10) to run `bash`. If this is too complicated, you can open a Linux environment (Ubuntu) in docker by following our instructions. Then you can enter bash commands into the terminal opened by docker.
+
+If you run into problems installing or running `launch_universc.sh` please don't hesistate to contact us via email or GitHub.
+
+
 ## Purpose
 
 We've developed a bash script that will run cellranger on FASTQ files for these technologies. See below for details on how to use it.
@@ -307,7 +326,7 @@ most Linux distributions come with these pre-installed.
 
 - make 3.81
 - git 2.20.1 
-- sed (GNU sed) 4.4
+- sed (GNU sed) 4.4 (gsed)
 - tar  2.8.3
 - rename 0.20 (perl-rename)
 - perl 5.26.1
@@ -325,7 +344,7 @@ sudo yum install prename
 sudo dnf install prename
 ```
 
-Ret Hat Linux:
+Red Hat Linux:
 
 ```
 sudo rpm install prename
