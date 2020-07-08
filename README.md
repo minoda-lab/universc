@@ -62,7 +62,7 @@ Tom Kelly^†^ (RIKEN IMS) and Kai Battenberg^†^ (RIKEN CSRS/IMS)
 
 † These authors contributed equally to this work
 
-Contact: <first name>.<family name>[at]riken.jp
+Contact: &lt;first name&gt;.&lt;family name&gt;[at]riken.jp
 
 ------------------------------------------
 
@@ -125,8 +125,8 @@ technologies to demutliplex based on the wells.
 
 ## Release
 
-This tool will be released open-source (see [legal stuff](## Licensing) below).
-We welcome any feedback on it.
+This tool will be released open-source (see [legal stuff](#licensing) below).
+We welcome any feedback on it and any contributions to improve it.
 Hopefully it will save people time by making it easier to compare technologies.
 
 We have tested it on several technologies but we need users like you

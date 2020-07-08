@@ -62,7 +62,7 @@ Tom Kelly^†^ (RIKEN IMS) and Kai Battenberg^†^ (RIKEN CSRS/IMS)
 
 † These authors contributed equally to this work
 
-Contact: <first name>.<family name>[at]riken.jp
+Contact: &lt;first name&gt;.&lt;family name&gt;[at]riken.jp
 
 ------------------------------------------
 
