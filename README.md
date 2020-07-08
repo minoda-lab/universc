@@ -10,13 +10,9 @@ date: "Wednesday 08 July 2020"
 output:
   prettydoc::html_pretty:
        theme: cayman
-  #html_document:
-       #theme: united
        number_sections: true
        toc: true
        toc_depth: 4
-       #toc_float: true
-       #code_folding: show
        keep_md: true
        keep_html: true
 toc-title: "Table of Contents"
@@ -74,7 +70,7 @@ If you use this tool, please [cite](#Citation) to acknowledge the efforts of the
 new features to the maintainers with and [issue](#Issues) on GitHub. Details on how to [install](#Install) and [run](#Usage) are provided
 below. Please see the [help](#Help) and [examples](#Examples) to try solve your problem before submitting an issue.
 
-Details on the [Docker image](#Docker) are given below.
+Details on the [Docker image](#Docker) are given below. We recommend using Docker unless you have a server environment with cellranger installed already.
 
 ### Supported Technologies
 
