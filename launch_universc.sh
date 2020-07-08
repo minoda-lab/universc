@@ -1352,7 +1352,7 @@ echo "JOBMODE: $jobmode"
 if [[ "$jobmode" == "local" ]]; then
     echo "***Warning: --jobmode \"sge\" is recommended if running script with qsub***"
 fi
-echo "CONVERSTION: $convert"
+echo "CONVERSION: $convert"
 if [[ $convert == "false" ]]; then
     echo "***Warning: adjustment for barcode and UMI length was skipped***"
 fi
