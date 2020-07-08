@@ -1249,7 +1249,7 @@ crIN=${crIN}_${id}
 #####checking if crIN exists#####
 if [[ ! -d $crIN ]]; then
     convert=true
-    echo "***Warning: convertion was turned on because directory $crIN was not found***"
+    echo "***Warning: conversion was turned on because directory $crIN was not found***"
 fi
 ##########
 
@@ -1363,6 +1363,9 @@ echo ""
 
 
 ####setup whitelist#####
+if [[ $verbose == "true" ]]; then
+    echo "lock $lock"
+fi
 if [[ $lock -eq 0 ]]; then
     echo "setup begin"
     echo "updating barcodes in $barcodedir for cellranger version ${cellrangerversion} installed in ${cellrangerpath} ..."
@@ -1428,15 +1431,17 @@ if [[ $lock -eq 0 ]]; then
     fi
     echo " whitelist converted"
 
+    echo "verbose $verbose"
     #change last call file
-    echo "${barcodelength} ${umilength} ${current_barcode}" > $lastcallfile
+    #if [[ $verbose == "true" ]]; then
+        echo "Setting last call as..."
+        echo "${barcodelength} ${umilength} ${barcodefile}"
+    #fi
+    echo "${barcodelength} ${umilength} ${barcodefile}" > $lastcallfile
 
     cd - > /dev/null
 
     echo "setup complete"
-    if [[ $setup == "true" ]]; then
-        exit 0
-    fi
 fi
 #########
 
@@ -1445,8 +1450,12 @@ fi
 #####exiting when setup is all that is requested#####
 if [[ $setup == "true" ]]; then
     lock=`cat $lockfile`
-    lock=$(($lock-1))
-    echo $lock > $lockfile
+    if [[ $lock -ge 1 ]]; then
+        lock=$(($lock-1))
+        echo $lock > $lockfile
+    else
+       rm -rf $lockfile
+    fi
     echo " setup complete. exiting launch_universc.sh"
     exit 0
 fi
