@@ -1160,6 +1160,9 @@ else
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${whitelistdir}/ICELL8_barcode.txt
 	echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in ICELL8. valid barcode will be an overestimate***"
+    elif [[ "$technology" == "marsseq-v2" ]]; then
+        barcodefile=${whitelistdir}/MARS-Seq2_barcode.txt
+        echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in ICELL8. valid barcode will be an overestimate***"
     elif [[ "$technology" == "quartz-seq2-384" ]]; then
         barcodefile=${whitelistdir}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
