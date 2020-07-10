@@ -1426,16 +1426,17 @@ else
     echo "  barcodes: ${barcodeadjust}bps at its head"
     echo "  UMIs: ${umiadjust}bps at its tail" 
     
-    #for CEL-Seq2 swap barcode and UMI
-    if [[ "$technology" == "sciseq" ]]; then
+    echo " making technology-specific modifications ..."
+    #CEL-Seq2: swap barcode and UMI
+    if [[ "$technology" == "celseq2" ]]; then
         for convFile in "${convFiles[@]}"; do
             #swap UMI and barcode
             sed -E '2~2s/(.{6})(.{6})/\2\1/' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
     fi
-
-    #remove adapter from inDrops see here for details:
+    
+    #inDrops: remove adapter (see links below for details)
      ## https://github.com/BUStools/bustools/issues/4
      ## https://teichlab.github.io/scg_lib_structs/methods_html/inDrop.html
     if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
@@ -1453,8 +1454,8 @@ else
             mv ${crIN}/.temp $convFile
         done
     fi
-
-    #remove adapter from QuartzSeq
+    
+    #QuartzSeq: remove adapter
     if [[ "$technology" == "quartz-seq2-384" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected
@@ -1481,9 +1482,8 @@ else
             mv ${crIN}/.temp $convFile
         done
     fi
-
-
-    #remove adapter from Sci-Seq and swap barcode and UMI
+    
+    #Sci-Seq: remove adapter and swap barcode and UMI
     if [[ "$technology" == "sciseq" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected
@@ -1495,13 +1495,13 @@ else
                 s/^(.{18})//g
                 }'  $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
-            #swap UMI and barcode
+            #swap barcode and UMI
             sed -E '2~2s/(.{8})(.{10})/\2\1/' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile            
         done
     fi
-
-    #remove adapter from SureCell (and correct phase blocks)
+    
+    #SureCell: remove adapter and correct phase blocks
     if [[ "$technology" == "surecell" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
@@ -1515,24 +1515,8 @@ else
             mv ${crIN}/.temp $convFile
         done
     fi
-
-    # SPLiT-Seq can be set up similarly if a whitelist and 18bp barcode can be supported
-    ## https://github.com/hms-dbmi/dropEst/issues/80
-    if [[ "$technology" == "surecell" ]]; then
-        for convFile in "${convFiles[@]}"; do
-            #remove phase blocks and linkers (swap UMI and barcode)
-            sed -E '
-                /^([ATCGA]{92})/ {
-                s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8})*/\2\3\4\1/g
-                n
-                n
-                s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8})*/\2\3\4\1/g
-                }' $convFile > ${crIN}/.temp
-            mv ${crIN}/.temp $convFile
-        done
-    fi
-
-    #remove adapter from SCRB-Seq
+    
+    #SCRB-Seq: remove adapter
     if [[ "$technology" == "scrbseq" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove adapters
@@ -1546,7 +1530,23 @@ else
             mv ${crIN}/.temp $convFile
         done
     fi
-
+    
+    #SPLiT-Seq: correct phase blocks and swap barcode and UMI
+     ## https://github.com/hms-dbmi/dropEst/issues/80
+    if [[ "$technology" == "surecell" ]]; then
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers (swap barcode and UMI)
+            sed -E '
+                /^([ATCGA]{92})/ {
+                s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8})*/\2\3\4\1/g
+                n
+                n
+                s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8})*/\2\3\4\1/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    
     #converting barcodes
     echo " adjusting barcodes of R1 files"
     if [[ $barcodeadjust != 0 ]]; then
