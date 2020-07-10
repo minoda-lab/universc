@@ -156,6 +156,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                   inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
+                                  MARS-Seq (6bp barcode, 10bp UMI): marsseq, marsseq-v1
+                                  MARS-Seq2 (7bp barcode, 8bp UMI): marsseq2, marsseq-v2
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   Sci-Seq (8bp UMI, 10bp barcode): sciseq
@@ -545,6 +547,10 @@ elif [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] |
     technology="indrop-v2"    
 elif [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]] || [[ "$technology" == "1cellbio-v3" ]] || [[ "$technology" == "1cellbiov3" ]]; then
     technology="indrop-v3"
+elif [[ "$technology" == "marsseq" ]] || [[ "$technology" == "mars-seq" ]] || [[ "$technology" == "marsseq-v1" ]] || [[ "$technology" == "mars-seq-v1" ]] || [[ "$technology" == "marsseqv1" ]] || [[ "$technology" == "mars-seqv1" ]]; then
+    technology="marsseq-v1"
+elif [[ "$technology" == "marsseq2" ]] || [[ "$technology" == "mars-seq2" ]] || [[ "$technology" == "marsseq-v2" ]] || [[ "$technology" == "mars-seq-v2" ]] || [[ "$technology" == "marsseqv2" ]] || [[ "$technology" == "mars-seqv2" ]]; then
+    technology="marsseq-v2"
 elif [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]]; then
     technology="quartz-seq2-384"
 elif [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]]; then
@@ -640,6 +646,14 @@ if [[ "$technology" == "indrop-v3" ]]; then
     barcodelength=11
     umilength=6
     minlength=8
+elif [[ "$technology" == "marsseq-v1" ]]; then
+    barcodelength=6
+    umilength=10
+    minlength=6
+elif [[ "$technology" == "marsseq-v2" ]]; then
+    barcodelength=7
+    umilength=8
+    minlength=7
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
