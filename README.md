@@ -118,8 +118,8 @@ avoid causing problems with existing runs). Multiple samples of the same technol
 -  Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
 -  ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
 - inDrops
-    -  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
-    -  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
+    -  inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1
+    -  inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
     -  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
 -  Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
 -  Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
@@ -806,8 +806,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                   CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
                                   Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
                                   ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
-                                  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
-                                  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
+                                  inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1
+                                  inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
