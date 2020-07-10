@@ -137,7 +137,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
 
                 /usr/local/bin/bcl2fastq  -v --runfolder-dir "/path/to/illumina/bcls"  --output-dir "./Data/Intensities/BaseCalls"\
                                              --sample-sheet "/path/to/SampleSheet.csv" --create-fastq-for-index-reads\
-                                             --use-bases-mask y26n,I8n,I8n,Y50n  --mask-short-adapter-reads 0\
+                                             --use-bases-mask Y26n,I8n,I8n,Y50n  --mask-short-adapter-reads 0\
                                              --minimum-trimmed-read-length 0
 
             Note that dual indexes are not supported by cellranger. Manually demultiplexing as above into separate
@@ -192,8 +192,8 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
                                   Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
                                   ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
-                                  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
-                                  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
+                                  inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1
+                                  inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536

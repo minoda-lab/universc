@@ -153,8 +153,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                   CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
                                   Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
                                   ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
-                                  inDrops version 1 (19bp barcode, 8bp UMI): indrops-v1, 1cellbio-v1
-                                  inDrops version 2 (19bp barcode, 8bp UMI): indrops-v2, 1cellbio-v2
+                                  inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1
+                                  inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
@@ -632,10 +632,14 @@ elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
     umilength=14
     minlength=11
-elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
     barcodelength=19 
     umilength=6
     minlength=16
+if [[ "$technology" == "indrop-v3" ]]; then
+    barcodelength=11
+    umilength=6
+    minlength=8
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
@@ -775,15 +779,6 @@ if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index1[@]} -ge 1 ]]; then
         echo "WARNING: mismatch in number of files (check index I1 files)"
         echo "NOTE: if no index files are specified, these can be detected from R1 file names"
     fi
-elif [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
-     if [[ ${#index2[@]} -eq 1 ]]; then
-         echo " index2 $index2 passes"
-     elif [[ ${#index2[@]} -ge 2 ]]; then
-         echo " indices $index2 passes"
-     else
-         echo "WARNING: mismatch in number of files (check index I2 files)"
-         echo "NOTE: if no index files are specified, these can be detected from R1 file names"
-     fi
 else
     #if number of files mismatch or no index1 given
     echo " checking for index1 files..."
@@ -796,24 +791,43 @@ else
         if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
             index1+=("$indexfile")
         fi
-        #check for dual indexing (I2 files)
-        #####check dual index(I1 and I2)#####
-        ##  Note that indexes are copied   ##
-        ##     but are not converted       ##
-        ##   Demultiplex with bcl2fastq    ##
-        ##   This is a work-in-progress    ##
-        #####################################
-        if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
+    done
+fi
+
+#check for dual indexing (I2 files)
+#####check dual index(I1 and I2)#####
+##  Note that indexes are copied   ##
+##     but are not converted       ##
+##   Demultiplex with bcl2fastq    ##
+##   This is a work-in-progress    ##
+#####################################
+# only check I2 for dual-indexed techniques
+if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
+    if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
+        if [[ ${#index2[@]} -eq 1 ]]; then
+            echo " index2 $index2 passes"
+        elif [[ ${#index2[@]} -ge 2 ]]; then
+            echo " indices $index2 passes"
+        else
+            echo "WARNING: mismatch in number of files (check index I2 files)"
+            echo "NOTE: if no index files are specified, these can be detected from R1 file names"
+        fi
+    else
+        #if number of files mismatch or no index1 given
+        echo " checking for index1 files..."
+        for ii in $(seq 1 1 ${#read1[@]}); do
              #iterate over read1 inputs
              indexfile=${read1[$(( $ii -1 ))]}
              #derive I2 filename for R1 filename
              indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I2/' )
+             #only add index2 files to list variable if file exists
              if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
                  index2+=("$indexfile")
              fi
-        fi
-    done
+        done
+    fi
 fi
+
 
 if [[ $verbose = "true" ]]; then
     echo "${#read1[@]} read1s: ${read1[@]}"
@@ -1025,7 +1039,7 @@ for i in ${keys[@]}; do
 done
 
 #inverting R1 and R2 for specific technologies
-if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "splitseq" ]]; then
     #invert read1 and read2
     echo "***WARNING: technology is set to ${technology}. barcodes on Read 2 will be used***"
     tmp=$read1
@@ -1664,8 +1678,11 @@ else
     echo "  barcodes: ${barcodeadjust}bps at its head"
     echo "  UMIs: ${umiadjust}bps at its tail" 
     
-    #for CEL-Seq2 swap barcode and UMI
-    if [[ "$technology" == "sciseq" ]]; then
+    echo " making technology-specific modifications ..."
+    #CEL-Seq2: swap barcode and UMI
+    ## https://github.com/BUStools/bustools/issues/4
+    if [[ "$technology" == "celseq2" ]]; then
+        echo "  ...barcode and UMI swapped for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #swap UMI and barcode
             sed -E '2~2s/(.{6})(.{6})/\2\1/' $convFile > ${crIN}/.temp
@@ -1673,10 +1690,13 @@ else
         done
     fi
 
-    #remove adapter from inDrops see here for details:
-     ## https://github.com/BUStools/bustools/issues/4
-     ## https://teichlab.github.io/scg_lib_structs/methods_html/inDrop.html
+    #inDrops: remove adapter (see links below for details)
+    ## https://github.com/BUStools/bustools/issues/4
+    ## https://teichlab.github.io/scg_lib_structs/methods_html/inDrop.html
+    ## https://github.com/sdparekh/zUMIs/wiki/Protocol-specific-setup
+    #note that adapters do not have to be removed for the dual-indexed inDrops-v3
     if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
+        echo "  ...remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapter if present
             sed -E '
@@ -1687,14 +1707,16 @@ else
                 s/^(.{8}).{22}(.{8})/\1\2/g
                 }' $convFile |
             #remove linker between barcode and UMI
+            echo"  ...barcode and UMI linker removed for ${technology}"
             sed -E '2~2s/^(.{8})(.{8}).{4}(.{6})/\1\2\3/g' > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
     fi
-
-    #remove adapter from QuartzSeq
+    
+    #QuartzSeq: remove adapter
     if [[ "$technology" == "quartz-seq2-384" ]]; then
         for convFile in "${convFiles[@]}"; do
+        echo "  ...remove adapter for ${technology}"
             #remove adapter if detected
             sed -E '
                 /^TATAGAATTCGCGGCCGCTCGCGATAC(.{14})(.{8})/ {
@@ -1707,6 +1729,7 @@ else
         done
     fi
     if [[ "$technology" == "quartz-seq2-1536" ]]; then
+        echo "  ...remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected
             sed -E '
@@ -1719,10 +1742,10 @@ else
             mv ${crIN}/.temp $convFile
         done
     fi
-
-
-    #remove adapter from Sci-Seq and swap barcode and UMI
+    
+    #Sci-Seq: remove adapter and swap barcode and UMI
     if [[ "$technology" == "sciseq" ]]; then
+        echo "  ...remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected
             sed -E '
@@ -1733,14 +1756,17 @@ else
                 s/^(.{18})//g
                 }'  $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
-            #swap UMI and barcode
+            #swap barcode and UMI
+            echo "  ...barcode and UMI swapped for ${technology}"
             sed -E '2~2s/(.{8})(.{10})/\2\1/' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile            
         done
     fi
-
-    #remove adapter from SureCell (and correct phase blocks)
+    
+    #SureCell: remove adapter and correct phase blocks
+    ## https://github.com/Hoohm/dropSeqPipe/issues/42
     if [[ "$technology" == "surecell" ]]; then
+        echo "  ...remove adapter and phase blocks for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
             sed -E '
@@ -1754,11 +1780,13 @@ else
         done
     fi
 
-    # SPLiT-Seq can be set up similarly if a whitelist and 18bp barcode can be supported
+    #SPLiT-Seq: correct phase blocks and swap barcode and UMI (if a whitelist and 18bp barcode can be supported)
     ## https://github.com/hms-dbmi/dropEst/issues/80
-    if [[ "$technology" == "surecell" ]]; then
+    ## https://github.com/sdparekh/zUMIs/wiki/Protocol-specific-setup
+    if [[ "$technology" == "splitseq" ]]; then
+        echo "  ...remove adapter and phase blocks for ${technology}"
         for convFile in "${convFiles[@]}"; do
-            #remove phase blocks and linkers (swap UMI and barcode)
+            #remove phase blocks and linkers (swap barcode and UMI)
             sed -E '
                 /^([ATCGA]{92})/ {
                 s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8})*/\2\3\4\1/g
@@ -1767,11 +1795,15 @@ else
                 s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8})*/\2\3\4\1/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
+        echo "  ...barcode and UMI swapped for ${technology}" #performed by \1 above
         done
     fi
 
-    #remove adapter from SCRB-Seq
+
+    #SCRB-Seq: remove adapter
+    ## https://teichlab.github.io/scg_lib_structs/methods_html/SCRB-seq.html
     if [[ "$technology" == "scrbseq" ]]; then
+        echo "  ...remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapters
             sed -E '
@@ -1784,7 +1816,7 @@ else
             mv ${crIN}/.temp $convFile
         done
     fi
-
+    
     #converting barcodes
     echo " adjusting barcodes of R1 files"
     if [[ $barcodeadjust != 0 ]]; then
