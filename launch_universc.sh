@@ -1435,8 +1435,10 @@ if [[ $lock -eq 0 ]]; then
             sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
             #disable cloupe generation
-            sed -i '/output_for_cloupe/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
-            sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+            sed -i '/output_for_cloupe/s/^#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+            sed -i '/out cloupe cloupe/ {s/^#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+#            sed -i '/output_for_cloupe/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+#            sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         fi
         echo " ${cellrangerpath} set for $technology"
     fi
