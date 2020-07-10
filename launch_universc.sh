@@ -1162,7 +1162,6 @@ else
 	echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in ICELL8. valid barcode will be an overestimate***"
     elif [[ "$technology" == "marsseq-v2" ]]; then
         barcodefile=${whitelistdir}/MARS-Seq2_barcode.txt
-        echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in ICELL8. valid barcode will be an overestimate***"
     elif [[ "$technology" == "quartz-seq2-384" ]]; then
         barcodefile=${whitelistdir}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
@@ -1179,6 +1178,8 @@ else
             barcodefile=${whitelistdir}/inDrop-v3_barcodes.txt
             echo "***WARNING: ***combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
         fi
+    elif [[ "$technology" == "smartseq" ]]; then
+        barcodefile=${whitelistdir}/SmartSeq3_barcode.txt 
     else
         echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength}bp. valid barcode will be 100% as a result***"
         barcodelength=${minlength}
