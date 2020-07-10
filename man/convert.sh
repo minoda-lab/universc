@@ -137,7 +137,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
 
                 /usr/local/bin/bcl2fastq  -v --runfolder-dir "/path/to/illumina/bcls"  --output-dir "./Data/Intensities/BaseCalls"\
                                              --sample-sheet "/path/to/SampleSheet.csv" --create-fastq-for-index-reads\
-                                             --use-bases-mask y26n,I8n,I8n,Y50n  --mask-short-adapter-reads 0\
+                                             --use-bases-mask Y26n,I8n,I8n,Y50n  --mask-short-adapter-reads 0\
                                              --minimum-trimmed-read-length 0
 
             Note that dual indexes are not supported by cellranger. Manually demultiplexing as above into separate

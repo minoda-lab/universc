@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Wednesday 08 July 2020"
+date: "Thursday 09 July 2020"
 output:
   prettydoc::html_pretty:
        theme: cayman

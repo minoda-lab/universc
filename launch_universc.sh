@@ -1663,6 +1663,7 @@ else
     echo "  UMIs: ${umiadjust}bps at its tail" 
     
     #for CEL-Seq2 swap barcode and UMI
+    ## https://github.com/BUStools/bustools/issues/4
     if [[ "$technology" == "sciseq" ]]; then
         for convFile in "${convFiles[@]}"; do
             #swap UMI and barcode
@@ -1672,8 +1673,8 @@ else
     fi
 
     #remove adapter from inDrops see here for details:
-     ## https://github.com/BUStools/bustools/issues/4
-     ## https://teichlab.github.io/scg_lib_structs/methods_html/inDrop.html
+    ## https://github.com/BUStools/bustools/issues/4
+    ## https://teichlab.github.io/scg_lib_structs/methods_html/inDrop.html
     if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove adapter if present
@@ -1738,6 +1739,7 @@ else
     fi
 
     #remove adapter from SureCell (and correct phase blocks)
+    ## https://github.com/Hoohm/dropSeqPipe/issues/42
     if [[ "$technology" == "surecell" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
@@ -1754,7 +1756,8 @@ else
 
     # SPLiT-Seq can be set up similarly if a whitelist and 18bp barcode can be supported
     ## https://github.com/hms-dbmi/dropEst/issues/80
-    if [[ "$technology" == "surecell" ]]; then
+    ## https://github.com/sdparekh/zUMIs/wiki/Protocol-specific-setup
+    if [[ "$technology" == "splitseq" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers (swap UMI and barcode)
             sed -E '
@@ -1769,6 +1772,7 @@ else
     fi
 
     #remove adapter from SCRB-Seq
+    ## https://teichlab.github.io/scg_lib_structs/methods_html/SCRB-seq.html
     if [[ "$technology" == "scrbseq" ]]; then
         for convFile in "${convFiles[@]}"; do
             #remove adapters
