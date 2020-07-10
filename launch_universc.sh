@@ -632,10 +632,14 @@ elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
     umilength=14
     minlength=11
-elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
     barcodelength=19 
     umilength=6
     minlength=16
+if [[ "$technology" == "indrop-v3" ]]; then
+    barcodelength=8
+    umilength=6
+    minlength=8
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
