@@ -1173,9 +1173,9 @@ else
             echo "  barcode adjusted to ${barcodelength}bp to match the length in the default whitelist for ${technology}"
         fi
         if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
-            barcodefile=${whitelistdir}/inDrop_gel_barcode2_list.txt
+            barcodefile=${whitelistdir}/inDrop-v2_barcodes.txt
         elif [[ "$technology" == "indrop-v3" ]]; then
-            barcodefile=${whitelistdir}/inDrop_gel_barcode2_list.txt
+            barcodefile=${whitelistdir}/inDrop-v3_barcodes.txt
             echo "***WARNING: ***combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
         fi
     elif [[ "$technology" == "smartseq" ]]; then
