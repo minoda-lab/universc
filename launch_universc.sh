@@ -775,15 +775,6 @@ if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index1[@]} -ge 1 ]]; then
         echo "WARNING: mismatch in number of files (check index I1 files)"
         echo "NOTE: if no index files are specified, these can be detected from R1 file names"
     fi
-elif [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
-     if [[ ${#index2[@]} -eq 1 ]]; then
-         echo " index2 $index2 passes"
-     elif [[ ${#index2[@]} -ge 2 ]]; then
-         echo " indices $index2 passes"
-     else
-         echo "WARNING: mismatch in number of files (check index I2 files)"
-         echo "NOTE: if no index files are specified, these can be detected from R1 file names"
-     fi
 else
     #if number of files mismatch or no index1 given
     echo " checking for index1 files..."
@@ -796,24 +787,43 @@ else
         if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
             index1+=("$indexfile")
         fi
-        #check for dual indexing (I2 files)
-        #####check dual index(I1 and I2)#####
-        ##  Note that indexes are copied   ##
-        ##     but are not converted       ##
-        ##   Demultiplex with bcl2fastq    ##
-        ##   This is a work-in-progress    ##
-        #####################################
-        if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
+    done
+fi
+
+#check for dual indexing (I2 files)
+#####check dual index(I1 and I2)#####
+##  Note that indexes are copied   ##
+##     but are not converted       ##
+##   Demultiplex with bcl2fastq    ##
+##   This is a work-in-progress    ##
+#####################################
+# only check I2 for dual-indexed techniques
+if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
+    if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
+        if [[ ${#index2[@]} -eq 1 ]]; then
+            echo " index2 $index2 passes"
+        elif [[ ${#index2[@]} -ge 2 ]]; then
+            echo " indices $index2 passes"
+        else
+            echo "WARNING: mismatch in number of files (check index I2 files)"
+            echo "NOTE: if no index files are specified, these can be detected from R1 file names"
+        fi
+    else
+        #if number of files mismatch or no index1 given
+        echo " checking for index1 files..."
+        for ii in $(seq 1 1 ${#read1[@]}); do
              #iterate over read1 inputs
              indexfile=${read1[$(( $ii -1 ))]}
              #derive I2 filename for R1 filename
              indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I2/' )
+             #only add index2 files to list variable if file exists
              if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
                  index2+=("$indexfile")
              fi
-        fi
-    done
+        done
+    fi
 fi
+
 
 if [[ $verbose = "true" ]]; then
     echo "${#read1[@]} read1s: ${read1[@]}"
