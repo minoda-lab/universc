@@ -1542,12 +1542,6 @@ if [[ $lock -eq 0 ]]; then
             sed -i "s/#*#if gem_group == prev_gem_group/if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/#*#assert barcode_idx >= prev_barcode_idx/assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/#*#assert np.array_equal(in_mc.get_barcodes(), barcodes)/assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
-            #restore cloupe generation
-            if [[ $verbose  ]]; then
-                echo "restore cloupe"
-            fi
-            sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
-            sed -i '/out cloupe cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         elif [[ $lastcall_p == "default:10x" ]] || [[ ! -f $lastcallfile ]]; then
             #disable checking barcodes
             if [[ $verbose  ]]; then
@@ -1556,17 +1550,26 @@ if [[ $lock -eq 0 ]]; then
             sed -i "s/if gem_group == prev_gem_group/#if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
-            #disable cloupe generation
-            if [[ $verbose  ]]; then
-                echo "diasble cloupe"
-            fi
-#            sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
-#            sed -i '/out cloupe cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
-            sed -i '/output_for_cloupe/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
-            sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         fi
-        echo " ${cellrangerpath} set for $technology"
     fi
+    if [[ $technology == "10x" ]] && [[ $barcodefile == "default:10x" ]]; then
+        #restore cloupe generation
+        if [[ $verbose  ]]; then
+            echo "restore cloupe" 
+        fi
+        sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        sed -i '/out cloupe cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+    elif [[ $lastcall_p == "default:10x" ]] || [[ ! -f $lastcallfile ]]; then
+        #disable cloupe generation
+        if [[ $verbose  ]]; then
+           echo "diasble cloupe"
+        fi
+#        sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+#        sed -i '/out cloupe cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro #
+        sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/"null"/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+        sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+    fi
+    echo " ${cellrangerpath} set for $technology"
     
     #whitelist file name
     v2=737K-august-2016.txt
