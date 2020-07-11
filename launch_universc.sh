@@ -14,7 +14,7 @@ if [[ -z $cellrangerpath ]]; then
     echo "cellranger command is not found."
     exit 1
 fi
-cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')'`
+cellrangerversion=$(cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')')
 ##########
 
 
@@ -1522,21 +1522,43 @@ if [[ $lock -eq 0 ]]; then
     
     #restore assert functions if cellranger version is 3 or greater
     echo " restoring cellranger"
-    if [[ `printf '%s\n' '${cellrangerversion} 3.0.0' | sort -V | head -n 1` != ${cellrangerversion} ]]; then
-        if [[ $technology == "10x" ]] && [[ -z $barcodefile ]]; then
+    if [[ $verbose  ]]; then
+        echo "${cellrangerversion}"
+        echo "${cellrangerversion} 3.0.0" | tr " " "\n" | sort -V | head -n 1
+    fi
+    if [[ $(echo "${cellrangerversion} 3.0.0" | tr " " "\n" | sort -V | tail -n 1)  == ${cellrangerversion} ]]; then
+        if [[ $verbose  ]]; then
+            echo "cellranger version 3.0.0 or greater"
+        fi
+        if [[ ! -z $barcodefile ]] && [[ $verbose  ]]; then
+            echo "barcodefile: $barcodefile"
+        fi
+        if [[ $technology == "10x" ]] && [[ $barcodefile == "default:10x" ]]; then
             #restore checking barcodes
+            if [[ $verbose  ]]; then
+                echo "restore barcode checks"
+            fi
             sed -i "s/#if gem_group == prev_gem_group/if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/#assert barcode_idx >= prev_barcode_idx/assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
             #restore cloupe generation
+            if [[ $verbose  ]]; then
+                echo "restore cloupe"
+            fi
             sed -i '/output_for_cloupe/s/^#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
             sed -i '/out cloupe cloupe/ {s/^#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         elif [[ $lastcall == "10x" ]] || [[ ! -f $lastcallfile ]]; then
             #disable checking barcodes
+            if [[ $verbose  ]]; then
+                 echo "disable barcode checks"
+            fi
             sed -i "s/if gem_group == prev_gem_group/#if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
             #disable cloupe generation
+            if [[ $verbose  ]]; then
+                echo "diasble cloupe"
+            fi
 #            sed -i '/output_for_cloupe/s/^#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
 #            sed -i '/out cloupe cloupe/ {s/^#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
             sed -i '/output_for_cloupe/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
