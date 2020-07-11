@@ -844,37 +844,60 @@ fi
 
 # check for indexes in R2 and R3 (R1 -> R2; R2 -> I1; R3 -> I2; R4 -> R1)
 if [[ "$technology" == "indrop-v3" ]]; then
-    if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
-        echo " index I1 and I2 found for ${technology}"
+    if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index1[@]} -ge 1 ]]; then
+        echo " index I1 found for ${technology}"
     else
         #checking for R2 and R3 index files
-        echo " checking for index R2 and R3 files..."
+        echo " checking for index I1 in R2 files..."
         for ii in $(seq 1 1 ${#read1[@]}); do
              #iterate over read1 inputs
              indexfile=${read1[$(( $ii -1 ))]}
              #derive I1 filename from R1 filename
              indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R2/' )
-             #only add index1 files to list variable if file exists
+             #only add index2 files to list variable if file exists (this will only run if I1 not found above)
              if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
                  index1+=("$indexfile")
              fi
+        done
+    fi
+    if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
+        echo " index I2 found for ${technology}"
+    else
+        #checking for R2 and R3 index files
+        echo " checking for index I2 in R3 files..."
+        for ii in $(seq 1 1 ${#read1[@]}); do  
              #iterate over read1 inputs
              indexfile=${read1[$(( $ii -1 ))]}
              #derive I2 filename from R1 filename
              indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R3/' )
-             #only add index2 files to list variable if file exists
+             #only add index2 files to list variable if file exists (this will only run if I2 not found above)
              if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
                  index2+=("$indexfile")
              fi
+        done
+     fi
+     #checking for R1 and R4 index files
+        echo " checking for read R4 files..."
+        for ii in $(seq 1 1 ${#read1[@]}); do
              #iterate over read1 inputs
              indexfile=${read1[$(( $ii -1 ))]}
              #derive I2 filename from R1 filename
              indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R4/' )
-             #only replace R2 files with R4 variable if file exists
+             #only replace R2 files with R4 variable if R4 file exists (otherwise keep R2)
              if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
                  read2[$(( $ii -1 ))]=("$indexfile")
              fi
+             #Note that R2 and R1 are inverted below (thus [I1, I2]R2 or [R2, R3]R4 are converted to R1)
         done
+    fi
+    #checking inDrops-v3 indexes are accepted (by checking that index 2 is correct)
+    ##note that index 1 will be detected as I1 OR R2
+    ##note that read1 will be detected R2 or R4
+    if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
+        echo " indexes ${index1[@]} and ${index2[@]} found for ${technology}"
+    else
+        echo "ERROR: note that ${technology} expects dual indexes: I1 and I2 OR R2 and R3"
+        exit 1
     fi
 fi
 
