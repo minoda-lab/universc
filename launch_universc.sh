@@ -1525,6 +1525,7 @@ if [[ $lock -eq 0 ]]; then
     if [[ $verbose  ]]; then
         echo "${cellrangerversion}"
         echo "${cellrangerversion} 3.0.0" | tr " " "\n" | sort -V | head -n 1
+        echo "last call: $lastcall_p"
     fi
     if [[ $(echo "${cellrangerversion} 3.0.0" | tr " " "\n" | sort -V | tail -n 1)  == ${cellrangerversion} ]]; then
         if [[ $verbose  ]]; then
@@ -1547,7 +1548,7 @@ if [[ $lock -eq 0 ]]; then
             fi
             sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
             sed -i '/out cloupe cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
-        elif [[ $lastcall == "10x" ]] || [[ ! -f $lastcallfile ]]; then
+        elif [[ $lastcall_p == "default:10x" ]] || [[ ! -f $lastcallfile ]]; then
             #disable checking barcodes
             if [[ $verbose  ]]; then
                  echo "disable barcode checks"
