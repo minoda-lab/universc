@@ -5,8 +5,9 @@ if(!require(Seurat)){install.packages("Seurat")}
 
 
 #####Input files#####
-Cellranger.INPUT <- "/Users/kai/Desktop/convert_similarity_test/test_10x/INPUT/cellranger3.0.2/outs/filtered_feature_bc_matrix"
-Convert.INPUT <- "/Users/kai/Desktop/convert_similarity_test/test_10x/INPUT/convert1.0.0/outs/filtered_feature_bc_matrix"
+Cellranger.INPUT <- "tiny-count-v3-v302/outs/outs/filtered_feature_bc_matrix"
+Convert.INPUT <- "test-10x-v3-v302/outs/filtered_feature_bc_matrix"
+Out.dir <- "test_10x_GBM"
 ##########
 
 #####Read in input files#####
@@ -50,7 +51,7 @@ Convert.GBM <- Convert.GBM[order(rownames(Convert.GBM)),]
 ##########
 
 #####Output GBM#####
-Out.dir <- "/Users/kai/Desktop/convert_similarity_test/test_10x/01_GBM"
+system(paste("mkdir -p",  Out.dir)
 Cellranger.file <- paste(Out.dir, "cellranger3.0.2_GBM.txt", sep="/")
 Convert.file <- paste(Out.dir, "convert1.0.0_GBM.txt", sep="/")
 

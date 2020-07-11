@@ -5,8 +5,9 @@ if(!require(Seurat)){install.packages("Seurat")}
 
 
 #####Input files#####
-ICELL8.INPUT <- "/Users/kai/Desktop/convert_similarity_test/test_ICELL8/INPUT/mappa0.9beta/test-icell8-custom-mappa-0.9_genematrix.csv"
-Convert.INPUT <- "/Users/kai/Desktop/convert_similarity_test/test_ICELL8/INPUT/convert1.0.0/outs/filtered_feature_bc_matrix"
+ICELL8.INPUT <- "test-icell8-custom-mappa-0.9/test-icell8-custom-mappa-0.9_genematrix.csv"
+Convert.INPUT <- "test-icell8-custom-v302/outs/filtered_feature_bc_matrix"
+Out.dir <- "test_ICELL8_GBM"
 ##########
 
 #####Read in input files#####
@@ -49,7 +50,7 @@ Convert.GBM <- Convert.GBM[order(rownames(Convert.GBM)),]
 ##########
 
 #####Output GBM#####
-Out.dir <- "/Users/kai/Desktop/convert_similarity_test/test_ICELL8/01_GBM"
+system(paste("mkdir -p",  Out.dir)
 ICELL8.file <- paste(Out.dir, "mappa0.9beta_GBM.txt", sep="/")
 Convert.file <- paste(Out.dir, "convert1.0.0_GBM.txt", sep="/")
 

@@ -5,8 +5,9 @@ if(!require(Seurat)){install.packages("Seurat")}
 
 
 #####Input files#####
-Nadia.INPUT <- "/Users/kai/Desktop/convert_similarity_test/test_Nadia/INPUT/dropseqpipe0.6/samples/SRR1873277_S1_L001/umi"
-Convert.INPUT <- "/Users/kai/Desktop/convert_similarity_test/test_Nadia/INPUT/convert1.0.0/outs/filtered_feature_bc_matrix"
+Nadia.INPUT <- "test-dropseqpipe-dev/samples/SRR1873277_S1_L001/umi"
+Convert.INPUT <- "test-dropseq-v302/outs/filtered_feature_bc_matrix"
+Out.dir <- "test_DropSeq_GBM"
 ##########
 
 #####Read in input files#####
@@ -47,7 +48,7 @@ Convert.GBM <- Convert.GBM[order(rownames(Convert.GBM)),]
 ##########
 
 #####Output GBM#####
-Out.dir <- "/Users/kai/Desktop/convert_test/test_Nadia/01_GBM"
+system(paste("mkdir -p",  Out.dir)
 Nadia.file <- paste(Out.dir, "dropseqpipe0.6_GBM.txt", sep="/")
 Convert.file <- paste(Out.dir, "convert1.0.0_GBM.txt", sep="/")
 
