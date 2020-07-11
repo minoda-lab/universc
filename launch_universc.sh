@@ -1557,6 +1557,7 @@ if [[ $lock -eq 0 ]]; then
         if [[ $verbose  ]]; then
             echo "restore cloupe" 
         fi
+        sed -i 's/#*#@include "_cloupe_stages.mro"/@include "_cloupe_stages.mro"g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         sed -i '/out cloupe cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         sed -i '/output_for_cloupe/s/null/CLOUPE_PREPROCESS.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
@@ -1567,9 +1568,10 @@ if [[ $lock -eq 0 ]]; then
         fi
 #        sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
 #        sed -i '/out cloupe cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro #
-         sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/null/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
-#        sed -i '/output_for_cloupe/s/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
-#        sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        sed -i 's/@include "_cloupe_stages.mro"/#@include "_cloupe_stages.mro"g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/null/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+        sed -i '/output_for_cloupe/s/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+        sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
     fi
     echo " ${cellrangerpath} set for $technology"
     
