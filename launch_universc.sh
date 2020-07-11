@@ -920,7 +920,6 @@ if [[ ${#index1[@]} -eq ${#read1[@]} ]] || [[ ${#index1[@]} -eq 0 ]]; then
 else
     echo "... index1 files missing for some samples or lanes (will be skipped)"
     index1=()
-    fi
 fi
 if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -eq ${#read1[@]} ]] || [[ ${#index2[@]} -eq 0 ]]; then
     if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -eq ${#read1[@]} ]]; then
