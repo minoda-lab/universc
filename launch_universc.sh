@@ -784,7 +784,7 @@ keys=("R1" "R2")
 ##         calling cellranger      ##
 ##   This is a work-in-progress    ##
 #####################################
-if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index1[@]} -ge 1 ]]; then
+if [[ ${#index1[@]} -eq ${#read1[@]} ]] || [[ ${#index1[@]} -ge 1 ]]; then
     if [[ ${#index1[@]} -eq 1 ]]; then
         echo " index1 $index1 passes"
     elif [[ ${#index1[@]} -ge 2 ]]; then
@@ -799,7 +799,7 @@ else
     for ii in $(seq 1 1 ${#read1[@]}); do
         #iterate over read1 inputs
         indexfile=${read1[$(( $ii -1 ))]}
-        #derive I1 filename for R1 filename
+        #derive I1 filename from R1 filename
         indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I1/' )
         #only add index1 files to list variable if file exists
         if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
@@ -817,7 +817,7 @@ fi
 #####################################
 # only check I2 for dual-indexed techniques
 if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
-    if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
+    if [[ ${#index2[@]} -eq ${#read1[@]} ]] || [[ ${#index2[@]} -ge 1 ]]; then
         if [[ ${#index2[@]} -eq 1 ]]; then
             echo " index2 $index2 passes"
         elif [[ ${#index2[@]} -ge 2 ]]; then
@@ -832,7 +832,7 @@ if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ 
         for ii in $(seq 1 1 ${#read1[@]}); do
              #iterate over read1 inputs
              indexfile=${read1[$(( $ii -1 ))]}
-             #derive I2 filename for R1 filename
+             #derive I2 filename from R1 filename
              indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I2/' )
              #only add index2 files to list variable if file exists
              if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
@@ -842,6 +842,41 @@ if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ 
     fi
 fi
 
+# check for indexes in R2 and R3 (R1 -> R2; R2 -> I1; R3 -> I2; R4 -> R1)
+if [[ "$technology" == "indrop-v3" ]]; then
+    if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
+        echo " index I1 and I2 found for ${technology}"
+    else
+        #checking for R2 and R3 index files
+        echo " checking for index R2 and R3 files..."
+        for ii in $(seq 1 1 ${#read1[@]}); do
+             #iterate over read1 inputs
+             indexfile=${read1[$(( $ii -1 ))]}
+             #derive I1 filename from R1 filename
+             indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R2/' )
+             #only add index1 files to list variable if file exists
+             if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
+                 index1+=("$indexfile")
+             fi
+             #iterate over read1 inputs
+             indexfile=${read1[$(( $ii -1 ))]}
+             #derive I2 filename from R1 filename
+             indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R3/' )
+             #only add index2 files to list variable if file exists
+             if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
+                 index2+=("$indexfile")
+             fi
+             #iterate over read1 inputs
+             indexfile=${read1[$(( $ii -1 ))]}
+             #derive I2 filename from R1 filename
+             indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R4/' )
+             #only replace R2 files with R4 variable if file exists
+             if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
+                 read2[$(( $ii -1 ))]=("$indexfile")
+             fi
+        done
+    fi
+fi
 
 if [[ $verbose = "true" ]]; then
     echo "${#read1[@]} read1s: ${read1[@]}"
@@ -1618,6 +1653,10 @@ for fq in "${read2[@]}"; do
         #where converted "read2" is R1 in source files
         echo "using transcripts in Read 1 for ${technology}"
         to=`echo $to | sed -e "s/_R1_/_R2_/g"`
+        #where converted "read2" is R4 in source files
+        if [[ "$technology" == "indrop-v3" ]]; then
+            to=`echo $to | sed -e "s/_R4_/_R2_/g"`
+        fi
     fi
 
     if [[ $verbose == true ]]; then echo "$to"; fi
@@ -1645,7 +1684,14 @@ if [[ ${#index1[@]} -ge 1 ]]; then
         to=`basename $fq`
         to="${crIN}/${to}"
         to=$(echo "$to" | sed 's/\.gz$//')
-    
+
+        #convert index for R2 and R3
+        if [[ "$technology" == "indrop-v3" ]]; then
+            #where converted "index1" is R2 in source files (corrected names for cellranger)
+            echo "using transcripts in Read 2 for ${technology}"
+            to=`echo $to | sed -e "s/_R2_/_I1_/g"`
+        fi    
+
         if [[ $verbose == true ]]; then echo "$to" ; fi
         crI1s+=($to)
     
@@ -1672,6 +1718,13 @@ if [[ ${#index2[@]} -ge 1 ]]; then
         to=`basename $fq`
         to="${crIN}/${to}"
         to=$(echo "$to" | sed 's/\.gz$//')
+
+        #convert index for R2 and R3
+        if [[ "$technology" == "indrop-v3" ]]; then
+            #where converted "index2" is R3 in source files (corrected names for cellranger)
+            echo "using transcripts in Read 2 for ${technology}"
+            to=`echo $to | sed -e "s/_R3_/_I2_/g"`
+        fi
     
         if [[ $verbose == true ]]; then echo "$to" ; fi
         crI2s+=($to)
