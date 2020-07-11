@@ -608,6 +608,9 @@ fi
 
 #barcode and umi lengths given by options
 barcodelength=""
+if [[ $verbose ]]; then
+    echo "barcodelength before $barcodelength"
+fi
 umilength=""
 minlength=""
 if [[ "$technology" == "10x" ]]; then
@@ -642,7 +645,7 @@ elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; t
     barcodelength=19 
     umilength=6
     minlength=16
-if [[ "$technology" == "indrop-v3" ]]; then
+elif [[ "$technology" == "indrop-v3" ]]; then
     barcodelength=11
     umilength=6
     minlength=8
@@ -749,11 +752,18 @@ fi
 totallength=`echo $((${barcode_default}+${umi_default}))`
 
 #adjustment lengths
+if [[ $verbose ]]; then
+   echo "barcode length: $barcodelength"
+   echo "barcode default: $barcode_default"
+fi
 barcodeadjust=`echo $(($barcodelength-$barcode_default))`
 umiadjust=`echo $(($umilength-$umi_default))`
+if [[ $verbose ]]; then
+   echo "barcode adjust: $barcodeadjust "
+fi
 
 if [[ $verbose ]]; then
-    echo " chemisty set to ${chemistry}"
+    echo " chemistry set to ${chemistry}"
 fi
 ##########
 
@@ -889,15 +899,16 @@ if [[ "$technology" == "indrop-v3" ]]; then
              fi
              #Note that R2 and R1 are inverted below (thus [I1, I2]R2 or [R2, R3]R4 are converted to R1)
         done
-    fi
     #checking inDrops-v3 indexes are accepted (by checking that index 2 is correct)
     ##note that index 1 will be detected as I1 OR R2
     ##note that read1 will be detected R2 or R4
     if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
         echo " indexes ${index1[@]} and ${index2[@]} found for ${technology}"
     else
-        echo "ERROR: note that ${technology} expects dual indexes: I1 and I2 OR R2 and R3"
-        exit 1
+        if [[ $setup == "false" ]]; then
+            echo "ERROR: note that ${technology} expects dual indexes: I1 and I2 OR R2 and R3"
+            exit 1
+        fi
     fi
 fi
 
@@ -1259,7 +1270,7 @@ if [[ -f ${barcodefile} ]]; then
     if [[ $verbose ]]; then
         echo "  barcodefile file exists"
     fi
-    if ! [[ "${barcodefile}" == "${whitelsitdir}"* ]]; then
+    if ! [[ "${barcodefile}" == "${whitelistdir}"* ]]; then
         if [[ $verbose ]]; then
             echo "  ensuring all barcode within selected whitelist are in upper case"
         fi
@@ -1268,7 +1279,7 @@ if [[ -f ${barcodefile} ]]; then
 else
     if [[ ${barcodefile} == "default:10x" ]]; then
         if [[ $verbose ]]; then
-            echo "  default 10x barcoe whitelist will be used"
+            echo "  default 10x barcode whitelist will be used"
         fi
     elif ! [[ "${barcodefile}" == "${whitelistdir}"* ]]; then
         echo "Error: user selected barcode file (${barcodefile}) does not exist"
@@ -1281,7 +1292,9 @@ else
             if [[ "$technology" == "indrop-v1" ]] || [[ $technology"" == "indrop-v2" ]]; then
                 ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v2 ${whitelistdir}
             elif [[ "$technology" == "indrop-v3" ]]; then
-                ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
+                #ignore barcodes in index (R1 only)
+                cp ${whitelistdir}/inDrop_gel_barcode2_list.txt ${whitelistdir}/inDrop-v3_barcodes.txt
+                #${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
             fi
         else
             #generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
@@ -1524,10 +1537,10 @@ if [[ $lock -eq 0 ]]; then
             sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
             sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
             #disable cloupe generation
-            sed -i '/output_for_cloupe/s/^#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
-            sed -i '/out cloupe cloupe/ {s/^#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
-#            sed -i '/output_for_cloupe/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
-#            sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+#            sed -i '/output_for_cloupe/s/^#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+#            sed -i '/out cloupe cloupe/ {s/^#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+            sed -i '/output_for_cloupe/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+            sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         fi
         echo " ${cellrangerpath} set for $technology"
     fi
@@ -1544,7 +1557,7 @@ if [[ $lock -eq 0 ]]; then
         echo " backup generated"
     fi
     
-    #convert whitelist to the apropriate barcode
+    #convert whitelist to the appropriate barcode
     echo " converting whitelist"
     if [[ ${barcodefile} == "default:10x" ]]; then
         #for version 2
@@ -1554,10 +1567,12 @@ if [[ $lock -eq 0 ]]; then
     else
         #for version 2
         cat ${barcodefile} > ${v2}
+        echo "barcode adjust: $barcodeadjust "
         if [[ $barcodeadjust -gt 0 ]]; then
             sed -i "s/^.{${barcodeadjust}}//" ${v2} #Trim the first n characters from the beginning of the sequence and quality
         elif [[ 0 -gt $barcodeadjust ]]; then
             As=`printf '%0.sA' $(seq 1 $(($barcodeadjust * -1)))`
+            echo As: $As
             sed -i "s/^/$As/" ${v2} #Trim the first n characters from the beginning of the quality
         fi
         #for version 3
