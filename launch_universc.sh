@@ -1559,6 +1559,7 @@ if [[ $lock -eq 0 ]]; then
         fi
         sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         sed -i '/out cloupe cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        sed -i '/output_for_cloupe/s/null/CLOUPE_PREPROCESS.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
     elif [[ $lastcall_p == "default:10x" ]] || [[ ! -f $lastcallfile ]]; then
         #disable cloupe generation
         if [[ $verbose  ]]; then
@@ -1566,8 +1567,9 @@ if [[ $lock -eq 0 ]]; then
         fi
 #        sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
 #        sed -i '/out cloupe cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro #
-        sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/"null"/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
-        sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+         sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/null/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+#        sed -i '/output_for_cloupe/s/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+#        sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
     fi
     echo " ${cellrangerpath} set for $technology"
     
