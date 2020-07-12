@@ -1572,6 +1572,15 @@ if [[ $lock -eq 0 ]]; then
         sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/null/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
         sed -i '/output_for_cloupe/s/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
         sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+
+#remove 11 lines for cloupe preprocess call
+for file in $(grep -l  "call CLOUPE_PREPROCES"  /home/tom/local/bin/cellranger-3.0.2/cellranger-cs/3.0.2/mro/*.mro )
+do
+num=$(grep -n "call CLOUPE_PREPROCESS" $file |  head -n 1 | cut -d":" -f1); num2=$(($num+10)); echo $num $num2
+eval "sed '$(echo "${num},${num2}s/^/#/g")' $file" | grep "PREPROCESS"
+done
+
+
     fi
     echo " ${cellrangerpath} set for $technology"
     
