@@ -1559,9 +1559,9 @@ if [[ $lock -eq 0 ]]; then
         fi
         ## list cloupe output as (not null)
         if [[ $verbose  ]]; then
-            echo "sed -i '/output_for_cloupe/s/null/CLOUPE_PREPROCESS\.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro"
+            echo "sed -i '/cloupe/s/null/CLOUPE_PREPROCESS\.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro"
         fi
-        sed -i '/output_for_cloupe/s/null/CLOUPE_PREPROCESS\.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+        sed -i '/cloupe/s/null/CLOUPE_PREPROCESS\.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
         ## add cloupe to outputs
         if [[ $verbose  ]]; then
             echo "sed -i '/out cloupe *cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro"
@@ -1572,7 +1572,7 @@ if [[ $lock -eq 0 ]]; then
         if [[ $verbose  ]]; then
             echo "sed -i 's/^#*#@include "_cloupe_stages.mro"/@include "_cloupe_stages.mro"/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro"
         fi
-        sed -i 's/^#*#@include "_cloupe_stages.mro"/@include "_cloupe_stages.mro"g/' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        sed -i 's/^#*#@include "_cloupe_stages.mro"/@include "_cloupe_stages.mro"/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         ## remove listing CLOUPE in output
         sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
         ## remove calling CLOUPE_PREPROCESS
@@ -1593,8 +1593,6 @@ if [[ $lock -eq 0 ]]; then
         if [[ $verbose  ]]; then
             echo "disable cloupe"
         fi
-        ## list cloupe output as null
-        sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/null/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
         ## remove cloupe from outputs
         sed -i '/out cloupe *cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         #remove 11 lines for cloupe preprocess call (all following steps are needed to be suppressed together or call will break)
@@ -1602,6 +1600,8 @@ if [[ $lock -eq 0 ]]; then
         sed -i 's/@include "_cloupe_stages.mro"/#@include "_cloupe_stages.mro"/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         ## remove listing CLOUPE in output
         sed -i '/output_for_cloupe/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+         ## list cloupe output as null
+        sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/null/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         ## remove calling CLOUPE_PREPROCESS
         ### iterate over all files calling CLOUPE_PREPROCESS
         for file in $(grep -l  "call CLOUPE_PREPROCESS"  /home/tom/local/bin/cellranger-3.0.2/cellranger-cs/3.0.2/mro/*.mro )
