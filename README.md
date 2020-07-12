@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Thursday 09 July 2020"
+date: "Sunday 12 July 2020"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -812,7 +812,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
                                   MARS-Seq (6bp barcode, 10bp UMI): marsseq, marsseq-v1
-                                  MARS-Seq2 (7bp barcode, 8bp UMI): marsseq2, marsseq-v2 
+                                  MARS-Seq2 (7bp barcode, 8bp UMI): marsseq2, marsseq-v2
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   Sci-Seq (8bp UMI, 10bp barcode): sciseq
@@ -923,7 +923,17 @@ bash universc/launch_universc.sh --id "test-dropseq" --technology "nadia" \
 
 #### Running launch_universc.sh on ICELL8 data
 
-- add example running on custom barcode whitelist
+```
+# call on icell8 files with custom whitelist and non-standard file names
+bash launch_universc.sh --setup -t "icell8"  --barcodefile "test/shared/icell8-test/BarcodeList.txt"
+bash launch_universc.sh --id "test-icell8-custom" --technology "iCell8" \
+ --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --read1 "test/shared/icell8-test/iCELL8_01_S1_L001_R1_001.fastq" "test/shared/icell8-test/iCELL8_01_S1_L002_R1_001.fastq" \
+ --read2 "test/shared/icell8-test/iCELL8_01_S1_L001_R2_001.fastq" "test/shared/icell8-test/iCELL8_01_S1_L002_R2_001.fastq" \
+ --barcodefile "test/shared/icell8-test/BarcodeList.txt" \
+ --jobmode "sge"
+```
+
 
 ## Licensing
 
