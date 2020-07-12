@@ -1557,10 +1557,28 @@ if [[ $lock -eq 0 ]]; then
         if [[ $verbose  ]]; then
             echo "restore cloupe" 
         fi
-        sed -i 's/#*#@include "_cloupe_stages.mro"/@include "_cloupe_stages.mro"g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
-        sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        ## list cloupe output as (not null)
+        sed -i '/output_for_cloupe/s/null/CLOUPE_PREPROCESS\.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+        ## add cloupe to outputs
         sed -i '/out cloupe cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
-        sed -i '/output_for_cloupe/s/null/CLOUPE_PREPROCESS.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+        #restore 11 lines for cloupe preprocess call (all following steps are needed to be called together or the call will break)
+        ## restore defining CLOUPE_PREPROCESS
+        sed -i 's/^#*#@include "_cloupe_stages.mro"/@include "_cloupe_stages.mro"g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        ## remove listing CLOUPE in output
+        sed -i '/output_for_cloupe/s/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+        ## remove calling CLOUPE_PREPROCESS
+        ### iterate over all files calling CLOUPE_PREPROCESS
+        for file in $(grep -l  "call CLOUPE_PREPROCES"  /home/tom/local/bin/cellranger-3.0.2/cellranger-cs/3.0.2/mro/*.mro )
+        do
+            #find  start of CLOUPE_PREPROCESS call
+            num=$(grep -n "call CLOUPE_PREPROCESS" $file |  head -n 1 | cut -d":" -f1)
+            #find end of CLOUPE_PREPROCESS call
+            num2=$(($num +$(tail -n $(echo $(($(wc -l $file | cut -f1 -d " ") - $num))) $file | grep -n ")" | head -n 1 | cut -d":" -f1)))
+            if [[ $verbose ]]; then
+               echo "lines ${num}-${num2} restored in $file"
+            fi
+            eval "sed -i '$(echo "${num},${num2}s/^#*#//g")' $file"
+        done
     elif [[ $lastcall_p == "default:10x" ]] || [[ ! -f $lastcallfile ]]; then
         #disable cloupe generation
         if [[ $verbose  ]]; then
@@ -1570,7 +1588,7 @@ if [[ $lock -eq 0 ]]; then
         sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/null/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
         ## remove cloupe from outputs
         sed -i '/out cloupe cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
-        #remove 11 lines for cloupe preprocess call (all folowing steps are needed to be suppressed together or call will break)
+        #remove 11 lines for cloupe preprocess call (all following steps are needed to be suppressed together or call will break)
         ## remove defining CLOUPE_PREPROCESS
         sed -i 's/@include "_cloupe_stages.mro"/#@include "_cloupe_stages.mro"g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         ## remove listing CLOUPE in output
