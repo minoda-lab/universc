@@ -30,6 +30,7 @@
 <p>The following technologies have been tested to ensure that they give the expected results: 10x Genomics, Nadia (DropSeq), ICELL8 version 3</p>
 <p>We provide the following preset configurations for convenience based on published data and configurations used by other pipelines (e.g, DropSeqPipe and Kallisto/Bustools). To add further support for other technologies or troubleshoot problems, please submit an Issue to the GitHub repository: <a href="https://github.com/TomKellyGenetics/universc/issues">TomKellyGenetics/universc</a> as described in <a href="#Issues">Bug Reports</a> below.</p>
 <p>Some changes to the cellranger install are required to run other technologies. Therefore we provide settings for 10x Genomics which restores settings for the Chromium instrument. We therefore recommend using ‘convert’ for processing all data from different technologies as the tool manages these changes. Please note that on a single install of cellranger, multiple technologies or multiple samples of the same technology with different whitelist barcodes cannot be run cannot be run simultaneousely (the tool will also check for this to avoid causing problems with existing runs). Multiple samples of the same technology with the same barcode whitelist can be run simultaneously.</p>
+<p>If you are using <code>UniverSC</code> you should also do so to run 10x Genomics data. If you wish to restore cellranger to default settings, see the <a href="#Uninstalling">installation</a> or <a href="#Debugging">troubleshooting</a> sections below.</p>
 <h4 id="pre-set-configurations">Pre-set configurations</h4>
 <ul>
 <li>10x Genomics (version automatically detected): 10x, chromium
@@ -248,7 +249,10 @@ make</code></pre>
 <p>The manual can be updated with:</p>
 <pre><code>sudo make manual</code></pre>
 <h5 id="uninstalling">Uninstalling</h5>
-<p>We provide an automated script to reverse these changes.</p>
+<p>Before uninstalling UniverSC please ensure that any versions of cellranger used are restored to their default configuration:</p>
+<pre><code>export PATH=/Users/tom/Downloads/cellranger-x.y.z:$PATH
+bash launch_universc.sh -t &quot;10x&quot; --setup</code></pre>
+<p>We provide an automated script to reverse the changes above.</p>
 <pre><code>make uninstall</code></pre>
 <p>This is will automatically detect the installation of launch_universc.sh.</p>
 <p>If multiple versions of cellranger are present, you can specify which to remove with.</p>
@@ -499,6 +503,17 @@ bash launch_universc.sh --id &quot;test-icell8-custom&quot; --technology &quot;i
 <p>Then you can call <code>launch_universc.sh</code> as above or configure cellranger for your technology of choice such as :</p>
 <pre><code>bash launch_universc.sh --setup -t &quot;icell8&quot;  --barcodefile &quot;test/shared/icell8-test/BarcodeList.txt&quot;</code></pre>
 <p>Set up calls are particularly useful to set up the whitelist in advance of running multiple samples simultaneously, provided they are the same technology.</p>
+<p>It is also possible that your cellranger installation will be “locked” by UniverSC. This is intentional to prevent different technologies running simultaneously. When running cellranger, we need to ensure that the barcode whitelist corresponds to the technology that is running and cannot be changed until existing runs will finish.</p>
+<p>However, this means that in the case of an error or if a job is “killed”, then the lock file will not be cleared. You can do this manually as follows:</p>
+<pre><code>cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d&#39;(&#39; | cut -f1 -d&#39;)&#39;`
+cellrangerpath=`which cellranger`
+rm ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock</code></pre>
+<p>When doing this <em>please ensure that no other instances are running</em> for UniverSC.</p>
+<p>You can also see the current configuration of UniverSC for each cellranger install as follows:</p>
+<pre><code>cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d&#39;(&#39; | cut -f1 -d&#39;)&#39;`
+cellrangerpath=`which cellranger`
+cat ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lastcalled</code></pre>
+<p>These columns show the barcode length, UMI length, and barcode whitelist of the last technology used by UniverSC. Please <em>do not remove this file</em> unless the last technology used is 10x Genomics.</p>
 <h2 id="licensing">Licensing</h2>
 <p>This package is provided open-source on a GPL-3 license. This means that you are free to use and modify this code provided that they also contain this license.</p>
 <p>Please note that we are third-party developers releasing it for use by users like ourselves. We are not affiliated with 10x Genomics, Dolomite Bio, Takara Bio, or any other vendor of single-cell technologies. This software is not supported by 10x Genomics and only changes data formats so that other technologies can be used with the cellranger pipeline.</p>
