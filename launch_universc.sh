@@ -1576,8 +1576,12 @@ if [[ $lock -eq 0 ]]; then
 #remove 11 lines for cloupe preprocess call
 for file in $(grep -l  "call CLOUPE_PREPROCES"  /home/tom/local/bin/cellranger-3.0.2/cellranger-cs/3.0.2/mro/*.mro )
 do
-num=$(grep -n "call CLOUPE_PREPROCESS" $file |  head -n 1 | cut -d":" -f1); num2=$(($num+10)); echo $num $num2
-eval "sed '$(echo "${num},${num2}s/^/#/g")' $file" | grep "PREPROCESS"
+num=$(grep -n "call CLOUPE_PREPROCESS" $file |  head -n 1 | cut -d":" -f1)
+num2=$(($num +$(tail -n $(echo $(($(wc -l $file | cut -f1 -d " ") - $num))) $file | grep -n ")" | head -n 1 | cut -d":" -f1)))
+if [[ $verbose ]]; then
+   echo "lines ${num}-${num2} commented out of $file"
+fi
+eval "sed -i '$(echo "${num},${num2}s/^/#/g")' $file"
 done
 
 
