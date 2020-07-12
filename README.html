@@ -493,6 +493,12 @@ bash launch_universc.sh --id &quot;test-icell8-custom&quot; --technology &quot;i
  --read2 &quot;test/shared/icell8-test/iCELL8_01_S1_L001_R2_001.fastq&quot; &quot;test/shared/icell8-test/iCELL8_01_S1_L002_R2_001.fastq&quot; \
  --barcodefile &quot;test/shared/icell8-test/BarcodeList.txt&quot; \
  --jobmode &quot;sge&quot;</code></pre>
+<h3 id="debugging">Debugging</h3>
+<p>We’ve made considerable efforts to ensure you don’t run into problems. However, it may be necessary from time to time to troubleshoot issues calling UniverSC. For other technologies, various changes to cellranger are made in a reversible fashion. If you run into problems you can restore cellranger to default parameters:</p>
+<pre><code>bash launch_universc.sh -t &quot;10x&quot; --setup</code></pre>
+<p>Then you can call <code>launch_universc.sh</code> as above or configure cellranger for your technology of choice such as :</p>
+<pre><code>bash launch_universc.sh --setup -t &quot;icell8&quot;  --barcodefile &quot;test/shared/icell8-test/BarcodeList.txt&quot;</code></pre>
+<p>Set up calls are particularly useful to set up the whitelist in advance of running multiple samples simultaneously, provided they are the same technology.</p>
 <h2 id="licensing">Licensing</h2>
 <p>This package is provided open-source on a GPL-3 license. This means that you are free to use and modify this code provided that they also contain this license.</p>
 <p>Please note that we are third-party developers releasing it for use by users like ourselves. We are not affiliated with 10x Genomics, Dolomite Bio, Takara Bio, or any other vendor of single-cell technologies. This software is not supported by 10x Genomics and only changes data formats so that other technologies can be used with the cellranger pipeline.</p>

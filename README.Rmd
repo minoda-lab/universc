@@ -13,8 +13,8 @@ output:
        number_sections: true
        toc: true
        toc_depth: 4
-       keep_md: true
        keep_html: true
+       keep_md: true
 toc-title: "Table of Contents"
 tags:
   - single-cell
@@ -933,6 +933,26 @@ bash launch_universc.sh --id "test-icell8-custom" --technology "iCell8" \
  --barcodefile "test/shared/icell8-test/BarcodeList.txt" \
  --jobmode "sge"
 ```
+
+### Debugging
+
+We've made considerable efforts to ensure you don't run into problems. However, it may be necessary from
+time to time to troubleshoot issues calling UniverSC. For other technologies, various
+changes to cellranger are made in a reversible fashion. If you run into problems you can restore
+cellranger to default parameters:
+
+```
+bash launch_universc.sh -t "10x" --setup
+```
+
+Then you can call `launch_universc.sh` as above or configure cellranger for your technology of choice such as :
+
+```
+bash launch_universc.sh --setup -t "icell8"  --barcodefile "test/shared/icell8-test/BarcodeList.txt"
+```
+
+Set up calls are particularly useful to set up the whitelist in advance of running multiple
+samples simultaneously, provided they are the same technology.
 
 
 ## Licensing
