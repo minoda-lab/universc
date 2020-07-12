@@ -1577,7 +1577,7 @@ if [[ $lock -eq 0 ]]; then
         sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
         ## remove calling CLOUPE_PREPROCESS
         ### iterate over all files calling CLOUPE_PREPROCESS
-        for file in $(grep -l  "call CLOUPE_PREPROCESS"  /home/tom/local/bin/cellranger-3.0.2/cellranger-cs/3.0.2/mro/*.mro )
+        for file in $(grep -l  "call CLOUPE_PREPROCESS"  ${cellrangerpath}cs/${cellrangerversion}/mro/*.mro )
         do
             #find  start of CLOUPE_PREPROCESS call
             num=$(grep -n "call CLOUPE_PREPROCESS" $file |  head -n 1 | cut -d":" -f1)
@@ -1604,7 +1604,7 @@ if [[ $lock -eq 0 ]]; then
         sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/null/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         ## remove calling CLOUPE_PREPROCESS
         ### iterate over all files calling CLOUPE_PREPROCESS
-        for file in $(grep -l  "call CLOUPE_PREPROCESS"  /home/tom/local/bin/cellranger-3.0.2/cellranger-cs/3.0.2/mro/*.mro )
+        for file in $(grep -l  "call CLOUPE_PREPROCESS"  ${cellrangerpath}-cs/${cellrangerversion}/mro/*.mro )
         do
             #find  start of CLOUPE_PREPROCESS call
             num=$(grep -n "call CLOUPE_PREPROCESS" $file |  head -n 1 | cut -d":" -f1)
