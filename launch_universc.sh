@@ -3,7 +3,7 @@
 install=false
 
 ######convert version#####
-convertversion="1.0.1.9000"
+convertversion="1.0.1"
 ##########
 
 

@@ -50,7 +50,7 @@ Guide on how to simulate gene expression data from pathway structures defined by
 
 **Package**
 
-UniverSC version 1.0.0
+UniverSC version 1.0.1
 
 **Maintainers**
 
@@ -159,14 +159,14 @@ as follows:
 
 Kelly, S.T., Battenberg, K., Hayashi, K., and Minoda, A. (2020)
 launch_universc.sh : single-cell processing across technologies.
-package version 1.0.0. https://github.com/TomKellyGenetics/universc
+package version 1.0.1. https://github.com/TomKellyGenetics/universc
 
 ```
 @Manual{,
     title = {{launch_universc.sh}: single-cell processing across technologies},
     author = {S. Thomas Kelly, Kai Battenbery, Makoto Hayashi, and Aki Minoda},
     year = {2020},
-    note = {package version 1.0.0},
+    note = {package version 1.0.1},
     url = {https://github.com/TomKellyGenetics/universc},
   }
 ```
