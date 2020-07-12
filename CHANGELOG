@@ -1,3 +1,13 @@
+### 1.0.1
+
+- improved set up call to handle restoring cloupe files for 10x
+
+- support for index files for testing 10x
+
+- checking for dual index files for inDrops-v3, SmartSeq3 and Sci-Seq
+
+- adds whitelists for SmartSeq3 and MARS-Seq-2.0
+
 ### 1.0.0
 
 - full documentation of all features

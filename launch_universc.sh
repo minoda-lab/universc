@@ -3,7 +3,7 @@
 install=false
 
 ######convert version#####
-convertversion="1.0.0.9004"
+convertversion="1.0.1.9000"
 ##########
 
 
@@ -1577,7 +1577,7 @@ if [[ $lock -eq 0 ]]; then
         sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
         ## remove calling CLOUPE_PREPROCESS
         ### iterate over all files calling CLOUPE_PREPROCESS
-        for file in $(grep -l  "call CLOUPE_PREPROCESS"  ${cellrangerpath}cs/${cellrangerversion}/mro/*.mro )
+        for file in $(grep -l  "call CLOUPE_PREPROCESS"  ${cellrangerpath}-cs/${cellrangerversion}/mro/*.mro )
         do
             #find  start of CLOUPE_PREPROCESS call
             num=$(grep -n "call CLOUPE_PREPROCESS" $file |  head -n 1 | cut -d":" -f1)
