@@ -59,6 +59,13 @@
 <li>Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq</li>
 <li>SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad</li>
 </ul>
+<p>All technologies support 3’ single-cell RNA-Seq. Barcode adjustments and whitelists are changed automatically. For 5’ single-cell RNA-Seq, this is only supported for 10x Genomics version 2 chemistry. This is detected automatically but can be configured with the <code>--chemistry</code> argument.</p>
+<h4 id="dual-indexing">Dual-indexing</h4>
+<p>For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use “bcl2fastq” before calling UniverSC:</p>
+<pre><code>   /usr/local/bin/bcl2fastq  -v --runfolder-dir &quot;/path/to/illumina/bcls&quot;  --output-dir &quot;./Data/Intensities/BaseCalls&quot;\
+                                --sample-sheet &quot;/path/to/SampleSheet.csv&quot; --create-fastq-for-index-reads\
+                                --use-bases-mask Y26n,I8n,I8n,Y50n  --mask-short-adapter-reads 0\
+                                --minimum-trimmed-read-length 0</code></pre>
 <h4 id="custom-inputs">Custom inputs</h4>
 <p>Custom inputs are also supported by giving the name “custom” and length of barcode and UMI separated by a &quot;_&quot; character.</p>
 <p>e.g. Custom (16bp barcode, 10bp UMI): <code>custom_16_10</code></p>

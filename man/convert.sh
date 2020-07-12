@@ -132,13 +132,12 @@ Provides a conversion script to run multiple technologies and custom libraries w
 
             Or
 
-                /usr/local/bin/bcl2fastq -v --runfolder-dir "/path/to/illumina/bcls"  --output-dir "./Data/Intensities/BaseCalls"\
-                                            --sample-sheet "/path/to/SampleSheet.csv" --create-fastq-for-index-reads
-
                 /usr/local/bin/bcl2fastq  -v --runfolder-dir "/path/to/illumina/bcls"  --output-dir "./Data/Intensities/BaseCalls"\
                                              --sample-sheet "/path/to/SampleSheet.csv" --create-fastq-for-index-reads\
                                              --use-bases-mask Y26n,I8n,I8n,Y50n  --mask-short-adapter-reads 0\
                                              --minimum-trimmed-read-length 0
+
+            For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use "bcl2fastq"
 
             Note that dual indexes are not supported by cellranger. Manually demultiplexing as above into separate
             FASTQ files before processing should work as multiple samples are supported. For example, files names as:
