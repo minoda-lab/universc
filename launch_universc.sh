@@ -466,13 +466,6 @@ done
 
 
 #####check if this is a test run#####
-
-#####################################
-##  Note that tests are currently  ##
-##        called the in the        ##
-##       ./test directory          ##
-##   This is a work-in-progress    ##
-#####################################
 if [[ $testrun == "true" ]]; then
     if [[ ${#read1[@]} -gt 0 ]] || [[ ${#read2[@]} -gt 0 ]]; then
         echo "Error: for test run, no R1 or R2 file can be selected."
@@ -485,24 +478,27 @@ if [[ $testrun == "true" ]]; then
         exit 1
     fi
      
-    reference=${SDIR}/test/cellranger_reference/cellranger-tiny-ref/3.0.0
+    TESTDIR=${SDIR}/test
+    reference=${TESTDIR}/cellranger_reference/cellranger-tiny-ref/3.0.0
     id=test-tiny-${technology}
     description=${id}
     percelldata=true
     
     if [[ $technology == "10x" ]]; then
-        gunzip -fk ${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L00[12]_R[12]_001.fastq.gz
-        read1=("${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq" "${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq")
-        read2=("${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R2_001.fastq" "${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq")
-        index1=("${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_I1_001.fastq.gz" "${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_I1_001.fastq.gz")
+        gunzip -fk ${TESTDIR}/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L00[12]_R[12]_001.fastq.gz
+        read1=("${TESTDIR}/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq" "${TESTDIR}/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq")
+        read2=("${TESTDIR}/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R2_001.fastq" "${TESTDIR}/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq")
+        index1=("${TESTDIR}/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_I1_001.fastq.gz" "${TESTDIR}/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_I1_001.fastq.gz")
     elif [[ $technology == "nadia" ]]; then
-        gunzip -fk ${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq.gz
-        read1=("${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq")
-        read2=("${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq")
+        gunzip -fk ${TESTDIR}/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq.gz
+        read1=("${TESTDIR}/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq")
+        read2=("${TESTDIR}/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq")
     elif [[ $technology == "icell8" ]]; then
-        gunzip -fk ${SDIR}/test/shared/icell8-test/ICELL8_01_S1_L00[12]_R[12]_001.fastq.gz
-        read1=("${SDIR}/test/shared/icell8-test/iCELL8_01_S1_L001_R1_001.fastq" "${SDIR}/test/shared/icell8-test/iCELL8_01_S1_L002_R1_001.fastq")
-        read2=("${SDIR}/test/shared/icell8-test/iCELL8_01_S1_L001_R2_001.fastq" "${SDIR}/test/shared/icell8-test/iCELL8_01_S1_L002_R2_001.fastq")
+        gunzip -fk ${TESTDIR}/shared/icell8-test/ICELL8_01_S1_L00[12]_R[12]_001.fastq.gz
+        read1=("${TESTDIR}/shared/icell8-test/ICELL8_01_S1_L001_R1_001.fastq" "${TESTDIR}/shared/icell8-test/ICELL8_01_S1_L002_R1_001.fastq")
+        read2=("${TESTDIR}/shared/icell8-test/ICELL8_01_S1_L001_R2_001.fastq" "${TESTDIR}/shared/icell8-test/ICELL8_01_S1_L002_R2_001.fastq")
+	barcodefile=${TESTDIR}/shared/icell8-test/BarcodeList.txt
+	ncells=`wc -l $barcodefile | cut -f1 -d' '`
     else
         echo "Error: for test run, -t needs to be 10x, nadia, or icell8"
         exit 1
@@ -758,7 +754,13 @@ fi
 
 
 
-#####Check for presence of R1, R2, I1, and I2 files#####
+#####Input file curation 1: Check if number of R1, R2, I1, and I2 files are as expected#####
+#get unique inputs
+read1=(`echo "${read1[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '`)
+read2=(`echo "${read2[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '`)
+index1=(`echo "${index1[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '`)
+index2=(`echo "${index2[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '`)
+
 #check for presence of read1 and read2 files
 if [[ $verbose ]]; then
     echo " checking option: --read1 and --read2"
@@ -773,33 +775,18 @@ if [[ $setup == "false" ]]; then
         exit 1
     fi
 fi
-keys=("R1" "R2")
 
 #check for presence of indexe files
-####################################
-##   Note that indexes are not    ##
-##    supported by launch_universc.sh     ##
-##  You must demultiplex before   ##
-##       calling cellranger       ##
-##   This is a work-in-progress   ##
-####################################
 if [[ $verbose ]]; then
     echo " checking option: --index1 and --index2"
 fi
 
 #index 1
 if [[ $setup == "false" ]]; then
-    if [[ ${#index1[@]} -eq ${#read1[@]} ]]; then
-        for i1 in "${index1[@]}"; do
-            echo " index ${i1} passes"
-        done
-    else
-        #if no index1 is given
-        if [[ ${#index1[@]} -eq 0 ]]; then
-            echo " no index file was passed"
-	else
-            echo " one or more index1 files are missing"
-	    echo " either give no index1 file, or give index1 file for each and every read1 file"
+    if [[ ${#index1[@]} -ne ${#read1[@]} ]]; then
+        if [[ ${#index1[@]} -gt 0 ]]; then
+            echo " Error: number of index1 files is not matching the number of R1 and R2 files"
+            echo " either give no index1 file, or give index1 file for each and every read1 file"
             exit 1
         fi
     fi
@@ -809,141 +796,54 @@ fi
 if [[ $setup == "false" ]]; then
     #only check I2 for dual-indexed techniques
     if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
-        if [[ ${#index2[@]} -eq ${#read1[@]} ]]; then        
-            for i2 in "${index2[@]}"; do
-                echo " index ${i2} passes"
-	    done
-        else
-            echo " one or more index2 files are missing"
-            echo " either give no index files, or give index1 and index2 for each and every read1 and read2 file"
+        if [[ ${#index2[@]} -ne ${#read1[@]} ]]; then        
+            echo " Error: number of index1 files is not matching the number of index2 files"
+            echo " for $technology, either give no index files or give index1 and index2 for each and every read1 and read2 file"
+            exit 1
         fi
+    elif [[ ${#index2[@]} -gt 0 ]]; then
+        echo " Error: $technology does not support dual index"
+        echo " re-run without selecting any files for --index2"
+        exit 1
     fi   
 fi
 
-#check for indexes in R2 and R3 (R1 -> R2; R2 -> I1; R3 -> I2; R4 -> R1)
-if [[ "$technology" == "indrop-v3" ]]; then
-    if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index1[@]} -ge 1 ]]; then
-        echo " index I1 found for ${technology}"
-    else
-        #checking for R2 and R3 index files
-        echo " checking for index I1 in R2 files..."
-        for ii in $(seq 1 1 ${#read1[@]}); do
-             #iterate over read1 inputs
-             indexfile=${read1[$(( $ii -1 ))]}
-             #derive I1 filename from R1 filename
-             indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R2/' )
-             #only add index2 files to list variable if file exists (this will only run if I1 not found above)
-             if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
-                 index1+=("$indexfile")
-             fi
-        done
-    fi
-    if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
-        echo " index I2 found for ${technology}"
-    else
-        #checking for R2 and R3 index files
-        echo " checking for index I2 in R3 files..."
-        for ii in $(seq 1 1 ${#read1[@]}); do  
-             #iterate over read1 inputs
-             indexfile=${read1[$(( $ii -1 ))]}
-             #derive I2 filename from R1 filename
-             indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R3/' )
-             #only add index2 files to list variable if file exists (this will only run if I2 not found above)
-             if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
-                 index2+=("$indexfile")
-             fi
-        done
-     fi
-     #checking for R1 and R4 index files
-        echo " checking for read R4 files..."
-        for ii in $(seq 1 1 ${#read1[@]}); do
-             #iterate over read1 inputs
-             indexfile=${read1[$(( $ii -1 ))]}
-             #derive I2 filename from R1 filename
-             indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R4/' )
-             #only replace R2 files with R4 variable if R4 file exists (otherwise keep R2)
-             if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
-                 read2[$(( $ii -1 ))]=("$indexfile")
-             fi
-             #Note that R2 and R1 are inverted below (thus [I1, I2]R2 or [R2, R3]R4 are converted to R1)
-        done
-    #checking inDrops-v3 indexes are accepted (by checking that index 2 is correct)
-    ##note that index 1 will be detected as I1 OR R2
-    ##note that read1 will be detected R2 or R4
-    if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
-        echo " indexes ${index1[@]} and ${index2[@]} found for ${technology}"
-    else
-        if [[ $setup == "false" ]]; then
-            echo "ERROR: note that ${technology} expects dual indexes: I1 and I2 OR R2 and R3"
-            exit 1
-        fi
-    fi
+if [[ $verbose ]]; then
+    echo "  ${#read1[@]} read1s: ${read1[@]}"
+    echo "  ${#read2[@]} read2s: ${read2[@]}"
+    echo "  ${#index1[@]} I1s: ${index1[@]}"
+    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    echo "  number of these files are as expected"
 fi
 
-if [[ $verbose = "true" ]]; then
-    echo "${#read1[@]} read1s: ${read1[@]}"
-    echo "${#read2[@]} read2s: ${read2[@]}"
-    echo "${#index1[@]} I1s: ${index1[@]}"
-    echo "${#index2[@]} I2s: ${index2[@]}"
+keys=("R1" "R2")
+if [[ ${#index2[@]} -gt 0 ]]; then
+    keys=("R1" "R2" "I1" "I2")
+elif [[ ${#index1[@]} -gt 0 ]]; then
+    keys=("R1" "R2" "I1")
 fi
+##########
 
 
 
-
-
-
-
-
-
-
-
-exit 0
-
-#check number of index1 files is 0 or number of read1 files
-if [[ ${#index1[@]} -eq ${#read1[@]} ]] || [[ ${#index1[@]} -eq 0 ]]; then
-    if [[ ${#index1[@]} -eq ${#read1[@]} ]]; then
-        echo "... accepted index1 file: ${index1[@]}"
-        keys=("R1" "R2" "I1")
-    fi
-    if [[ ${#index1[@]} -eq 0 ]]; then
-        echo "... index1 files not found (optional)"
-    fi
-else
-    echo "... index1 files missing for some samples or lanes (will be skipped)"
-    index1=()
-fi
-if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -eq ${#read1[@]} ]] || [[ ${#index2[@]} -eq 0 ]]; then
-    if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -eq ${#read1[@]} ]]; then
-        echo "... accepted index1 file: ${index1[@]}"
-        keys=("R1" "R2" "I1" "I2")
-    fi
-    if [[ ${#index2[@]} -eq 0 ]]; then 
-        echo "... index2 files not found (optional)"
-    fi
-else
-    echo "... index2 files missing for some samples or lanes (will be skipped)"
-    index2=()
-fi
-
-
-#check read1 and read2 files for their extensions
+#####Input file curation 2: Check R1, R2, I1, and I2 files for their extensions#####
 ##allows incomplete file names and processing compressed files
 for key in ${keys[@]}; do
     readkey=$key
-    list=""
+    list=()
     if [[ $readkey == "R1" ]]; then
         list=("${read1[@]}")
     elif [[ $readkey == "R2" ]]; then
         list=("${read2[@]}")
     elif [[ $readkey == "I1" ]]; then
         list=("${index1[@]}")
-     elif [[ $readkey == "I2" ]]; then
-         list=("${index2[@]}")
+    elif [[ $readkey == "I2" ]]; then
+        list=("${index2[@]}")
     fi
     
     for j in ${!list[@]}; do
         read=${list[$j]}
-        if [[ $verbose  ]]; then
+        if [[ $verbose ]]; then
             echo "  checking file format for $read ..."
         fi
         if [[ -f $read ]] && [[ -h $read ]]; then
@@ -982,8 +882,8 @@ for key in ${keys[@]}; do
             exit 1
         fi
         
-        if [[ $verbose  ]]; then
-             echo "  $read"
+        if [[ $verbose ]]; then
+             echo "  $read processed"
         fi
         
         list[$j]=$read
@@ -1000,9 +900,20 @@ for key in ${keys[@]}; do
     fi
 done
 
-#renaming read1 and read2 files if not compatible with the convention
+if [[ $verbose ]]; then
+    echo "  ${#read1[@]} read1s: ${read1[@]}"
+    echo "  ${#read2[@]} read2s: ${read2[@]}"
+    echo "  ${#index1[@]} I1s: ${index1[@]}"
+    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    echo "  files exist, with extentions compatible with launch_universc.sh"
+fi
+##########
+
+
+
+#####Input file curation 3: renaming read1, read2, index1, and index2 file name if not compatible with the convet.sh#####
 for i in ${keys[@]}; do
-    readkey=$key
+    readkey=$keys
     list=""
     if [[ $readkey == "R1" ]]; then
         list=("${read1[@]}")
@@ -1016,13 +927,13 @@ for i in ${keys[@]}; do
     
     for j in ${!list[@]}; do
         read=${list[$j]}
-        if [[ $verbose  ]]; then
+        if [[ $verbose ]]; then
             echo "  checking file name for $read ..."
         fi
         
         if [[ -h $read ]]; then
             path=`readlink -f $read`
-            if [[ $verbose  ]]; then
+            if [[ $verbose ]]; then
                 echo "***Warning: file $read not in current directory. Path to the file captured instead.***"
                 echo " (file) $read"
                 echo " (path) $path"
@@ -1100,6 +1011,79 @@ for i in ${keys[@]}; do
     fi
 done
 
+if [[ $verbose ]]; then
+    echo "  ${#read1[@]} read1s: ${read1[@]}"
+    echo "  ${#read2[@]} read2s: ${read2[@]}"
+    echo "  ${#index1[@]} I1s: ${index1[@]}"
+    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    echo "  names of these files are compatible with launch_universc.sh"
+fi
+##########
+
+
+
+#####Input file curation 4: Technology-specific adjustments#####
+#reorganize for indrop-v3
+if [[ "$technology" == "indrop-v3" ]]; then
+    #check for indexes in R2 and R3 (R1 -> R2; R2 -> I1; R3 -> I2; R4 -> R1)
+    if [[ ${#index1[@]} -gt 0 ]]; then
+        echo " index I1 found for ${technology}"
+    else
+        #checking for R2 and R3 index files
+        echo " checking for index I1 in R2 files..."
+        for ii in $(seq 1 1 ${#read1[@]}); do
+             #iterate over read1 inputs
+             indexfile=${read1[$(( $ii -1 ))]}
+             #derive I1 filename from R1 filename
+             indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R2/' )
+             #only add index2 files to list variable if file exists (this will only run if I1 not found above)
+             if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
+                 index1+=("$indexfile")
+             fi
+        done
+    fi
+    if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
+        echo " index I2 found for ${technology}"
+    else
+        #checking for R2 and R3 index files
+        echo " checking for index I2 in R3 files..."
+        for ii in $(seq 1 1 ${#read1[@]}); do  
+             #iterate over read1 inputs
+             indexfile=${read1[$(( $ii -1 ))]}
+             #derive I2 filename from R1 filename
+             indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R3/' )
+             #only add index2 files to list variable if file exists (this will only run if I2 not found above)
+             if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
+                 index2+=("$indexfile")
+             fi
+        done
+    fi
+    #checking for R1 and R4 index files
+    echo " checking for read R4 files..."
+    for ii in $(seq 1 1 ${#read1[@]}); do
+         #iterate over read1 inputs
+         indexfile=${read1[$(( $ii -1 ))]}
+         #derive I2 filename from R1 filename
+         indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R4/' )
+         #only replace R2 files with R4 variable if R4 file exists (otherwise keep R2)
+         if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
+             read2[$(( $ii -1 ))]=("$indexfile")
+         fi
+         #Note that R2 and R1 are inverted below (thus [I1, I2]R2 or [R2, R3]R4 are converted to R1)
+    done
+    #checking inDrops-v3 indexes are accepted (by checking that index 2 is correct)
+    ##note that index 1 will be detected as I1 OR R2
+    ##note that read1 will be detected R2 or R4
+    if [[ ${#index2[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -ge 1 ]]; then
+        echo " indexes ${index1[@]} and ${index2[@]} found for ${technology}"
+    else
+        if [[ $setup == "false" ]]; then
+            echo "ERROR: note that ${technology} expects dual indexes: I1 and I2 OR R2 and R3"
+            exit 1
+        fi
+    fi
+fi
+
 #inverting R1 and R2 for specific technologies
 if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "splitseq" ]]; then
     #invert read1 and read2
@@ -1110,14 +1094,26 @@ if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]] || [
     tmp=""
 fi
 
+if [[ $verbose ]]; then
+    echo "  ${#read1[@]} read1s: ${read1[@]}"
+    echo "  ${#read2[@]} read2s: ${read2[@]}"
+    echo "  ${#index1[@]} I1s: ${index1[@]}"
+    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    echo "  input files adjusted for technology-specific conditions"
+fi
+##########
+
+
+
+#####Input file curation 5: Catpuring sample name#####
 #checking the quality of fastq file names
 read12=("${read1[@]}" "${read2[@]}")
-if [[ ${#index1[@]} -ge 1 ]]; then
+if [[ ${#index2[@]} -gt 0 ]]; then
+    read12=("${read1[@]}" "${read2[@]}" "${index1[@]}" "${index2[@]}")
+elif [[ ${#index1[@]} -gt 0 ]]; then
     read12=("${read1[@]}" "${read2[@]}" "${index1[@]}")
-    if [[ ${#index2[@]} -ge 1 ]]; then
-        read12=("${read1[@]}" "${read2[@]}" "${index1[@]}" "${index2[@]}")
-    fi
 fi
+
 for fq in "${read12[@]}"; do
     name=`basename $fq`
     name=${name%.*}
@@ -1146,13 +1142,14 @@ for fq in "${read12[@]}"; do
         fi
     fi
 done
-LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 
 if [[ $verbose ]]; then
-     echo " read1 and read2 files checked"
+     echo "  read1, read2, index1, and index2 file curation complete"
 fi
-##########
 
+LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
+##########
+ 
 
 
 #####Set the input barcode file#####
@@ -1166,39 +1163,36 @@ if [[ -n "$barcodefile" ]]; then
 	exit 1
     else
         #getting absolute path
-	barcodefile=$(readlink -f $barcodefile)
+        barcodefile=$(readlink -f $barcodefile)
         #allowing WellList from ICELL8 and other well-based techniques
         if [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq" ]] || [[ "$technology" == "custom" ]]; then
-	    n_col_tsv=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
-            n_col_csv=$(awk -F',' '{print NF}' $barcodefile | sort -nu | tail -n 1)
-            if [[ $n_col_tsv -gt 1 ]]; then
-                if [[ $(head -n $barcodefile | grep -q "[Bb]arcode") ]]; then
-                    col_n=$(head -n 1 test/shared/icell8-test/WellList.txt | tr "\t" "\n" | grep -n "[Bb]arcode" | head -n 1 | cut -d":" -f1)
-                    #removes header (1st line) containing colname "barcode"
-                    tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -f$col_n > ${barcodefile}_barcode.txt
-                else
+            seg=$'\t'
+            n_col=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
+            if [[ $n_col -eq 1 ]]; then
+                seg=","
+                n_col=$(awk -F',' '{print NF}' $barcodefile | sort -nu | tail -n 1)
+            fi
+            
+            if [[ $n_col -gt 1 ]]; then
+                new_barcodefile=${barcodefile%.*}_barcode.txt
+                
+                #get column with barcodes
+		col_n=$(head -n 1 $barcodefile | tr "${seg}" "\n" | grep -n "[Bb]arcode" | head -n 1 | cut -d":" -f1)
+		if [[ -z $col_n ]]; then
                     col_n=1
-                    echo "***WARNING: barcode file has multiple columns and none named 'barcode(s)':"
-                    echo "Note: please check that column 1 of the barcode file contains the barcodes as required"
-                    head $barcodefile | cut -f1
-                    #assumes no headers
-                    cut -f$col_n $barcodefile > ${barcodefile}_barcode.txt
                 fi
-                barcodefile=${barcodefile}_barcode.txt
-            elif [[ $n_col_csv -gt 1 ]]; then
-                if [[ $(head -n $barcodefile | grep -q "[Bb]arcode") ]]; then
-                    col_n=$(head -n 1 test/shared/icell8-test/WellList.txt | tr "," "\n" | grep -n "[Bb]arcode" | head -n 1 | cut -d":" -f1)
-                     #removes header (1st line) containing colname "barcode"
-                    tail -n $(($(wc -l $barcodefile | cut -d" " -f5)-1)) $barcodefile | cut -d"," -f$col_n > ${barcodefile}_barcode.txt
+                
+                if [[ $(head -n 1 $barcodefile | grep "[Bb]arcode") ]]; then
+                    #removes header (1st line) containing colname "barcode"
+		    tail -n $(($(wc -l $barcodefile | cut -d" " -f1)-1)) $barcodefile | cut -f$col_n -d "$seg" > ${new_barcodefile}
                 else
-                     col_n=1
-                     echo "***WARNING: barcode file has multiple columns and none named 'barcode(s)':"
-                     echo "Note: please check that column 1 of the barcode file contains the barcodes as required"
-                     head $barcodefile | cut -d"," -f1
-                     #assumes no headers
-                     cut -d"," -f$col_n $barcodefile > ${barcodefile}_barcode.txt
+                    echo "***WARNING: barcode file has multiple columns and none named 'barcode(s)'"
+                    echo "Note: please check that column 1 of the barcode file contains the barcodes as required"
+                    head $barcodefile | cut -f1 -d "${seg}"
+                    #assumes no headers
+                    cut -f1 -d "${seg}" $barcodefile > ${new_barcodefile}
                 fi
-                barcodefile=${barcodefile}_barcode.txt
+                barcodefile=${new_barcodefile}
             fi
         fi
     fi
@@ -1335,7 +1329,9 @@ elif ! [[ $mem =~ $int ]] && [[ $setup == "false" ]]; then
 fi
 ##########
 
-#check if chemistry matches expected input
+
+
+#####check if chemistry matches expected input#####
 #allow "auto" only for 10x
 if [[ "$technology" != "10x" ]]; then
     #use SC3Pv3 (umi length 12) 
@@ -1352,6 +1348,8 @@ if [[ "$technology" != "10x" ]]; then
        exit 1
     fi
 fi
+##########
+
 
 
 #####checking if jobmode matches expected input#####
@@ -1584,8 +1582,7 @@ if [[ $lock -eq 0 ]]; then
         sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/null/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         ## remove calling CLOUPE_PREPROCESS
         ### iterate over all files calling CLOUPE_PREPROCESS
-        for file in $(grep -l  "call CLOUPE_PREPROCESS"  ${cellrangerpath}-cs/${cellrangerversion}/mro/*.mro )
-        do
+        for file in $(grep -l  "call CLOUPE_PREPROCESS"  ${cellrangerpath}-cs/${cellrangerversion}/mro/*.mro ); do
             #find  start of CLOUPE_PREPROCESS call
             num=$(grep -n "call CLOUPE_PREPROCESS" $file |  head -n 1 | cut -d":" -f1)
             #find end of CLOUPE_PREPROCESS call
@@ -1679,43 +1676,44 @@ else
     echo " directory $crIN already exists"
 fi
 
-
-if [[ $verbose == true ]]; then
+if [[ $verbose ]]; then
     echo "convert: $convert"
 fi
 if [[ $convert == "true" ]]; then
     echo "moving file to new location"
 fi
 
-
-crR1s=()
-
-if [[ $verbose == true ]]; then
+if [[ $verbose ]]; then
     echo "Processing Read1"
     echo "Fastqs: ${read1[@]}"
-fi
-if [[ $verbose == true ]]; then
     echo "${read1[@]}"
 fi
+
+crR1s=()
 for fq in "${read1[@]}"; do
-    if [[ $verbose == true ]]; then echo $fq; fi
+    if [[ $verbose == true ]]; then
+        echo $fq
+    fi
     to=`basename $fq`
     to="${crIN}/${to}"
-
+    
     #invert read1 and read2
     if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
         #where converted "read1" is R2 in source files (corrected names for cellranger)
         echo "using transcripts in Read 2 for ${technology}"
         to=`echo $to | sed -e "s/_R2_/_R1_/g"`
     fi
-
-
-    if [[ $verbose == true ]]; then echo $to; fi
+    
+    if [[ $verbose ]]; then
+        echo $to
+    fi
     crR1s+=($to)
-
+    
     echo " handling $fq ..."
     if [[ ! -f $to ]] || [[ $convert == "true" ]]; then
-        if [[ $verbose == true ]]; then echo "cp -f $fq $to"; fi
+        if [[ $verbose ]]; then
+            echo "cp -f $fq $to"
+        fi
         cp -f $fq $to
     fi
     if [[ $convert == "true" ]]; then
@@ -1724,20 +1722,19 @@ for fq in "${read1[@]}"; do
 done
 
 crR2s=()
-
-if [[ $verbose == true ]]; then
+if [[ $verbose ]]; then
      echo "Processing Read2"
      echo "Fastqs: ${read2[@]}"
-fi
-if [[ $verbose == true ]]; then
-    echo "${read2[@]}"
+     echo "${read2[@]}"
 fi
 for fq in "${read2[@]}"; do
-    if [[ $verbose == true ]]; then echo "$fq"; fi
+    if [[ $verbose ]]; then
+        echo "$fq";
+    fi
     to=`basename $fq`
     to="${crIN}/${to}"
     to=$(echo "$to" | sed 's/\.gz$//')
-
+    
     #invert read1 and read2
     if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
         #where converted "read2" is R1 in source files
@@ -1749,45 +1746,52 @@ for fq in "${read2[@]}"; do
         fi
     fi
 
-    if [[ $verbose == true ]]; then echo "$to"; fi
+    if [[ $verbose ]]; then
+        echo "$to"
+    fi
     crR2s+=($to)
-
+    
     echo " handling $fq ..."
     if [[ ! -f $to ]] || [[ $convert == "true" ]]; then
-        if [[ $verbose == true ]]; then echo "cp -f $fq $to"; fi
+        if [[ $verbose == true ]]; then 
+            echo "cp -f $fq $to"; 
+        fi
         cp -f $fq $to
     fi
 done
 
 if [[ ${#index1[@]} -ge 1 ]]; then
     crI1s=()
-    
     if [[ $verbose == true ]]; then
          echo "Processing Index"
          echo "Fastqs: ${index1[@]}"
-    fi
-    if [[ $verbose == true ]]; then
-        echo "${index1[@]}"
+         echo "${index1[@]}"
     fi
     for fq in "${index1[@]}"; do
-        if [[ $verbose  == true ]]; then echo "$fq" ; fi
+        if [[ $verbose ]]; then
+            echo "$fq"
+        fi
         to=`basename $fq`
         to="${crIN}/${to}"
         to=$(echo "$to" | sed 's/\.gz$//')
-
+        
         #convert index for R2 and R3
         if [[ "$technology" == "indrop-v3" ]]; then
             #where converted "index1" is R2 in source files (corrected names for cellranger)
             echo "using transcripts in Read 2 for ${technology}"
             to=`echo $to | sed -e "s/_R2_/_I1_/g"`
         fi    
-
-        if [[ $verbose == true ]]; then echo "$to" ; fi
+        
+        if [[ $verbose ]]; then
+            echo "$to"
+        fi
         crI1s+=($to)
-    
-        echo  "handling $fq ..."
+        
+        echo "handling $fq ..."
         if [[ ! -f $to ]] || [[ $convert  == true ]]; then
-            if [[ $verbose == true ]]; then echo "cp -f $fq $to" ; fi
+            if [[ $verbose ]]; then
+                echo "cp -f $fq $to"
+	    fi
             cp -f $fq $to
         fi
     done
@@ -1795,33 +1799,36 @@ fi
 
 if [[ ${#index2[@]} -ge 1 ]]; then
     crI2s=()
-    
-    if [[ $verbose == true ]]; then
-         echo "Processing Index"
-         echo "Fastqs: ${index2[@]}"
-    fi
-    if [[ $verbose == true ]]; then
+    if [[ $verbose ]]; then
+        echo "Processing Index"
+        echo "Fastqs: ${index2[@]}"
         echo "${index2[@]}"
     fi
     for fq in "${index2[@]}"; do
-        if [[ $verbose  == true ]]; then echo "$fq" ; fi
+        if [[ $verbose ]]; then
+            echo "$fq"
+        fi
         to=`basename $fq`
         to="${crIN}/${to}"
         to=$(echo "$to" | sed 's/\.gz$//')
-
+        
         #convert index for R2 and R3
         if [[ "$technology" == "indrop-v3" ]]; then
             #where converted "index2" is R3 in source files (corrected names for cellranger)
             echo "using transcripts in Read 2 for ${technology}"
             to=`echo $to | sed -e "s/_R3_/_I2_/g"`
         fi
-    
-        if [[ $verbose == true ]]; then echo "$to" ; fi
+        
+        if [[ $verbose == true ]]; then
+            echo "$to"
+        fi
         crI2s+=($to)
-    
-        echo  "handling $fq ..."
+        
+        echo "handling $fq ..."
         if [[ ! -f $to ]] || [[ $convert  == true ]]; then
-            if [[ $verbose == true ]]; then echo "cp -f $fq $to" ; fi
+            if [[ $verbose ]]; then
+                echo "cp -f $fq $to"
+       	    fi
             cp -f $fq $to
         fi
     done
@@ -1850,7 +1857,7 @@ else
             mv ${crIN}/.temp $convFile
         done
     fi
-
+    
     #inDrops: remove adapter (see links below for details)
     ## https://github.com/BUStools/bustools/issues/4
     ## https://teichlab.github.io/scg_lib_structs/methods_html/inDrop.html
@@ -1940,7 +1947,7 @@ else
             mv ${crIN}/.temp $convFile
         done
     fi
-
+    
     #SPLiT-Seq: correct phase blocks and swap barcode and UMI (if a whitelist and 18bp barcode can be supported)
     ## https://github.com/hms-dbmi/dropEst/issues/80
     ## https://github.com/sdparekh/zUMIs/wiki/Protocol-specific-setup
@@ -1959,8 +1966,7 @@ else
         echo "  ...barcode and UMI swapped for ${technology}" #performed by \1 above
         done
     fi
-
-
+    
     #SCRB-Seq: remove adapter
     ## https://teichlab.github.io/scg_lib_structs/methods_html/SCRB-seq.html
     if [[ "$technology" == "scrbseq" ]]; then
