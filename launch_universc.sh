@@ -912,11 +912,15 @@ if [[ "$technology" == "indrop-v3" ]]; then
     fi
 fi
 
-if [[ $verbose = "true" ]]; then
+if [[ $verbose ]]; then
     echo "${#read1[@]} read1s: ${read1[@]}"
     echo "${#read2[@]} read2s: ${read2[@]}"
-    echo "${#index1[@]} I1s: ${index1[@]}"
-    echo "${#index2[@]} I2s: ${index2[@]}"
+    if [[ ${#index1[@]} -ge 1 ]]; then
+        echo "${#index1[@]} I1s: ${index1[@]}"
+    fi
+    if [[ ${#index2[@]} -ge 1 ]]; then
+        echo "${#index2[@]} I2s: ${index2[@]}"
+    fi
 fi
 
 #check number of index1 files is 0 or number of read1 files
@@ -926,7 +930,9 @@ if [[ ${#index1[@]} -eq ${#read1[@]} ]] || [[ ${#index1[@]} -eq 0 ]]; then
         keys=("R1" "R2" "I1")
     fi
     if [[ ${#index1[@]} -eq 0 ]]; then
-        echo "... index1 files not found (optional)"
+        if [[ $verbose ]]; then
+            echo "... index1 files not found (optional)"
+        fi
     fi
 else
     echo "... index1 files missing for some samples or lanes (will be skipped)"
@@ -938,7 +944,9 @@ if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index2[@]} -eq ${#read1[@]} ]] 
         keys=("R1" "R2" "I1" "I2")
     fi
     if [[ ${#index2[@]} -eq 0 ]]; then 
-        echo "... index2 files not found (optional)"
+        if [[ $verbose ]]; then
+            echo "... index2 files not found (optional)"
+        fi
     fi
 else
     echo "... index2 files missing for some samples or lanes (will be skipped)"
@@ -948,6 +956,9 @@ fi
 
 #check read1 and read2 files for their extensions
 ##allows incomplete file names and processing compressed files
+if [[ $verbose ]]; then
+    echo "key: ${keys[@]}"
+fi
 for key in ${keys[@]}; do
     readkey=$key
     list=""
@@ -1020,9 +1031,16 @@ for key in ${keys[@]}; do
     fi
 done
 
+if [[ $verbose ]]; then
+    echo "key: ${keys[@]}"
+fi
+
 #renaming read1 and read2 files if not compatible with the convention
-for i in ${keys[@]}; do
+for key in ${keys[@]}; do
     readkey=$key
+    if [[ $verbose ]]; then
+        echo $readkey here
+    fi
     list=""
     if [[ $readkey == "R1" ]]; then
         list=("${read1[@]}")
@@ -1138,7 +1156,13 @@ if [[ ${#index1[@]} -ge 1 ]]; then
         read12=("${read1[@]}" "${read2[@]}" "${index1[@]}" "${index2[@]}")
     fi
 fi
+if [[ $verbose == true ]]; then
+    echo "reads:" ${read12[@]}
+fi
 for fq in "${read12[@]}"; do
+    if [[ $verbose ]]; then
+        echo "read: $fq"
+    fi
     name=`basename $fq`
     name=${name%.*}
     fields=`echo ${name} | grep -o "_" | wc -l`
@@ -1156,7 +1180,12 @@ for fq in "${read12[@]}"; do
         echo "Error: $fq has a period \".\" within its sample name. Remove it to run cellranger."
 	exit 1
     fi
-    
+
+    if [[ $verbose == true ]]; then
+       echo "SAMPLE: $SAMPLE"
+       echo "sample (field): $sn"
+    fi
+
     if [[ ${sn} != $SAMPLE ]]; then
         if [[ -z $SAMPLE ]]; then
             SAMPLE=${sn}
