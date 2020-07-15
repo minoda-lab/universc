@@ -60,7 +60,7 @@ lastcall_u=`echo ${lastcall} | cut -f2 -d' '`
 lastcall_p=`echo ${lastcall} | cut -f3 -d' '`
 barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
 barcodefile=""
-crIN=input4cellranger #name of the directory with all FASTQ files given to cellranger
+crIN=input4cellranger #name of the directory with all FASTQ and index files given to cellranger
 whitelistdir=${SDIR}/whitelists #path to whitelists
 whitelistfile="outs/whitelist.txt" #name of the whitelist file added to the cellranger output
 percellfile="outs/basic_stats.txt" #name of the file with the basic statistics of the run added to the cellranger output
@@ -91,44 +91,29 @@ fi
 
 
 #####usage statement#####
-if [[ $VENDOR != "apple" ]]
-    then
-    SHELL=$(readlink -f /proc/$$/exe | cut -d'/' -f3)
-else
-    SHELL=$(ps -p $$ | awk '$1 == PP {print $4}' PP=$$)
+#get shell
+invocation=$0
+if [[ -n $BASH_VERSION ]]; then
+    invocation='bash '${invocation}''
+elif [[ -n $ZSH_VERSION ]]; then
+    invocation='zsh '${invocation}''
+elif [[ -n $FISH_VERSION ]]; then
+    invocation='fish '${invoaction}''
+elif [[ -n $KSH_VERSION ]]; then
+    invocation='ksh '${invocation}''
 fi
-if [[ $(which launch_universc.sh) != *"not found" ]]
-    then
-    SHELL='' 
-    invocation=$0
-else
-    if [[ -z $ZSH_VERSION ]]
-        then
-        SHELL="zsh"
-    elif [[ -z $KSH_VERSION ]]
-       then
-       SHELL="ksh"
-    elif [[ -z $FISH_VERSION ]]
-       then
-       SHELL="fish"
-    elif [[ -z $BASH_VERSION ]]
-        then
-        SHELL="bash"
-    else
-       SHELL=$SHELL
-    fi
-    invocation=$(echo $(basename $0))
-fi
+
+#usage statement
 help='
 Usage:
-  '$SHELL' '$invocation' --testrun -t TECHNOLOGY
-  '$SHELL' '$invocation' -t TECHNOLOGY --setup
-  '$SHELL' '$invocation' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$invocation' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$invocation' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$invocation' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$invocation' -v
-  '$SHELL' '$invocation' -h
+  '$invocation' --testrun -t TECHNOLOGY
+  '$invocation' -t TECHNOLOGY --setup
+  '$invocation' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$invocation' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$invocation' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$invocation' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$invocation' -v
+  '$invocation' -h
 
 Convert sequencing data (FASTQ) from Nadia or ICELL8 platforms for compatibility with 10x Genomics and run cellranger count
 
@@ -140,15 +125,15 @@ Mandatory arguments to long options are mandatory for short options too.
   -I2, --index2 FILE            Index (I2) FASTQ file to pass to cellranger (OPTIONAL and EXPERIMENTAL)
   -f,  --file NAME              Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
                                   e.g. /path/to/files/Example_S1_L001
-
+  
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
   -t,  --technology PLATFORM    Name of technology used to generate data.
                                 Supported technologies:
                                   10x Genomics (version automatically detected): 10x, chromium
-				  10x Genomics version 2 (16bp barcode, 10bp UMI): 10x-v2, chromium-v2
-				  10x Genomics version 3 (16bp barcode, 12bp UMI): 10x-v3, chromium-v3
+                                  10x Genomics version 2 (16bp barcode, 10bp UMI): 10x-v2, chromium-v2
+                                  10x Genomics version 3 (16bp barcode, 12bp UMI): 10x-v3, chromium-v3
                                   CEL-Seq (8bp barcode, 4bp UMI): celseq
                                   CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
                                   Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
@@ -169,7 +154,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
-
+  
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
@@ -179,12 +164,12 @@ Mandatory arguments to long options are mandatory for short options too.
                                     Only applies when --jobmode=local.
        --mempercore NUM         Set max GB each job may use at one time.
                                     Only applies in cluster jobmodes.
-
+  
   -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data
-
+  
        --setup                  Set up whitelists for compatibility with new technology and exit
        --as-is                  Skips the FASTQ file conversion if the file already exists
-
+  
   -h,  --help                   Display this help and exit
   -v,  --version                Output version information and exit
        --verbose                Print additional outputs for debugging
@@ -301,14 +286,15 @@ for op in "$@"; do
                 echo "Error: file input missing for --index1"
                 exit 1
             fi
-            ;;        -f|--file)
+            ;;        
+        -f|--file)
             shift
             if [[ "$1" != "" ]]; then
                 arg=$1
                 while [[ ! "$arg" == "-"* ]] && [[ "$arg" != "" ]]; do
                     read1+=("${1}_R1_001")
                     read2+=("${1}_R2_001")
-                    shift
+		    shift
                     arg=$1
                 done
                 skip=true
@@ -480,8 +466,10 @@ done
 
 
 #####check if this is a test run#####
-## Note that tests are currently   ##
-##       called the in the         ##
+
+#####################################
+##  Note that tests are currently  ##
+##        called the in the        ##
 ##       ./test directory          ##
 ##   This is a work-in-progress    ##
 #####################################
@@ -505,7 +493,8 @@ if [[ $testrun == "true" ]]; then
     if [[ $technology == "10x" ]]; then
         gunzip -fk ${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L00[12]_R[12]_001.fastq.gz
         read1=("${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq" "${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq")
-        read2=("${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_002.fastq" "${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq")
+        read2=("${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R2_001.fastq" "${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq")
+        index1=("${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_I1_001.fastq.gz" "${SDIR}/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_I1_001.fastq.gz")
     elif [[ $technology == "nadia" ]]; then
         gunzip -fk ${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq.gz
         read1=("${SDIR}/test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq")
@@ -769,90 +758,69 @@ fi
 
 
 
-#####Collecting R1 and R2 files#####
+#####Check for presence of R1, R2, I1, and I2 files#####
+#check for presence of read1 and read2 files
 if [[ $verbose ]]; then
     echo " checking option: --read1 and --read2"
 fi
 
-#check for presence of read1 and read2 files
 if [[ $setup == "false" ]]; then
     if [[ ${#read1[@]} -eq 0 ]]; then
-        echo "Error: option -R1 or --file is required"
+        echo "Error: option --read1 or --file is required"
         exit 1
     elif [[ ${#read2[@]} -eq 0 ]]; then
-        echo "Error: option -R2 or --file is required"
+        echo "Error: option --read2 or --file is required"
         exit 1
     fi
 fi
 keys=("R1" "R2")
 
-# check if indexes given
-#####check if indexes are given #####
-##   Note that indexes are not     ##
-##    supported by conversion      ##
-##  You must demultiplex before    ##
-##         calling cellranger      ##
-##   This is a work-in-progress    ##
-#####################################
-if [[ ${#index1[@]} -eq ${#read1[@]} ]] || [[ ${#index1[@]} -ge 1 ]]; then
-    if [[ ${#index1[@]} -eq 1 ]]; then
-        echo " index1 $index1 passes"
-    elif [[ ${#index1[@]} -ge 2 ]]; then
-        echo " indices $index1 passes"
-    else
-        echo "WARNING: mismatch in number of files (check index I1 files)"
-        echo "NOTE: if no index files are specified, these can be detected from R1 file names"
-    fi
-else
-    #if number of files mismatch or no index1 given
-    echo " checking for index1 files..."
-    for ii in $(seq 1 1 ${#read1[@]}); do
-        #iterate over read1 inputs
-        indexfile=${read1[$(( $ii -1 ))]}
-        #derive I1 filename from R1 filename
-        indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I1/' )
-        #only add index1 files to list variable if file exists
-        if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
-            index1+=("$indexfile")
-        fi
-    done
+#check for presence of indexe files
+####################################
+##   Note that indexes are not    ##
+##    supported by launch_universc.sh     ##
+##  You must demultiplex before   ##
+##       calling cellranger       ##
+##   This is a work-in-progress   ##
+####################################
+if [[ $verbose ]]; then
+    echo " checking option: --index1 and --index2"
 fi
 
-#check for dual indexing (I2 files)
-#####check dual index(I1 and I2)#####
-##  Note that indexes are copied   ##
-##     but are not converted       ##
-##   Demultiplex with bcl2fastq    ##
-##   This is a work-in-progress    ##
-#####################################
-# only check I2 for dual-indexed techniques
-if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
-    if [[ ${#index2[@]} -eq ${#read1[@]} ]] || [[ ${#index2[@]} -ge 1 ]]; then
-        if [[ ${#index2[@]} -eq 1 ]]; then
-            echo " index2 $index2 passes"
-        elif [[ ${#index2[@]} -ge 2 ]]; then
-            echo " indices $index2 passes"
-        else
-            echo "WARNING: mismatch in number of files (check index I2 files)"
-            echo "NOTE: if no index files are specified, these can be detected from R1 file names"
-        fi
-    else
-        #if number of files mismatch or no index1 given
-        echo " checking for index1 files..."
-        for ii in $(seq 1 1 ${#read1[@]}); do
-             #iterate over read1 inputs
-             indexfile=${read1[$(( $ii -1 ))]}
-             #derive I2 filename from R1 filename
-             indexfile=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I2/' )
-             #only add index2 files to list variable if file exists
-             if [[ -f $indexfile ]] || [[ -f ${indexfile}.gz ]] || [[ -f $indexfile.fastq ]] || [[ -f ${indexfile}.fastq.gz ]] || [[ -f $indexfile.fq ]] || [[ -f ${indexfile}.fq.gz ]]; then
-                 index2+=("$indexfile")
-             fi
+#index 1
+if [[ $setup == "false" ]]; then
+    if [[ ${#index1[@]} -eq ${#read1[@]} ]]; then
+        for i1 in "${index1[@]}"; do
+            echo " index ${i1} passes"
         done
+    else
+        #if no index1 is given
+        if [[ ${#index1[@]} -eq 0 ]]; then
+            echo " no index file was passed"
+	else
+            echo " one or more index1 files are missing"
+	    echo " either give no index1 file, or give index1 file for each and every read1 file"
+            exit 1
+        fi
     fi
 fi
 
-# check for indexes in R2 and R3 (R1 -> R2; R2 -> I1; R3 -> I2; R4 -> R1)
+#index 2
+if [[ $setup == "false" ]]; then
+    #only check I2 for dual-indexed techniques
+    if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
+        if [[ ${#index2[@]} -eq ${#read1[@]} ]]; then        
+            for i2 in "${index2[@]}"; do
+                echo " index ${i2} passes"
+	    done
+        else
+            echo " one or more index2 files are missing"
+            echo " either give no index files, or give index1 and index2 for each and every read1 and read2 file"
+        fi
+    fi   
+fi
+
+#check for indexes in R2 and R3 (R1 -> R2; R2 -> I1; R3 -> I2; R4 -> R1)
 if [[ "$technology" == "indrop-v3" ]]; then
     if [[ ${#index1[@]} -eq ${#read1[@]} ]] && [[ ${#index1[@]} -ge 1 ]]; then
         echo " index I1 found for ${technology}"
@@ -918,6 +886,18 @@ if [[ $verbose = "true" ]]; then
     echo "${#index1[@]} I1s: ${index1[@]}"
     echo "${#index2[@]} I2s: ${index2[@]}"
 fi
+
+
+
+
+
+
+
+
+
+
+
+exit 0
 
 #check number of index1 files is 0 or number of read1 files
 if [[ ${#index1[@]} -eq ${#read1[@]} ]] || [[ ${#index1[@]} -eq 0 ]]; then
