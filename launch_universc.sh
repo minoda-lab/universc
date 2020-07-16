@@ -105,17 +105,17 @@ else
     SHELL=$(ps -p $$ | awk '$1 == PP {print $4}' PP=$$)
 fi
 ## detect how called (e.g., bash converrt.sh or ./launch_universc.sh)
-if [[ $(which launch_universc.sh) == *"/"* ]]; then
+if [[ $(which launch_universc.sh) == *"/"* ]] || [[ $0 == *"/"* ]]; then
     SHELL=''
     invocation=$0
 else
-    if [[ -z $ZSH_VERSION ]]; then
+    if [[ ! -z $ZSH_VERSION ]]; then
         SHELL="zsh"
-    elif [[ -z $KSH_VERSION ]]; then
+    elif [[ ! -z $KSH_VERSION ]]; then
        SHELL="ksh"
-    elif [[ -z $FISH_VERSION ]]; then
+    elif [[ ! -z $FISH_VERSION ]]; then
        SHELL="fish"
-    elif [[ -z $BASH_VERSION ]]; then
+    elif [[ ! -z $BASH_VERSION ]]; then
         SHELL="bash"
     else
        SHELL=$SHELL
