@@ -1489,7 +1489,7 @@ echo ""
 
 
 ####setup whitelist#####
-if [[ $verbose == "true" ]]; then
+if [[ $verbose ]]; then
     echo "lock $lock"
 fi
 if [[ $lock -eq 0 ]]; then
@@ -1635,10 +1635,10 @@ if [[ $lock -eq 0 ]]; then
 
     echo "verbose $verbose"
     #change last call file
-    #if [[ $verbose == "true" ]]; then
+    if [[ $verbose ]]; then
         echo "Setting last call as..."
         echo "${barcodelength} ${umilength} ${barcodefile}"
-    #fi
+    fi
     echo "${barcodelength} ${umilength} ${barcodefile}" > $lastcallfile
 
     cd - > /dev/null
@@ -1691,7 +1691,7 @@ fi
 
 crR1s=()
 for fq in "${read1[@]}"; do
-    if [[ $verbose == true ]]; then
+    if [[ $verbose ]]; then
         echo $fq
     fi
     to=`basename $fq`
@@ -1753,7 +1753,7 @@ for fq in "${read2[@]}"; do
     
     echo " handling $fq ..."
     if [[ ! -f $to ]] || [[ $convert == "true" ]]; then
-        if [[ $verbose == true ]]; then 
+        if [[ $verbose ]]; then 
             echo "cp -f $fq $to"; 
         fi
         cp -f $fq $to
@@ -1762,7 +1762,7 @@ done
 
 if [[ ${#index1[@]} -ge 1 ]]; then
     crI1s=()
-    if [[ $verbose == true ]]; then
+    if [[ $verbose ]]; then
          echo "Processing Index"
          echo "Fastqs: ${index1[@]}"
          echo "${index1[@]}"
@@ -1819,7 +1819,7 @@ if [[ ${#index2[@]} -ge 1 ]]; then
             to=`echo $to | sed -e "s/_R3_/_I2_/g"`
         fi
         
-        if [[ $verbose == true ]]; then
+        if [[ $verbose ]]; then
             echo "$to"
         fi
         crI2s+=($to)
@@ -1844,7 +1844,7 @@ if [[ $convert == "false" ]]; then
 else
     echo " adjustment parameters:"
     echo "  barcodes: ${barcodeadjust}bps at its head"
-    echo "  UMIs: ${umiadjust}bps at its tail" 
+    echo "  UMiIs: ${umiadjust}bps at its tail" 
     
     echo " making technology-specific modifications ..."
     #CEL-Seq2: swap barcode and UMI
@@ -2065,17 +2065,17 @@ echo ""
 echo "#####cellranger command#####"
 
 start=`date +%s`
-echo "cellranger count --id=$id \
-        --fastqs=$crIN \
-        --lanes=$LANE \
-        --r1-length=$totallength \
-        --chemistry=$chemistry \
-        --transcriptome=$reference \
-        --sample=$SAMPLE \
-        $d \
-        $n \
-        $j \
-        $l \
+echo "cellranger count --id=$id
+        --fastqs=$crIN
+        --lanes=$LANE
+        --r1-length=$totallength
+        --chemistry=$chemistry
+        --transcriptome=$reference
+        --sample=$SAMPLE
+        $d
+        $n
+        $j
+        $l
         $m
 "
 echo "##########"
