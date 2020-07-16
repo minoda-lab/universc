@@ -922,7 +922,7 @@ fi
 
 
 
-#####Input file curation 3: renaming read1, read2, index1, and index2 file name if not compatible with the convet.sh#####
+#####Input file curation 3: renaming read1, read2, index1, and index2 file name if not compatible with the launch_universc.sh#####
 for key in ${keys[@]}; do
     readkey=$keys
     list=""
