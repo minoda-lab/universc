@@ -91,29 +91,46 @@ fi
 
 
 #####usage statement#####
-#get shell
-invocation=$0
-if [[ -n $BASH_VERSION ]]; then
-    invocation='bash '${invocation}''
-elif [[ -n $ZSH_VERSION ]]; then
-    invocation='zsh '${invocation}''
-elif [[ -n $FISH_VERSION ]]; then
-    invocation='fish '${invoaction}''
-elif [[ -n $KSH_VERSION ]]; then
-    invocation='ksh '${invocation}''
+## detect shell across different OS
+if [[ $VENDOR != "apple" ]]
+    then
+    SHELL=$(readlink -f /proc/$$/exe | cut -d'/' -f3)
+else
+    SHELL=$(ps -p $$ | awk '$1 == PP {print $4}' PP=$$)
 fi
-
-#usage statement
+## detect how called (e.g., bash converrt.sh or ./launch_universc.sh)
+if [[ $(which launch_universc.sh) != *"not found" ]]
+    then
+    SHELL='' 
+    invocation=$0
+else
+    if [[ -z $ZSH_VERSION ]]
+        then
+        SHELL="zsh"
+    elif [[ -z $KSH_VERSION ]]
+       then
+       SHELL="ksh"
+    elif [[ -z $FISH_VERSION ]]
+       then
+       SHELL="fish"
+    elif [[ -z $BASH_VERSION ]]
+        then
+        SHELL="bash"
+    else
+       SHELL=$SHELL
+    fi
+    invocation=$(echo $(basename $0))
+fi
 help='
 Usage:
-  '$invocation' --testrun -t TECHNOLOGY
-  '$invocation' -t TECHNOLOGY --setup
-  '$invocation' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$invocation' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$invocation' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$invocation' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$invocation' -v
-  '$invocation' -h
+  '$SHELL' '$invocation' --testrun -t TECHNOLOGY
+  '$SHELL' '$invocation' -t TECHNOLOGY --setup
+  '$SHELL' '$invocation' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+  '$SHELL' '$invocation' -v
+  '$SHELL' '$invocation' -h
 
 Convert sequencing data (FASTQ) from Nadia or ICELL8 platforms for compatibility with 10x Genomics and run cellranger count
 
@@ -811,8 +828,12 @@ fi
 if [[ $verbose ]]; then
     echo "  ${#read1[@]} read1s: ${read1[@]}"
     echo "  ${#read2[@]} read2s: ${read2[@]}"
-    echo "  ${#index1[@]} I1s: ${index1[@]}"
-    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    if [[ ${#index1[@]} -gt 0 ]]; then
+        echo "  ${#index1[@]} I1s: ${index1[@]}"
+    fi
+    if [[ ${#index2[@]} -gt 0 ]]; then
+        echo "  ${#index2[@]} I2s: ${index2[@]}"
+    fi
     echo "  number of these files are as expected"
 fi
 
@@ -906,15 +927,19 @@ done
 if [[ $verbose ]]; then
     echo "  ${#read1[@]} read1s: ${read1[@]}"
     echo "  ${#read2[@]} read2s: ${read2[@]}"
-    echo "  ${#index1[@]} I1s: ${index1[@]}"
-    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    if [[ ${#index1[@]} -gt 0 ]]; then
+        echo "  ${#index1[@]} I1s: ${index1[@]}"
+    fi
+    if [[ ${#index2[@]} -gt 0 ]]; then
+        echo "  ${#index2[@]} I2s: ${index2[@]}"
+    fi
     echo "  files exist, with extentions compatible with launch_universc.sh"
 fi
 ##########
 
 
 
-#####Input file curation 3: renaming read1, read2, index1, and index2 file name if not compatible with the convet.sh#####
+#####Input file curation 3: renaming read1, read2, index1, and index2 file name if not compatible with the launch_universc.sh#####
 for key in ${keys[@]}; do
     readkey=$keys
     list=""
@@ -1017,8 +1042,12 @@ done
 if [[ $verbose ]]; then
     echo "  ${#read1[@]} read1s: ${read1[@]}"
     echo "  ${#read2[@]} read2s: ${read2[@]}"
-    echo "  ${#index1[@]} I1s: ${index1[@]}"
-    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    if [[ ${#index1[@]} -gt 0 ]]; then
+        echo "  ${#index1[@]} I1s: ${index1[@]}"
+    fi
+    if [[ ${#index2[@]} -gt 0 ]]; then
+        echo "  ${#index2[@]} I2s: ${index2[@]}"
+    fi
     echo "  names of these files are compatible with launch_universc.sh"
 fi
 ##########
@@ -1100,8 +1129,12 @@ fi
 if [[ $verbose ]]; then
     echo "  ${#read1[@]} read1s: ${read1[@]}"
     echo "  ${#read2[@]} read2s: ${read2[@]}"
-    echo "  ${#index1[@]} I1s: ${index1[@]}"
-    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    if [[ ${#index1[@]} -gt 0 ]]; then
+        echo "  ${#index1[@]} I1s: ${index1[@]}"
+    fi
+    if [[ ${#index2[@]} -gt 0 ]]; then
+        echo "  ${#index2[@]} I2s: ${index2[@]}"
+    fi
     echo "  input files adjusted for technology-specific conditions"
 fi
 ##########
@@ -2080,17 +2113,17 @@ echo ""
 echo "#####cellranger command#####"
 
 start=`date +%s`
-echo "cellranger count --id=$id
-        --fastqs=$crIN
-        --lanes=$LANE
-        --r1-length=$totallength
-        --chemistry=$chemistry
-        --transcriptome=$reference
-        --sample=$SAMPLE
-        $d
-        $n
-        $j
-        $l
+echo "cellranger count --id=$id\\
+        --fastqs=$crIN\\
+        --lanes=$LANE\\
+        --r1-length=$totallength\\
+        --chemistry=$chemistry\\
+        --transcriptome=$reference\\
+        --sample=$SAMPLE\\
+        $d\\
+        $n\\
+        $j\\
+        $l\\
         $m
 "
 echo "##########"
