@@ -122,16 +122,19 @@ else
     fi
     invocation=$(echo $(basename $0))
 fi
+if [[ $SHELL != "" ]]; then
+    SHELL=" $SHELL"
+fi
 help='
 Usage:
-  '$SHELL' '$invocation' --testrun -t TECHNOLOGY
-  '$SHELL' '$invocation' -t TECHNOLOGY --setup
-  '$SHELL' '$invocation' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$invocation' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$invocation' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$invocation' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
-  '$SHELL' '$invocation' -v
-  '$SHELL' '$invocation' -h
+ '$SHELL' '$invocation' --testrun -t TECHNOLOGY
+ '$SHELL' '$invocation' -t TECHNOLOGY --setup
+ '$SHELL' '$invocation' -R1 FILE1 -R2 FILE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+ '$SHELL' '$invocation' -R1 READ1_LANE1 READ1_LANE2 -R2 READ2_LANE1 READ2_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+ '$SHELL' '$invocation' -f SAMPLE_LANE -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+ '$SHELL' '$invocation' -f SAMPLE_LANE1 SAMPLE_LANE2 -t TECHNOLOGY -i ID -r REFERENCE [--option OPT]
+ '$SHELL' '$invocation' -v
+ '$SHELL' '$invocation' -h
 
 Convert sequencing data (FASTQ) from Nadia or ICELL8 platforms for compatibility with 10x Genomics and run cellranger count
 
