@@ -811,8 +811,12 @@ fi
 if [[ $verbose ]]; then
     echo "  ${#read1[@]} read1s: ${read1[@]}"
     echo "  ${#read2[@]} read2s: ${read2[@]}"
-    echo "  ${#index1[@]} I1s: ${index1[@]}"
-    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    if [[ ${#index1[@]} -gt 0 ]]; then
+        echo "  ${#index1[@]} I1s: ${index1[@]}"
+    fi
+    if [[ ${#index2[@]} -gt 0 ]]; then
+        echo "  ${#index2[@]} I2s: ${index2[@]}"
+    fi
     echo "  number of these files are as expected"
 fi
 
@@ -906,8 +910,12 @@ done
 if [[ $verbose ]]; then
     echo "  ${#read1[@]} read1s: ${read1[@]}"
     echo "  ${#read2[@]} read2s: ${read2[@]}"
-    echo "  ${#index1[@]} I1s: ${index1[@]}"
-    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    if [[ ${#index1[@]} -gt 0 ]]; then
+        echo "  ${#index1[@]} I1s: ${index1[@]}"
+    fi
+    if [[ ${#index2[@]} -gt 0 ]]; then
+        echo "  ${#index2[@]} I2s: ${index2[@]}"
+    fi
     echo "  files exist, with extentions compatible with launch_universc.sh"
 fi
 ##########
@@ -1017,8 +1025,12 @@ done
 if [[ $verbose ]]; then
     echo "  ${#read1[@]} read1s: ${read1[@]}"
     echo "  ${#read2[@]} read2s: ${read2[@]}"
-    echo "  ${#index1[@]} I1s: ${index1[@]}"
-    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    if [[ ${#index1[@]} -gt 0 ]]; then
+        echo "  ${#index1[@]} I1s: ${index1[@]}"
+    fi
+    if [[ ${#index2[@]} -gt 0 ]]; then
+        echo "  ${#index2[@]} I2s: ${index2[@]}"
+    fi
     echo "  names of these files are compatible with launch_universc.sh"
 fi
 ##########
@@ -1100,8 +1112,12 @@ fi
 if [[ $verbose ]]; then
     echo "  ${#read1[@]} read1s: ${read1[@]}"
     echo "  ${#read2[@]} read2s: ${read2[@]}"
-    echo "  ${#index1[@]} I1s: ${index1[@]}"
-    echo "  ${#index2[@]} I2s: ${index2[@]}"
+    if [[ ${#index1[@]} -gt 0 ]]; then
+        echo "  ${#index1[@]} I1s: ${index1[@]}"
+    fi
+    if [[ ${#index2[@]} -gt 0 ]]; then
+        echo "  ${#index2[@]} I2s: ${index2[@]}"
+    fi
     echo "  input files adjusted for technology-specific conditions"
 fi
 ##########
