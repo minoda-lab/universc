@@ -2096,17 +2096,17 @@ echo ""
 echo "#####cellranger command#####"
 
 start=`date +%s`
-echo "cellranger count --id=$id\
-        --fastqs=$crIN\
-        --lanes=$LANE\
-        --r1-length=$totallength\
-        --chemistry=$chemistry\
-        --transcriptome=$reference\
-        --sample=$SAMPLE\
-        $d\
-        $n\
-        $j\
-        $l\
+echo "cellranger count --id=$id\\
+        --fastqs=$crIN\\
+        --lanes=$LANE\\
+        --r1-length=$totallength\\
+        --chemistry=$chemistry\\
+        --transcriptome=$reference\\
+        --sample=$SAMPLE\\
+        $d\\
+        $n\\
+        $j\\
+        $l\\
         $m
 "
 echo "##########"
