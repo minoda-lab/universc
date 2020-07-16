@@ -92,29 +92,30 @@ fi
 
 #####usage statement#####
 ## detect shell across different OS
-if [[ $VENDOR != "apple" ]]
-    then
+if [[ -z $VENDOR ]]; then
+   if [[ $(uname -a | grep "[Mm]ac") ]]; then
+       VENDOR="apple"
+   else
+       VENDOR="linux"
+   fi
+fi
+if [[ $VENDOR != "apple" ]]; then
     SHELL=$(readlink -f /proc/$$/exe | cut -d'/' -f3)
 else
     SHELL=$(ps -p $$ | awk '$1 == PP {print $4}' PP=$$)
 fi
 ## detect how called (e.g., bash converrt.sh or ./launch_universc.sh)
-if [[ $(which launch_universc.sh) != *"not found" ]]
-    then
-    SHELL='' 
+if [[ $(which launch_universc.sh) == *"/"* ]]; then
+    SHELL=''
     invocation=$0
 else
-    if [[ -z $ZSH_VERSION ]]
-        then
+    if [[ -z $ZSH_VERSION ]]; then
         SHELL="zsh"
-    elif [[ -z $KSH_VERSION ]]
-       then
+    elif [[ -z $KSH_VERSION ]]; then
        SHELL="ksh"
-    elif [[ -z $FISH_VERSION ]]
-       then
+    elif [[ -z $FISH_VERSION ]]; then
        SHELL="fish"
-    elif [[ -z $BASH_VERSION ]]
-        then
+    elif [[ -z $BASH_VERSION ]]; then
         SHELL="bash"
     else
        SHELL=$SHELL
