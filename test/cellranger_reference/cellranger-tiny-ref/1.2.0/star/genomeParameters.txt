@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f2f22ddfdd424d3efe8da808578333257779e4134d857c32339c4414bb0bad01
-size 924
+### STAR   --runMode genomeGenerate   --runThreadN 1   --genomeDir /mnt/yard/rudy/testing/cellranger_120/references/refs/hg19_chr21/hg19_chr21/star   --genomeFastaFiles /mnt/yard/rudy/testing/cellranger_120/references/refs/hg19_chr21/hg19_chr21/fasta/genome.fa      --genomeSAindexNbases 11   --genomeChrBinNbits 18   --genomeSAsparseD 1   --sjdbGTFfile /mnt/yard/rudy/testing/cellranger_120/references/refs/hg19_chr21/hg19_chr21/genes/genes.gtf
+versionGenome	20201
+genomeFastaFiles	/mnt/yard/rudy/testing/cellranger_120/references/refs/hg19_chr21/hg19_chr21/fasta/genome.fa 
+genomeSAindexNbases	11
+genomeChrBinNbits	18
+genomeSAsparseD	1
+sjdbOverhang	100
+sjdbFileChrStartEnd	- 
+sjdbGTFfile	/mnt/yard/rudy/testing/cellranger_120/references/refs/hg19_chr21/hg19_chr21/genes/genes.gtf
+sjdbGTFchrPrefix	-
+sjdbGTFfeatureExon	exon
+sjdbGTFtagExonParentTranscript	transcript_id
+sjdbGTFtagExonParentGene	gene_id
+sjdbInsertSave	Basic
