@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3b1562bc4f3a1bd1f8e301651b0a6fc31fea477c82c86297668a7525a9c93371
-size 908
+### STAR   --runMode genomeGenerate   --runThreadN 1   --genomeDir /mnt/yard1/rudy/testing/cellranger_300/tinytest_300/GRCh38_chr21/star   --genomeFastaFiles /mnt/yard1/rudy/testing/cellranger_300/tinytest_300/GRCh38_chr21/fasta/genome.fa      --genomeSAindexNbases 11   --genomeChrBinNbits 18   --genomeSAsparseD 1   --limitGenomeGenerateRAM 17179869184   --sjdbGTFfile /mnt/yard1/rudy/testing/cellranger_300/tinytest_300/GRCh38_chr21/genes/genes.gtf
+versionGenome	20201
+genomeFastaFiles	/mnt/yard1/rudy/testing/cellranger_300/tinytest_300/GRCh38_chr21/fasta/genome.fa 
+genomeSAindexNbases	11
+genomeChrBinNbits	18
+genomeSAsparseD	1
+sjdbOverhang	100
+sjdbFileChrStartEnd	- 
+sjdbGTFfile	/mnt/yard1/rudy/testing/cellranger_300/tinytest_300/GRCh38_chr21/genes/genes.gtf
+sjdbGTFchrPrefix	-
+sjdbGTFfeatureExon	exon
+sjdbGTFtagExonParentTranscript	transcript_id
+sjdbGTFtagExonParentGene	gene_id
+sjdbInsertSave	Basic

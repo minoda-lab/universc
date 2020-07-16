@@ -828,6 +828,9 @@ fi
 
 #####Input file curation 2: Check R1, R2, I1, and I2 files for their extensions#####
 ##allows incomplete file names and processing compressed files
+if [[ $verbose ]]; then
+    echo "key: ${keys[@]}"
+fi
 for key in ${keys[@]}; do
     readkey=$key
     list=()
@@ -1114,7 +1117,14 @@ elif [[ ${#index1[@]} -gt 0 ]]; then
     read12=("${read1[@]}" "${read2[@]}" "${index1[@]}")
 fi
 
+if [[ $verbose ]]; then
+    echo "reads:" ${read12[@]}
+fi
+
 for fq in "${read12[@]}"; do
+    if [[ $verbose ]]; then
+        echo "read: $fq"
+    fi
     name=`basename $fq`
     name=${name%.*}
     fields=`echo ${name} | grep -o "_" | wc -l`
@@ -1132,7 +1142,12 @@ for fq in "${read12[@]}"; do
         echo "Error: $fq has a period \".\" within its sample name. Remove it to run cellranger."
 	exit 1
     fi
-    
+
+    if [[ $verbose == true ]]; then
+       echo "SAMPLE: $SAMPLE"
+       echo "sample (field): $sn"
+    fi
+
     if [[ ${sn} != $SAMPLE ]]; then
         if [[ -z $SAMPLE ]]; then
             SAMPLE=${sn}
