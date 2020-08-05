@@ -1457,7 +1457,21 @@ else
 	    echo "  total of $lock cellranger ${cellrangerversion} jobs are already running in ${cellrangerpath} with barcode length (${lastcall_b}), UMI length (${lastcall_u}), and whitelist barcodes (${lastcall_p})"
             
 	    #check if a custom barcode is used for a run (which cannot be run in parallel)
+            currentbarcode=$(echo $barcodefile | rev | cut -d"/" -f1 | rev)
+            lastbarcode=$(echo $lastcall_p | rev | cut -d"/" -f1 | rev)
+            if [[ $verbose == true ]]; then
+                echo "current file: $currentbarcode"
+                echo "last file: $lastbarcode"
+            fi
             if [[ ${barcodelength} == ${lastcall_b} ]] && [[ ${umilength} == ${lastcall_u} ]] && [[ ${barcodefile} == ${lastcall_p} ]]; then
+                echo " call accepted: no conflict detected with other jobs currently running"
+                #add current job to lock
+                lock=$(($lock+1))
+                if [[ $setup == "false" ]]; then 
+                    echo $lock > $lockfile
+                fi
+            #compare filenames (not paths) if not custom barcodes
+            elif [[ ${barcodelength} == ${lastcall_b} ]] && [[ ${umilength} == ${lastcall_u} ]] && [[ $currentbarcode == "AllPossibilities_"* ]] && [[ $lastbarcode == "AllPossibilities_"* ]]; then
                 echo " call accepted: no conflict detected with other jobs currently running"
                 #add current job to lock
                 lock=$(($lock+1))
