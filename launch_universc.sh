@@ -14,7 +14,7 @@ if [[ -z $cellrangerpath ]]; then
     echo "cellranger command is not found."
     exit 1
 fi
-cellrangerversion=$(cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')')
+cellrangerversion=$(cellranger --version | head -n 2 | tail -n 1 | rev | cut -f1 -d" " | rev |  cut -f2 -d'(' | cut -f1 -d')')
 ##########
 
 
@@ -59,6 +59,9 @@ lastcall_b=`echo ${lastcall} | cut -f1 -d' '`
 lastcall_u=`echo ${lastcall} | cut -f2 -d' '`
 lastcall_p=`echo ${lastcall} | cut -f3 -d' '`
 barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
+if [[ $(echo "${cellrangerversion} 4.0.0" | tr " " "\n" | sort -V | tail -n 1)  == ${cellrangerversion} ]]; then
+    barcodedir=$(dirname /home/tom/local/bin/cellranger-4.0.0/cellranger)/lib/python/cellranger/barcodes
+fi
 barcodefile=""
 crIN=input4cellranger #name of the directory with all FASTQ and index files given to cellranger
 whitelistdir=${SDIR}/whitelists #path to whitelists
@@ -68,7 +71,7 @@ percellfile="outs/basic_stats.txt" #name of the file with the basic statistics o
 
 
 
-#####checki if convert and cellranger are writable#####
+#####checking if convert and cellranger are writable#####
 #cellranger
 if ! [[ -w "$barcodedir" ]]; then
     echo "Error: Trying to run cellranger installed at ${cellrangerpath}"
