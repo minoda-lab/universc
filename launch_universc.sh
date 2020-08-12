@@ -1913,7 +1913,7 @@ if [[ $convert == "false" ]]; then
 else
     echo " adjustment parameters:"
     echo "  barcodes: ${barcodeadjust}bps at its head"
-    echo "  UMiIs: ${umiadjust}bps at its tail" 
+    echo "  UMIs: ${umiadjust}bps at its tail" 
     
     echo " making technology-specific modifications ..."
     #CEL-Seq2: swap barcode and UMI
