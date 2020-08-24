@@ -61,6 +61,8 @@ lastcall_p=`echo ${lastcall} | cut -f3 -d' '`
 barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
 if [[ $(echo "${cellrangerversion} 4.0.0" | tr " " "\n" | sort -V | tail -n 1)  == ${cellrangerversion} ]]; then
     barcodedir=$(dirname /home/tom/local/bin/cellranger-4.0.0/cellranger)/lib/python/cellranger/barcodes
+    mkdir -p $(dirname /home/tom/local/bin/cellranger-4.0.0/cellranger)/${cellrangerpath}-cs/${cellrangerversion}
+    ln -sf $(dirname /home/tom/local/bin/cellranger-4.0.0/cellranger)/mro/rna $(dirname /home/tom/local/bin/cellranger-4.0.0/cellranger)/${cellrangerpath}-cs/${cellrangerversion}/mro
 fi
 barcodefile=""
 crIN=input4cellranger #name of the directory with all FASTQ and index files given to cellranger
@@ -1698,7 +1700,7 @@ if [[ $lock -eq 0 ]]; then
         cat ${v2} > ${v3}
         gzip -f ${v3}
         rm translation/${v3}.gz
-        ln -s ${v3}.gz translation/${v3}.gz
+        ln -s ../${v3}.gz translation/${v3}.gz
     fi
     echo " whitelist converted"
 
