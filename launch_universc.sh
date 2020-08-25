@@ -1699,7 +1699,7 @@ if [[ $lock -eq 0 ]]; then
         #for version 3
         cat ${v2} > ${v3}
         gzip -f ${v3}
-        if[[ -f translation/${v3}.gz]]; then
+        if [[ -f translation/${v3}.gz ]]; then
             rm translation/${v3}.gz
             paste ${v3} ${v3} > translation/${v3}
             gzip -f translation/${v3}
