@@ -1700,6 +1700,7 @@ if [[ $lock -eq 0 ]]; then
         cat ${v2} > ${v3}
         gzip -f ${v3}
         rm translation/${v3}.gz
+        ln -s ../${v3} translation/${v3}
         ln -s ../${v3}.gz translation/${v3}.gz
     fi
     echo " whitelist converted"
