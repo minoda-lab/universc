@@ -255,7 +255,7 @@ my $r1_single_file = `basename $r1_raw_file | perl -pe chomp`;
 $r1_single_file = $integrated_folder."/single.".$r1_single_file;
 
 my $temp_r1 = $r1_raw_file.".temp";
-my $temp_r2 = $r1_raw_file.".temp";
+my $temp_r2 = $r2_raw_file.".temp";
 system "$zcat $r1_raw_file > $temp_r1";
 system "$zcat $r2_atqt_file > $temp_r2";
 
