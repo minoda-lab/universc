@@ -1698,10 +1698,9 @@ if [[ $lock -eq 0 ]]; then
         fi
         #for version 3
         cat ${v2} > ${v3}
-        gzip -f ${v3}
         if [[ -f translation/${v3}.gz ]]; then
             rm translation/${v3}.gz
-            paste ${v3} ${v3} > translation/${v3}
+            awk -F , -v OFS="\t" '{print $1, "\t", $1}' $v3 > translation/${v3}
             gzip -f translation/${v3}
         fi
         gzip -f ${v3}
