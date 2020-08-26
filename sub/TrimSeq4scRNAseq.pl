@@ -12,7 +12,7 @@ use warnings;
 use Getopt::Long;
 
 #####SCRIPT DESCRIPTION#####
-#Script "qc_and_trim.pl" trims the R2 file and pairs it with the untrimmed R1 file.
+#Script "TrimSeq4scRNAseq.pl" trims the R2 file and pairs it with the untrimmed R1 file.
 ###########
 
 
@@ -34,22 +34,20 @@ my $index = ""; #library index sequence
 my $out = ""; #output directory
 my $mode = "perl"; #"fastqc_pair" or "perl"
 my $threads = "2"; #number of threads given
-my $log = "TrimSeq4scRNAseq_log.txt";
 
 my $raw_folder = "01_RAW";
-
 my $trimmed_folder = "02_TRIMMED";
+my $multi_folder = "03_MULTIQC";
+my $integrated_folder = "04_INTEGRATED";
+
 my $trimmings = "trimmed_sequences.fas";
-my $m_threshold = 1; #smallest contaminant to consider
-my $l_threshold = 30; #shortest length of sequence to keep after trimming
+my $m_threshold = 1; #shortest contaminant to consider
+my $l_threshold = 15; #shortest length of sequence to keep after trimming
 my $p_threshold = 0.99; #my prior
 my $q_threshold = 30; #quality threshold
 
-my $multi_folder = "03_MULTIQC";
-
-my $integrated_folder = "04_INTEGRATED";
-
-my $outdir = "QC_AND_TRIM";
+my $log = "TrimSeq4scRNAseq_log.txt";
+my $outdir = "TrimSeq4scRNAseq_out";
 
 #making the options into external arguments.
 GetOptions (
@@ -60,7 +58,7 @@ GetOptions (
 	'mode=s' => \$mode,
 	'q_threshold=s' => \$q_threshold,
 	'l_threshold=s' => \$l_threshold,
-	'threads=s' => \$threads 
+	'threads' => \$threads,
 	);
 
 #checking for required options.
@@ -78,7 +76,11 @@ if (!$out) {
 }
 
 #checking option quality
-if (-e $out and -d $out) {
+if (-e $out && -d $out) {
+	$outdir = $out."/".$outdir."_Q".$q_threshold."L".$l_threshold;
+	$log = $outdir."/".$log;
+	system "rm -rf $outdir";
+	system "mkdir $outdir";
 	print " out directory checked.\n";
 }
 else {
@@ -93,7 +95,7 @@ my $multiqc_verison = `multiqc --version | cut -f3 -d' ' | perl -pe chomp`;
 
 #open a log file
 open (LOG, ">", "$log") or die "cannot open $log.\n";
-print LOG "#####qc_and_trim.pl LOG#####\n";
+print LOG "#####TrimSeq4scRNAseq.pl LOG#####\n";
 print LOG "R1 file:\t$r1\n";
 print LOG "R2 file:\t$r2\n";
 print LOG "Index sequence:\t$index\n";
@@ -108,12 +110,11 @@ print LOG "\n";
 
 
 
-#####Make input file folder#####
-print "Step-1: Making raw input folder\n";
-print LOG "Step-1: Making raw input folder\n";
+#####Step-01: Make input file folder#####
+print "Step-01: Making raw input folder\n";
+print LOG "Step-01: Making raw input folder\n";
 
-$raw_folder = $out."/".$raw_folder;
-system "rm -rf $raw_folder";
+$raw_folder = $outdir."/".$raw_folder;
 system "mkdir $raw_folder";
 
 my $r1_raw_file = `basename $r1 | perl -pe chomp`;
@@ -144,16 +145,16 @@ print LOG "\tcmd: fastqc $r1_raw_file $r2_raw_file -o $raw_folder -f fastq -t $t
 
 
 
-#####run trimming of R2 file#####
-print "Step-2: Running trimming on raw R2 file\n";
-print LOG "Step-2: Running trimming on raw R2 file\n";
+#####Step-02: run trimming of R2 file#####
+print "Step-02: Running trimming on raw R2 file\n";
+print LOG "Step-02: Running trimming on raw R2 file\n";
 print LOG "Parameter settings:\n";
 print LOG "\tShortest contaminant length:\t$m_threshold\n";
 print LOG "\tShortest sequence length:\t$l_threshold\n";
 print LOG "\tPrior probability:\t$p_threshold\n";
 print LOG "\tQuality threshold:\t$q_threshold\n";
-$trimmed_folder = $out."/".$trimmed_folder;
-system "rm -rf $trimmed_folder";
+
+$trimmed_folder = $outdir."/".$trimmed_folder;
 system "mkdir $trimmed_folder";
 
 my $r2_at_file = `basename $r2_raw_file | perl -pe chomp`;
@@ -221,11 +222,11 @@ print LOG "\tcmd: fastqc $r2_at_file $r2_atqt_file -o $trimmed_folder -f fastq -
 
 
 
-#####run multi fastq_pair#####
-print "Step-3: Running multiqc for all fastqc files\n";
-print LOG "Step-3: Running multiqc for all fastqc files\n";
-$multi_folder = $out."/".$multi_folder;
-system "rm -rf $multi_folder";
+#####Step-03: run multi fastq_pair#####
+print "Step-03: Running multiqc for all fastqc files\n";
+print LOG "Step-03: Running multiqc for all fastqc files\n";
+
+$multi_folder = $outdir."/".$multi_folder;
 system "mkdir $multi_folder";
 
 system "mv $raw_folder/*fastqc* $multi_folder";
@@ -239,11 +240,11 @@ print LOG "\tcmd: multiqc $multi_folder -o $multi_folder\n";
 
 
 
-#####pairing R2 with R1#####
-print "Step-4: Running integration of R1 and R2\n";
-print LOG "Step-4: Running integration of R1 and R2\n";
-$integrated_folder = $out."/".$integrated_folder;
-system "rm -rf $integrated_folder";
+#####Step-04: pairing R2 with R1#####
+print "Step-04: Running integration of R1 and R2\n";
+print LOG "Step-04: Running integration of R1 and R2\n";
+
+$integrated_folder = $outdir."/".$integrated_folder;
 system "mkdir $integrated_folder";
 
 my $r1_paired_file = `basename $r1_raw_file | perl -pe chomp`;
@@ -253,10 +254,10 @@ $r2_paired_file = $integrated_folder."/".$r2_paired_file;
 my $r1_single_file = `basename $r1_raw_file | perl -pe chomp`;
 $r1_single_file = $integrated_folder."/single.".$r1_single_file;
 
-my $temp_r1 = "temp.r1.fq";
-my $temp_r2 = "temp.r2.fq";
-system "$zcat $r1_raw_file >$temp_r1";
-system "$zcat $r2_atqt_file >$temp_r2";
+my $temp_r1 = $r1_raw_file.".temp";
+my $temp_r2 = $r1_raw_file.".temp";
+system "$zcat $r1_raw_file > $temp_r1";
+system "$zcat $r2_atqt_file > $temp_r2";
 
 my $temp_r1_paired = $temp_r1.".paired.fq";
 my $temp_r2_paired = $temp_r2.".paired.fq";
@@ -334,19 +335,9 @@ unlink ($temp_r2);
 
 
 
-#####generating a single output folder#####
-print "Step-5: Generating a log and output file\n";
-print LOG "Step-5: Generating a log and output file\n";
-$outdir = $out."/".$outdir;
-system "rm -rf $outdir";
-system "mkdir $outdir";
-
+#####Step-05: completing process#####
+print "Step-05: Completing process\n";
+print LOG "Step-05: Completing process\n";
 print LOG "##########\n";
 close (LOG);
-
-system "mv $raw_folder $outdir";
-system "mv $trimmed_folder $outdir";
-system "mv $multi_folder $outdir";
-system "mv $integrated_folder $outdir";
-system "mv $log $outdir";
 ##########
