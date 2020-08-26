@@ -1696,6 +1696,7 @@ if [[ $lock -eq 0 ]]; then
             echo As: $As
             sed -i "s/^/$As/" ${v2} #Trim the first n characters from the beginning of the quality
         fi
+    fi
         #for version 3
         cat ${v2} > ${v3}
         if [[ -f translation/${v3}.gz ]]; then
@@ -1704,7 +1705,6 @@ if [[ $lock -eq 0 ]]; then
             gzip -f translation/${v3}
         fi
         gzip -f ${v3}
-    fi
     echo " whitelist converted"
 
     echo "verbose $verbose"
