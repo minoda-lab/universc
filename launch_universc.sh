@@ -751,7 +751,7 @@ fi
 if [[ -z ${chemistry} ]]; then
     chemistry=${temp_chemistry}
 elif [[ "$chemistry" != "$temp_chemistry" ]]; then
-    echo "***WARNING: chemistry is set to ${chemistry} where ${temp_chemistry} would have been chosen automatically. proceed with causion.***"
+    echo "***WARNING: chemistry is set to ${chemistry} where ${temp_chemistry} would have been chosen automatically. proceed with caution.***"
 fi
 
 #set default barcode and umi lengths
