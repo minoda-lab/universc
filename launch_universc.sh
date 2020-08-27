@@ -2133,6 +2133,12 @@ else
      fi
 fi
 
+if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
+    r=""
+else
+    r="--r1-length=$totallength"
+fi
+
 #outputting command
 echo "running cellranger ..."
 echo ""
@@ -2142,7 +2148,7 @@ start=`date +%s`
 echo "cellranger count --id=$id\\
         --fastqs=$crIN\\
         --lanes=$LANE\\
-        --r1-length=$totallength\\
+        $r\\
         --chemistry=$chemistry\\
         --transcriptome=$reference\\
         --sample=$SAMPLE\\
@@ -2161,7 +2167,7 @@ echo "##########"
 cellranger count --id=$id \
         --fastqs=$crIN \
         --lanes=$LANE \
-        --r1-length=$totallength \
+        $r\\
         --chemistry=$chemistry \
         --transcriptome=$reference \
         --sample=$SAMPLE \
