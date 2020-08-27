@@ -2148,7 +2148,7 @@ start=`date +%s`
 echo "cellranger count --id=$id\\
         --fastqs=$crIN\\
         --lanes=$LANE\\
-        $r\\
+        $r\
         --chemistry=$chemistry\\
         --transcriptome=$reference\\
         --sample=$SAMPLE\\
@@ -2167,7 +2167,7 @@ echo "##########"
 cellranger count --id=$id \
         --fastqs=$crIN \
         --lanes=$LANE \
-        $r\\
+        $r\
         --chemistry=$chemistry \
         --transcriptome=$reference \
         --sample=$SAMPLE \
