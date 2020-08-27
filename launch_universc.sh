@@ -2134,7 +2134,7 @@ else
 fi
 
 if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
-    r=""
+    r="--r1-length=NULL"
 else
     r="--r1-length=$totallength"
 fi
