@@ -862,7 +862,9 @@ if [[ $verbose ]]; then
     echo "key: ${keys[@]}"
 fi
 for key in ${keys[@]}; do
-    readkey=$key
+    if [[ $verbose ]]; then
+        readkey=$key
+    fi
     list=()
     if [[ $readkey == "R1" ]]; then
         list=("${read1[@]}")
@@ -950,7 +952,10 @@ fi
 
 #####Input file curation 3: renaming read1, read2, index1, and index2 file name if not compatible with the launch_universc.sh#####
 for key in ${keys[@]}; do
-    readkey=$keys
+    if [[ $verbose ]]; then
+        echo "key: $key"
+    fi
+    readkey=$key
     list=""
     if [[ $readkey == "R1" ]]; then
         list=("${read1[@]}")
@@ -990,7 +995,7 @@ for key in ${keys[@]}; do
                     echo "***Warning: file $read does not have lane value in its name. Lane 1 is assumed.***"
                 echo "  renaming $read ..."
                 fi
-                rename "s/_$readkey/_L001_$readkey/" $read
+                rename -f "s/_$readkey/_L001_$readkey/" $read
                 #update file variable
                 read=`echo $read | sed -e "s/_${readkey}/_L001_${readkey}/g"`
                 list[$j]=$read
@@ -1010,7 +1015,7 @@ for key in ${keys[@]}; do
                     echo "  renaming $read ..."
                 fi
                 k=$((${j}+1))
-                rename "s/_L0/_S${k}_L0/" $read
+                rename -f "s/_L0/_S${k}_L0/" $read
                 #update file variable
                 read=`echo $read | sed -e "s/_L0/_S${k}_L0/g"`
                 list[$j]=$read
@@ -1029,7 +1034,7 @@ for key in ${keys[@]}; do
                     echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
                     echo "  renaming $read ..."
                 fi
-                rename "s/_${readkey}.*\./_${readkey}_001\./" $read
+                rename -f "s/_${readkey}.*\./_${readkey}_001\./" $read
                 #update file variable
                 read=`echo $read | sed -e "s/_${readkey}.*\./_${readkey}_001\./g"`
                 list[$j]=$read
@@ -1171,12 +1176,17 @@ for fq in "${read12[@]}"; do
     name=${name%.*}
     fields=`echo ${name} | grep -o "_" | wc -l`
     fields=$(($fields+1))
-    sn=`echo ${name} | cut -f1-$((${fields}-4))  -d'_'`
+    if [[ $fields -le 4 ]]; then
+        name_fields=$(($fields+1))
+    else
+        name_fields=$fields
+    fi
+    sn=`echo ${name} | cut -f1-$((${name_fields}-4))  -d'_'`
     lane=`echo ${name} | cut -f$((${fields}-2)) -d'_' | sed 's/L00//'`
     LANE+=($lane)
     if [[ ${fields} -le 4 ]]; then
-        echo "Error: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
-        exit 1
+        echo "Warning: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
+        #exit 1
     elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
         echo "Error: $fq does not have a .fq or .fastq extention."
         exit 1
