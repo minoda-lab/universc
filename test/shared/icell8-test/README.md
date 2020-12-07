@@ -11,7 +11,8 @@ Study Accession: EGAS00001002320
 https://ega-archive.org/studies/EGAS00001002320
 Data Accession: EGAD00001003443
 https://ega-archive.org/datasets/EGAD00001003443
-
+File Accession: EGAF00001698000
+Sample: 72618_KU812 (Human KU812 cells)
 
 ## Data preparations
 Filtered for regions mapping to HUMAN_21:9825832-48085036 GRCh38 (hg38)
