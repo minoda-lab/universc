@@ -1,17 +1,3 @@
-{
-    "fasta_hash": "332a9359e2b8dc662910106dd439c2b4e5e58022", 
-    "genomes": [
-        "hg19_chr21"
-    ], 
-    "gtf_hash": "b40de17097f46e3e8648bc38cfd0f2d7ebde00da", 
-    "input_fasta_files": [
-        "genome.fa"
-    ], 
-    "input_gtf_files": [
-        "genes.gtf"
-    ], 
-    "mem_gb": 4, 
-    "mkref_version": "4009.1.79-50-ge2da5f0", 
-    "threads": 1, 
-    "version": null
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:394e690da7291c3aa40a76d111ce204230363b55ad0d8cfee04ca3f06886fb7e
+size 385
