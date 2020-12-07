@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# run tests in home directory (writeable)
-#cd ~
-# run tests in universc directory
+# run tests in universc directory (parent of test directory)
 cd $(dirname ${BASH_SOURCE[0]})/..
+pwd
 
 # used to export to PATH for testing on SGE server
-#export PATH=${HOME}/local/bin/cellranger-3.0.2:$PATH
+export PATH=${HOME}/local/bin/cellranger-3.0.2:$PATH
 
 cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')'`
 cellrangerpath=`which cellranger`
@@ -15,7 +14,7 @@ cellrangerpath=`which cellranger`
 bash launch_universc.sh -t "10x" --setup
 
 ## test 10x data
-# nzip input data
+# unzip input data
 if [[ ! -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt.gz ]]; then
     gzip -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
 fi
