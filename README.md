@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Sunday 12 July 2020"
+date: "Tuesday 08 December 2020"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -59,6 +59,11 @@ Tom Kelly^†^ (RIKEN IMS) and Kai Battenberg^†^ (RIKEN CSRS/IMS)
 † These authors contributed equally to this work
 
 Contact: &lt;first name&gt;.&lt;family name&gt;[at]riken.jp
+
+------------------------------------------
+
+**Disclaimer**: we are third party developers not affiliated with 10X Genomics or any other vendor of single-cell technologies.
+We are releasing this code on an open-source [license](#licensing) which calls Cell Ranger™ as an external dependency.
 
 ------------------------------------------
 
@@ -1013,7 +1018,7 @@ technology used by UniverSC. Please *do not remove this file* unless the
 last technology used is 10x Genomics.
 
 
-## Licensing
+## Licensing <span id="Licensing"><span>
 
 This package is provided open-source on a GPL-3 license. This means that you are free to use and 
 modify this code provided that they also contain this license.
