@@ -717,7 +717,7 @@ fi
 
 
 
-#####Setting chemisty#####
+#####Setting chemistry#####
 #check if chemistry matches expected inputs
 if [[ $verbose ]]; then
     echo " checking option: --chemistry"
@@ -802,7 +802,7 @@ if [[ $setup == "false" ]]; then
     fi
 fi
 
-#check for presence of indexe files
+#check for presence of index files
 if [[ $verbose ]]; then
     echo " checking option: --index1 and --index2"
 fi
@@ -833,6 +833,8 @@ if [[ $setup == "false" ]]; then
         exit 1
     fi   
 fi
+
+
 
 if [[ $verbose ]]; then
     echo "  ${#read1[@]} read1s: ${read1[@]}"
