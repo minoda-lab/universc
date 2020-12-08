@@ -1617,7 +1617,16 @@ if [[ $lock -eq 0 ]]; then
             sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
         fi
     fi
+    #backup 10x navbar
+    if [[ ! -f ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html ]];then
+        cp ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.html ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html
+        cp ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.html ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.temp.html
+    fi
     if [[ $technology == "10x" ]] && [[ $barcodefile == "default:10x" ]]; then
+        #restore logo in HTML template
+        if [[ -f ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html ]];then
+            cp ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.html
+        fi
         #restore cloupe generation
         if [[ $verbose  ]]; then
             echo "restore cloupe" 
@@ -1654,6 +1663,11 @@ if [[ $lock -eq 0 ]]; then
             eval "sed -i '$(echo "${num},${num2}s/^#*#//g")' $file"
         done
     elif [[ $lastcall_p == "default:10x" ]] || [[ ! -f $lastcallfile ]]; then
+        #remove logo from HTML template
+        if [[ -f ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html ]];then
+            #line of HTML in header is removed
+            sed '/class="logo"/d' ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html > ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.html
+        fi
         #disable cloupe generation
         if [[ $verbose  ]]; then
             echo "disable cloupe"
