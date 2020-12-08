@@ -9,14 +9,17 @@ convertversion="1.0.1"
 
 
 #####locate cellranger and get cellranger version#####
-cellrangerpath=`which cellranger` #location of cellranger
+cellrangerpath=$(which cellranger) #location of cellranger
 if [[ -z $cellrangerpath ]]; then
     echo "cellranger command is not found."
     exit 1
 fi
-cellrangerversion=$(cellranger --version | head -n 2 | tail -n 1 | rev | cut -f1 -d" " | rev |  cut -f2 -d'(' | cut -f1 -d')')
+## detects version by attempting to parse "cellranger --version" (older versions do not support this by print the help header if invalid args given)
+cellrangerversion=$(cellranger --version 2>/dev/null | head -n 2 | tail -n 1 | rev | cut -f1 -d" " | rev |  cut -f2 -d'(' | cut -f1 -d')')
+if [[ $verbose ]]; then
+    echo $cellrangerversion
+fi
 ##########
-
 
 
 #####locate launch_universc.sh, barcode sources, and other tools######
@@ -60,9 +63,10 @@ lastcall_u=`echo ${lastcall} | cut -f2 -d' '`
 lastcall_p=`echo ${lastcall} | cut -f3 -d' '`
 barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
 if [[ $(echo "${cellrangerversion} 4.0.0" | tr " " "\n" | sort -V | tail -n 1)  == ${cellrangerversion} ]]; then
-    barcodedir=$(dirname /home/tom/local/bin/cellranger-4.0.0/cellranger)/lib/python/cellranger/barcodes
-    mkdir -p $(dirname /home/tom/local/bin/cellranger-4.0.0/cellranger)/${cellrangerpath}-cs/${cellrangerversion}
-    ln -sf $(dirname /home/tom/local/bin/cellranger-4.0.0/cellranger)/mro/rna $(dirname /home/tom/local/bin/cellranger-4.0.0/cellranger)/${cellrangerpath}-cs/${cellrangerversion}/mro
+    barcodedir=$(dirname $cellrangerpath)/lib/python/cellranger/barcodes
+    mkdir -p ${cellrangerpath}-cs/${cellrangerversion}
+    ln -sf $(dirname $cellrangerpath)/mro/rna ${cellrangerpath}-cs/${cellrangerversion}/mro
+    ln -sf $(dirname $cellrangerpath)/lib ${cellrangerpath}-cs/${cellrangerversion}/lib
 fi
 barcodefile=""
 crIN=input4cellranger #name of the directory with all FASTQ and index files given to cellranger
