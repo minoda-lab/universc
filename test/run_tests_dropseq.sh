@@ -28,7 +28,7 @@ bash launch_universc.sh --id "test-dropseq" --technology "nadia" \
  --read2 "test/shared/dropseq-test/SRR1873277_Sample1_R2" 
 
 #reset test data (files names)
-if [[ -f test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq ]];
+if [[ -f test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq ]]; then
     gzip test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq
 fi
 if [[ ! -f test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz ]]; then
