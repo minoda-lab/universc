@@ -1637,14 +1637,14 @@ if [[ $lock -eq 0 ]]; then
         fi
     fi
     #backup 10x navbar
-    if [[ ! -f ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html ]];then
-        cp ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.html ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html
-        cp ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.html ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.temp.html
+    if [[ ! -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.backup.html ]];then
+        cp ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.html ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.backup.html
+        cp ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.html ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.temp.html
     fi
     if [[ $technology == "10x" ]] && [[ $barcodefile == "default:10x" ]]; then
         #restore logo in HTML template
-        if [[ -f ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html ]];then
-            cp ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.html
+        if [[ -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.backup.html ]];then
+            cp ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.backup.html ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.html
         fi
         #restore cloupe generation
         if [[ $verbose  ]]; then
@@ -1683,9 +1683,9 @@ if [[ $lock -eq 0 ]]; then
         done
     elif [[ $lastcall_p == "default:10x" ]] || [[ ! -f $lastcallfile ]]; then
         #remove logo from HTML template
-        if [[ -f ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html ]];then
+        if [[ -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.backup.html ]];then
             #line of HTML in header is removed
-            sed '/class="logo"/d' ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.backup.html > ${cellrangerpath}-cs/${cellrangerversion}lib/python/cellranger/webshim/template/navbar.html
+            sed '/class="logo"/d' ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.backup.html > ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.html
         fi
         #disable cloupe generation
         if [[ $verbose  ]]; then
