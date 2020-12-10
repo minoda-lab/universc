@@ -36,3 +36,18 @@ RUN mkdir -p /cellranger-3.0.2.9001/cellranger-tiny-ref \
 ENV PATH cellranger_convert:$PATH
 
 RUN ln -s /cellranger_convert/convert.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/conversion
+
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
+
+RUN apt-get install -y \
+ python3-pip \
+ && python3 -m pip install --upgrade pip setuptools wheel \
+ && pip3 install multiqc
+
+RUN git clone https://github.com/linsalrob/fastq-pair.git \
+ && cd fastq-pair \
+ && mkdir build \
+ && cd build \
+ && gcc -std=gnu99   ../main.c ../robstr.c ../fastq_pair.c ../is_gzipped.c  -o fastq_pair \
+ && cp fastq_pair /bin/fastq_pair
