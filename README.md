@@ -46,7 +46,11 @@ tags:
 
 **Summary**
 
-Guide on how to simulate gene expression data from pathway structures defined by graphs from `igraph` objects.
+Single-cell RNA-sequencing analysis to quantify RNA molecules in individual cells has become popular owing to 
+the large amount of information one can obtain from each experiment. UniverSC is a universal single-cell processing 
+tool that supports any UMI-based platform. Our command-line tool enables consistent and comprehensive integration,
+comparison, and evaluation across data generated from a wide range of platforms. Here we provide a guide to install
+and use this tool to process single-cell RNA-Seq data from FASTQ format.
 
 **Package**
 
