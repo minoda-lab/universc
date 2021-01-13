@@ -1,5 +1,22 @@
 #!/bin/sh
 
+#    UniverSC
+#    Copyright (C) 2019  Tom Kelly; Kai Battenberg 
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
 install=false
 
 ######convert version#####
@@ -134,6 +151,22 @@ fi
 if [[ $SHELL != "" ]]; then
     SHELL=" $SHELL"
 fi
+copyright="
+    UniverSC  Copyright (C) 2019  Tom Kelly; Kai Battenberg
+
+"
+notice="
+    This program comes with ABSOLUTELY NO WARRANTY; for details type 'cat LICENSE'.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions; type 'cat LICENSE' for details.
+
+"
+disclaimer="
+    Cell Ranger is called as third-party dependency and is not maintained
+    by this project. Please ensure you comply with the End User License
+    Agreement for all software installed where applicable; for details type 'cat README.md'.
+
+"
 help='
 Usage:
  '$SHELL' '$invocation' --testrun -t TECHNOLOGY
@@ -215,6 +248,12 @@ For custom barcode and umi length, follow the format below:
 
 Files will be renamed if they do not follow this format. File extension will be detected automatically.
 '
+
+echo $copyright
+
+echo $notice
+
+echo $disclaimer
 
 if [[ -z $@ ]]; then
     echo "$help"
