@@ -19,8 +19,8 @@
 
 install=false
 
-######convert version#####
-convertversion="1.0.1"
+######UniverSC version#####
+universcversion="1.0.2"
 ##########
 
 
@@ -94,7 +94,7 @@ percellfile="outs/basic_stats.txt" #name of the file with the basic statistics o
 
 
 
-#####checking if convert and cellranger are writable#####
+#####checking if universc and cellranger are writable#####
 #cellranger
 if ! [[ -w "$barcodedir" ]]; then
     echo "Error: Trying to run cellranger installed at ${cellrangerpath}"
@@ -514,7 +514,7 @@ for op in "$@"; do
             exit 0
             ;;
         -v|--version)
-            echo "launch_universc.sh version ${convertversion}"
+            echo "launch_universc.sh version ${universcversion}"
             echo "cellranger version ${cellrangerversion}"
             exit 0
             ;;
@@ -2295,7 +2295,7 @@ fi
 
 
 
-#####remove files if convert is not running elsewhere#####
+#####remove files if universc is not running elsewhere#####
 echo "updating .lock file"
 
 #remove current job from counter (successfully completed)

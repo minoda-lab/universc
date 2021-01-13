@@ -1,3 +1,11 @@
+### 1.0.2
+
+- unit tests for 10x, dropseq, and icell8
+
+- renaming tool and script
+
+- version for public release
+
 ### 1.0.1
 
 - improved set up call to handle restoring cloupe files for 10x

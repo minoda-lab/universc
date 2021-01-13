@@ -1,4 +1,4 @@
-# Contributing to universc development
+# Contributing to UniverSC development
 
 Thank you for helping to make this package better. We value all contributions
 and rely on your feedback to identify problems and use cases.
@@ -15,14 +15,14 @@ changes, we suggest that you open an issue before you start coding, so that
 we can maximize the probability that we can successfully merge in your
 code.
 
-The goal of this guide is to help you get up and contributing to universc as 
+The goal of this guide is to help you get up and contributing to UniverSC as 
 quickly as possible. The guide is divided into two main pieces:
   
   1. Filing a bug report or feature request in an issue.
   
   2. Suggesting a change via a pull request.
 
-Please note that universc is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
+Please note that UniverSC is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
 By contributing to this project,  you agree to abide by its terms.
 
 ## Issues
@@ -139,7 +139,7 @@ Pull requests will be evaluated against a seven point checklist:
     how your pull request solves it as concisely as possible.
 
     Also include this motivation in `NEWS` so that when a new release of
-    universc comes out it's easy for users to see what's changed. Add your
+    UniverSC comes out it's easy for users to see what's changed. Add your
     item at the top of the file and use markdown for formatting. The
     news item should end with `(@yourGithubUsername, #the_issue_number)`.
 
@@ -153,10 +153,10 @@ Pull requests will be evaluated against a seven point checklist:
     multiple changes that depend on each other, start with the first one
     and don't submit any others until the first one has been processed.
                                                                               
-1.  __Use universc coding style__. Please follow the
+1.  __Use UniverSC coding style__. Please follow the
 [Google shell style](https://google.github.io/styleguide/shellguide.html).
 Maintaining a consistent style across the whole code base makes it much easier to
-jump into the code. If you're modifying existing universc code that
+jump into the code. If you're modifying existing UniverSC code that
 doesn't follow the style guide, a separate pull request to fix the
 style would be greatly appreciated.
                                                                               
@@ -172,13 +172,13 @@ to document them in the help and manual.
     to the appropriate function.
 
 This seems like a lot of work but don't worry if your pull request isn't perfect.
-It's a learning process and members of the universc team will be on hand to help you
+It's a learning process and members of the UniverSC team will be on hand to help you
 out. A pull request ("PR") is a process, and unless you've submitted a few in the
 past it's unlikely that your pull request will be accepted as is. All PRs require
-review and approval from at least one member of the universc development team 
+review and approval from at least one member of the UniverSC development team 
 before merge.
                                                                               
-Please remember that universc is package used by other people. 
+Please remember that UniverSC is package used by other people. 
 This means that changing any existing functionality could result in
 breaking someone's code (or another pipeline). 
 Please don't submit pull requests that change existing behaviour. Instead, 
@@ -223,7 +223,7 @@ edit the sources on your computer, instead of online on Github.
   in case somebody is already working on the same thing, or it is something
   we don't want in universc.
 * Fork the repository, and clone it to the machine you'll work on.
-* We usually build universc on OSX, so the `dev` branch is usally fine on
+* We usually build UniverSC on OSX, so the `dev` branch is usally fine on
   that platform. It might have problems on other systems. If this happens,
   please open an issue and tell us.
 * Make sure you work on the `dev` branch.
@@ -239,16 +239,16 @@ edit the sources on your computer, instead of online on Github.
   by email or mentioning the maintainer's username on GitHub
   if it takes longer than a week or so to respond. 
 
-## Writing universc Code 
+## Writing UniverSC Code 
 
-Some tips on writing universc code. In general, look at how things are done,
+Some tips on writing UniverSC code. In general, look at how things are done,
 and try to do them similarly. (Unless you think they are not done well, in
 which case please tell us.)
 
 ### Code Formatting
 
 Look at the style (indentation, braces, etc.) of some recently committed
-bigger change, and try to mimic that. The code style within universc is not
+bigger change, and try to mimic that. The code style within UniverSC is not
 stricly the same, but we want to keep it reasonably similar. If you are 
 unsure on this, we can address this when reviewing the Pull Request so
 don't worry about it too much.

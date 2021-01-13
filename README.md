@@ -50,7 +50,7 @@ Guide on how to simulate gene expression data from pathway structures defined by
 
 **Package**
 
-UniverSC version 1.0.1
+UniverSC version 1.0.2
 
 **Maintainers**
 
@@ -182,16 +182,16 @@ A submission to a journal and biorXiv is in progress. Please cite this
 when it becomes available. In the meantime, the package can be cited
 as follows:
 
-Kelly, S.T., Battenberg, K., Hayashi, K., and Minoda, A. (2020)
-launch_universc.sh : single-cell processing across technologies.
-package version 1.0.1. https://github.com/TomKellyGenetics/universc
+Kelly, S.T., Battenberg, Hetherington, N.A., K., Hayashi, K., and Minoda, A. (2021)
+UniverSC: single-cell processing across technologies.
+package version 1.0.2. https://github.com/TomKellyGenetics/universc
 
 ```
 @Manual{,
     title = {{launch_universc.sh}: single-cell processing across technologies},
     author = {S. Thomas Kelly, Kai Battenbery, Makoto Hayashi, and Aki Minoda},
     year = {2020},
-    note = {package version 1.0.1},
+    note = {package version 1.0.2},
     url = {https://github.com/TomKellyGenetics/universc},
   }
 ```
@@ -270,7 +270,7 @@ to the PATH so that `launch_universc.sh` can be run from any directory.
 
 ### Runnning in a git repository
 
-If you are running code in a git repository you can add universc as a submodule.
+If you are running code in a git repository you can add UniverSC as a submodule.
 
 ```
 cd $/HOME/my_git_repo
@@ -642,7 +642,7 @@ your systems administrator.
 
 #### Pulling from remote DockerHub repository
 
-We provide a docker image for universc version 0.3.
+We provide a docker image for UniverSC version 1.0.2.
 
 You can import it if you have docker installed.
 
@@ -737,7 +737,7 @@ Please note that this script alters the barcode whitelist. Known ICELL8 barcodes
 
 #### Locally install manual
 
-You can display a manual from the locally installed universc directory with:
+You can display a manual from the locally installed UniverSC directory with:
 
 ```
  man man/launch_universc.sh 
