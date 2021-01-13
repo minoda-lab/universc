@@ -8,7 +8,7 @@ crconverterversion="3.1.1.90001"
 
 
 #####cellranger version#####
-cellrangerpath=`which cellranger` #location of cellranger
+cellrangerpath=`which cellranger` #location of Cell Ranger
 if [[ -z $cellrangerpath ]]; then
     echo "cellranger command is not found."
     exit 1
@@ -55,7 +55,7 @@ Options:
 
 This is an open-source implementation of crconverter.
 This is only intended for testing open-source implementations
-of cellranger and may not produce the same results as
+of Cell Ranger and may not produce the same results as
 software produced by 10x Genomics. We recommend the
 supported software be used for other purposes.
 
@@ -308,7 +308,7 @@ fi
 
 if [[ ! -f $output ]]; then
     echo "#!/bin/bash" > $output
-    echo "echo \"Please use the supported release of cellranger if you wish to use .cloupe files\"" >> $output
+    echo "echo \"Please use the supported release of Cell Ranger if you wish to use .cloupe files\"" >> $output
     chmod 755 $output
 else
     echo ".cloupe file already exists in $output"

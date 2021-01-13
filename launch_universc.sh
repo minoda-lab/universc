@@ -26,7 +26,7 @@ universcversion="1.0.2"
 
 
 #####locate cellranger and get cellranger version#####
-cellrangerpath=$(which cellranger) #location of cellranger
+cellrangerpath=$(which cellranger) #location of Cell Ranger
 if [[ -z $cellrangerpath ]]; then
     echo "cellranger command is not found."
     exit 1
@@ -86,7 +86,7 @@ if [[ $(echo "${cellrangerversion} 4.0.0" | tr " " "\n" | sort -V | tail -n 1)  
     ln -sf $(dirname $cellrangerpath)/lib ${cellrangerpath}-cs/${cellrangerversion}/lib
 fi
 barcodefile=""
-crIN=input4cellranger #name of the directory with all FASTQ and index files given to cellranger
+crIN=input4cellranger #name of the directory with all FASTQ and index files given to Cell Ranger
 whitelistdir=${SDIR}/whitelists #path to whitelists
 whitelistfile="outs/whitelist.txt" #name of the whitelist file added to the cellranger output
 percellfile="outs/basic_stats.txt" #name of the file with the basic statistics of the run added to the cellranger output
@@ -94,13 +94,13 @@ percellfile="outs/basic_stats.txt" #name of the file with the basic statistics o
 
 
 
-#####checking if universc and cellranger are writable#####
-#cellranger
+#####checking if Universc and Cell Ranger are writable#####
+#Cell Ranger
 if ! [[ -w "$barcodedir" ]]; then
-    echo "Error: Trying to run cellranger installed at ${cellrangerpath}"
-    echo "launch_universc.sh can only run with cellranger installed locally"
-    echo "Install cellranger in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
-    echo "The following versions of cellranger are found:"
+    echo "Error: Trying to run Cell Ranger installed at ${cellrangerpath}"
+    echo "launch_universc.sh can only run with Cell Ranger installed locally"
+    echo "Install Cell Ranger in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
+    echo "The following versions of Cell Ranger are found:"
     echo " `whereis cellranger`"
     exit 1
 fi
@@ -182,11 +182,11 @@ Convert sequencing data (FASTQ) from Nadia or ICELL8 platforms for compatibility
 
 Mandatory arguments to long options are mandatory for short options too.
        --testrun                Initiates a test trun with the test dataset
-  -R1, --read1 FILE             Read 1 FASTQ file to pass to cellranger (cell barcodes and umi)
-  -R2, --read2 FILE             Read 2 FASTQ file to pass to cellranger
-  -I1, --index1 FILE            Index (I1) FASTQ file to pass to cellranger (OPTIONAL)
-  -I2, --index2 FILE            Index (I2) FASTQ file to pass to cellranger (OPTIONAL and EXPERIMENTAL)
-  -f,  --file NAME              Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
+  -R1, --read1 FILE             Read 1 FASTQ file to pass to Cell Ranger (cell barcodes and umi)
+  -R2, --read2 FILE             Read 2 FASTQ file to pass to Cell Ranger
+  -I1, --index1 FILE            Index (I1) FASTQ file to pass to Cell Ranger (OPTIONAL)
+  -I2, --index2 FILE            Index (I2) FASTQ file to pass to Cell Ranger (OPTIONAL and EXPERIMENTAL)
+  -f,  --file NAME              Path and the name of FASTQ files to pass to Cell Ranger (prefix before R1 or R2)
                                   e.g. /path/to/files/Example_S1_L001
   
   -i,  --id ID                  A unique run id, used to name output folder
@@ -1255,7 +1255,7 @@ for fq in "${read12[@]}"; do
         echo "Error: $fq does not have a .fq or .fastq extention."
         exit 1
     elif [[ ${sn} =~ "." ]]; then
-        echo "Error: $fq has a period \".\" within its sample name. Remove it to run cellranger."
+        echo "Error: $fq has a period \".\" within its sample name. Remove it to run Cell Ranger."
 	exit 1
     fi
 
@@ -1639,12 +1639,12 @@ if [[ $verbose ]]; then
 fi
 if [[ $lock -eq 0 ]]; then
     echo "setup begin"
-    echo "updating barcodes in $barcodedir for cellranger version ${cellrangerversion} installed in ${cellrangerpath} ..."
+    echo "updating barcodes in $barcodedir for Cell Ranger version ${cellrangerversion} installed in ${cellrangerpath} ..."
     
     cd $barcodedir
     
     #restore assert functions if cellranger version is 3 or greater
-    echo " restoring cellranger"
+    echo " restoring Cell Ranger"
     if [[ $verbose  ]]; then
         echo "${cellrangerversion}"
         echo "${cellrangerversion} 3.0.0" | tr " " "\n" | sort -V | head -n 1
@@ -1827,8 +1827,8 @@ fi
 
 
 
-#####create directory with files fed to cellranger#####
-echo "creating a folder for all cellranger input files ..."
+#####create directory with files fed to Cell Ranger#####
+echo "creating a folder for all Cell Ranger input files ..."
 convFiles=()
 
 if [[ ! -d $crIN ]]; then
@@ -1861,7 +1861,7 @@ for fq in "${read1[@]}"; do
     
     #invert read1 and read2
     if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
-        #where converted "read1" is R2 in source files (corrected names for cellranger)
+        #where converted "read1" is R2 in source files (corrected names for Cell Ranger)
         echo "using transcripts in Read 2 for ${technology}"
         to=`echo $to | sed -e "s/_R2_/_R1_/g"`
     fi
@@ -1939,7 +1939,7 @@ if [[ ${#index1[@]} -ge 1 ]]; then
         
         #convert index for R2 and R3
         if [[ "$technology" == "indrop-v3" ]]; then
-            #where converted "index1" is R2 in source files (corrected names for cellranger)
+            #where converted "index1" is R2 in source files (corrected names for Cell Ranger)
             echo "using transcripts in Read 2 for ${technology}"
             to=`echo $to | sed -e "s/_R2_/_I1_/g"`
         fi    
@@ -1976,7 +1976,7 @@ if [[ ${#index2[@]} -ge 1 ]]; then
         
         #convert index for R2 and R3
         if [[ "$technology" == "indrop-v3" ]]; then
-            #where converted "index2" is R3 in source files (corrected names for cellranger)
+            #where converted "index2" is R3 in source files (corrected names for Cell Ranger)
             echo "using transcripts in Read 2 for ${technology}"
             to=`echo $to | sed -e "s/_R3_/_I2_/g"`
         fi
@@ -2186,7 +2186,7 @@ fi
 
 
 
-#####setting parameters for cellranger#####
+#####setting parameters for Cell Ranger#####
 d=""
 if [[ -n $description ]]; then
     d="--description=$description"
@@ -2228,9 +2228,9 @@ else
 fi
 
 #outputting command
-echo "running cellranger ..."
+echo "running Cell Ranger ..."
 echo ""
-echo "#####cellranger command#####"
+echo "#####Cell Ranger command#####"
 
 start=`date +%s`
 echo "cellranger count --id=$id\\
@@ -2251,7 +2251,7 @@ echo "##########"
 
 
 
-#####running cellranger#####
+#####running Cell Ranger#####
 cellranger count --id=$id \
         --fastqs=$crIN \
         --lanes=$LANE \

@@ -16,7 +16,7 @@ launch_universc.sh \- single-cell processing across technologies
   bash launch_universc.sh -v
   bash launch_universc.sh -h
 .SH DESCRIPTION
-Provides a conversion script to run multiple technologies and custom libraries with cellranger (10x Genomics analysis tool).
+Provides a conversion script to run multiple technologies and custom libraries with Cell Ranger (10x Genomics analysis tool).
 .SH OPTIONS
        --testrun
             Initiates a test trun with the test dataset. The technology and id must be specified.
@@ -24,7 +24,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                 e.g., bash launch_universc.sh -t "10x" -i "test-10x" --testrun
 
   -R1, --read1 FILE
-            Read 1 FASTQ file to pass to cellranger (contains the cell barcodes and umi).
+            Read 1 FASTQ file to pass to Cell Ranger (contains the cell barcodes and umi).
             Please provide the name of FASTQ file in the working directory or the path to it.
             String must match the name of an exiting file. Files can have any of the
             following extensions:
@@ -32,7 +32,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                 .fastq .fq .fastq.gz .fq.gz
 
             Compressed files will be opened automatically. Files will be renamed for
-            compatibility with cellranger:
+            compatibility with Cell Ranger:
 
                 e.g.,  SRR1873277_R1.fastq will be renamed to SRR1873277_S1_L001_R1_001.fastq
 
@@ -43,7 +43,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
             Apart from inDrops-v2 or inDrops-v3, all technologies expect barcodes in Read 1.
 
   -R2, --read2 FILE
-            Read 2 FASTQ file to pass to cellranger (contains the transcript reads).
+            Read 2 FASTQ file to pass to Cell Ranger (contains the transcript reads).
             Please provide the name of FASTQ file in the working directory or the path to it.
             String must match the name of an exiting file. Files can have any of the
             following extensions:
@@ -51,7 +51,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                  .fastq .fq .fastq.gz .fq.gz
 
             Compressed files will be opened automatically. Files will be renamed for
-            compatibility with cellranger:
+            compatibility with Cell Ranger:
 
                  e.g.,  SRR1873277_R2.fastq will be renamed to SRR1873277_S1_L001_R2_001.fastq
 
@@ -60,7 +60,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                  --read2 Sample_S1_L001_R2_001.fastq Sample_S1_L002_R2_001.fastq
 
   -I1, --index1 FILE
-            Index (I1) FASTQ file to pass to cellranger (OPTIONAL). Contains the indexes 
+            Index (I1) FASTQ file to pass to Cell Ranger (OPTIONAL). Contains the indexes 
             for each sample. (In the case of Illumina paired-ends these are the i7 indexes).
             Please provide the name of FASTQ file in the working directory or the path to it.
             String must match the name of an exiting file. Files can have any of the
@@ -69,7 +69,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                   .fastq .fq .fastq.gz .fq.gz
 
              Compressed files will be opened automatically. Files will be renamed for
-             compatibility with cellranger:
+             compatibility with Cell Ranger:
 
                   e.g.,  SRR1873277_I1.fastq will be renamed to SRR1873277_S1_L001_I1_001.fastq
 
@@ -81,14 +81,14 @@ Provides a conversion script to run multiple technologies and custom libraries w
              as the files for the reads, they will be inferred from them.
 
             For example is a file Sample_S1_L001_I1_001.fastq is in the same directory,
-            it will be passed to cellranger when launch_universc.sh is called:
+            it will be passed to Cell Ranger when launch_universc.sh is called:
 
                 bash launch_universc.sh -t "dropseq" -R1 Sample_S1_L001_R1_001.fastq -R2 Sample_S1_L001_R2_001.fastq
 
-            It is still advisable to demultiplex samples with Illumina bcl2fastq or cellranger mkfastq
-            before passing them to convert. Index files are passed to cellranger for QC. For example:
+            It is still advisable to demultiplex samples with Illumina bcl2fastq or 'cellranger mkfastq'
+            before passing them to UniverSC. Index files are passed to Cell Ranger for QC. For example:
 
-                cellranger mkfastq --run=/path/to/illumina/bcls --id=sample-name  --sample-sheet=/path/to/SampleSheet.csv --lanes=1,2
+                'cellranger mkfastq' --run=/path/to/illumina/bcls --id=sample-name  --sample-sheet=/path/to/SampleSheet.csv --lanes=1,2
 
             Or
 
@@ -96,7 +96,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                             --sample-sheet "/path/to/SampleSheet.csv" --create-fastq-for-index-reads
 
   -I2, --index2 FILE
-            Index (I2) FASTQ file to pass to cellranger (OPTIONAL). Contains the indexes 
+            Index (I2) FASTQ file to pass to Cell Ranger (OPTIONAL). Contains the indexes 
             for each sample. (In the case of Illumina paired-ends these are the i5 indexes).
             Please provide the name of FASTQ file in the working directory or the path to it.
             String must match the name of an exiting file. Files can have any of the
@@ -105,7 +105,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                   .fastq .fq .fastq.gz .fq.gz
 
              Compressed files will be opened automatically. Files will be renamed for
-             compatibility with cellranger:
+             compatibility with Cell Ranger:
 
                   e.g.,  SRR1873277_I2.fastq will be renamed to SRR1873277_S1_L001_I2_001.fastq
 
@@ -117,17 +117,17 @@ Provides a conversion script to run multiple technologies and custom libraries w
              as the files for the reads, they will be inferred from them.
 
             For example is a file Sample_S1_L001_I2_001.fastq is in the same directory,
-            it will be passed to cellranger when launch_universc.sh is called:
+            it will be passed to Cell Ranger when launch_universc.sh is called:
 
                 bash launch_universc.sh -t "dropseq" -R1 Sample_S1_L001_R1_001.fastq -R2 Sample_S1_L001_R2_001.fastq
 
             This is sufficent to pass files Sample_S1_L001_I1_001.fastq and Sample_S1_L001_I2_001.fastq
-            to cellranger if they are in the same directory.
+            to Cell Ranger if they are in the same directory.
 
-            It is still advisable to demultiplex samples with Illumina bcl2fastq or cellranger mkfastq
-            before passing them to convert. Index files are passed to cellranger for QC. For example:
+            It is still advisable to demultiplex samples with Illumina bcl2fastq or 'cellranger mkfastq'
+            before passing them to UniverSC. Index files are passed to Cell Ranger for QC. For example:
 
-                cellranger mkfastq --run=/path/to/illumina/bcls --id=sample-name  --sample-sheet=/path/to/SampleSheet.csv\
+                'cellranger mkfastq' --run=/path/to/illumina/bcls --id=sample-name  --sample-sheet=/path/to/SampleSheet.csv\
                                    --lanes=1,2 --use-bases-mask y26n,I8n,I8n,Y50n
 
             Or
@@ -139,7 +139,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
 
             For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use "bcl2fastq"
 
-            Note that dual indexes are not supported by cellranger. Manually demultiplexing as above into separate
+            Note that dual indexes are not supported by Cell Ranger. Manually demultiplexing as above into separate
             FASTQ files before processing should work as multiple samples are supported. For example, files names as:
 
                 Sample[ABCD]_S[1234]_L00[12]_R[12]_001.fastq
@@ -150,7 +150,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
             we welcome you to contact us on GitHub to help you out.
 
   -f,  --file NAME
-            Path and the name of FASTQ files to pass to cellranger (prefix before R1 or R2)
+            Path and the name of FASTQ files to pass to Cell Ranger (prefix before R1 or R2)
 
                 e.g. /path/to/files/Example_S1_L001
 
@@ -172,11 +172,11 @@ Provides a conversion script to run multiple technologies and custom libraries w
             contain special characters or an existing filename.
 
   -d,  --description TEXT
-            Sample description to embed in output files, passes to cellranger HTML output.
+            Sample description to embed in output files, passes to Cell Ranger HTML output.
 
   -r,  --reference DIR
             Path of directory containing 10x-compatible reference.
-            See cellranger documentation on how to generate custom "transcriptomes" or
+            See Cell Ranger documentation on how to generate custom "transcriptomes" or
             download human and mouse references from the 10x Genomics website.
 
   -t,  --technology PLATFORM
@@ -235,11 +235,11 @@ Provides a conversion script to run multiple technologies and custom libraries w
            Job manager to use. Valid options: local (default), sge, lsf, or a .template file
 
            We recommend to use a cluster configuration when submitting jobs in to a job scheduler.
-           DO NOT submit jobs in "local" mode to a slurm, SGE, or LSF cluster as cellranger runs
+           DO NOT submit jobs in "local" mode to a slurm, SGE, or LSF cluster as Cell Ranger runs
            multiple threads in parallel by default. Performance is significantly improved using a
            cluster mode with a job scheduler.
 
-          See the cellranger documentation on how to set up a cluster mode with a template file.
+          See the Cell Ranger documentation on how to set up a cluster mode with a template file.
 
        --localcores NUM
            Set max cores the pipeline may request at one time.
@@ -254,9 +254,9 @@ Provides a conversion script to run multiple technologies and custom libraries w
            Only applies in cluster jobmodes.
 
   -p,  --per-cell-data
-           Generates a file with basic run statistics along with per-cell data (additional output to cellranger).
+           Generates a file with basic run statistics along with per-cell data (additional output to Cell Ranger).
            Recommended but disabled by default due to additional runtime required to parse BAM files.
-           This provides more accurate summary statistics than cellranger (which uses an average across cells
+           This provides more accurate summary statistics than Cell Ranger (which uses an average across cells
            that are filtered out).
 
        --setup
@@ -267,19 +267,19 @@ Provides a conversion script to run multiple technologies and custom libraries w
               bash launch_universc.sh -t "dropseq" --setup
 
        --as-is
-           Skips the FASTQ file conversion if the file already exists and run cellranger on pre-converted file.
+           Skips the FASTQ file conversion if the file already exists and run Cell Ranger on pre-converted file.
 
   -h,  --help
            Prints the usage and a list of the most commonly used commands.
 
   -v,  --version                Output version information and exit
-           Prints the version of 'convert' and the 'cellranger' version that will be called from the PATH.
+           Prints the version of 'UniverSC' and the 'Cell Ranger' version that will be called from the PATH.
 
        --verbose
            Print additional information to standard out for debugging purposes.
 
        --version
-           Prints the version of 'convert' and the 'cellranger' version that will be called from the PATH.
+           Prints the version of 'UniverSC' and the 'Cell Ranger' version that will be called from the PATH.
 
 .SH SEE ALSO
 cellranger

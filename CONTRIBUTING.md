@@ -77,7 +77,7 @@ Then simply copy these into GitHub with code blocks:
 tail -n 25  my-id/outs/_log
 ```
 
-Copy the output from the cellranger logs or the terminal
+Copy the output from the Cell Ranger logs or the terminal
 and paste is as a quote
 
 > \> your
