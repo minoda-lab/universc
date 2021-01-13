@@ -35,7 +35,7 @@ RUN mkdir -p /cellranger-3.0.2.9001/cellranger-tiny-ref \
 
 ENV PATH cellranger_convert:$PATH
 
-RUN ln -s /cellranger_convert/convert.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/conversion
+RUN ln -s /cellranger_convert/launch_universc.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/universc
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
