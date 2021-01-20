@@ -10,6 +10,13 @@ export PATH=${HOME}/local/bin/cellranger-3.0.2:$PATH
 cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')'`
 cellrangerpath=`which cellranger`
 
+if [[ ! -f ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA
+fi
+if [[ ! -f ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA
+fi
+
 if [ -f test/shared/icell8-test/72618_A375_S1_L001_R1_001.fastq ]; then
     rename "s/_S1_L001/_L001/" test/shared/icell8-test/72618_A375_S1_L001_R1_001.fastq
 fi

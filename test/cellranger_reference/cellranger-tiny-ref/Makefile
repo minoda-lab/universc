@@ -2,7 +2,7 @@
 
 PWD=$(shell pwd)
 
-all: reference
+all: reference star
 
 reference:
 	@echo "generating cellranger references"
@@ -18,6 +18,19 @@ reference:
 	else\
 		echo "reference 3.0.0 pre-generated";\
 	fi
+
+star:
+        @echo "check for SA files"
+        # used to export to PATH for testing on SGE server
+        @cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')'`
+        @cellrangerpath=`which cellranger`
+        # set up cellranger reference
+        @if [[ ! -f ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
+                rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA
+        fi
+        @if [[ ! -f ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
+                rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA
+        fi
 
 ##########################################
 # Generic rules

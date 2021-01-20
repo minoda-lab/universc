@@ -343,11 +343,11 @@ cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 
 cellrangerpath=`which cellranger`
 
 # set up cellranger reference
-if [[ ! -f /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA
+if [[ ! -f ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA
 fi
-if [[ ! -f /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA
+if [[ ! -f ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA
 fi
 cd ..</code></pre>
 <p>This creates a reference for Cell Ranger here:</p>
