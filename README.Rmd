@@ -712,6 +712,95 @@ sript to the PATH in future sessions.
 export PATH=$HOME/Downloads/universc:$PATH
 ```
 
+### Setting up Cell Ranger references
+
+This repository comes with almost all necessary files to run test jobs. Test data and
+Cell Ranger references are available with Git large file storage (LFS).
+
+To install git LFS run:
+
+```
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+sudo apt-get install git-lfs
+git lfs install
+```
+
+To import large files from Github change to the "universc" directory and run:
+
+```
+git lfs pull origin
+```
+
+This provides almost all files required. The STAR index and reference need to be generated or
+imported from an existing reference. The following code detects whether the references are
+available in an existing cellranger installation.
+
+```
+cd test
+cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')'`
+cellrangerpath=`which cellranger`
+
+# set up cellranger reference
+if [[ ! -f /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA
+fi
+if [[ ! -f /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA
+fi
+cd ..
+```
+
+This creates a reference for Cell Ranger here:
+
+- test/cellranger_reference/cellranger-tiny-ref/1.2.0
+
+- test/cellranger_reference/cellranger-tiny-ref/3.0.0
+
+
+#### Automated references
+
+You can reset the references with the automated settings here:
+
+```
+cd test/cellranger_reference/cellranger-tiny-ref/
+make clean
+make reference
+cd ../../..
+```
+
+#### Custom Cell Ranger references
+
+It is also possible to generate a custom reference for any genome provided you have
+a FASTQ genome reference file and a GTF/GFF3 annotation file. Please ensure that the
+chromosomes match between the FASTA headers and the chromosome column (1st) of the
+GTF/GFF3 file.
+
+The `gffread` function includes with the [cufflinks](http://cole-trapnell-lab.github.io/cufflinks/file_formats/#the-gffread-utility)
+utility can convert to gtf. For example:
+
+```
+gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gff3 -T -o test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gtf 
+```
+
+To generate new references we first remove the references imported.
+
+```
+rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0 test/cellranger_reference/cellranger-tiny-ref/3.0.0
+```
+
+We then generate references from the FASTA and GTF files as shown in the following examples:
+
+```
+cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/1.2.0 \
+        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.0.fa \
+        --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.0.gtf
+
+cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/3.0.0 \
+         --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-3.0.0.fa \
+         --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-3.0.0.gtf
+```
+
+See the Cell Ranger manuals for more [details on references](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/references). 
 
 ## Usage <span id="Usage"><span>
 

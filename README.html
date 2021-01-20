@@ -4,7 +4,7 @@
 <p><strong>Single-cell processing across technologies</strong></p>
 <hr />
 <p><strong>Summary</strong></p>
-<p>Single-cell RNA-sequencing analysis to quantify RNA molecules in individual cells has become popular owing to the large amount of information one can obtain from each experiment. UniverSC is a universal single-cell processing  tool that supports any UMI-based platform. Our command-line tool enables consistent and comprehensive integration, comparison, and evaluation across data generated from a wide range of platforms. Here we provide a guide to install and use this tool to process single-cell RNA-Seq data from FASTQ format.</p>
+<p>Single-cell RNA-sequencing analysis to quantify RNA molecules in individual cells has become popular owing to the large amount of information one can obtain from each experiment. UniverSC is a universal single-cell processing tool that supports any UMI-based platform. Our command-line tool enables consistent and comprehensive integration, comparison, and evaluation across data generated from a wide range of platforms. Here we provide a guide to install and use this tool to process single-cell RNA-Seq data from FASTQ format.</p>
 <p><strong>Package</strong></p>
 <p>UniverSC version 1.0.2</p>
 <p><strong>Maintainers</strong></p>
@@ -12,24 +12,26 @@
 <p>† These authors contributed equally to this work</p>
 <p>Contact: &lt;first name&gt;.&lt;family name&gt;[at]riken.jp</p>
 <hr />
+<p><strong>Disclaimer</strong>: we are third party developers not affiliated with 10X Genomics or any other vendor of single-cell technologies. We are releasing this code on an open-source <a href="#licensing">license</a> which calls Cell Ranger™ as an external dependency.</p>
+<hr />
 <h2 id="getting-started">Getting Started</h2>
 <h3 id="advanced-users">Advanced users</h3>
 <p>If you have <code>cellranger</code> already installed, then all you need to do is clone or download this git repository. You can then run the script in this directory or add it your <code>PATH</code>. See the <a href="#quick-start">Quick Start</a> guide below.</p>
-<p>If you wish to install <code>cellranger</code> and configure this script to run on a Linux environment, we provide details on <a href="#installation">installation</a> below. Note that <code>launch_universc.sh</code> requires write-access a Cell Ranger installation so it needs to be installed in a user’s “home” directory on a server. No admin powers needed!</p>
+<p>If you wish to install <code>cellranger</code> and configure this script to run on a Linux environment, we provide details on <a href="#installation">installation</a> below. Note that <code>launch_universc.sh</code> requires write-access a Cell Ranger installation so it needs to be installed in a user's &quot;home&quot; directory on a server. No admin powers needed!</p>
 <p>Note that <code>cellranger</code> installations that are pre-compiled on Linux will not run on Mac or Windows. Note that Mac OS and some Linux distributions also have different version of sed and rename. It is possible to compile an open-source version of Cell Ranger but it is tricky to install the dependencies so we recommend using our docker <a href="#Docker">image</a> if you wish to do this.</p>
 <h3 id="beginners">Beginners</h3>
-<p>If you are a beginner bioinformatician or wish to run this on a local computer (Mac or Windows), no problem! We provide a “docker” image containing everything needed to run it without installing the software needed. All you need to do is install <a href="https://docs.docker.com/desktop/">docker</a> and follow our guide to use the <a href="#Docker">image</a>. This comes bundled with all the compatible versions needed to run it.</p>
-<p>Note that you need to run the shell commands given in a unix-like command-line interface (the “Terminal” application on Mac or Linux systems). Many shells are supported but we recommend the “bash” shell for beginners (this is the default on most systems). Windows 10 includes a <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">subsystem</a> to run <code>bash</code>. If this is too complicated, you can open a Linux environment (Ubuntu) in docker by following our instructions. Then you can enter bash commands into the terminal opened by docker.</p>
-<p>If you run into problems installing or running <code>launch_universc.sh</code> please don’t hesistate to contact us via email or GitHub.</p>
+<p>If you are a beginner bioinformatician or wish to run this on a local computer (Mac or Windows), no problem! We provide a &quot;docker&quot; image containing everything needed to run it without installing the software needed. All you need to do is install <a href="https://docs.docker.com/desktop/">docker</a> and follow our guide to use the <a href="#Docker">image</a>. This comes bundled with all the compatible versions needed to run it.</p>
+<p>Note that you need to run the shell commands given in a unix-like command-line interface (the &quot;Terminal&quot; application on Mac or Linux systems). Many shells are supported but we recommend the &quot;bash&quot; shell for beginners (this is the default on most systems). Windows 10 includes a <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">subsystem</a> to run <code>bash</code>. If this is too complicated, you can open a Linux environment (Ubuntu) in docker by following our instructions. Then you can enter bash commands into the terminal opened by docker.</p>
+<p>If you run into problems installing or running <code>launch_universc.sh</code> please don't hesistate to contact us via email or GitHub.</p>
 <h2 id="purpose">Purpose</h2>
-<p>We’ve developed a bash script that will run Cell Ranger on FASTQ files for these technologies. See below for details on how to use it.</p>
+<p>We've developed a bash script that will run Cell Ranger on FASTQ files for these technologies. See below for details on how to use it.</p>
 <p>If you use this tool, please <a href="#Citation">cite</a> to acknowledge the efforts of the authors. You can report problems and request new features to the maintainers with and <a href="#Issues">issue</a> on GitHub. Details on how to <a href="#Install">install</a> and <a href="#Usage">run</a> are provided below. Please see the <a href="#Help">help</a> and <a href="#Examples">examples</a> to try solve your problem before submitting an issue.</p>
 <p>Details on the <a href="#Docker">Docker image</a> are given below. We recommend using Docker unless you have a server environment with Cell Ranger installed already.</p>
 <h3 id="supported-technologies">Supported Technologies</h3>
 <p>In principle, any technology with a cell barcode and unique molecular identifier (UMI) can be supported.</p>
 <p>The following technologies have been tested to ensure that they give the expected results: 10x Genomics, Nadia (DropSeq), ICELL8 version 3</p>
 <p>We provide the following preset configurations for convenience based on published data and configurations used by other pipelines (e.g, DropSeqPipe and Kallisto/Bustools). To add further support for other technologies or troubleshoot problems, please submit an Issue to the GitHub repository: <a href="https://github.com/TomKellyGenetics/universc/issues">TomKellyGenetics/universc</a> as described in <a href="#Issues">Bug Reports</a> below.</p>
-<p>Some changes to the Cell Ranger install are required to run other technologies. Therefore we provide settings for 10x Genomics which restores settings for the Chromium instrument. We therefore recommend using ‘convert’ for processing all data from different technologies as the tool manages these changes. Please note that on a single install of Cell Ranger, multiple technologies or multiple samples of the same technology with different whitelist barcodes cannot be run cannot be run simultaneousely (the tool will also check for this to avoid causing problems with existing runs). Multiple samples of the same technology with the same barcode whitelist can be run simultaneously.</p>
+<p>Some changes to the Cell Ranger install are required to run other technologies. Therefore we provide settings for 10x Genomics which restores settings for the Chromium instrument. We therefore recommend using 'convert' for processing all data from different technologies as the tool manages these changes. Please note that on a single install of Cell Ranger, multiple technologies or multiple samples of the same technology with different whitelist barcodes cannot be run cannot be run simultaneousely (the tool will also check for this to avoid causing problems with existing runs). Multiple samples of the same technology with the same barcode whitelist can be run simultaneously.</p>
 <p>If you are using <code>UniverSC</code> you should also do so to run 10x Genomics data. If you wish to restore Cell Ranger to default settings, see the <a href="#Uninstalling">installation</a> or <a href="#Debugging">troubleshooting</a> sections below.</p>
 <h4 id="pre-set-configurations">Pre-set configurations</h4>
 <ul>
@@ -59,16 +61,16 @@
 <li>Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq</li>
 <li>SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad</li>
 </ul>
-<p>All technologies support 3’ single-cell RNA-Seq. Barcode adjustments and whitelists are changed automatically. For 5’ single-cell RNA-Seq, this is only supported for 10x Genomics version 2 chemistry. This is detected automatically but can be configured with the <code>--chemistry</code> argument.</p>
+<p>All technologies support 3' single-cell RNA-Seq. Barcode adjustments and whitelists are changed automatically. For 5' single-cell RNA-Seq, this is only supported for 10x Genomics version 2 chemistry. This is detected automatically but can be configured with the <code>--chemistry</code> argument.</p>
 <h4 id="dual-indexing">Dual-indexing</h4>
-<p>For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use “bcl2fastq” before calling UniverSC:</p>
+<p>For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use &quot;bcl2fastq&quot; before calling UniverSC:</p>
 <pre><code>   /usr/local/bin/bcl2fastq  -v --runfolder-dir &quot;/path/to/illumina/bcls&quot;  --output-dir &quot;./Data/Intensities/BaseCalls&quot;\
                                 --sample-sheet &quot;/path/to/SampleSheet.csv&quot; --create-fastq-for-index-reads\
                                 --use-bases-mask Y26n,I8n,I8n,Y50n  --mask-short-adapter-reads 0\
                                 --minimum-trimmed-read-length 0</code></pre>
 <h4 id="custom-inputs">Custom inputs</h4>
-<p>Custom inputs are also supported by giving the name “custom” and length of barcode and UMI separated by a &quot;_&quot; character.</p>
-<p>e.g. Custom (16bp barcode, 10bp UMI): <code>custom_16_10</code></p>
+<p>Custom inputs are also supported by giving the name &quot;custom&quot; and length of barcode and UMI separated by a &quot;_&quot; character.</p>
+<p>e.g. Custom (16bp barcode, 10bp UMI): <code>custom_16_10</code></p>
 <p>Custom barcode files are also supported for preset technologies. These are particularly useful for well-based technologies to demutliplex based on the wells.</p>
 <h2 id="release">Release</h2>
 <p>This tool will be released open-source (see <a href="#licensing">legal stuff</a> below). We welcome any feedback on it and any contributions to improve it. Hopefully it will save people time by making it easier to compare technologies.</p>
@@ -93,7 +95,7 @@
 <ul>
 <li>length of barcode</li>
 <li>length of UMI</li>
-<li>which reads they’re on</li>
+<li>which reads they're on</li>
 <li>whether there is a known barcode whitelist available</li>
 <li>whether adapters or linkers are required</li>
 <li>whether a preprint, publication, or company specifications are available</li>
@@ -123,7 +125,7 @@ cd universc</code></pre>
 bash $HOME/Downloads/universc/launch_universc.sh</code></pre>
 <p>See the details below on how to install Cell Ranger and launch_universc.sh add them to the PATH so that <code>launch_universc.sh</code> can be run from any directory.</p>
 <h3 id="runnning-in-a-git-repository">Runnning in a git repository</h3>
-<p>If you are running code in a git repository you can add universc as a submodule.</p>
+<p>If you are running code in a git repository you can add UniverSC as a submodule.</p>
 <pre><code>cd $/HOME/my_git_repo
 git submodule add https://github.com/TomKellyGenetics/universc.git
 bash universc/launch_universc.sh</code></pre>
@@ -190,7 +192,7 @@ cellranger count --version</code></pre>
 <li>1TB free disk space</li>
 <li>64-bit CentOS/RedHat 6.0 or Ubuntu 12.04</li>
 </ul>
-<h4 id="ensuring-write-access-to-cellranger">Ensuring write-access to Cell Ranger</h4>
+<h4 id="ensuring-write-access-to-cell-ranger">Ensuring write-access to Cell Ranger</h4>
 <p>The conversion process requires write-access to to the Cell Ranger install directory so an install on your user directory is recommended.</p>
 <p>You can check where Cell Ranger is installed with:</p>
 <pre><code>which cellranger</code></pre>
@@ -203,7 +205,7 @@ cellranger count --version</code></pre>
 <pre><code>bash launch_universc.sh -t &quot;10x&quot; --setup</code></pre>
 <h5 id="local-install">Local install</h5>
 <p>If Cell Ranger is not already installed we recommend installing it in a directory that you have write access to such as <code>$HOME/local</code>.</p>
-<h5 id="importing-an-installed-version-of-cellranger">Importing an installed version of Cell Ranger</h5>
+<h5 id="importing-an-installed-version-of-cell-ranger">Importing an installed version of Cell Ranger</h5>
 <p>If Cell Ranger has been installed by a system administrator, you will only have read-access to that installation. You can still use rather than installing a new version but you will need to copy it to your home directory and add this version to your PATH.</p>
 <pre><code>mkdir -p $HOME/local
 cd ~/local
@@ -230,7 +232,7 @@ cd universc
 bash launch_universc.sh</code></pre>
 <h5 id="automated-configuration">Automated configuration</h5>
 <p>We provide a Makefile with all necessary configurations to automatically check whether launch_universc.sh is installed correctly.</p>
-<p>You can specify any directory to install as a “prefix”. This will create a directory “$HOME/local/universc-0.3” where the files needed will be stored.</p>
+<p>You can specify any directory to install as a &quot;prefix&quot;. This will create a directory &quot;$HOME/local/universc-0.3&quot; where the files needed will be stored.</p>
 <pre><code>cd $HOME/Downloads
 git clone https://github.com/TomKellyGenetics/universc.git
 make
@@ -282,7 +284,7 @@ launch_universc.sh</code></pre>
 <p>To update, similarly run the <code>inst/UPGRADE</code> script with your chosen shell.</p>
 <h3 id="docker-image">Docker image <span id="Docker"><span></h3>
 <p>We provide a docker image with all software needed to run UniverSC.</p>
-<p>This requires “docker” to be installed and a valid DockerHub account.</p>
+<p>This requires &quot;docker&quot; to be installed and a valid DockerHub account.</p>
 <p>You can check whether docker is available by running:</p>
 <pre><code>which docker
 docker run hello-world    </code></pre>
@@ -290,7 +292,7 @@ docker run hello-world    </code></pre>
 <pre><code>docker login -u &quot;myusername&quot;</code></pre>
 <p>If you cannot run docker on a remote server, contact your systems administrator.</p>
 <h4 id="pulling-from-remote-dockerhub-repository">Pulling from remote DockerHub repository</h4>
-<p>We provide a docker image for universc version 0.3.</p>
+<p>We provide a docker image for UniverSC version 1.0.2.</p>
 <p>You can import it if you have docker installed.</p>
 <pre><code>docker pull tomkellygenetics/universc:latest</code></pre>
 <p>Then you can run convert with:</p>
@@ -313,6 +315,53 @@ cd ~
 launch_universc.sh</code></pre>
 <p>Add the following line to the <code>~/.bashrc</code> file and use <code>source ~/.bashrc</code> to load a new session. This means that you do not need to add the sript to the PATH in future sessions.</p>
 <pre><code>export PATH=$HOME/Downloads/universc:$PATH</code></pre>
+<h3 id="setting-up-cell-ranger-references">Setting up Cell Ranger references</h3>
+<p>This repository comes with almost all necessary files to run test jobs. Test data and Cell Ranger references are available with Git large file storage (LFS).</p>
+<p>To install git LFS run:</p>
+<pre><code>curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+sudo apt-get install git-lfs
+git lfs install</code></pre>
+<p>To import large files from Github change to the &quot;universc&quot; directory and run:</p>
+<pre><code>git lfs pull origin</code></pre>
+<p>This provides almost all files required. The STAR index and reference need to be generated or imported from an existing reference. The following code detects whether the references are available in an existing cellranger installation.</p>
+<pre><code>cd test
+cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d&#39;(&#39; | cut -f1 -d&#39;)&#39;`
+cellrangerpath=`which cellranger`
+
+# set up cellranger reference
+if [[ ! -f /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA
+fi
+if [[ ! -f /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA /home/tom/local/bin/cellranger-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA
+fi
+cd ..</code></pre>
+<p>This creates a reference for Cell Ranger here:</p>
+<ul>
+<li><p>test/cellranger_reference/cellranger-tiny-ref/1.2.0</p></li>
+<li><p>test/cellranger_reference/cellranger-tiny-ref/3.0.0</p></li>
+</ul>
+<h4 id="automated-references">Automated references</h4>
+<p>You can reset the references with the automated settings here:</p>
+<pre><code>cd test/cellranger_reference/cellranger-tiny-ref/
+make clean
+make reference
+cd ../../..</code></pre>
+<h4 id="custom-cell-ranger-references">Custom Cell Ranger references</h4>
+<p>It is also possible to generate a custom reference for any genome provided you have a FASTQ genome reference file and a GTF/GFF3 annotation file. Please ensure that the chromosomes match between the FASTA headers and the chromosome column (1st) of the GTF/GFF3 file.</p>
+<p>The <code>gffread</code> function includes with the <a href="http://cole-trapnell-lab.github.io/cufflinks/file_formats/#the-gffread-utility">cufflinks</a> utility can convert to gtf. For example:</p>
+<pre><code>gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gff3 -T -o test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gtf </code></pre>
+<p>To generate new references we first remove the references imported.</p>
+<pre><code>rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0 test/cellranger_reference/cellranger-tiny-ref/3.0.0</code></pre>
+<p>We then generate references from the FASTA and GTF files as shown in the following examples:</p>
+<pre><code>cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/1.2.0 \
+        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.0.fa \
+        --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.0.gtf
+
+cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/3.0.0 \
+         --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-3.0.0.fa \
+         --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-3.0.0.gtf</code></pre>
+<p>See the Cell Ranger manuals for more <a href="https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/references">details on references</a>.</p>
 <h2 id="usage">Usage <span id="Usage"><span></h2>
 <p>The script will:</p>
 <ul>
@@ -320,7 +369,7 @@ launch_universc.sh</code></pre>
 </ul>
 <p><code>bash launch_universc.sh -h</code></p>
 <ul>
-<li><p>convert R1 files so that barcodes and UMIs are where they’re expected to be for 10x (this can take some time for larger files)</p></li>
+<li><p>convert R1 files so that barcodes and UMIs are where they're expected to be for 10x (this can take some time for larger files)</p></li>
 <li><p>runs Cell Ranger with the same parameters as for 10x and treats samples exactly the same</p></li>
 <li><p>the barcode whitelists are changed and some checks on barcodes disabled (requires a writeable install of Cell Ranger in your user directory)</p></li>
 <li><p>it can run Cell Ranger in parallel in SGE mode on the server if you use <code>--jobmode &quot;sge&quot;</code> and set up an <code>sge.template</code> file</p></li>
@@ -331,7 +380,7 @@ launch_universc.sh</code></pre>
 <p>Please note that this script alters the barcode whitelist. Known ICELL8 barcodes are supported but this is not possible with Nadia or DropSeq chemistry so 100% valid barcodes will be returned.</p>
 <h3 id="manual">Manual <span id="Help"><span></h3>
 <h4 id="locally-install-manual">Locally install manual</h4>
-<p>You can display a manual from the locally installed universc directory with:</p>
+<p>You can display a manual from the locally installed UniverSC directory with:</p>
 <pre><code> man man/launch_universc.sh </code></pre>
 <p>Note that the working directory must be <code>universc</code> or the full path to the man directory must be given.</p>
 <h4 id="installing-the-manual-with-root-priviliges">Installing the manual with root priviliges:</h4>
@@ -451,7 +500,7 @@ For custom barcode and umi length, follow the format below:
 Files will be renamed if they do not follow this format. File extension will be detected automatically.
 </code></pre>
 <h3 id="examples">Examples <span id="Examples"><span></h3>
-<h4 id="running-cellranger">Running Cell Ranger</h4>
+<h4 id="running-cell-ranger">Running Cell Ranger</h4>
 <pre><code>cellranger testrun --id=&quot;tiny-test&quot;</code></pre>
 <pre><code># open gzip files from test data
 gunzip -fk universc/test/shared/cellranger-tiny-fastq/3.0.0/*fastq.gz
@@ -505,24 +554,24 @@ bash launch_universc.sh --id &quot;test-icell8-custom&quot; --technology &quot;i
  --barcodefile &quot;test/shared/icell8-test/BarcodeList.txt&quot; \
  --jobmode &quot;sge&quot;</code></pre>
 <h3 id="debugging">Debugging</h3>
-<p>We’ve made considerable efforts to ensure you don’t run into problems. However, it may be necessary from time to time to troubleshoot issues calling UniverSC. For other technologies, various changes to Cell Ranger are made in a reversible fashion. If you run into problems you can restore Cell Ranger to default parameters:</p>
+<p>We've made considerable efforts to ensure you don't run into problems. However, it may be necessary from time to time to troubleshoot issues calling UniverSC. For other technologies, various changes to Cell Ranger are made in a reversible fashion. If you run into problems you can restore Cell Ranger to default parameters:</p>
 <pre><code>bash launch_universc.sh -t &quot;10x&quot; --setup</code></pre>
 <p>Then you can call <code>launch_universc.sh</code> as above or configure Cell Ranger for your technology of choice such as :</p>
 <pre><code>bash launch_universc.sh --setup -t &quot;icell8&quot;  --barcodefile &quot;test/shared/icell8-test/BarcodeList.txt&quot;</code></pre>
 <p>Set up calls are particularly useful to set up the whitelist in advance of running multiple samples simultaneously, provided they are the same technology.</p>
-<p>It is also possible that your Cell Ranger installation will be “locked” by UniverSC. This is intentional to prevent different technologies running simultaneously. When running Cell Ranger, we need to ensure that the barcode whitelist corresponds to the technology that is running and cannot be changed until existing runs will finish.</p>
-<p>However, this means that in the case of an error or if a job is “killed”, then the lock file will not be cleared. You can do this manually as follows:</p>
+<p>It is also possible that your Cell Ranger installation will be &quot;locked&quot; by UniverSC. This is intentional to prevent different technologies running simultaneously. When running Cell Ranger, we need to ensure that the barcode whitelist corresponds to the technology that is running and cannot be changed until existing runs will finish.</p>
+<p>However, this means that in the case of an error or if a job is &quot;killed&quot;, then the lock file will not be cleared. You can do this manually as follows:</p>
 <pre><code>cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d&#39;(&#39; | cut -f1 -d&#39;)&#39;`
 cellrangerpath=`which cellranger`
 rm ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock</code></pre>
-<p>When doing this <em>please ensure that no other instances are running</em> for UniverSC.</p>
+<p>When doing this <em>please ensure that no other instances are running</em> for Cell Ranger convert.</p>
 <p>You can also see the current configuration of UniverSC for each Cell Ranger install as follows:</p>
 <pre><code>cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d&#39;(&#39; | cut -f1 -d&#39;)&#39;`
 cellrangerpath=`which cellranger`
 cat ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lastcalled</code></pre>
 <p>These columns show the barcode length, UMI length, and barcode whitelist of the last technology used by UniverSC. Please <em>do not remove this file</em> unless the last technology used is 10x Genomics.</p>
-<h2 id="licensing">Licensing</h2>
+<h2 id="licensing">Licensing <span id="Licensing"><span></h2>
 <p>This package is provided open-source on a GPL-3 license. This means that you are free to use and modify this code provided that they also contain this license.</p>
 <p>Please note that we are third-party developers releasing it for use by users like ourselves. We are not affiliated with 10x Genomics, Dolomite Bio, Takara Bio, or any other vendor of single-cell technologies. This software is not supported by 10x Genomics and only changes data formats so that other technologies can be used with the Cell Ranger pipeline.</p>
-<p>Cell Ranger (version 2.0.2, 2.1.0, 2.1.0, and 3.0.2) has been released open source on and MIT license on GitHub. We use this version of Cell Ranger for testing and running our tools. Note that the code that generates the ‘cloupe’ files is not included in this release. The Cloupe browser uses files generated by proprietary closed-source software and is subject to the 10x Genomics End-User License Agreement which does not allow use with data generated from other platforms.</p>
-<p>Therefore ‘launch_universc.sh’ does not support Cloupe files and you should not use them with technologies other than 10x Genomics.</p>
+<p>Cell Ranger (version 2.0.2, 2.1.0, 2.1.0, and 3.0.2) has been released open source on and MIT license on GitHub. We use this version of Cell Ranger for testing and running our tools. Note that the code that generates the 'cloupe' files is not included in this release. The Cloupe browser uses files generated by proprietary closed-source software and is subject to the 10x Genomics End-User License Agreement which does not allow use with data generated from other platforms.</p>
+<p>Therefore 'launch_universc.sh' does not support Cloupe files and you should not use them with technologies other than 10x Genomics.</p>
