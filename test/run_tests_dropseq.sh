@@ -18,6 +18,8 @@ if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ 
     rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
 fi
 
+unpigz -k test/shared/dropseq-test/SRR1873277*fastq.gz
+
 ## test drop-seq data
 # unzip input data
 if [[ -f test/shared/dropseq-test/*fastq.gz ]]; then

@@ -1040,7 +1040,7 @@ for key in ${keys[@]}; do
                     echo "***Warning: file $read does not have lane value in its name. Lane 1 is assumed.***"
                 echo "  renaming $read ..."
                 fi
-                rename -f "s/_$readkey/_L001_$readkey/" $read
+                rename -f "s/_$readkey/_L001_$readkey/" ${read}*
                 #update file variable
                 read=`echo $read | sed -e "s/_${readkey}/_L001_${readkey}/g"`
                 list[$j]=$read
@@ -1060,7 +1060,7 @@ for key in ${keys[@]}; do
                     echo "  renaming $read ..."
                 fi
                 k=$((${j}+1))
-                rename -f "s/_L0/_S${k}_L0/" $read
+                rename -f "s/_L0/_S${k}_L0/" ${read}*
                 #update file variable
                 read=`echo $read | sed -e "s/_L0/_S${k}_L0/g"`
                 list[$j]=$read
@@ -1079,7 +1079,7 @@ for key in ${keys[@]}; do
                     echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
                     echo "  renaming $read ..."
                 fi
-                rename -f "s/_${readkey}.*\./_${readkey}_001\./" $read
+                rename -f "s/_${readkey}.*\./_${readkey}_001\./" ${read}*
                 #update file variable
                 read=`echo $read | sed -e "s/_${readkey}.*\./_${readkey}_001\./g"`
                 list[$j]=$read
