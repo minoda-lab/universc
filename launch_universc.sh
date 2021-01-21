@@ -1719,6 +1719,9 @@ if [[ $lock -eq 0 ]]; then
     fi
     if [[ $technology == "10x" ]] && [[ $barcodefile == "default:10x" ]]; then
         #restore logo in HTML template
+        if [[ $verbose  ]]; then
+                echo "restore logo in summary HTML"
+        fi
         if [[ -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.backup.html ]];then
             cp ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.backup.html ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.html
         fi
@@ -1806,6 +1809,9 @@ if [[ $lock -eq 0 ]]; then
     #convert whitelist to the appropriate barcode
     echo " converting whitelist"
     if [[ ${barcodefile} == "default:10x" ]]; then
+        if [[ $verbose ]]; then
+            echo "  ... restoring 10x barcodes"
+        fi
         #for version 2
         cp ${v2}.backup ${v2}
         #for version 3
@@ -1821,9 +1827,9 @@ if [[ $lock -eq 0 ]]; then
             echo As: $As
             sed -i "s/^/$As/" ${v2} #Trim the first n characters from the beginning of the quality
         fi
-    fi
         #for version 3
         cat ${v2} > ${v3}
+    fi
         if [[ -f translation/${v3}.gz ]]; then
             rm translation/${v3}.gz
             awk -F , -v OFS="\t" '{print $1, "\t", $1}' $v3 > translation/${v3}
