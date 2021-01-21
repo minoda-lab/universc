@@ -1081,27 +1081,21 @@ for key in ${keys[@]}; do
                 fi
                 if [[  -f $(find $(dirname ${read}) -name $(basename ${read})'*.gz') ]]; then
                     rename -f "s/_${readkey}.(.*).gz/_${readkey}_001\.\$1.gz/g" ${read}*gz
-#                    read=`echo $read | sed -e "s/_${readkey}/_${readkey}_001/g"`
                 fi
                 if [[ ${read} == *.gz ]]; then
                     rename -f "s/_${readkey}.(.*).gz/_${readkey}_001\.\$1.gz/g" ${read}
- #                   read=`echo $read | sed -e "s/_${readkey}.(.*).gz/_${readkey}_001\.\$1.gz/g"`
                 fi
                 if [[ -f $(find $(dirname ${read}) -name $(basename ${read})'*.fastq') ]]; then
                     rename -f "s/_${readkey}.(.*)/_${readkey}_001\.\$1/" ${read}*.fastq
-#                    read=`echo $read | sed -e "s/_${readkey}(.*).fastq/_${readkey}_001.fastq/g"`
                 fi
                 if [[ -f $(find $(dirname ${read}) -name $(basename ${read})'*.fq') ]]; then
                     rename -f "s/_${readkey}.(.*)/_${readkey}_001\.\$1/" ${read}*.fq
- #                   read=`echo $read | sed -e "s/_${readkey}(.*).fq/_${readkey}_001.fq/g"`
                 fi
                 if [[ ${read} == *.fastq ]]; then
                     rename -f "s/_${readkey}(.*).fastq/_${readkey}_001\.fastq/" ${read} ${read}.gz
-#                    read=`echo $read | sed -e "s/_${readkey}*.fastq/_${readkey}_001.fastq/g"`
                fi
               if [[ ${read} == *.fq ]]; then
                    rename -f "s/_${readkey}(.*).fq/_${readkey}_001\.fq/" ${read}
-#                   read=`echo $read | sed -e "s/_${readkey}*.fq/_${readkey}_001\.fq/g"`
               fi
               #update file variable
               if [[ ${read} == *.gz ]] || [[ ${read} == *.fastq ]] || [[ ${read} == *.fq ]] || [[ -f ${read} ]]; then
