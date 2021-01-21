@@ -1019,13 +1019,13 @@ for key in ${keys[@]}; do
         fi
         
         if [[ -h $read ]]; then
-            path=`readlink -f $read`
+            fullpath=`readlink -f $read`
             if [[ $verbose ]]; then
                 echo "***Warning: file $read not in current directory. Path to the file captured instead.***"
                 echo " (file) $read"
-                echo " (path) $path"
+                echo " (path) $fullpath"
             fi
-            read=${path}
+            read=${fullpath}
         fi
         case $read in
             #check if contains lane before read
@@ -1073,36 +1073,79 @@ for key in ${keys[@]}; do
                     echo "  $read compatible with suffix"
                 fi
             ;;
-            *)
+            *.*)
                 #rename file
                 if [[ $verbose ]]; then
                     echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
                     echo "  renaming $read ..."
                 fi
-                rename -f "s/_${readkey}.*\./_${readkey}_001\./" ${read}*
-                #update file variable
-                read=`echo $read | sed -e "s/_${readkey}.*\./_${readkey}_001\./g"`
+                if [[  -f $(find $(dirname ${read}) -name $(basename ${read})'*.gz') ]]; then
+                    rename -f "s/_${readkey}.(.*).gz/_${readkey}_001\.\$1.gz/g" ${read}*gz
+#                    read=`echo $read | sed -e "s/_${readkey}/_${readkey}_001/g"`
+                fi
+                if [[ ${read} == *.gz ]]; then
+                    rename -f "s/_${readkey}.(.*).gz/_${readkey}_001\.\$1.gz/g" ${read}
+ #                   read=`echo $read | sed -e "s/_${readkey}.(.*).gz/_${readkey}_001\.\$1.gz/g"`
+                fi
+                if [[ -f $(find $(dirname ${read}) -name $(basename ${read})'*.fastq') ]]; then
+                    rename -f "s/_${readkey}.(.*)/_${readkey}_001\.\$1/" ${read}*.fastq
+#                    read=`echo $read | sed -e "s/_${readkey}(.*).fastq/_${readkey}_001.fastq/g"`
+                fi
+                if [[ -f $(find $(dirname ${read}) -name $(basename ${read})'*.fq') ]]; then
+                    rename -f "s/_${readkey}.(.*)/_${readkey}_001\.\$1/" ${read}*.fq
+ #                   read=`echo $read | sed -e "s/_${readkey}(.*).fq/_${readkey}_001.fq/g"`
+                fi
+                if [[ ${read} == *.fastq ]]; then
+                    rename -f "s/_${readkey}(.*).fastq/_${readkey}_001\.fastq/" ${read} ${read}.gz
+#                    read=`echo $read | sed -e "s/_${readkey}*.fastq/_${readkey}_001.fastq/g"`
+               fi
+              if [[ ${read} == *.fq ]]; then
+                   rename -f "s/_${readkey}(.*).fq/_${readkey}_001\.fq/" ${read}
+#                   read=`echo $read | sed -e "s/_${readkey}*.fq/_${readkey}_001\.fq/g"`
+              fi
+              #update file variable
+              if [[ ${read} == *.gz ]] || [[ ${read} == *.fastq ]] || [[ ${read} == *.fq ]] || [[ -f ${read} ]]; then
+                  #assumes read name already contains . in file extension
+                  read=`echo $read | sed -e "s/_${readkey}.*\./_${readkey}_001\./g"`
+              else
+                  #replace everything after read key (R1, R2, I1, I2) with 001 suffix (detects file later)
+                  rename -f "s/_${readkey}.*/_${readkey}_001/g" ${read}
+                  read=`echo $read | sed -e "s/_${readkey}.*/_${readkey}_001/g"`
+              fi
+              #remove characters after read key (R1, R2, I1, I2) required as above
+              if [[ ${read} != *_${readkey}_001.* ]] && [[ ${read} != *.* ]]; then
+                  rename -f "s/_${readkey}_*\./_${readkey}_001\./" ${read}
+                  read=`echo $read | sed -e "s/_${readkey}.*\./_${readkey}_001\./g"`
+              elif [[ ${read} != *_${readkey}_001 ]] || [[ ${read} != *_${readkey}*00#1 ]]; then
+                  rename -f "s/_${readkey}*_001/_${readkey}_001/" ${read#}
+                  read=`echo $read | sed -e "s/_${readkey}*_001/_${readkey}_001/g"`
+              fi
+              if [[ ${read} == *_${readkey}_*_001.* ]]; then
+                   rename -f "s/_${readkey}.*_001\./_${readkey}_001\./" ${read}
+                   read=`echo $read | sed -e "s/_${readkey}*_001\./_${readkey}_001\./g"`
+              fi
+
                 list[$j]=$read
             ;;
         esac
 
-            #allow detection of file extension (needed for --file input)
-            if [[ -f ${read} ]] || [[ -h ${read} ]]; then
-                echo "    $read file found"
-            elif [[ -f ${read}.fq ]] || [[ -h ${read}.fq ]]; then
-                read=${read}.fq
-            elif [[ -f ${read}.fastq ]] || [[ -h ${read}.fastq ]]; then
-                read=${read}.fastq
-            elif [[ -f ${read}.fq.gz ]] || [[ -h ${read}.fq.gz ]]; then
-                gunzip -f -k ${read}.fq.gz
-                read=${read}.fq
-            elif [[ -f ${read}.fastq.gz ]] || [[ -h ${read}.fastq.gz ]]; then
-                gunzip -f -k ${read}.fastq.gz
-                read=${read}.fastq.gz
-            else
-                echo "Error: $read not found"
-                exit 1
-            fi
+        #allow detection of file extension (needed for --file input)
+        if [[ -f ${read} ]] || [[ -h ${read} ]]; then
+            echo "    $read file found"
+        elif [[ -f ${read}.fq ]] || [[ -h ${read}.fq ]]; then
+            read=${read}.fq
+        elif [[ -f ${read}.fastq ]] || [[ -h ${read}.fastq ]]; then
+            read=${read}.fastq
+        elif [[ -f ${read}.fq.gz ]] || [[ -h ${read}.fq.gz ]]; then
+            gunzip -f -k ${read}.fq.gz
+            read=${read}.fq
+        elif [[ -f ${read}.fastq.gz ]] || [[ -h ${read}.fastq.gz ]]; then
+            gunzip -f -k ${read}.fastq.gz
+            read=${read}.fastq.gz
+        else
+            echo "Error: $read not found"
+            exit 1
+        fi
             list[$j]=$read
     done
     

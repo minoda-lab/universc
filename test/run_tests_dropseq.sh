@@ -27,29 +27,38 @@ if [[ -f test/shared/dropseq-test/*fastq.gz ]]; then
 fi
 # test manual setup
 bash launch_universc.sh -t "nadia" --setup
+
 # remove processed files
 if [[ -f SRR1873277_S1_L001_R[12]_001.fastq ]]; then
     rm SRR1873277_S1_L001_R[12]_001.fastq
+fi
+if [[ -d input4cellranger_test-dropseq ]]; then
+    rm -rf input4cellranger_test-dropseq
 fi
 # call on dropseq with files
 bash launch_universc.sh --id "test-dropseq" --technology "nadia" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --read1 "test/shared/dropseq-test/SRR1873277_Sample1_R1" \
- --read2 "test/shared/dropseq-test/SRR1873277_Sample1_R2" 
+ --read2 "test/shared/dropseq-test/SRR1873277_Sample1_R2" \
+ --verbose
 
-#reset test data (files names)
-if [[ -f test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq ]]; then
-    gzip test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq
+#reset test data (compress)
+if [[ -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq ]]; then
+    gzip -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq
 fi
+if [[ -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R2_001.fastq ]]; then
+    gzip -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R2_001.fastq
+fi
+#reset test data (files names)
 if [[ ! -f test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz ]]; then
-    mv test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq.gz test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz
+    mv test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq.gz test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz
 else
-    rm test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq.gz
+    rm test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq.gz
 fi
 if [[ ! -f test/shared/dropseq-test/SRR1873277_Sample1_R2.fastq.gz ]]; then
-    mv test/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq.gz test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz
+    mv test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R2_001.fastq.gz test/shared/dropseq-test/SRR1873277_Sample1_R2.fastq.gz
 else
-    rm test/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq.gz
+    rm test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R2_001.fastq.gz
 fi
 
 # compress all input files
