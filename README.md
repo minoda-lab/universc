@@ -32,7 +32,7 @@ tags:
 ![Docker Automated build](https://img.shields.io/docker/automated/tomkellygenetics/universc)
 ![Docker Build Status](https://img.shields.io/docker/build/tomkellygenetics/universc)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest)
-[![GitHub Views](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
+[![GitHub Views](http://hits.dwyl.com/minoda-lab/universc.svg)](http://hits.dwyl.com/minoda-lab/universc)
 
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
