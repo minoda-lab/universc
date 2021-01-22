@@ -40,12 +40,13 @@ if [[ -f test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq ]]; then
     gzip test/shared/dropseq-test/SRR1873277_S1_L001_R[12]_001.fastq
 fi
 if [[ ! -f test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz ]]; then
-    mv test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq.gz test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz
+    mv test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1.fastq.gz test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz       
+
 else
     rm test/shared/dropseq-test/SRR1873277_S1_L001_R1_001.fastq.gz
 fi
 if [[ ! -f test/shared/dropseq-test/SRR1873277_Sample1_R2.fastq.gz ]]; then
-    mv test/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq.gz test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz
+    mv test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R2.fastq.gz test/shared/dropseq-test/SRR1873277_Sample1_R2.fastq.gz       
 else
     rm test/shared/dropseq-test/SRR1873277_S1_L001_R2_001.fastq.gz
 fi
