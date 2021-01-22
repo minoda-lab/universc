@@ -1,16 +1,19 @@
 sut:
   build: .
-  command: echo "build complete" && bash test/test_call.sh
+  command: echo "build complete"
+
+test:
+  build: .
+  command: bash /universc/test/test_call.sh
 
 test_10x:
   build: .
-  command: bash test/run_tests_10x.sh
+  command: bash /universc/test/run_tests_10x.sh
 
 test_dropseq:
   build: .
-  command: bash test/run_tests_dropseq.sh
+  command: bash /universc/test/run_tests_dropseq.sh
 
 test_icell8:
   build: .
-  command: bash test/run_tests_icell8.sh
-
+  command: bash /universc/test/run_tests_icell8.sh
