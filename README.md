@@ -132,21 +132,25 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
 -  inDrops
     -  inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1
     -  inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
-    -  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
 -  MARS-Seq (6bp barcode, 10bp UMI): marsseq, marsseq-v1
 -  MARS-Seq2 (7bp barcode, 8bp UMI): marsseq2, marsseq-v2   
 -  Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
 -  Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
--  Sci-Seq (8bp UMI, 10bp barcode): sciseq
 -  SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
 -  SeqWell (12bp barcode, 8bp UMI): seqwell
--  Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq
 -  SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
 
 All technologies support 3' single-cell RNA-Seq. Barcode adjustments and
 whitelists are changed automatically. For 5' single-cell RNA-Seq, this
 is only supported for 10x Genomics version 2 chemistry. This is detected
 automatically but can be configured with the `--chemistry` argument.
+
+We are developing technologies to support dual indexes and full length scRNA kits.
+
+Experimental technologies (not yet supported):
+-  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
+-  Sci-Seq (8bp UMI, 10bp barcode): sciseq
+-  Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq
 
 #### Dual-indexing
 
