@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Wednesday 20 January 2021"
+date: "Friday 22 January 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -32,7 +32,7 @@ tags:
 ![Docker Automated build](https://img.shields.io/docker/automated/tomkellygenetics/universc)
 ![Docker Build Status](https://img.shields.io/docker/build/tomkellygenetics/universc)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest)
-[![GitHub Views](http://hits.dwyl.com/minoda-lab/universc.svg)](http://hits.dwyl.com/minoda-lab/universc)
+[![GitHub Views](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
 
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
@@ -754,18 +754,16 @@ imported from an existing reference. The following code detects whether the refe
 available in an existing cellranger installation.
 
 ```
-cd test
 cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')'`
 cellrangerpath=`which cellranger`
 
 # set up cellranger reference
-if [[ ! -f ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA
+if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA
 fi
-if [[ ! -f ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA
+if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
 fi
-cd ..
 ```
 
 This creates a reference for Cell Ranger here:
@@ -954,18 +952,21 @@ Mandatory arguments to long options are mandatory for short options too.
                                   ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
-                                  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
                                   MARS-Seq (6bp barcode, 10bp UMI): marsseq, marsseq-v1
                                   MARS-Seq2 (7bp barcode, 8bp UMI): marsseq2, marsseq-v2
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
-                                  Sci-Seq (8bp UMI, 10bp barcode): sciseq
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
-                                  Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
+
+                                Experimental technologies (not yet supported):
+                                  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
+                                  Sci-Seq (8bp UMI, 10bp barcode): sciseq
+                                  Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq
+
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
 
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: SC3Pv2 (default), SC5P-PE, or SC5P-R2
