@@ -42,6 +42,9 @@ if [[ ! -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barco
     gzip -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
 fi
 rm -rf ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
+if [[ -d tiny-test ]]; then
+    rm -rf tiny-test
+fi
 # test cellranger call
 cellranger testrun --id="tiny-test"
 # unzip input data
@@ -58,7 +61,9 @@ fi
 if [[ ! -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt.gz ]]; then
     gzip -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
 fi
-rm -rf ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
+if [[ -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt ]]; then
+    rm -rf ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
+fi
 cellranger count --id="tiny-count-v3" \
  --fastqs="test/shared/cellranger-tiny-fastq/3.0.0/" --sample="tinygex" \
  --transcriptome="test/cellranger_reference/cellranger-tiny-ref/3.0.0"
@@ -68,7 +73,9 @@ fi
 if [[ ! -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt.gz ]]; then
     gzip -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
 fi
-rm -rf ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
+if [[ -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt ]]; then
+    rm -rf ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
+fi
 cellranger count --id="tiny-count-v2" \
  --fastqs="test/shared/cellranger-tiny-fastq/1.2.0/" --sample="" --chemistry="threeprime" \
  --transcriptome="test/cellranger_reference/cellranger-tiny-ref/1.2.0"
@@ -79,6 +86,13 @@ if [[ -d test-10x-v3 ]]; then
 fi
 if [[ -d input4cellranger_test-10x-v3 ]]; then
     rm -rf input4cellranger_test-10x-v3
+fi
+# unzip input data
+if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001/*fastq.gz ]]; then
+    unpigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001/*fastq.gz
+fi
+if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002/*fastq.gz ]]; then
+    unpigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002/*fastq.gz
 fi
 bash launch_universc.sh --id "test-10x-v3" --technology "10x" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \

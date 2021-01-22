@@ -1119,7 +1119,7 @@ for key in ${keys[@]}; do
                    read=`echo $read | sed -e "s/_${readkey}*_001\./_${readkey}_001\./g"`
               fi
 
-                list[$j]=$read
+              list[$j]=$read
             ;;
         esac
 

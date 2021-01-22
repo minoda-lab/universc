@@ -33,7 +33,7 @@ if [ -f test/shared/icell8-test/72618_KU812_S2_L002_R2_001.fastq ]; then
     rename -n "s/_S2_L002/_L002/" test/shared/icell8-test/72618_KU812_S2_L002_R2_001.fastq
 fi
 if [ -d test-icell8-72618-KU812-2-lanes ];then
-    rm -rf test-icell8-72618-KU812-2-lanes
+    rm -rf test-icell8-72618_KU812-2-lanes
 fi
 bash launch_universc.sh --id "test-icell8-72618_KU812-2-lanes" --technology "iCell8" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
@@ -47,8 +47,8 @@ fi
 if [ -f test/shared/icell8-test/KU812_S1_L001_R2_001.fastq ]; then
     rename "s/_S1_L001/_L001/" test/shared/icell8-test/72618_KU812_S1_L001_R2_001.fastq
 fi
-if [ -d test-icell8-KU812-1-lane ];then
-    rm -rf test-icell8-KU812-1-lane
+if [ -d test-icell8-72618_KU812-1-lane ]; then
+    rm -rf test-icell8-72618_KU812-1-lane
 fi
 bash launch_universc.sh --id "test-icell8-72618_KU812-1-lane" --technology "iCell8" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
