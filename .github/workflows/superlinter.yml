@@ -1,0 +1,62 @@
+name: Super-Linter
+
+# Run this workflow every time a new commit pushed to your repository (includes merged PR)
+on: push
+
+jobs:
+  # Set the job key. The key is displayed as the job name
+  # when a job name is not provided
+  super-lint:
+    # Name the Job
+    name: Lint code base
+    # Set the type of machine to run on
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Runs the Super-Linter action
+      - name: Run Super-Linter
+        uses: github/super-linter@v3
+        env:
+          DEFAULT_BRANCH: ja
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
+
+  lint-documentation:
+    name: Lint markdown documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        env:
+          DEFAULT_BRANCH: ja
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
+
+      - name: Lint markdown files
+        uses: avto-dev/markdown-lint@v1
+        with:
+          args: './*.md'
+
+      - name: Lint markdown docs
+        uses: avto-dev/markdown-lint@v1
+        with:
+          args: './docs/*md'
+
+  lint-scripts:
+    name: Lint shell scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        env:
+          DEFAULT_BRANCH: ja
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
+      - name: Check wrapper script
+        uses: azohra/shell-linter@latest
+        with:
+          path: "./wrapper.sh"
+      - name: Run shell check
+        uses: azohra/shell-linter@latest
+

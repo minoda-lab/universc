@@ -1,3 +1,14 @@
 sut:
   build: .
   command: echo "build complete"
+
+version: '3'
+services:
+  web:
+    container_name: webapp-frontend
+    build: .
+    ports:
+      - "5000:5000"
+  redis:
+    container_name: redis-backend
+    image: "redis:alpine"

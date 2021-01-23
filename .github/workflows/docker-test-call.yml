@@ -1,0 +1,13 @@
+name: Docker Compose Actions Test Call
+on: push
+jobs:
+  test:
+    runs-on: tomkellygenetics/cellanger_clean
+    steps:
+      - uses: actions/checkout@3.0.2
+      - name: Build the stack
+        run: docker-compose up -d
+      - name: Status
+        run: echo "build complete" 
+      - name: Call functions
+        run: bash /universc/test/test_call.sh

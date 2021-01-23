@@ -1,0 +1,13 @@
+name: Test DropSeq / Nadia
+on: push
+jobs:
+  test:
+    runs-on: tomkellygenetics/universc
+    steps:
+      - uses: actions/checkout@1.0.2
+      - name: Build the stack
+        run: docker-compose up -d
+      - name: Status
+        run: echo "build complete" 
+      - name: Test runnning on Drop-Seq
+        run:  /universc/test/run_tests_dropseq.sh
