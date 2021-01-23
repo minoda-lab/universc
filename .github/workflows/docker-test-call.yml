@@ -10,20 +10,18 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
+      - name: Run docker
+        uses: addnab/docker-run-action@v1
         with:
-          context: ./
-          file: ./Dockerfile
-          push: true
-          tags: tomkellygenetics/universc:latest
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@master
-      - name: Status
-        run: echo "build complete" 
-#      - name: Call functions
-#        run: docker run universc:latest bash /universc/test/test_call.sh
+          image: docker:latest
+          run: echo "hello world"
+      - name: Call Cell Ranger
+        uses: addnab/docker-run-action@v1
+        with:
+          image: tomkellygenetics/cellranger_clean:3.0.2
+          run: echo "cellranger:" $(which cellranger)
+      - name: Call UniverSC
+        uses: addnab/docker-run-action@v1
+        with:
+          image: tomkellygenetics/universc:latest
+          run: bash /universc/test/test_call.sh
