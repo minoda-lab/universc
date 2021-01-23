@@ -10,6 +10,6 @@ jobs:
       - name: Status
         run: echo "build complete" 
       - name: Call functions
-        run: bash /universc/test/test_call.sh
+        run: bash test/test_call.sh
       - name: Test docker container
         run: docker run --network container:webapp-frontend appropriate/curl -s --retry 10 --retry-connrefused http://localhost:5000/

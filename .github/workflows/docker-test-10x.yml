@@ -10,4 +10,4 @@ jobs:
       - name: Status
         run: echo "build complete" 
       - name: Test runnning on 10x
-        run:  /universc/test/run_tests_10x.sh
+        run:  test/run_tests_10x.sh

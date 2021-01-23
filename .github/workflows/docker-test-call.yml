@@ -10,4 +10,4 @@ jobs:
       - name: Status
         run: echo "build complete" 
       - name: Call functions
-        run: bash /universc/test/test_call.sh
+        run: bash test/test_call.sh
