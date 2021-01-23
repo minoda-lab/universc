@@ -6,4 +6,4 @@ services:
     command: echo "build complete"
   cellranger:
     container_name: cellranger_clean
-    image: "tomkellygenetics/cellranger_clean:3.0.2"
+    image: "tomkellygenetics/cellranger_clean:3.0.2.9001"
