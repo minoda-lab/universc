@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Friday 22 January 2021"
+date: "Saturday 23 January 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -37,6 +37,12 @@ tags:
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc)
+
+"[![Actions Build](https://github.com/minoda-lab/universc/workflows/docker-run/badge.svg)](https://github.com/minoda-lab/universc/actions)"
+"[![Actions Test](https://github.com/minoda-lab/universc/workflows/docker-test-call/badge.svg)](https://github.com/minoda-lab/universc/actions)"
+"[![Test 10x Genomics](https://github.com/minoda-lab/universc/workflows/docker-test-10x/badge.svg)](https://github.com/minoda-lab/universc/actions)"
+"[![Test DropSeq](https://github.com/minoda-lab/universc/workflows/docker-test-dropseq/badge.svg)](https://github.com/minoda-lab/universc/actions)"
+"[![Test ICELL8](https://github.com/minoda-lab/universc/workflows/docker-test-icell8/badge.svg)](https://github.com/minoda-lab/universc/actions)"
 
 # UniverSC
 
