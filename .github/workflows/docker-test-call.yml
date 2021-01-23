@@ -10,4 +10,4 @@ jobs:
       - name: Status
         run: echo "build complete" 
       - name: Call functions
-        run: docker run --network container:universc_universc tomkellygenetics/universc:1.0.2 bash /universc/test/test_call.sh
+        run: docker run universc:latest bash /universc/test/test_call.sh
