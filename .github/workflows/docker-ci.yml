@@ -1,12 +1,9 @@
-name: CI to Docker hub 
-
-on:
-
-  push:
-
-    branches: [ master ]
-
-  steps:
+name: CI to Docker hub
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
 
       -
 
