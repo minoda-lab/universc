@@ -34,5 +34,3 @@ jobs:
         file: ./Dockerfile
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: true
-    - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
