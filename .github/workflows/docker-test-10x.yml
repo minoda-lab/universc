@@ -2,9 +2,9 @@ name: Test 10x Genomics
 on: push
 jobs:
   test:
-    runs-on: tomkellygenetics/universc
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@1.0.2
+      - uses: actions/checkout@v2
       - name: Build the stack
         run: docker-compose up -d
       - name: Status

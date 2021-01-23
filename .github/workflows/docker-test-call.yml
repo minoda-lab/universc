@@ -1,10 +1,10 @@
-name: Docker Compose Actions Test Call
+name: Docker Test
 on: push
 jobs:
   test:
-    runs-on: tomkellygenetics/cellanger_clean
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@3.0.2
+      - uses: actions/checkout@v2
       - name: Build the stack
         run: docker-compose up -d
       - name: Status
