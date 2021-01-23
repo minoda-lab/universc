@@ -4,20 +4,13 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     steps:
-
       -
-
         name: Login to DockerHub
-
         uses: docker/login-action@v1 
-
         with:
-
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
-
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
