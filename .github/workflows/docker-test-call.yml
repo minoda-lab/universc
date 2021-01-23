@@ -2,7 +2,7 @@ name: Docker Test
 on: push
 jobs:
   test:
-    runs-on: tomkellygenetics/cellranger_clean:3.0.2.9001
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Build the stack
@@ -10,4 +10,4 @@ jobs:
       - name: Status
         run: echo "build complete" 
       - name: Call functions
-        run: bash test/test_call.sh
+        run: docker run -it universc_universc:latest bash /universc/test/test_call.sh

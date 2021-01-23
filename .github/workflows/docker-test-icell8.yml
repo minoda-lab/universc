@@ -2,7 +2,7 @@ name: Test ICELL8
 on: push
 jobs:
   test:
-    runs-on: tomkellygenetics/cellranger_clean:3.0.2.9001
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Build the stack
