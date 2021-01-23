@@ -9,5 +9,7 @@ jobs:
         run: docker-compose up -d
       - name: Status
         run: echo "build complete" 
+      - name: Show container
+        run: pwd; ls; echo "/"; ls /; echo "home"; ls ~/*
       - name: Test runnning on Drop-Seq
         run:  /universc/test/run_tests_dropseq.sh
