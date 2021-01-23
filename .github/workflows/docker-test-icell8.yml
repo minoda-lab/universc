@@ -9,7 +9,5 @@ jobs:
         run: docker-compose up -d
       - name: Status
         run: echo "build complete" 
-      - name: Build config
-        run: pwd; ls ../*; ls ../../*
       - name: Test runnning on ICELL8
         run:  test/run_tests_icell8.sh

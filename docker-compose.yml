@@ -3,6 +3,7 @@ services:
   universc:
     container_name: universc
     build: .
-    ports:
-      - "5000:5000"
     command: echo "build complete"
+  cellranger:
+    container_name: cellranger_clean
+    image: "tomkellygenetics/cellranger_clean:3.0.2"
