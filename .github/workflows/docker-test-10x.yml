@@ -28,20 +28,20 @@ jobs:
         file: ./Dockerfile
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
-      - name: Run image
-        run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w tomkellygenetics/universc:1.0.2 echo "hello from universc"
-      - name: Call UniverSC
-        uses: addnab/docker-run-action@v1
-        with:
-          image: tomkellygenetics/universc:latest
-          run: bash /universc/test/test_call.sh
-      - name: Run image
-        run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w tomkellygenetics/universc:1.0.2 bash /universc/test/run_tests_10x.sh
-      - name: Call UniverSC
-        uses: addnab/docker-run-action@v1
-        with:
-          image: tomkellygenetics/universc:latest
-          run: bash /universc/test/run_tests_10x.sh
+    - name: Run image
+      run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w tomkellygenetics/universc:1.0.2 echo "hello from universc"
+    - name: Call UniverSC
+      uses: addnab/docker-run-action@v1
+      with:
+        image: tomkellygenetics/universc:latest
+        run: bash /universc/test/test_call.sh
+    - name: Run image
+      run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w tomkellygenetics/universc:1.0.2 bash /universc/test/run_tests_10x.sh
+    - name: Call UniverSC
+      uses: addnab/docker-run-action@v1
+      with:
+        image: tomkellygenetics/universc:latest
+        run: bash /universc/test/run_tests_10x.sh
 
   build:
     runs-on: ubuntu-20.04
