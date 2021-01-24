@@ -3,14 +3,8 @@ on: push
 jobs:
   test:
     runs-on: ubuntu-20.04
-    container:
-      image: docker.pkg.github.com/tomkellygenetics/cellranger_clean/cellranger_clean:latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Build the stack
         run: docker-compose up -d
       - name: Status

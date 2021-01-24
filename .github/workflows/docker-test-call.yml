@@ -18,14 +18,8 @@ jobs:
 
   test-cellranger:
     runs-on: ubuntu-latest
-    container:
-      image: docker.pkg.github.com/tomkellygenetics/cellranger_clean/cellranger_clean:latest
     steps:  
       - uses: actions/checkout@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: What OS is running
         run: uname -a
       - name: Where am i
@@ -35,14 +29,8 @@ jobs:
 
   test-universc:
     runs-on: ubuntu-latest
-    container:
-      image: docker.pkg.github.com/minoda-lab/universc/universc:latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: What OS is running
         run: uname -a
       - name: Where am i                
