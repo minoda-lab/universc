@@ -30,7 +30,7 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
 
-  push:
+  run:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
@@ -49,6 +49,6 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
     - name: Hello world 
-      run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest echo "hello world"
+      run: docker run -it ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest echo "hello world"
     - name: Diagnostics
-      run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls
+      run: docker run -it ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls
