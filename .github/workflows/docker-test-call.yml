@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: docker.pkg.github.com/tomkellygenetics/cellranger_clean/cellranger_clean:latest
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
     steps:  
       - uses: actions/checkout@v2
       - name: What OS is running
@@ -33,6 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: docker.pkg.github.com/minoda-lab/universc/universc:latest
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - name: What OS is running

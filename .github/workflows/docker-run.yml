@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-20.04
     container:
       image: docker.pkg.github.com/tomkellygenetics/cellranger_clean/cellranger_clean:latest
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - name: Build the stack
