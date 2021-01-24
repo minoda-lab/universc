@@ -1,4 +1,4 @@
-name: Docker Test
+name: Docker Test Calling Dependencies
 on: push
 jobs:
   test:
@@ -15,11 +15,19 @@ jobs:
         with:
           image: docker:latest
           run: echo "hello world"
+      - name: Pull Docker image
+        run: docker pull tomkellygenetics/cellranger_clean:3.0.2
+      - name: Run image
+        run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w tomkellygenetics/cellranger_clean:3.0.2 echo "hello from cellranger_clean"
       - name: Call Cell Ranger
         uses: addnab/docker-run-action@v1
         with:
           image: tomkellygenetics/cellranger_clean:3.0.2
           run: echo "cellranger:" $(which cellranger)
+      - name: Pull Docker image
+        run: docker pull tomkellygenetics/universc:1.0.2
+      - name: Run image
+        run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w tomkellygenetics/universc:1.0.2 echo "hello from universc"
       - name: Call UniverSC
         uses: addnab/docker-run-action@v1
         with:
