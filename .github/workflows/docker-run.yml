@@ -9,6 +9,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Build the stack
         run: docker-compose up -d
       - name: Status

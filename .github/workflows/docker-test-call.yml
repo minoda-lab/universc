@@ -24,6 +24,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: What OS is running
         run: uname -a
       - name: Where am i
@@ -39,6 +41,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: What OS is running
         run: uname -a
       - name: Where am i                
