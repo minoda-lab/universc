@@ -15,21 +15,33 @@ jobs:
         with:
           image: docker:latest
           run: echo "hello world"
-      - name: Pull Docker image
-        run: docker pull tomkellygenetics/cellranger_clean:3.0.2
-      - name: Run image
-        run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w tomkellygenetics/cellranger_clean:3.0.2 echo "hello from cellranger_clean"
-      - name: Call Cell Ranger
-        uses: addnab/docker-run-action@v1
-        with:
-          image: tomkellygenetics/cellranger_clean:3.0.2
-          run: echo "cellranger:" $(which cellranger)
-      - name: Pull Docker image
-        run: docker pull tomkellygenetics/universc:1.0.2
-      - name: Run image
-        run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w tomkellygenetics/universc:1.0.2 echo "hello from universc"
-      - name: Call UniverSC
-        uses: addnab/docker-run-action@v1
-        with:
-          image: tomkellygenetics/universc:latest
-          run: bash /universc/test/test_call.sh
+
+  test-cellranger:
+    runs-on: ubuntu-latest
+    container:
+      image: tomkellygenetics/cellranger_clean:3.0.2
+    steps:  
+      - uses: actions/checkout@v2
+      - name: What OS is running
+        run: uname -a
+      - name: Where am i
+        run: pwd; ls
+      - name: call Cell Ranger
+        run: which cellranger; cellranger -v
+
+  test-universc:
+    runs-on: ubuntu-latest
+    container:
+      image: tomkellygenetics/universc:1.0.2
+    steps:
+      - uses: actions/checkout@v2
+      - name: What OS is running
+        run: uname -a
+      - name: Where am i                
+        run: pwd; ls
+      - name: pull updates:
+        run: cd universc; git pull origin master
+      - name: call UniverSC
+        run: bash /universc/launch_universc.sh -v
+      - name: test callas
+        run: bash /universc/test/test_call.sh
