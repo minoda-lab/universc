@@ -19,7 +19,7 @@ jobs:
   test-cellranger:
     runs-on: ubuntu-latest
     container:
-      image: tomkellygenetics/cellranger_clean:3.0.2
+      image: docker.pkg.github.com/tomkellygenetics/cellranger_clean/cellranger_clean:latest
     steps:  
       - uses: actions/checkout@v2
       - name: What OS is running
@@ -32,7 +32,7 @@ jobs:
   test-universc:
     runs-on: ubuntu-latest
     container:
-      image: tomkellygenetics/universc:1.0.2
+      image: docker.pkg.github.com/minoda-lab/universc/universc:latest
     steps:
       - uses: actions/checkout@v2
       - name: What OS is running
