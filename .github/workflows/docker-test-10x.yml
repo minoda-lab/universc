@@ -29,14 +29,14 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
     - name: Run image
-      run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w docker.pkg.github.com/minoda-lab/universc/universc:latest echo "hello from universc"
+      run: docker run docker.pkg.github.com/minoda-lab/universc/universc:latest echo "hello from universc"
     - name: Call UniverSC
       uses: addnab/docker-run-action@v1
       with:
         image: tomkellygenetics/universc:latest
         run: bash /universc/test/test_call.sh
     - name: Run image
-      run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/workspace -w docker.pkg.github.com/minoda-lab/universc/universc:latest bash /universc/test/run_tests_10x.sh
+      run: docker run docker.pkg.github.com/minoda-lab/universc/universc:latest bash /universc/test/run_tests_10x.sh
     - name: Call UniverSC
       uses: addnab/docker-run-action@v1
       with:
