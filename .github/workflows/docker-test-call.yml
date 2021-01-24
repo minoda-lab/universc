@@ -39,7 +39,7 @@ jobs:
         run: uname -a
       - name: Where am i                
         run: pwd; ls
-      - name: pull updates:
+      - name: pull updates
         run: cd universc; git pull origin master
       - name: call UniverSC
         run: bash /universc/launch_universc.sh -v
