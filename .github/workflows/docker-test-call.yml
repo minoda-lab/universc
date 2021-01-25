@@ -17,17 +17,6 @@ jobs:
           run: echo "hello world"
 
   test-cellranger:
-    runs-on: ubuntu-latest
-    steps:  
-      - uses: actions/checkout@v2
-      - name: What OS is running
-        run: uname -a
-      - name: Where am i
-        run: pwd; ls
-      - name: call Cell Ranger
-        run: which cellranger; cellranger -v
-
-  test-cellranger:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
@@ -51,7 +40,7 @@ jobs:
     - name: Cell Ranger Call
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/cellranger_clean:latest cellranger -v
 
-  test-universc:
+  test-repo:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -62,9 +51,7 @@ jobs:
       - name: pull updates
         run: cd universc; git pull origin master
       - name: call UniverSC
-        run: bash /universc/launch_universc.sh -v
-      - name: test callas
-        run: bash /universc/test/test_call.sh
+        run: ls /universc/launch_universc.sh 
 
   test-universc:
     runs-on: ubuntu-20.04
