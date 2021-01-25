@@ -870,9 +870,9 @@ if [[ $setup == "false" ]]; then
             for j in ${!r1_list[@]}; do
                 read=${r1_list[$j]}
                 R1_file=$read
-                R2_file=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R2/' )
-                R4_file=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_R4/' )
-                I1_file=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I1/' )
+                R2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+                R4_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R4/' )
+                I1_file=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
                 if [[ -f $R4_file ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.gz') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fastq') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fq') ]]; then
                     if [[ $verbose ]]; then
                         echo "  file $R4_file found, replacing $R1_file ..." 
@@ -918,16 +918,56 @@ fi
 if [[ $setup == "false" ]]; then
     #only check I2 for dual-indexed techniques
     if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
-        if [[ ${#index2[@]} -ne ${#read1[@]} ]]; then        
-            echo " Error: number of index1 files is not matching the number of index2 files"
-            echo " for $technology, either give no index files or give index1 and index2 for each and every read1 and read2 file"
-            exit 1
+        if [[ ${#index2[@]} -ne ${#read1[@]} ]]; then
+            if [[ ${#index2[@]} -gt 0 ]]; then
+               echo " Error: number of index1 files is not matching the number of index2 files"
+               echo " for $technology, either give no index files or give index1 and index2 for each and every read1 and read2 file"
+               exit 1
+            else
+                if [[ $verbose ]] then
+                    echo " No index files given. Automatically detecing from R1 and R2 file names..."
+                fi
+                r1_list=("${read1[@]}")
+                r2_list=("${read2[@]}")
+                i2_list=()
+                for j in ${!r1_list[@]}; do
+                    read=${r1_list[$j]}
+                    R1_file=$read
+                    R2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+                    R3_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R3/' )
+                    I2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
+                    if [[ -f $R3_file ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.gz') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fastq') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fq') ]]; then
+                        if [[ $verbose ]]; then
+                            echo "  file $R3_file found, replacing $I2_file ..." 
+                        fi
+                        i2_read=$R3_file
+                        i2_list[$j]=$i1_read
+                    fi
+                    if [[ -f $I2_file ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.gz') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fastq') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fq') ]]; then
+                        if [[ $verbose ]]; then
+                            echo "  file $I2_file found..."
+                        fi
+                        i2_read=$I2_file
+                        i2_list[$j]=$i2_read
+                    fi
+                done
+                if [ ${#i2_list[@]} -eq 0 ]; then
+                    if [[ $verbose ]]; then
+                        echo "Dual index files not found"
+                    fi
+                else
+                    if [ ${#i2_list[@]} -eq 0 ]; then
+                        if [[ $verbose ]]; then
+                            echo "echo "  index files found ${#index2[@]} I2s: ${index2[@]}"
+                        fi
+                fi
+            fi
         fi
     elif [[ ${#index2[@]} -gt 0 ]]; then
         echo " Error: $technology does not support dual index"
         echo " re-run without selecting any files for --index2"
         exit 1
-    fi   
+    fi
 fi
 
 
