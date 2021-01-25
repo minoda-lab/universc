@@ -1,0 +1,13 @@
+name: Test ICELL8
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the stack
+        run: docker-compose up -d
+      - name: Status
+        run: echo "build complete" 
+      - name: Test runnning on ICELL8
+        run:  test/run_tests_icell8.sh

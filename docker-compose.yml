@@ -1,3 +1,9 @@
-sut:
-  build: .
-  command: echo "build complete"
+version: '3'
+services:
+  universc:
+    container_name: universc
+    build: .
+    command: echo "build complete"
+  cellranger:
+    container_name: cellranger_clean
+    image: "tomkellygenetics/cellranger_clean:3.0.2.9001"

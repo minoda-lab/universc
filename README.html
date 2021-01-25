@@ -1,5 +1,6 @@
 <p><img src="https://img.shields.io/docker/automated/tomkellygenetics/universc" alt="Docker Automated build" /> <img src="https://img.shields.io/docker/build/tomkellygenetics/universc" alt="Docker Build Status" /> <img src="https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest" alt="Docker Image Size (tag)" /> <a href="http://hits.dwyl.com/tomkellygenetics/universc"><img src="http://hits.dwyl.com/tomkellygenetics/universc.svg" alt="GitHub Views" /></a></p>
 <p><img src="https://img.shields.io/docker/stars/tomkellygenetics/universc" alt="Docker Stars" /> <img src="https://img.shields.io/docker/pulls/tomkellygenetics/universc" alt="Docker Pulls" /> <img src="https://img.shields.io/docker/v/tomkellygenetics/universc" alt="Docker Image Version (latest by date)" /></p>
+<p>&quot;<a href="https://github.com/minoda-lab/universc/actions"><img src="https://github.com/minoda-lab/universc/workflows/docker-run/badge.svg" alt="Actions Build" /></a>&quot; &quot;<a href="https://github.com/minoda-lab/universc/actions"><img src="https://github.com/minoda-lab/universc/workflows/docker-test-call/badge.svg" alt="Actions Test" /></a>&quot; &quot;<a href="https://github.com/minoda-lab/universc/actions"><img src="https://github.com/minoda-lab/universc/workflows/docker-test-10x/badge.svg" alt="Test 10x Genomics" /></a>&quot; &quot;<a href="https://github.com/minoda-lab/universc/actions"><img src="https://github.com/minoda-lab/universc/workflows/docker-test-dropseq/badge.svg" alt="Test DropSeq" /></a>&quot; &quot;<a href="https://github.com/minoda-lab/universc/actions"><img src="https://github.com/minoda-lab/universc/workflows/docker-test-icell8/badge.svg" alt="Test ICELL8" /></a>&quot;</p>
 <h1 id="universc">UniverSC</h1>
 <p><strong>Single-cell processing across technologies</strong></p>
 <hr />
@@ -48,20 +49,19 @@
 <ul>
 <li>inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1</li>
 <li>inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2</li>
-<li>inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3</li>
 </ul></li>
 <li>MARS-Seq (6bp barcode, 10bp UMI): marsseq, marsseq-v1</li>
 <li>MARS-Seq2 (7bp barcode, 8bp UMI): marsseq2, marsseq-v2<br />
 </li>
 <li>Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384</li>
 <li>Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536</li>
-<li>Sci-Seq (8bp UMI, 10bp barcode): sciseq</li>
 <li>SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq</li>
 <li>SeqWell (12bp barcode, 8bp UMI): seqwell</li>
-<li>Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq</li>
 <li>SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad</li>
 </ul>
 <p>All technologies support 3' single-cell RNA-Seq. Barcode adjustments and whitelists are changed automatically. For 5' single-cell RNA-Seq, this is only supported for 10x Genomics version 2 chemistry. This is detected automatically but can be configured with the <code>--chemistry</code> argument.</p>
+<p>We are developing technologies to support dual indexes and full length scRNA kits.</p>
+<p>Experimental technologies (not yet supported): - inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3 - Sci-Seq (8bp UMI, 10bp barcode): sciseq - Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq</p>
 <h4 id="dual-indexing">Dual-indexing</h4>
 <p>For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use &quot;bcl2fastq&quot; before calling UniverSC:</p>
 <pre><code>   /usr/local/bin/bcl2fastq  -v --runfolder-dir &quot;/path/to/illumina/bcls&quot;  --output-dir &quot;./Data/Intensities/BaseCalls&quot;\
@@ -338,18 +338,16 @@ git lfs install</code></pre>
 <p>To import large files from Github change to the &quot;universc&quot; directory and run:</p>
 <pre><code>git lfs pull origin</code></pre>
 <p>This provides almost all files required. The STAR index and reference need to be generated or imported from an existing reference. The following code detects whether the references are available in an existing cellranger installation.</p>
-<pre><code>cd test
-cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d&#39;(&#39; | cut -f1 -d&#39;)&#39;`
+<pre><code>cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d&#39;(&#39; | cut -f1 -d&#39;)&#39;`
 cellrangerpath=`which cellranger`
 
 # set up cellranger reference
-if [[ ! -f ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/3.0.0/star/SA
+if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA
 fi
-if [[ ! -f ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ${cellrangerpath}-${cellrangerversion}/cellranger-tiny-ref/1.2.0/star/SA
-fi
-cd ..</code></pre>
+if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
+fi</code></pre>
 <p>This creates a reference for Cell Ranger here:</p>
 <ul>
 <li><p>test/cellranger_reference/cellranger-tiny-ref/1.2.0</p></li>
@@ -469,18 +467,21 @@ Mandatory arguments to long options are mandatory for short options too.
                                   ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
-                                  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
                                   MARS-Seq (6bp barcode, 10bp UMI): marsseq, marsseq-v1
                                   MARS-Seq2 (7bp barcode, 8bp UMI): marsseq2, marsseq-v2
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
-                                  Sci-Seq (8bp UMI, 10bp barcode): sciseq
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
-                                  Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name &quot;custom&quot; and length of barcode and UMI separated by &quot;_&quot;
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
+
+                                Experimental technologies (not yet supported):
+                                  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
+                                  Sci-Seq (8bp UMI, 10bp barcode): sciseq
+                                  Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq
+
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
 
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: SC3Pv2 (default), SC5P-PE, or SC5P-R2
