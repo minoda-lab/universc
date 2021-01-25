@@ -1066,14 +1066,12 @@ for key in ${keys[@]}; do
                 list[$j]=$read
             ;;
         esac
-        case $read in
             #check if contains sample before lane
-            *_${readkey}_001.*)
+            if [[ $read == *"_${readkey}_001."* ]]  || [[ $read == *"_${readkey}_001" ]]; then
                 if [[ $verbose ]]; then
                     echo "  $read compatible with suffix"
                 fi
-            ;;
-            *.*)
+            else
                 #rename file
                 if [[ $verbose ]]; then
                     echo "***Warning: file $read does not have suffix in its name. Suffix 001 is given.***"
@@ -1120,8 +1118,7 @@ for key in ${keys[@]}; do
               fi
 
               list[$j]=$read
-            ;;
-        esac
+        fi
 
         #allow detection of file extension (needed for --file input)
         if [[ -f ${read} ]] || [[ -h ${read} ]]; then
