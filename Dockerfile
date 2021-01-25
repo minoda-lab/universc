@@ -8,6 +8,7 @@ RUN apt-get update \
  git-lfs \
  make \
  gzip \
+ pigz \
  rename
 
 RUN apt-get install -y \
