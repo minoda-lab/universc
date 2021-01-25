@@ -49,7 +49,7 @@ tags:
 ![Actions Call](https://github.com/minoda-lab/universc/workflows/.github/workflows/docker-test-call/badge.svg)
 ![Actions Test](https://github.com/minoda-lab/universc/workflows/.github/workflows/docker-run-tests/badge.svg)
 
-![Test 10x Genomics](https://github.com/minoda-lab/universc/workflows/Test%2010xGenomics/badge.svg)
+![Test 10x Genomics](https://github.com/minoda-lab/universc/workflows/Test%2010x%20Genomics/badge.svg)
 ![Test DropSeq](https://github.com/minoda-lab/universc/workflows/Test%20DropSeq/badge.svg)
 ![Test ICELL8](https://github.com/minoda-lab/universc/workflows/Test%20iCELL8/badge.svg)
 
