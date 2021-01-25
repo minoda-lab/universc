@@ -38,12 +38,12 @@ tags:
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc)
 
-![Docker CI](https://github.com/minoda-lab/universc/workflows/CI$20to%20Docker%hub/badge.svg)
+![Docker CI](https://github.com/minoda-lab/universc/workflows/CI%20to%20Docker%hub/badge.svg)
 ![Docker compose](https://github.com/minoda-lab/universc/workflows/Docker%20Compose%20Actions/badge.svg)
-![Docker Build](https://github.com/minoda-lab/universc/workflows/Docker%20Test/badge.svg)
-![Actions Call](https://github.com/minoda-lab/universc/workflows/Docker%20Test%20Calling%Dependencies/badge.svg)
 
+![Actions Build](https://github.com/minoda-lab/universc/workflows/Docker%20Test/badge.svg)
 ![Actions Tests](https://github.com/minoda-lab/universc/workflows/Run%20tests%20in%20Docker/badge.svg)
+
 ![Test 10x Genomics](https://github.com/minoda-lab/universc/workflows/Test%2010x%20Genomics/badge.svg)
 ![Test DropSeq](https://github.com/minoda-lab/universc/workflows/Test%20DropSeq%20%2F%20Nadia/badge.svg)
 ![Test ICELL8](https://github.com/minoda-lab/universc/workflows/Test%20ICELL8/badge.svg)
