@@ -52,3 +52,8 @@ RUN git clone https://github.com/linsalrob/fastq-pair.git \
  && cd build \
  && gcc -std=gnu99   ../main.c ../robstr.c ../fastq_pair.c ../is_gzipped.c  -o fastq_pair \
  && cp fastq_pair /bin/fastq_pair
+
+RUN wget https://sourceforge.net/projects/bbmap/files/latest/download ; mv download BBMap_38.87.tar.gz \
+ && tar -xvzf BBMap_38.87.tar.gz
+
+ENV PATH bbmap:$PATH
