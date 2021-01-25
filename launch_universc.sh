@@ -853,6 +853,7 @@ if [[ $verbose ]]; then
     echo " checking option: --index1 and --index2"
 fi
 
+
 #index 1
 if [[ $setup == "false" ]]; then
     if [[ ${#index1[@]} -ne ${#read1[@]} ]]; then
@@ -861,7 +862,7 @@ if [[ $setup == "false" ]]; then
             echo " either give no index1 file, or give index1 file for each and every read1 file"
             exit 1
         else
-            if [[ $verbose ]] then
+            if [[ $verbose ]]; then
                 echo " No index files given. Automatically detecing from R1 and R2 file names..."
             fi
             r1_list=("${read1[@]}")
@@ -898,17 +899,17 @@ if [[ $setup == "false" ]]; then
                     i1_list[$j]=$i1_read
                 fi
             done
-            read1=("$r1_{list[@]}")
-            read2=("$r2_{list[@]}")
-            if [ ${#i1_list[@]} -eq 0 ]; then
+            read1=("${r1_list[@]}")
+            read2=("${r2_list[@]}")
+            if [[ ${#i1_list[@]} -eq 0 ]]; then
                 if [[ $verbose ]]; then
                     echo "No index files found"
                 fi
             else
-            if [ ${#i1_list[@]} -eq 0 ]; then
-                 if [[ $verbose ]]; then
-                     echo "echo "  index files found ${#index1[@]} I1s: ${index1[@]}"
-                 fi
+                index1=("${i1_list[@]}")
+                if [[ $verbose ]]; then
+                    echo "  index files found ${#index1[@]} I1s: ${index1[@]}"
+                fi
             fi
         fi
     fi
@@ -924,7 +925,7 @@ if [[ $setup == "false" ]]; then
                echo " for $technology, either give no index files or give index1 and index2 for each and every read1 and read2 file"
                exit 1
             else
-                if [[ $verbose ]] then
+                if [[ $verbose ]]; then
                     echo " No index files given. Automatically detecing from R1 and R2 file names..."
                 fi
                 r1_list=("${read1[@]}")
@@ -951,15 +952,15 @@ if [[ $setup == "false" ]]; then
                         i2_list[$j]=$i2_read
                     fi
                 done
-                if [ ${#i2_list[@]} -eq 0 ]; then
+                if [[ ${#i2_list[@]} -eq 0 ]]; then
                     if [[ $verbose ]]; then
                         echo "Dual index files not found"
                     fi
                 else
-                    if [ ${#i2_list[@]} -eq 0 ]; then
-                        if [[ $verbose ]]; then
-                            echo "echo "  index files found ${#index2[@]} I2s: ${index2[@]}"
-                        fi
+                    index2=("${i2_list[@]}")
+                    if [[ $verbose ]]; then
+                        echo "  index files found ${#index2[@]} I2s: ${index2[@]}"
+                    fi
                 fi
             fi
         fi
@@ -970,7 +971,7 @@ if [[ $setup == "false" ]]; then
     fi
 fi
 
-
+exit 0
 
 if [[ $verbose ]]; then
     echo "  ${#read1[@]} read1s: ${read1[@]}"
