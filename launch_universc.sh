@@ -861,6 +861,9 @@ if [[ $setup == "false" ]]; then
             echo " either give no index1 file, or give index1 file for each and every read1 file"
             exit 1
         else
+            if [[ $verbose ]] then
+                echo " No index files given. Automatically detecing from R1 and R2 file names..."
+            fi
             r1_list=("${read1[@]}")
             r2_list=("${read2[@]}")
             i1_list=()
@@ -872,24 +875,24 @@ if [[ $setup == "false" ]]; then
                 I1_file=$(echo $indexfile | perl -pne 's/(.*)_R1/$1_I1/' )
                 if [[ -f $R4_file ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.gz') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fastq') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fq') ]]; then
                     if [[ $verbose ]]; then
-                        echo "file $R4_file found, replacing $R1_file ..." 
+                        echo "  file $R4_file found, replacing $R1_file ..." 
                     fi
                     r1_read=$R4_file
                     r1_list[$j]=$r1_read
                     if [[ $verbose ]]; then
-                        echo "file $R1_file found, replacing $R2_file ..."
+                        echo "  file $R1_file found, replacing $R2_file ..."
                     fi
                     r2_read=$R1_file
                     r2_list[$j]=$r2_read
                     if [[ $verbose ]]; then
-                         echo "file $R2_file found, replacing $I1_file ..."
+                         echo "  file $R2_file found, replacing $I1_file ..."
                     fi
                     i1_read=$R2_file
                     i1_list[$j]=$i1_read
                 fi
                 if [[ -f $I1_file ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.gz') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fastq') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fq') ]]; then
                     if [[ $verbose ]]; then
-                         echo "file $I1_file found..."
+                         echo "  file $I1_file found..."
                     fi
                     i1_read=$I1_file
                     i1_list[$j]=$i1_read
