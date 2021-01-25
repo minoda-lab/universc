@@ -2278,6 +2278,33 @@ else
         done
     fi
     
+    #Smart-Seq3
+    if [[ "$technology" == "smartseq"* ]];then
+        R2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+
+        # reads matching adapter sequence for R1
+        grep -A 2 -B 1 ATTGCGCAATG test_R1.fastq  | sed '/--/d' > test_R1_umi.fastq
+        #match R2 to R1 containing UMI
+        fastq_pair  test_R1_umi.fastq test_R2.fastq
+
+        # uses bbduk (decontamination using k=mers) from BBMap(BBTools) vesion 38.87
+        # step 1: process as paired ends to match k-mers (adapters matched are filtered)
+        bbduk.sh in1=test_R1.fastq in2=test_R2.fastq outu1=clean_R1.fq outu2=clean_R2.fq outm1=fail_R2.fastq outm2=fail_R1.fastq outs=pass_singletons.fq literal=ATTGCGCAATG k=10
+        # step 2: take matched (adapter filtered) reads and remove adapter (and all bases to the left)
+        bbduk.sh in1=fail_R1.fq in2=fail_R2.fq out1=trimmed_R1.fq out2=trimmed_R2.fq literal=ATTGCGCAATG ktrim=l k=11
+
+       # match indexes to R1
+       fastq_pair  test_R1_umi.fastq test_I1.fastq
+       fastq_pair  test_R1_umi.fastq test_I2.fastq
+
+       #replace original files
+       mv test_I1.fastq.paired.fq test_I1.fastq
+       mv test_I2.fastq.paired.fq test_I2.fastq
+       mv trimmed_R1.fq test_R1.fastq
+       mv trimmed_R2.fq test_R2.fastq
+       rm *fastq.paired.fq *fastq.single.fq clean_R1.fq clean_R2.fq fail_R1.fastq fail_R2.fastq pass_singletons.fq  test_R1_umi.fastq
+    fi
+
     #converting barcodes
     echo " adjusting barcodes of R1 files"
     if [[ $barcodeadjust != 0 ]]; then
