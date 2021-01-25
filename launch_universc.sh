@@ -863,7 +863,7 @@ if [[ $setup == "false" ]]; then
             exit 1
         else
             if [[ $verbose ]]; then
-                echo " No index files given. Automatically detecing from R1 and R2 file names..."
+                echo " No index files given. Automatically detecting from R1 and R2 file names..."
             fi
             r1_list=("${read1[@]}")
             r2_list=("${read2[@]}")
@@ -926,7 +926,7 @@ if [[ $setup == "false" ]]; then
                exit 1
             else
                 if [[ $verbose ]]; then
-                    echo " No index files given. Automatically detecing from R1 and R2 file names..."
+                    echo " No index files given. Automatically detecting from R1 and R2 file names..."
                 fi
                 r1_list=("${read1[@]}")
                 r2_list=("${read2[@]}")
@@ -2280,29 +2280,35 @@ else
     
     #Smart-Seq3
     if [[ "$technology" == "smartseq"* ]];then
-        R2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+        echo "Note: SmartSeq-3 requires additional dependencies, install fastq_pair and bbduk.sh and add these to the PATH"
+        for convFile in "${convFiles[@]}"; do
+            read=$convFile
+            convR1=$read
+            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+            convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
+            convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
 
-        # reads matching adapter sequence for R1
-        grep -A 2 -B 1 ATTGCGCAATG test_R1.fastq  | sed '/--/d' > test_R1_umi.fastq
-        #match R2 to R1 containing UMI
-        fastq_pair  test_R1_umi.fastq test_R2.fastq
+            # reads matching adapter sequence for R1
+            grep -A 2 -B 1 ATTGCGCAATG $convR1  | sed '/--/d' > ${convR1}.umi.fastq
+            #match R2 to R1 containing UMI
+            fastq_pair  ${convR1}.umi.fastq $convR2
 
-        # uses bbduk (decontamination using k=mers) from BBMap(BBTools) vesion 38.87
-        # step 1: process as paired ends to match k-mers (adapters matched are filtered)
-        bbduk.sh in1=test_R1.fastq in2=test_R2.fastq outu1=clean_R1.fq outu2=clean_R2.fq outm1=fail_R2.fastq outm2=fail_R1.fastq outs=pass_singletons.fq literal=ATTGCGCAATG k=10
-        # step 2: take matched (adapter filtered) reads and remove adapter (and all bases to the left)
-        bbduk.sh in1=fail_R1.fq in2=fail_R2.fq out1=trimmed_R1.fq out2=trimmed_R2.fq literal=ATTGCGCAATG ktrim=l k=11
+            # uses bbduk (decontamination using k=mers) from BBMap(BBTools) vesion 38.87
+            # step 1: process as paired ends to match k-mers (adapters matched are filtered)
+            bbduk.sh in1=${convR1}.umi.fastq.paired.fq in2=${convR2}.paired.fq outu1=$crIN/clean_R1.fq outu2=$crIN/clean_R2.fq outm1=$crIN/fail_R2.fq outm2=$crIN/fail_R1.fq outs=$crIN/pass_singletons.fq literal=ATTGCGCAATG k=10
+            # step 2: take matched (adapter filtered) reads and remove adapter (and all bases to the left)
+            bbduk.sh in1=$crIN/fail_R1.fq in2=$crIN/fail_R2.fq out1=$crIN/trimmed_R1.fq out2=$crIN/trimmed_R2.fq literal=ATTGCGCAATG ktrim=l k=11
+            # match indexes to R1
+            fastq_pair  ${convR1}.umi.fastq ${convI1}
+            fastq_pair  ${convR1}.umi.fastq ${convI2}
 
-       # match indexes to R1
-       fastq_pair  test_R1_umi.fastq test_I1.fastq
-       fastq_pair  test_R1_umi.fastq test_I2.fastq
-
-       #replace original files
-       mv test_I1.fastq.paired.fq test_I1.fastq
-       mv test_I2.fastq.paired.fq test_I2.fastq
-       mv trimmed_R1.fq test_R1.fastq
-       mv trimmed_R2.fq test_R2.fastq
-       rm *fastq.paired.fq *fastq.single.fq clean_R1.fq clean_R2.fq fail_R1.fastq fail_R2.fastq pass_singletons.fq  test_R1_umi.fastq
+            #replace original files
+            mv ${convI1}.fastq.paired.fq ${convI1}
+            mv ${convI2}.fastq.paired.fq ${convI2}
+            mv $crIN/trimmed_R1.fq ${convR1}
+            mv $crIN/trimmed_R2.fq ${convR2}
+            rm $crIN/*fastq.paired.fq $crIN/*fastq.single.fq $crIN/clean_R1.fq $crIN/clean_R2.fq $crIN/fail_R1.fq $crIN/fail_R2.fq $crIN/pass_singletons.fq ${convR1}.umi.fastq
+        done
     fi
 
     #converting barcodes
