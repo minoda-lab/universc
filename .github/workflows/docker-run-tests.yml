@@ -53,7 +53,7 @@ jobs:
     - name: Diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls
 
-  test:
+  call:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2

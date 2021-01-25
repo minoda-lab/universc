@@ -28,16 +28,16 @@ jobs:
         file: ./Dockerfile
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
-    - name: Run image
-      run: docker run docker.pkg.github.com/minoda-lab/universc/universc:latest echo "hello from universc"
-    - name: Call UniverSC
+    - name: Run image test
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest echo "hello from universc"
+    - name: Call UniverSC test
       uses: addnab/docker-run-action@v1
       with:
         image: tomkellygenetics/universc:latest
-        run: bash /universc/test/test_call.sh
-    - name: Run image
-      run: docker run docker.pkg.github.com/minoda-lab/universc/universc:latest bash /universc/test/run_tests_10x.sh
-    - name: Call UniverSC
+        run: echo "hello from universc"
+    - name: Call UniverSC from image
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x.sh
+    - name: Call UniverSC from container
       uses: addnab/docker-run-action@v1
       with:
         image: tomkellygenetics/universc:latest
