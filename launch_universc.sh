@@ -971,8 +971,6 @@ if [[ $setup == "false" ]]; then
     fi
 fi
 
-exit 0
-
 if [[ $verbose ]]; then
     echo "  ${#read1[@]} read1s: ${read1[@]}"
     echo "  ${#read2[@]} read2s: ${read2[@]}"
