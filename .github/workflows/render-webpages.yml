@@ -1,0 +1,65 @@
+name: Render-Webpages
+
+# Run this workflow every time a new commit pushed to your repository (includes merged PR)
+on: push
+
+jobs:
+  # Set the job key. The key is displayed as the job name
+  # when a job name is not provided
+  build-webpages:
+    # Name the Job
+    name: Update lessons
+    # Set the type of machine to run on
+    runs-on: tomkellygenetics/cellranger_clean:3.0.2.9001
+    strategy:
+      matrix:
+        lesson-repo: [shell-novice, git-novice, r-novice-gapminder]
+        ##lesson-repo: [shell-novice, git-novice, r-novice-gapminder, r-novice-inflammation, python-novice-gapminder, python-novice-inflammation, sql-novice-survey, make-novice]
+        python-version: [3.7]
+
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: install shell dependencies
+        run: sudo apt-get install -y git
+
+      - name: update python package manager
+        run: pip install --upgrade pip
+
+      - name: install python dependencies
+        run: pip install python-dateutil 
+
+      - name: where am i
+        run: pwd
+
+      - name: list files
+        run: ls
+
+      - name: list parent files
+        run: ls ..
+
+      - name: configure git access
+        run: export GITHUB_TOKEN=${{ secrets.ACTIONS_TOKEN }}
+      - name: configure git account
+        run: git config --global user.email "tomkellygenetics@gmail.com"
+      - name: configure git user
+        run: git config --global user.name "TomKellyGenetics"
+      - name: configure git settings
+        run: git config --global pull.rebase false 
+
+      - name: who am i
+        run: git config -l | cat 
+
+      - name: Build ${{ matrix.lesson-repo }} lesson
+        run: bash wrapper.sh --repo ${{ matrix.lesson-repo }} --locale ja --account swcarpentry-ja --webpages
+        env:
+          DEFAULT_BRANCH: ja
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
