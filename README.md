@@ -38,11 +38,20 @@ tags:
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc)
 
-"[![Actions Build](https://github.com/minoda-lab/universc/workflows/docker-run/badge.svg)](https://github.com/minoda-lab/universc/actions)"
-"[![Actions Test](https://github.com/minoda-lab/universc/workflows/docker-test-call/badge.svg)](https://github.com/minoda-lab/universc/actions)"
-"[![Test 10x Genomics](https://github.com/minoda-lab/universc/workflows/docker-test-10x/badge.svg)](https://github.com/minoda-lab/universc/actions)"
-"[![Test DropSeq](https://github.com/minoda-lab/universc/workflows/docker-test-dropseq/badge.svg)](https://github.com/minoda-lab/universc/actions)"
-"[![Test ICELL8](https://github.com/minoda-lab/universc/workflows/docker-test-icell8/badge.svg)](https://github.com/minoda-lab/universc/actions)"
+[![Actions Build](https://github.com/minoda-lab/universc/workflows/docker-run/badge.svg)](https://github.com/minoda-lab/universc/actions)
+[![Actions Test](https://github.com/minoda-lab/universc/workflows/docker-test-call/badge.svg)](https://github.com/minoda-lab/universc/actions)
+
+![Docker CI](https://github.com/minoda-lab/universc/workflows/.github/workflows/docker-ci/badge.svg)
+![Docker CI call](https://github.com/minoda-lab/universc/workflows/.github/workflows/docker-ci-runner/badge.svg)
+![Docker Run](https://github.com/minoda-lab/universc/workflows/.github/workflows/docker-run/badge.svg)
+
+![Actions Build](https://github.com/minoda-lab/universc/workflows/.github/workflows/docker-test-build/badge.svg)
+![Actions Call](https://github.com/minoda-lab/universc/workflows/.github/workflows/docker-test-call/badge.svg)
+![Actions Test](https://github.com/minoda-lab/universc/workflows/.github/workflows/docker-run-tests/badge.svg)
+
+![Test 10x Genomics](https://github.com/minoda-lab/universc/workflows/Test%2010xGenomics/badge.svg)
+![Test DropSeq](https://github.com/minoda-lab/universc/workflows/Test%20DropSeq/badge.svg)
+![Test ICELL8](https://github.com/minoda-lab/universc/workflows/Test%20iCELL8/badge.svg)
 
 # UniverSC
 
