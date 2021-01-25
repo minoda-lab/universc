@@ -1,4 +1,4 @@
-name: Docker Compose Actions Workflow
+name: Docker Compose Actions
 on: push
 jobs:
   test:
@@ -9,11 +9,5 @@ jobs:
         run: docker-compose up -d
       - name: Status
         run: echo "build complete" 
-      - name: Build config
+      - name: Build diagnostics
         run: pwd; ls ../*; ls ../../*
-      - name: Paths
-        run: which cellranger; echo $PATH
-      - name: Call functions
-        run: bash test/test_call.sh
-      - name: Test docker container
-        run: docker run --network container:webapp-frontend appropriate/curl -s --retry 10 --retry-connrefused http://localhost:5000/
