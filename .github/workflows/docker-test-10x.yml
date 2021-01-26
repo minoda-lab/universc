@@ -36,12 +36,12 @@ jobs:
         image: tomkellygenetics/universc:latest
         run: echo "hello from universc"
     - name: Call UniverSC from image
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x.sh
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_gh_actions.sh
     - name: Call UniverSC from container
       uses: addnab/docker-run-action@v1
       with:
         image: tomkellygenetics/universc:latest
-        run: bash /universc/test/run_tests_10x.sh
+        run: bash /universc/test/run_tests_10x_gh_actions.sh
 
   build:
     runs-on: ubuntu-20.04
@@ -71,4 +71,4 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
     - name: Test 10x
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x.sh
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_gh_actions.sh

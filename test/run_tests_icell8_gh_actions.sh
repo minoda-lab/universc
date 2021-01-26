@@ -12,13 +12,14 @@ cellrangerpath=`which cellranger`
 
 # set up cellranger reference
 if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA
+    ln $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA
 fi
 if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
+    ln $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
 fi
 
-unpigz -k test/shared/icell8-test/72618_KU812*fastq.gz
+rm -rf test/shared/dropseq-test/* test/shared/cellranger-tiny-fastq/* test/shared/mappa-test/
+unpigz -f test/shared/icell8-test/72618_KU812*fastq.gz
 
 if [ -f test/shared/icell8-test/72618_KU812_S1_L001_R1_001.fastq ]; then
     rename "s/_S1_L001/_L001/" test/shared/icell8-test/72618_KU812_S1_L001_R1_001.fastq*

@@ -31,12 +31,18 @@ tags:
 ![Docker Manual build](https://img.shields.io/docker/automated/tomkellygenetics/universc)
 ![Docker Automated build](https://img.shields.io/docker/cloud/automated/tomkellygenetics/universc)
 ![Docker Build Status](https://img.shields.io/docker/cloud/build/tomkellygenetics/universc)
-![Docker Image Size (tag)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest)
 [![GitHub Views](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
 
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
+
+![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.0.2)
+![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/1.0.2)
+![Docker Image Size (v1.0.2)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.0.2)
+
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc)
+![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest)
+![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc?sort=date)
 
 ![Docker CI](https://github.com/minoda-lab/universc/workflows/CI%20to%20Docker%20hub/badge.svg)
 ![Docker compose](https://github.com/minoda-lab/universc/workflows/Docker%20Compose%20Actions/badge.svg)
