@@ -1176,36 +1176,36 @@ for key in ${keys[@]}; do
                     rename -f "s/_${readkey}.(.*).gz/_${readkey}_001\.\$1.gz/g" ${read}
                 fi
                 if [[ -f $(find $(dirname ${read}) -name $(basename ${read})'*.fastq') ]]; then
-                    rename -f "s/_${readkey}.(.*)/_${readkey}_001\.\$1/" ${read}*.fastq
+                    rename -f "s/_${readkey}\.(.*)/_${readkey}_001\.\$1/" ${read}*.fastq
                 fi
                 if [[ -f $(find $(dirname ${read}) -name $(basename ${read})'*.fq') ]]; then
-                    rename -f "s/_${readkey}.(.*)/_${readkey}_001\.\$1/" ${read}*.fq
+                    rename -f "s/_${readkey}\.(.*)/_${readkey}_001\.\$1/" ${read}*.fq
                 fi
                 if [[ ${read} == *.fastq ]]; then
-                    rename -f "s/_${readkey}(.*).fastq/_${readkey}_001\.fastq/" ${read} ${read}.gz
+                    rename -f "s/_${readkey}*\.fastq/_${readkey}_001\.fastq/" ${read} ${read}.gz
                fi
               if [[ ${read} == *.fq ]]; then
-                   rename -f "s/_${readkey}(.*).fq/_${readkey}_001\.fq/" ${read}
+                   rename -f "s/_${readkey}*\.fq/_${readkey}_001\.fq/" ${read}
               fi
               #update file variable
               if [[ ${read} == *.gz ]] || [[ ${read} == *.fastq ]] || [[ ${read} == *.fq ]] || [[ -f ${read} ]]; then
                   #assumes read name already contains . in file extension
-                  read=`echo $read | sed -e "s/_${readkey}.*\./_${readkey}_001\./g"`
+                  read=`echo $read | sed -e "s/_${readkey}*\./_${readkey}_001\./g"`
               else
                   #replace everything after read key (R1, R2, I1, I2) with 001 suffix (detects file later)
                   rename -f "s/_${readkey}.*/_${readkey}_001/g" ${read}
-                  read=`echo $read | sed -e "s/_${readkey}.*/_${readkey}_001/g"`
+                  read=`echo $read | sed -e "s/_${readkey}*/_${readkey}_001/g"`
               fi
               #remove characters after read key (R1, R2, I1, I2) required as above
               if [[ ${read} != *_${readkey}_001.* ]] && [[ ${read} != *.* ]]; then
                   rename -f "s/_${readkey}_*\./_${readkey}_001\./" ${read}
-                  read=`echo $read | sed -e "s/_${readkey}.*\./_${readkey}_001\./g"`
+                  read=`echo $read | sed -e "s/_${readkey}*\./_${readkey}_001\./g"`
               elif [[ ${read} != *_${readkey}_001 ]] || [[ ${read} != *_${readkey}*00#1 ]]; then
                   rename -f "s/_${readkey}*_001/_${readkey}_001/" ${read#}
                   read=`echo $read | sed -e "s/_${readkey}*_001/_${readkey}_001/g"`
               fi
               if [[ ${read} == *_${readkey}_*_001.* ]]; then
-                   rename -f "s/_${readkey}.*_001\./_${readkey}_001\./" ${read}
+                   rename -f "s/_${readkey}*_001\./_${readkey}_001\./" ${read}
                    read=`echo $read | sed -e "s/_${readkey}*_001\./_${readkey}_001\./g"`
               fi
 
