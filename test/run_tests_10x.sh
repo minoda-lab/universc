@@ -46,7 +46,9 @@ if [[ -d tiny-test ]]; then
     rm -rf tiny-test
 fi
 # test cellranger call
-cellranger testrun --id="tiny-test"
+if [[ $cellrangerversion == "3.0.2" ]]; then
+    cellranger testrun --id="tiny-test"
+fi
 # unzip input data
 if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/*fastq.gz ]]; then
     gunzip -f test/shared/cellranger-tiny-fastq/3.0.0/*fastq.gz
@@ -66,7 +68,8 @@ if [[ -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcode
 fi
 cellranger count --id="tiny-count-v3" \
  --fastqs="test/shared/cellranger-tiny-fastq/3.0.0/" --sample="tinygex" \
- --transcriptome="test/cellranger_reference/cellranger-tiny-ref/3.0.0"
+ --transcriptome="test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --jobmode "local" --localcores 1 
 if [[ -d tiny-count-v2 ]]; then
     rm -rf tiny-count-v2
 fi 
@@ -78,7 +81,8 @@ if [[ -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcode
 fi
 cellranger count --id="tiny-count-v2" \
  --fastqs="test/shared/cellranger-tiny-fastq/1.2.0/" --sample="" --chemistry="threeprime" \
- --transcriptome="test/cellranger_reference/cellranger-tiny-ref/1.2.0"
+ --transcriptome="test/cellranger_reference/cellranger-tiny-ref/1.2.0" \
+ --jobmode "local" --localcores 1 
 
 # call convert on 10x with multiple lanes
 if [[ -d test-10x-v3 ]]; then
@@ -97,7 +101,8 @@ fi
 bash launch_universc.sh --id "test-10x-v3" --technology "10x" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --file "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
- "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002"
+ "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002" \
+  --jobmode "local" --localcores 1 
 
 # compress all input files
 if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/*fastq ]]; then
