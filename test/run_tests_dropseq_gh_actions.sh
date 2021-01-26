@@ -19,6 +19,7 @@ if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ 
 fi
 
 rm -rf test/shared/dropseq-test/* test/shared/cellranger-tiny-fastq/* test/shared/mappa-test/
+rm -rf  test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
 ## test drop-seq data
 # unzip input data

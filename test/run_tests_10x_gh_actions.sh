@@ -33,6 +33,7 @@ if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ 
 fi
 
 rm -rf test/shared/dropseq-test/* test/shared/icell8-test/* test/shared/mappa-test/
+rm -rf  test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
 # reset barcodes for test
 bash launch_universc.sh -t "10x" --setup
