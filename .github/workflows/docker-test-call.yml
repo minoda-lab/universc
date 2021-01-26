@@ -38,7 +38,7 @@ jobs:
     - name: Diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/cellranger_clean:latest pwd;ls
     - name: Cell Ranger Call
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/cellranger_clean:latest cellranger -v
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/cellranger_clean:latest cellranger count --help
 
   test-repo:
     runs-on: ubuntu-latest
@@ -49,9 +49,9 @@ jobs:
       - name: Where am i                
         run: pwd; ls
       - name: pull updates
-        run: cd universc; git pull origin master
+        run: git pull origin master
       - name: call UniverSC
-        run: ls /universc/launch_universc.sh 
+        run: ls launch_universc.sh 
 
   test-universc:
     runs-on: ubuntu-20.04
@@ -75,7 +75,7 @@ jobs:
     - name: Diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls
     - name: Cell Ranger Call
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest cellranger -v
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest cellranger count --help
     - name: UniverSC Call
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/launch_universc.sh -v
     - name: Run test calls
