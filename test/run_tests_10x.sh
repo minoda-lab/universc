@@ -69,7 +69,7 @@ fi
 cellranger count --id="tiny-count-v3" \
  --fastqs="test/shared/cellranger-tiny-fastq/3.0.0/" --sample="tinygex" \
  --transcriptome="test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
- --jobmode "local" --localcores 1 
+ --jobmode "local" --localcores 2 --localmem 4 
 if [[ -d tiny-count-v2 ]]; then
     rm -rf tiny-count-v2
 fi 
@@ -82,7 +82,7 @@ fi
 cellranger count --id="tiny-count-v2" \
  --fastqs="test/shared/cellranger-tiny-fastq/1.2.0/" --sample="" --chemistry="threeprime" \
  --transcriptome="test/cellranger_reference/cellranger-tiny-ref/1.2.0" \
- --jobmode "local" --localcores 1 
+ --jobmode "local" --localcores 2 --localmem 4 
 
 # call convert on 10x with multiple lanes
 if [[ -d test-10x-v3 ]]; then
@@ -102,7 +102,7 @@ bash launch_universc.sh --id "test-10x-v3" --technology "10x" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --file "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
  "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002" \
-  --jobmode "local" --localcores 1 
+  --jobmode "local" --localcores 2 --localmem 4 
 
 # compress all input files
 if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/*fastq ]]; then
