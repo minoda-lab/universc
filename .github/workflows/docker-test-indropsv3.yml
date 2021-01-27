@@ -10,7 +10,7 @@ jobs:
       - name: Status
         run: echo "build complete" 
 
-  test-dropseq:
+  test-indrops-v3:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
