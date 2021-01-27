@@ -217,7 +217,7 @@ Mandatory arguments to long options are mandatory for short options too.
 
                                 Experimental technologies (not yet supported):
                                   inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
-                                  Sci-Seq (8bp UMI, 10bp barcode): sciseq                                  
+                                  Sci-Seq (8bp UMI, 22bp barcode): sciseq
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
@@ -725,9 +725,9 @@ elif [[ "$technology" == "quartz-seq2-1536" ]]; then
     umilength=8
     minlength=15
 elif [[ "$technology" == "sciseq" ]]; then
-    barcodelength=10
+    barcodelength=22
     umilength=8
-    minlength=10
+    minlength=22
 elif [[ "$technology" == "scrbseq" ]]; then
     barcodelength=6 
     umilength=10
@@ -2254,6 +2254,21 @@ else
             echo "  ...barcode and UMI swapped for ${technology}"
             sed -E '2~2s/(.{8})(.{10})/\2\1/' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile            
+
+            read=$convFile
+            convR1=$read
+            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+            convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
+            convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
+
+            echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
+             # concatenate barcocdes from dual indexes to R1 as (bases 1-8 of the) barcode (bases 1-16), moving UMI to (17-22)
+            # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+
+            #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
+            mv $crIN/Concatenated_File.fastq ${convR1}
+
         done
     fi
     
