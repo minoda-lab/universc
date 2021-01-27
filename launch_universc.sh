@@ -2280,54 +2280,27 @@ else
     
     #Smart-Seq3
     if [[ "$technology" == "smartseq"* ]];then
-        echo "Note: SmartSeq-3 requires additional dependencies, install fastq_pair and bbduk.sh and add these to the PATH"
+        echo "  ...processsing for ${technology}"
+        if [[ $verbose ]]; them
+            echo "Note: SmartSeq-3 requires additional filtering for UMIs"
+        fi
         for convFile in "${convFiles[@]}"; do
             read=$convFile
             convR1=$read
             convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
             convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
             convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
-start=$(date +%s.%N)
-            # reads matching adapter sequence for R1
-            grep -A 2 -B 1 ATTGCGCAATG $convR1  | sed '/--/d' > ${convR1}.umi.fastq
-            #match R2 to R1 containing UMI
-            fastq_pair  ${convR1}.umi.fastq $convR2
-end=$(date +%s.%N)
-runtime=$(python -c "print(${end} - ${start})")
-echo "Runtime for filtering with grep was $runtime"
-            # uses bbduk (decontamination using k=mers) from BBMap(BBTools) vesion 38.87
-            # step 1: process as paired ends to match k-mers (adapters matched are filtered) (clean = internal; fail = 5' UMI reads)
-start1=$(date +%s.%N)
-            bbduk.sh in1=${convR1}.umi.fastq.paired.fq in2=${convR2}.paired.fq outu1=$crIN/clean_R1.fq outu2=$crIN/clean_R2.fq outm1=$crIN/fail_R2.fq outm2=$crIN/fail_R1.fq outs=$crIN/pass_singletons.fq literal=ATTGCGCAATG k=10
-end1=$(date +%s.%N)
-runtime=$(python -c "print(${end1} - ${start1})")
-echo "Runtime for filtering with bbduk.sh was $runtime"
-            # step 2: take matched (adapter filtered) reads and remove adapter (and all bases to the left)
-start2=$(date +%s.%N)
-            bbduk.sh in1=$crIN/fail_R1.fq in2=$crIN/fail_R2.fq out1=$crIN/trimmed_R1.fq out2=$crIN/trimmed_R2.fq literal=ATTGCGCAATG ktrim=l k=11
-            # match indexes to R1
-            fastq_pair  ${convR1}.umi.fastq ${convI1}
-            fastq_pair  ${convR1}.umi.fastq ${convI2}
 
-             mv ${convI1}.fastq.paired.fq ${convI1}
-             mv ${convI2}.fastq.paired.fq ${convI2}
-             mv $crIN/trimmed_R1.fq ${convR1}
-             mv $crIN/trimmed_R2.fq ${convR2}
-             rm $crIN/*fastq.paired.fq $crIN/*fastq.single.fq $crIN/clean_R1.fq $crIN/clean_R2.fq $crIN/fail_R1.fq $crIN/fail_R2.fq $crIN/pass_singletons.fq ${convR1}.umi.fastq
-end2=$(date +%s.%N)
-runtime=$(python -c "print(${end2} - ${start2})")
-echo "Runtime for trimming with bbduk.sh was $runtime"
-runtime=$(python -c "print(${end2} - ${start1})")
-echo "Runtime for trimming and filtering with bbduk.sh was $runtime"
+            # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
+            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2} --out $crIN
 
-start=$(date +%s.%N)
-            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1}--r2=${convR2} --i1=${convI1} --i2=${convI2} --out .
-end=$(date +%s.%N)
-runtime=$(python -c "print(${end} - ${start})")
-echo "Runtime for trimming and filtering with custom perl was $runtime"
+            # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
+            mv $crIN/SmartSeq3_parsed_R1.fastq ${convR1}
+            mv $crIN/SmartSeq3_parsed_R2.fastq ${convR2}
+            mv $crIN/SmartSeq3_parsed_I1.fastq ${convI1}
+            mv $crIN/SmartSeq3_parsed_I2.fastq ${convI2}
         done
     fi
-exit 0
     #converting barcodes
     echo " adjusting barcodes of R1 files"
     if [[ $barcodeadjust != 0 ]]; then
