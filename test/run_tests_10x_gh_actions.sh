@@ -17,39 +17,12 @@ bash launch_universc.sh -t "10x" --setup
 
 ## test 10x data
 # unzip input data
-ls ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt*
-if [[ ! -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt.gz ]]; then
-    gzip -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
-fi
-rm -rf ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
-if [[ -d tiny-test ]]; then
-    rm -rf tiny-test
-fi
-# test cellranger call
-if [[ $cellrangerversion == "3.0.2" ]]; then
-    cellranger testrun --id="tiny-test"
-fi
-# unzip input data
-if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/*fastq.gz ]]; then
-    gunzip -f test/shared/cellranger-tiny-fastq/3.0.0/*fastq.gz
-fi
-if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/*fastq ]]; then
-    rm -rf test/shared/cellranger-tiny-fastq/3.0.0/*fastq.gz
-fi
-# test cellranger call
-if [[ -d tiny-count-v3 ]]; then
-    rm -rf tiny-count-v3
-fi
 if [[ ! -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt.gz ]]; then
     gzip -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
 fi
 if [[ -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt ]]; then
     rm -rf ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
 fi
-cellranger count --id="tiny-count-v3" \
- --fastqs="test/shared/cellranger-tiny-fastq/3.0.0/" --sample="tinygex" \
- --transcriptome="test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
- --jobmode "local" --localcores 1 
 
 # call convert on 10x with multiple lanes
 if [[ -d test-10x-v3 ]]; then

@@ -50,5 +50,15 @@ jobs:
         push: false
     - name: Hello world 
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest echo "hello world"
-    - name: Diagnostics
+    - name: Repo diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls
+    - name: Repo size
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh *
+    - name: Parent directory diagnostics
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls ..
+    - name: Parent directory size
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh ../*
+    - name: Root directory diagnostics
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls /*
+    - name: Root directory size
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh /*
