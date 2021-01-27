@@ -650,7 +650,7 @@ if [[ "$technology" == "icell8" ]]; then
 fi
 if [[ "$technology" == "smartseq" ]]; then
     echo "***WARNING: ${technology} should only be used for kits that have UMIs***"
-    echo "... UMI reads will be filtered using a tag sequence which will be removed""
+    echo "... UMI reads will be filtered using a tag sequence which will be removed"
     echo "... barcodes will derived from dual indexes"
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
@@ -1526,7 +1526,7 @@ else
                  perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v2 ${whitelistdir}
             elif [[ "$technology" == "indrop-v3" ]]; then
                 #allow for barcodes in index (I1) and R1
-                ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
+                perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
             fi
         else
             #generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
@@ -2174,6 +2174,7 @@ else
             sed -E '2~2s/^(.{8})(.{8}).{4}(.{6})/\1\2\3/g' > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
+    fi
     # inDrops: migrate dual indexes to barcode
     # https://github.com/BUStools/bustools/issues/4
     if [[ "$technology" == "indrop-v3" ]]; then
