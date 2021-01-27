@@ -12,7 +12,7 @@ use warnings;
 use Getopt::Long;
 
 #####SCRIPT DESCRIPTION#####
-#Script "parse_fastq.pl" given a set of I1, I2, R1, and R2, trims and parses R1 and only keep the corresponding reads in the other files.
+#Script "FilterSmartSeqReadUMI.pl" given a set of I1, I2, R1, and R2, trims and parses R1 and only keep the corresponding reads in the other files.
 ###########
 
 

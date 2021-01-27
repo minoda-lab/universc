@@ -2292,16 +2292,21 @@ else
             convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
 
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
-            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2} --out $crIN
+            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2} --out_dir $crIN
 
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
-#            mv $crIN/SmartSeq3_parsed_R1.fastq ${convR1}
-#            mv $crIN/SmartSeq3_parsed_R2.fastq ${convR2}
-#            mv $crIN/SmartSeq3_parsed_I1.fastq ${convI1}
-#            mv $crIN/SmartSeq3_parsed_I2.fastq ${convI2}
+            mv $crIN/SmartSeq3_parsed_R1.fastq ${convR1}
+            mv $crIN/SmartSeq3_parsed_R2.fastq ${convR2}
+            mv $crIN/SmartSeq3_parsed_I1.fastq ${convI1}
+            mv $crIN/SmartSeq3_parsed_I2.fastq ${convI2}
+
+            # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+
+            #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
+            mv $crIN/Concatenated_File.fastq ${convR1}
         done
     fi
-exit 0
     #converting barcodes
     echo " adjusting barcodes of R1 files"
     if [[ $barcodeadjust != 0 ]]; then

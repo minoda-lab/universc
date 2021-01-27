@@ -12,7 +12,7 @@ use warnings;
 use Getopt::Long;
 
 #####SCRIPT DESCRIPTION#####
-#Script "cat_fastq.pl" given a reference file, and a list of fastq files, concatenates all the additive sequences to add in front of each reference read.
+#Script "ConcatenateDualIndexBarcodes.pl" given a reference file, and a list of fastq files, concatenates all the additive sequences to add in front of each reference read.
 ###########
 
 
@@ -21,7 +21,7 @@ use Getopt::Long;
 #setting the default values.
 my $ref_fastq = "";
 my @additives = ();
-my $concatenated_fastq = "cat.fastq";
+my $concatenated_fastq = "Concatenated_File.fastq";
 my $out_dir = "";
 
 #making the options into external arguments.
