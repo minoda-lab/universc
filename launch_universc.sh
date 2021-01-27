@@ -216,7 +216,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
 
                                 Experimental technologies (not yet supported):
-                                  inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
+                                  inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
                                   Sci-Seq (8bp UMI, 10bp barcode): sciseq                                  
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
@@ -601,7 +601,7 @@ elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]]; then
 elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
     technology="indrop-v1"
 elif [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
-    technology="indrop-v2"    
+    technology="indrop-v2"
 elif [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]] || [[ "$technology" == "1cellbio-v3" ]] || [[ "$technology" == "1cellbiov3" ]]; then
     technology="indrop-v3"
 elif [[ "$technology" == "marsseq" ]] || [[ "$technology" == "mars-seq" ]] || [[ "$technology" == "marsseq-v1" ]] || [[ "$technology" == "mars-seq-v1" ]] || [[ "$technology" == "marsseqv1" ]] || [[ "$technology" == "mars-seqv1" ]]; then
@@ -705,9 +705,9 @@ elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; t
     umilength=6
     minlength=16
 elif [[ "$technology" == "indrop-v3" ]]; then
-    barcodelength=11
+    barcodelength=16
     umilength=6
-    minlength=8
+    minlength=16
 elif [[ "$technology" == "marsseq-v1" ]]; then
     barcodelength=6
     umilength=10
@@ -1523,11 +1523,10 @@ else
         fi
         if [[ "$technology" == "indrop-v"* ]]; then
             if [[ "$technology" == "indrop-v1" ]] || [[ $technology"" == "indrop-v2" ]]; then
-                ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v2 ${whitelistdir}
+                 perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v2 ${whitelistdir}
             elif [[ "$technology" == "indrop-v3" ]]; then
-                #ignore barcodes in index (R1 only)
-                cp ${whitelistdir}/inDrop_gel_barcode2_list.txt ${whitelistdir}/inDrop-v3_barcodes.txt
-                #${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
+                #allow for barcodes in index (I1) and R1
+                ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
             fi
         else
             #generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
@@ -2175,6 +2174,36 @@ else
             sed -E '2~2s/^(.{8})(.{8}).{4}(.{6})/\1\2\3/g' > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
+    # inDrops: migrate dual indexes to barcode
+    # https://github.com/BUStools/bustools/issues/4
+    if [[ "$technology" == "indrop-v3" ]]; then
+        echo "  ...processsing for ${technology}"
+         if [[ $verbose ]]; then
+             echo "Note: inDrops v2 should be demultiplex by sample index I2 (R3 or 4) if multiple samples are sequenced"
+        fi
+        for convFile in "${convFiles[@]}"; do
+            read=$convFile
+            convR1=$read
+            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+            convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
+            convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
+
+            # (R1 -> R2; R2 -> I1; R3 -> I2; R4 -> R1)
+            # v3 : summer 2016 redesign requiring manual demultiplexing.
+            # R1 is the biological read (R2).
+            # R2 (i7) carries the first half of the gel barcode (I1). <- which cell
+            # R3 (i5) carries the library index (I2). <- which sample/organism
+            # R4 the second half of the gel barcode, the UMI and a fraction of the polyA tail (R1).
+            # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
+
+            echo "  ...concatencate barcodes to R1 from I1 index file"
+             # concatenate barcocdes from dual indexes to R1 as (bases 1-8 of the) barcode (bases 1-16), moving UMI to (17-22)
+            # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --ref_fastq=${convR1} --out_dir $crIN
+
+            #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
+            mv $crIN/Concatenated_File.fastq ${convR1}
+        done
     fi
     
     #QuartzSeq: remove adapter
@@ -2305,7 +2334,7 @@ else
             mv $crIN/SmartSeq3_parsed_I2.fastq ${convI2}
 
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
-            # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
+            # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
             perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
 
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
