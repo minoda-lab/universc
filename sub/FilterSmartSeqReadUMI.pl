@@ -18,7 +18,8 @@ use Getopt::Long;
 
 
 #####Options#####
-my $ss3i = "ATTGCGCAATG";
+#SmartSeq3 tag
+my $ss3t = "ATTGCGCAATG";
 
 #setting the default values.
 my $i1 = "";
@@ -57,21 +58,22 @@ elsif (!$out_dir) {
 	die "USAGE: option --out_dir <OUTPUT_DIRECTORY> is required.\n";
 }
 
-$i1_out = $out_dir."/"."SmartSeq3_parsed_I1.fastq";
+#set output file names
+$i1_out = $out_dir."/".$i1_out;
 $i1_out =~ s/\/\//\//;
-$i2_out = $out_dir."/"."SmartSeq3_parsed_I2.fastq";
+$i2_out = $out_dir."/".$i2_out;
 $i2_out =~ s/\/\//\//;
-$r1_out = $out_dir."/"."SmartSeq3_parsed_R1.fastq";
+$r1_out = $out_dir."/".$r1_out;
 $r1_out =~ s/\/\//\//;
-$r2_out = $out_dir."/"."SmartSeq3_parsed_R2.fastq";
+$r2_out = $out_dir."/".$r2_out;
 $r2_out =~ s/\/\//\//;
 ##########
 
 
 
 #####MAIN#####
-#get order of reads to keep
-my @keepreads = map { ($_ + 2) / 4 } split(/\n/, `grep $ss3i $r1 -n | cut -f1 -d\:`);
+#get list of reads to keep
+my @keepreads = map { ($_ + 2) / 4 } split(/\n/, `grep $ss3t $r1 -n | cut -f1 -d\:`);
 my %keepreads = map { $_ => 1 } @keepreads;
 
 #parse reads to keep
@@ -86,6 +88,8 @@ open (R1OUT, ">", $r1_out) or die "cannot open $r1_out.\n";
 open (R2OUT, ">", $r2_out) or die "cannot open $r2_out.\n";
 while (my $line = <R1>) {
 	$readcount++;
+	
+	#read in data
 	my $i1_head = <I1>;
 	my $i1_seq = <I1>;
 	my $i1_plus = <I1>;
@@ -108,9 +112,9 @@ while (my $line = <R1>) {
 	}
 	else {
 		#trim r1 data
-		my @trim = split (/$ss3i/, $r1_seq);
+		my @trim = split (/$ss3t/, $r1_seq);
 		shift @trim;
-		my $new_r1_seq = join ("$ss3i", @trim);
+		my $new_r1_seq = join ("$ss3t", @trim);
 		my $new_r1_q = $r1_q;
 		chomp $new_r1_q;
 		$new_r1_q = reverse $new_r1_q;
@@ -118,6 +122,7 @@ while (my $line = <R1>) {
 		$new_r1_q = reverse $new_r1_q;
 		$new_r1_q = $new_r1_q."\n";
 		
+		#print out data
 		print I1OUT "$i1_head";
 		print I1OUT "$i1_seq";
 		print I1OUT "$i1_plus";
@@ -144,13 +149,4 @@ close (I1OUT);
 close (I2OUT);
 close (R1OUT);
 close (R2OUT);
-
-
-
-
-
-
-
-
-
 ##########
