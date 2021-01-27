@@ -2281,7 +2281,7 @@ else
     #Smart-Seq3
     if [[ "$technology" == "smartseq"* ]];then
         echo "  ...processsing for ${technology}"
-        if [[ $verbose ]]; them
+        if [[ $verbose ]]; then
             echo "Note: SmartSeq-3 requires additional filtering for UMIs"
         fi
         for convFile in "${convFiles[@]}"; do
@@ -2295,12 +2295,13 @@ else
             perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2} --out $crIN
 
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
-            mv $crIN/SmartSeq3_parsed_R1.fastq ${convR1}
-            mv $crIN/SmartSeq3_parsed_R2.fastq ${convR2}
-            mv $crIN/SmartSeq3_parsed_I1.fastq ${convI1}
-            mv $crIN/SmartSeq3_parsed_I2.fastq ${convI2}
+#            mv $crIN/SmartSeq3_parsed_R1.fastq ${convR1}
+#            mv $crIN/SmartSeq3_parsed_R2.fastq ${convR2}
+#            mv $crIN/SmartSeq3_parsed_I1.fastq ${convI1}
+#            mv $crIN/SmartSeq3_parsed_I2.fastq ${convI2}
         done
     fi
+exit 0
     #converting barcodes
     echo " adjusting barcodes of R1 files"
     if [[ $barcodeadjust != 0 ]]; then
