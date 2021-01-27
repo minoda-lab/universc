@@ -209,6 +209,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
+                                  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq
                                   SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
@@ -217,7 +218,6 @@ Mandatory arguments to long options are mandatory for short options too.
                                 Experimental technologies (not yet supported):
                                   inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
                                   Sci-Seq (8bp UMI, 10bp barcode): sciseq                                  
-                                  Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
@@ -650,6 +650,8 @@ if [[ "$technology" == "icell8" ]]; then
 fi
 if [[ "$technology" == "smartseq" ]]; then
     echo "***WARNING: ${technology} should only be used for kits that have UMIs***"
+    echo "... UMI reads will be filtered using a tag sequence which will be removed""
+    echo "... barcodes will derived from dual indexes"
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
     echo "***WARNING: launch_universc.sh does not support barcodes in dual indexes. Make sure that the R1 file is adjusted accordingly prior to running launch_universc.sh***"
@@ -735,9 +737,9 @@ elif [[ "$technology" == "seqwell" ]]; then
     umilength=12
     minlength=8
 elif [[ "$technology" == "smartseq" ]]; then
-    barcodelength=11
+    barcodelength=16
     umilength=8
-    minlength=11
+    minlength=16
 elif [[ "$technology" == "splitseq" ]]; then
     barcodelength=18
     umilength=10
@@ -2291,8 +2293,10 @@ else
             convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
             convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
 
+            echo "  ...remove internal for ${technology} by matching tag sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
             perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2} --out_dir $crIN
+            echo "  ...trim tag sequence from R1"
 
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
             mv $crIN/SmartSeq3_parsed_R1.fastq ${convR1}
@@ -2300,6 +2304,7 @@ else
             mv $crIN/SmartSeq3_parsed_I1.fastq ${convI1}
             mv $crIN/SmartSeq3_parsed_I2.fastq ${convI2}
 
+            echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
             perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
 

@@ -61,11 +61,11 @@
 <li>Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536</li>
 <li>SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq</li>
 <li>SeqWell (12bp barcode, 8bp UMI): seqwell</li>
-<li>SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad</li>
+<li>Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq</li>
 </ul>
 <p>All technologies support 3' single-cell RNA-Seq. Barcode adjustments and whitelists are changed automatically. For 5' single-cell RNA-Seq, this is only supported for 10x Genomics version 2 chemistry. This is detected automatically but can be configured with the <code>--chemistry</code> argument.</p>
 <p>We are developing technologies to support dual indexes and full length scRNA kits.</p>
-<p>Experimental technologies (not yet supported): - inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3 - Sci-Seq (8bp UMI, 10bp barcode): sciseq - Smart-seq2-UMI, Smart-seq3 (11bp barcode, 8bp UMI): smartseq</p>
+<p>Experimental technologies (not yet supported): - inDrops version 3 (8bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3 - Sci-Seq (8bp UMI, 10bp barcode): sciseq - SPLiT-Seq (10bp UMI, 18bp barcode): splitseq - SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad</p>
 <h4 id="dual-indexing">Dual-indexing</h4>
 <p>For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use &quot;bcl2fastq&quot; before calling UniverSC:</p>
 <pre><code>   /usr/local/bin/bcl2fastq  -v --runfolder-dir &quot;/path/to/illumina/bcls&quot;  --output-dir &quot;./Data/Intensities/BaseCalls&quot;\
