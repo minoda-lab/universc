@@ -21,6 +21,30 @@ fi
 rm -rf test/shared/dropseq-test/* test/shared/cellranger-tiny-fastq/* test/shared/mappa-test/
 rm -rf  test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
+# compress all input files
+if [[ -f test/shared/dropseq-test/*fastq ]]; then
+    gzip test/shared/dropseq-test/*fastq
+fi
+
+# reset test data (compress)
+ if [[ -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq ]]; then
+   gzip -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq
+fi
+if [[ -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R2_001.fastq ]]; then
+    gzip -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R2_001.fastq
+fi
+# reset test data (files names)
+if [[ ! -f test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz ]]; then
+    mv test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq.gz test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz
+else
+    rm test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq.gz
+fi
+if [[ ! -f test/shared/dropseq-test/SRR1873277_Sample1_R2.fastq.gz ]]; then
+    mv test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R2_001.fastq.gz test/shared/dropseq-test/SRR1873277_Sample1_R2.fastq.gz
+else
+    rm test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R2_001.fastq.gz
+fi
+
 ## test drop-seq data
 # unzip input data
 if [[ -f test/shared/dropseq-test/*fastq.gz ]]; then
