@@ -4,35 +4,12 @@
 cd $(dirname ${BASH_SOURCE[0]})/..
 pwd
 
-# used to export to PATH for testing on SGE server
-export PATH=${HOME}/local/bin/cellranger-2.1.0:$PATH
-
 cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')'`
 cellrangerpath=`which cellranger`
 
-# set up cellranger reference
-if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
-    ln -h $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA
-fi
-if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
-    ln -h $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
-fi
-
-# used to export to PATH for testing on SGE server
-export PATH=${HOME}/local/bin/cellranger-3.0.2:$PATH
-
-cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')'`
-cellrangerpath=`which cellranger`
-
-# set up cellranger reference
-if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
-    ln $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA
-fi
-if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
-    ln $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
-fi
-
-rm -rf test/shared/dropseq-test/* test/shared/icell8-test/* test/shared/mappa-test/
+rm -rf  test/cellranger_reference/cellranger-tiny-ref/1.2.0
+rm -rf  test/cellranger_reference/cellranger-tiny-ref/3.0.0
+make test/cellranger_reference/cellranger-tiny-ref reference
 rm -rf  test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
 # reset barcodes for test
@@ -72,19 +49,6 @@ fi
 cellranger count --id="tiny-count-v3" \
  --fastqs="test/shared/cellranger-tiny-fastq/3.0.0/" --sample="tinygex" \
  --transcriptome="test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
- --jobmode "local" --localcores 1 
-if [[ -d tiny-count-v2 ]]; then
-    rm -rf tiny-count-v2
-fi 
-if [[ ! -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt.gz ]]; then
-    gzip -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
-fi
-if [[ -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt ]]; then
-    rm -rf ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/3M-february-2018.txt
-fi
-cellranger count --id="tiny-count-v2" \
- --fastqs="test/shared/cellranger-tiny-fastq/1.2.0/" --sample="" --chemistry="threeprime" \
- --transcriptome="test/cellranger_reference/cellranger-tiny-ref/1.2.0" \
  --jobmode "local" --localcores 1 
 
 # call convert on 10x with multiple lanes
