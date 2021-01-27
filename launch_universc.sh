@@ -2308,17 +2308,23 @@ start2=$(date +%s.%N)
             # match indexes to R1
             fastq_pair  ${convR1}.umi.fastq ${convI1}
             fastq_pair  ${convR1}.umi.fastq ${convI2}
+
+             mv ${convI1}.fastq.paired.fq ${convI1}
+             mv ${convI2}.fastq.paired.fq ${convI2}
+             mv $crIN/trimmed_R1.fq ${convR1}
+             mv $crIN/trimmed_R2.fq ${convR2}
+             rm $crIN/*fastq.paired.fq $crIN/*fastq.single.fq $crIN/clean_R1.fq $crIN/clean_R2.fq $crIN/fail_R1.fq $crIN/fail_R2.fq $crIN/pass_singletons.fq ${convR1}.umi.fastq
 end2=$(date +%s.%N)
 runtime=$(python -c "print(${end2} - ${start2})")
 echo "Runtime for trimming with bbduk.sh was $runtime"
 runtime=$(python -c "print(${end2} - ${start1})")
 echo "Runtime for trimming and filtering with bbduk.sh was $runtime"
-            #replace original files
-            mv ${convI1}.fastq.paired.fq ${convI1}
-            mv ${convI2}.fastq.paired.fq ${convI2}
-            mv $crIN/trimmed_R1.fq ${convR1}
-            mv $crIN/trimmed_R2.fq ${convR2}
-            rm $crIN/*fastq.paired.fq $crIN/*fastq.single.fq $crIN/clean_R1.fq $crIN/clean_R2.fq $crIN/fail_R1.fq $crIN/fail_R2.fq $crIN/pass_singletons.fq ${convR1}.umi.fastq
+
+start=$(date +%s.%N)
+            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1}--r2=${convR2} --i1=${convI1} --i2=${convI2} --out .
+end=$(date +%s.%N)
+runtime=$(python -c "print(${end} - ${start})")
+echo "Runtime for trimming and filtering with custom perl was $runtime"
         done
     fi
 exit 0
