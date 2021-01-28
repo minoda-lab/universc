@@ -1,4 +1,4 @@
-name: Run tests in Docker
+name: Run all tests in Docker
 on: push
 jobs:
   test:

@@ -8,9 +8,9 @@ cellrangerdir=$(dirname $(which cellranger))
 echo $cellrangerdir $cellrangerpath $cellrangerversion
 if [[ ! -f 3.0.0/star/SA ]] && [[ -f ${cellrangerpathdir}/cellranger-tiny-ref/3.0.0/star/SA ]]; then
     rsync ${cellrangerdir}/cellranger-tiny-ref/3.0.0/star/SA 3.0.0/star/SA
+    touch 3.0.0/star/SA
 fi
 if [[ ! -f 1.2.0/star/SA ]] && [[ -f ${cellrangerdir}/cellranger-tiny-ref/1.2.0/star/SA ]]; then
     rsync ${cellrangerdir}/cellranger-tiny-ref/1.2.0/star/SA 1.2.0/star/SA
+    touch 1.2.0/star/SA
 fi
-touch 3.0.0/star/SA
-touch 1.2.0/star/SA

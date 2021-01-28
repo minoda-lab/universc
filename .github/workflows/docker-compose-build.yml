@@ -1,0 +1,13 @@
+name: Docker compose build
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the stack
+        run: docker-compose up -d
+      - name: Status
+        run: echo "build complete" 
+      - name: Build diagnostics
+        run: pwd; ls ../*; ls ../../*
