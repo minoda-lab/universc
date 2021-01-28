@@ -12,6 +12,8 @@ rm -rf  test/cellranger_reference/cellranger-tiny-ref/3.0.0
 make test/cellranger_reference/cellranger-tiny-ref reference
 rm -rf  test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
+rm -rf  test/shared/dropseq-test/* test/shared/mappa-test/  test/shared/icell8-test/ test/shared/smartseq3-test/ test/shared/indrop-v3-test/
+
 # reset barcodes for test
 bash launch_universc.sh -t "10x" --setup
 
