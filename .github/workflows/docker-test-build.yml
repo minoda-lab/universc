@@ -1,4 +1,4 @@
-name: Docker Test
+name: Docker build image
 on: push
 jobs:
   test:
@@ -21,15 +21,16 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./
-          builder: ${{ steps.buildx.outputs.name }}
           file: ./Dockerfile
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
-          push: true
+          push: false
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       - name: Status
         run: echo "build complete" 
+      - name: Hello world
+        run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest echo "hello world"
       - name: Call functions
         run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}universc:latest bash /universc/test/test_call.sh

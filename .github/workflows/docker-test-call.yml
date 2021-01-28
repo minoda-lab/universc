@@ -1,4 +1,4 @@
-name: Docker Test Calling Dependencies
+name: Docker container tests
 on: push
 jobs:
   test:
