@@ -73,17 +73,17 @@ jobs:
     - name: Repo diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls -d */
     - name: Repo size
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh --max=depth=1 *
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh --max=depth 1 *
     - name: Parent directory diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls -d ../*/
     - name: Parent directory size
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh --max-depth=1 ../*
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh --max-depth 1 ../*
     - name: Grandparent directory diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls -d ../../*/
     - name: Grandarent directory size
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh --max-depth=2 ../../*
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh --max-depth 2 ../../*
     - name: Root directory diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls -d /*/
     - name: Root directory size
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh --max-depth=1 /*
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh --max-depth 1 /*
 
