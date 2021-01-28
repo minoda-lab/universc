@@ -28,5 +28,5 @@ jobs:
         file: ./Dockerfile
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
-    - name: Test DropSeq
+    - name: Test Smart-Seq3
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_smartseq3_gh_actions.sh
