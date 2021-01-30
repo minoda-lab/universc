@@ -7,10 +7,9 @@ pwd
 cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')'`
 cellrangerpath=`which cellranger`
 
-rm -rf  test/cellranger_reference/cellranger-tiny-ref/1.2.0
-rm -rf  test/cellranger_reference/cellranger-tiny-ref/3.0.0
-make test/cellranger_reference/cellranger-tiny-ref reference
-rm -rf  test/cellranger_reference/cellranger-tiny-ref/3.0.0
+rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0 test/cellranger_reference/cellranger-tiny-ref/3.0.0
+make -C test/cellranger_reference/cellranger-tiny-ref reference 
+rm -rf test/cellranger_reference/cellranger-tiny-ref/3.0.0
 
 rm -rf  test/shared/dropseq-test/* test/shared/mappa-test/  test/shared/icell8-test/ test/shared/smartseq3-test/ test/shared/indrop-v3-test/
 
