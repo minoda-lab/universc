@@ -77,13 +77,13 @@ jobs:
     - name: Parent directory diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls -d ../*/
     - name: Parent directory size
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh --max-depth 1 ../*
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh d 1 ../*
     - name: Grandparent directory diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls -d ../../*/
     - name: Grandarent directory size
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh --max-depth 2 ../../*
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh d 2 ../../*
     - name: Root directory diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls -d /*/
     - name: Root directory size
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh --max-depth 1 /*
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -sckh d 1 /*
 
