@@ -85,5 +85,4 @@ jobs:
     - name: Root directory diagnostics
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls -d /*/
     - name: Root directory size
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd; du -ckh -d 1 /*
-
+      run: df -h

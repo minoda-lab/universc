@@ -14,13 +14,10 @@ rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0 test/cellranger_refer
 make -C test/cellranger_reference/cellranger-tiny-ref reference
 rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
-rm -rf test/shared/dropseq-test/* test/shared/cellranger-tiny-fastq/* test/shared/mappa-test/ test/shared/icell8-test/ test/shared/smartseq3-test/
+rm -rf  test/shared/dropseq-test/* test/shared/cellranger-tiny-fastq/* test/shared/mappa-test/  test/shared/icell8-test/ test/shared/indrop-v3-test/ test/shared/smartseq3-test/
 
-if [ -d test-indrop-v3 ];then
-    rm -rf test-indrop-v3
-fi
-bash launch_universc.sh --id "test-indrop-v3" --technology "indrops-v3" \
+bash launch_universc.sh --id "test-sciseq" --technology "sciseq" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
- --read1 "test/shared/indrop-v3-test/Undetermined_S0_L001_R1_001.fastq" "test/shared/indrop-v3-test/Undetermined_S0_L002_R1_001.fastq" \
- --read2 "test/shared/indrop-v3-test/Undetermined_S0_L001_R2_001.fastq" "test/shared/indrop-v3-test/Undetermined_S0_L002_R2_001.fastq" \
+ --read1 "test/shared/sciseq-test/SRR7827205_S1_R1.fastq" \
+ --read2 "test/shared/sciseq-test/SRR7827205_S1_R2.fastq" \
  --jobmode "local" --localcores 1 
