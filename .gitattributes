@@ -57,3 +57,5 @@ test/shared/smartseq3-test/Smartseq3_diySpike_I1.fastq.gz filter=lfs diff=lfs me
 test/shared/smartseq3-test/Smartseq3_diySpike_I2.fastq.gz filter=lfs diff=lfs merge=lfs -text
 test/shared/smartseq3-test/Smartseq3_diySpike_R1.fastq.gz filter=lfs diff=lfs merge=lfs -text
 test/shared/smartseq3-test/Smartseq3_diySpike_R2.fastq.gz filter=lfs diff=lfs merge=lfs -text
+test/shared/sciseq-v3-test/SRR7827205_S1_R1.fastq.gz filter=lfs diff=lfs merge=lfs -text
+test/shared/sciseq-v3-test/SRR7827205_S1_R2.fastq.gz filter=lfs diff=lfs merge=lfs -text

@@ -17,7 +17,7 @@ cellranger mkref --genome=3.0.0 --fasta=genome-3.0.0.fa --genes=genes-3.0.0.gtf
 make -C test/cellranger_reference/cellranger-tiny-ref reference
 rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
-rm -rf test/shared/dropseq-test/* test/shared/cellranger-tiny-fastq/* test/shared/mappa-test/ test/shared/icell8-test/ test/shared/smartseq3-test/
+rm -rf test/shared/dropseq-test/* test/shared/cellranger-tiny-fastq/* test/shared/mappa-test/ test/shared/icell8-test/ test/shared/smartseq3-test/ test/shared/sciseq-v3-test
 
 if [ -d test-indrop-v3 ];then
     rm -rf test-indrop-v3

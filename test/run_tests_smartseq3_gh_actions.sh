@@ -17,7 +17,7 @@ cd ../../..
 make -C test/cellranger_reference/cellranger-tiny-ref reference
 rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
-rm -rf  test/shared/dropseq-test/* test/shared/cellranger-tiny-fastq/* test/shared/mappa-test/  test/shared/icell8-test/ test/shared/indrop-v3-test/
+rm -rf  test/shared/dropseq-test/* test/shared/cellranger-tiny-fastq/* test/shared/mappa-test/  test/shared/icell8-test/ test/shared/indrop-v3-test/ test/shared/sciseq-v3-test
 
 # compress all input files
 if [[ -f test/shared/smartseq3-test/*fastq ]]; then
