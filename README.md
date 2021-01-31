@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Wednesday 27 January 2021"
+date: "Sunday 31 January 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -45,15 +45,19 @@ tags:
 ![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc?sort=date)
 
 ![Docker CI](https://github.com/minoda-lab/universc/workflows/CI%20to%20Docker%20hub/badge.svg)
-![Docker compose](https://github.com/minoda-lab/universc/workflows/Docker%20Compose%20Actions/badge.svg)
+![Docker compose](https://github.com/minoda-lab/universc/workflows/Docker%20compose%20build/badge.svg)
 
-![Actions Build](https://github.com/minoda-lab/universc/workflows/Docker%20Test/badge.svg)
-![Actions Tests](https://github.com/minoda-lab/universc/workflows/Run%20tests%20in%20Docker/badge.svg)
-![Actions Call](https://github.com/minoda-lab/universc/workflows/Docker%20Test%20Calling%20Dependencies/badge.svg)
+![Actions Build](https://github.com/minoda-lab/universc/workflows/Docker%20container%20test/badge.svg)
+![Actions Tests](https://github.com/minoda-lab/universc/workflows/Run%20all%20tests%20in%20Docker/badge.svg)
+![Actions Call](https://github.com/minoda-lab/universc/workflows/Docker%20build%20image/badge.svg)
 
 ![Test 10x Genomics](https://github.com/minoda-lab/universc/workflows/Test%2010x%20Genomics/badge.svg)
 ![Test DropSeq](https://github.com/minoda-lab/universc/workflows/Test%20DropSeq%20%2F%20Nadia/badge.svg)
 ![Test ICELL8](https://github.com/minoda-lab/universc/workflows/Test%20ICELL8/badge.svg)
+
+![Test SCI-Seq](https://github.com/minoda-lab/universc/workflows/Test%20SCI%2DSeq/badge.svg)
+![Test inDrops v3](https://github.com/minoda-lab/universc/workflows/Test%20inDrops%20v3/badge.svg)
+![Test Smart-Seq3](https://github.com/minoda-lab/universc/workflows/Test%20Smart%2DSeq3/badge.svg)
 
 # UniverSC
 
@@ -166,7 +170,7 @@ We are developing technologies to support dual indexes and full length scRNA kit
 
 Experimental technologies (not yet supported):
 -  inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
--  Sci-Seq (8bp UMI, 10bp barcode): sciseq
+-  Sci-Seq (8bp UMI, 22bp barcode): sciseq
 -  SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
 -  SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
 
@@ -988,7 +992,7 @@ Mandatory arguments to long options are mandatory for short options too.
 
                                 Experimental technologies (not yet supported):
                                   inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
-                                  Sci-Seq (8bp UMI, 10bp barcode): sciseq
+                                  Sci-Seq (8bp UMI, 22bp barcode): sciseq
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
 
