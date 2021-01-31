@@ -29,4 +29,4 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
     - name: Test DropSeq
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_dropseq_gh_actions.sh
+      run: timeout 60 docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_dropseq_gh_actions.sh  || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi

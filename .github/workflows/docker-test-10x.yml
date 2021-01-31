@@ -36,12 +36,14 @@ jobs:
         image: tomkellygenetics/universc:latest
         run: echo "hello from universc"
     - name: Call UniverSC from image
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_gh_actions.sh
+      timeout-minutes: 15
+      run: timeout 10 docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
     - name: Call UniverSC from container
+      timeout-minutes: 15
       uses: addnab/docker-run-action@v1
       with:
         image: tomkellygenetics/universc:latest
-        run: bash /universc/test/run_tests_10x_gh_actions.sh
+        run: timeout 10 bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
   build:
     runs-on: ubuntu-20.04
@@ -69,9 +71,13 @@ jobs:
         context: ./
         file: ./Dockerfile
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
-        push: false
+        push: false 
+    - name: Test 10x timeout
+      timeout-minutes: 10      
+      run: timeout 10 docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_cellranger_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
     - name: Test 10x
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_gh_actions.sh
+      timeout-minutes: 10
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_cellranger_gh_actions.sh
 
   test-10x-v2:
     runs-on: ubuntu-20.04
@@ -92,7 +98,8 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
     - name: Test 10x
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_v2_gh_actions.sh
+      timeout-minutes: 15
+      run: timeout 10 docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_v2_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
   test-10x:
     runs-on: ubuntu-20.04
@@ -113,4 +120,5 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
     - name: Test 10x
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_gh_actions.sh
+      timeout-minutes: 15
+      run: timeout 10 docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
