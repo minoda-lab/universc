@@ -1,4 +1,4 @@
-name: Test DropSeq / Nadia
+name: Test SCI-Seq
 on: push
 jobs:
   test:
@@ -10,7 +10,7 @@ jobs:
       - name: Status
         run: echo "build complete" 
 
-  test-dropseq:
+  test-sci-seq:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
@@ -28,5 +28,5 @@ jobs:
         file: ./Dockerfile
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
-    - name: Test DropSeq
-      run: timeout 60 docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_dropseq_gh_actions.sh  || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+    - name: Test SCI-Seq
+      run: timeout 30 docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_sciseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
