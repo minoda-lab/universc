@@ -93,10 +93,10 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false 
     - name: Test 10x timeout
-      timeout-minutes: 10      
-      run: timeout 10m docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_cellranger_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      timeout-minutes: 15      
+      run: timeout 10m docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_cellranger_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
     - name: Test 10x
-      timeout-minutes: 10
+      timeout-minutes: 15
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_cellranger_gh_actions.sh
 
   test-10x-v2:
@@ -119,7 +119,7 @@ jobs:
         push: false
     - name: Test 10x
       timeout-minutes: 15
-      run: timeout 10m docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_v2_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: timeout 10m docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_v2_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-10x-v3:
     runs-on: ubuntu-20.04
@@ -140,7 +140,7 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
     - name: Test 10x
-      run: timeout 30m docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: timeout 30m docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-dropseq:
     runs-on: ubuntu-20.04
@@ -161,7 +161,7 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
     - name: Test DropSeq
-      run: timeout 60m docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_dropseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: timeout 60m docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_dropseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-icell8:
     runs-on: ubuntu-20.04
