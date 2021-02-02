@@ -3,6 +3,7 @@
 # run tests in universc directory (parent of test directory)
 cd $(dirname ${BASH_SOURCE[0]})/..
 pwd
+git pull origin master
 
 # used to export to PATH for testing on SGE server
 export PATH=${HOME}/local/bin/cellranger-3.0.2:$PATH
