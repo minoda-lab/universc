@@ -13,7 +13,7 @@ cellrangerpath=`which cellranger`
 rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0 test/cellranger_reference/cellranger-tiny-ref/3.0.0
 cd test/cellranger_reference/cellranger-tiny-ref/
 cellranger mkref --genome=3.0.0 --fasta=genome-3.0.0.fa --genes=genes-3.0.0.gtf
-../../..
+cd ../../..
 make -C test/cellranger_reference/cellranger-tiny-ref reference
 rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
