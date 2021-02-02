@@ -19,6 +19,8 @@ rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
 rm -rf test/shared/icell8-test/* test/shared/cellranger-tiny-fastq/* test/shared/mappa-test/ test/shared/smartseq3-test/ test/shared/indrop-v3-test/ test/shared/sciseq-v3-test
 
+gunzip -k test/shared/dropseq-test/SRR1873277_Sample1_*
+
 #test manual setup
 bash launch_universc.sh -t "nadia" --setup
 
