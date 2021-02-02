@@ -117,9 +117,11 @@ jobs:
         file: ./Dockerfile
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
         push: false
+    - name: clear environment
+      run: rm -rf *
     - name: Test 10x
-      timeout-minutes: 15
-      run: timeout 10m docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/run_tests_10x_v2_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
+      timeout-minutes: 300
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest timeout 20m bash /universc/test/run_tests_10x_v2_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-10x-v3:
     runs-on: ubuntu-20.04
