@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Sunday 31 January 2021"
+date: "Wednesday 03 February 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -47,7 +47,7 @@ tags:
 ![Docker CI](https://github.com/minoda-lab/universc/workflows/CI%20to%20Docker%20hub/badge.svg)
 ![Docker compose](https://github.com/minoda-lab/universc/workflows/Docker%20compose%20build/badge.svg)
 
-![Actions Build](https://github.com/minoda-lab/universc/workflows/Docker%20container%20test/badge.svg)
+![Actions Build](https://github.com/minoda-lab/universc/workflows/Docker%20container%20tests/badge.svg)
 ![Actions Tests](https://github.com/minoda-lab/universc/workflows/Run%20all%20tests%20in%20Docker/badge.svg)
 ![Actions Call](https://github.com/minoda-lab/universc/workflows/Docker%20build%20image/badge.svg)
 
