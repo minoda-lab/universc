@@ -654,7 +654,7 @@ if [[ "$technology" == "smartseq" ]]; then
     echo "... barcodes will derived from dual indexes"
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
-    echo "***WARNING: launch_universc.sh does not support barcodes in dual indexes. Make sure that the R1 file is adjusted accordingly prior to running launch_universc.sh***"
+    echo "***Note: launch_universc.sh support for barcodes in dual indexes is experimental. Make sure that samples are demultiplexed prior to running launch_universc.sh***"
 fi
 ##########
 
