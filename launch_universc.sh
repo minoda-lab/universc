@@ -1022,6 +1022,7 @@ for key in ${keys[@]}; do
         fi
         if [[ -f $read ]] && [[ -h $read ]]; then
             if [[ $read == *"gz" ]]; then
+                echo "  found compressed file ..."
                 gunzip -f -k $read
                 #update file variable
                 read=`echo $read | sed -e "s/\.gz//g"`
@@ -1051,6 +1052,10 @@ for key in ${keys[@]}; do
         elif [[ -f ${read}.fastq.gz ]] || [[ -h ${read}.fastq.gz ]]; then
             gunzip -f -k ${read}.fastq.gz
             read=${read}.fastq
+        elif [[ -f ${read}.gz ]] || [[ -h ${read}.gz ]]; then
+            read=${read}.gz
+            gunzip -f -k ${read}
+            read=`echo $read | sed -e "s/\.gz//g"`
         else
             echo "Error: $read not found"
             exit 1
