@@ -1,3 +1,15 @@
+### 1.0.3
+
+- unit tests for inDrops v3, SCI-Seq, Smart-Seq3
+
+- implements support for full-length scRNA and dual indexes
+
+- improved handling of input files and automated file detection
+
+- automated testing with GitHub Actions
+
+- version for submission to peer-review
+
 ### 1.0.2
 
 - unit tests for 10x, dropseq, and icell8
