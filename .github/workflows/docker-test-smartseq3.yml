@@ -26,9 +26,9 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: clear environment
       run: rm -rf *
     - name: Test Smart-Seq3
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest timeout 30m bash /universc/test/run_tests_smartseq3_gh_actions.sh  || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_smartseq3_gh_actions.sh  || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi

@@ -28,7 +28,7 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
 
   run:
@@ -47,12 +47,12 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: Hello world 
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest echo "hello world"
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test echo "hello world"
     - name: Diagnostics
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test pwd;ls
 
   call:
     runs-on: ubuntu-20.04
@@ -70,10 +70,10 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: Test call
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/test_call.sh
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test bash /universc/test/test_call.sh
 
   test-10x-v2:
     runs-on: ubuntu-20.04
@@ -91,13 +91,13 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: clear environment
       run: rm -rf *
     - name: Test 10x
       timeout-minutes: 300
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest timeout 20m bash /universc/test/run_tests_10x_v2_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m bash /universc/test/run_tests_10x_v2_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-10x-v3:
     runs-on: ubuntu-20.04
@@ -115,12 +115,12 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: clear environment
       run: rm -rf *
     - name: Test 10x
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest timeout 30m bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-cellranger:
     runs-on: ubuntu-20.04
@@ -138,13 +138,13 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false 
     - name: clear environment
       run: rm -rf *
     - name: Test Cell Ranger
       timeout-minutes: 45      
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest timeout 30m bash /universc/test/run_tests_cellranger_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_cellranger_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-dropseq:
     runs-on: ubuntu-20.04
@@ -162,12 +162,12 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: clear environment
       run: rm -rf *
     - name: Test DropSeq
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest timeout 120m bash /universc/test/run_tests_dropseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 120m bash /universc/test/run_tests_dropseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-icell8:
     runs-on: ubuntu-20.04
@@ -185,12 +185,12 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: clear environment
       run: rm -rf *
     - name: Test ICELL8
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest timeout 30m bash /universc/test/run_tests_icell8_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_icell8_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
   test-indrops-v3:
     runs-on: ubuntu-20.04
@@ -208,12 +208,12 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: clear environment
       run: rm -rf *
     - name: Test inDrops v3
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest timeout 30m bash /universc/test/run_tests_indropsv3_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_indropsv3_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
   test-sci-seq:
     runs-on: ubuntu-20.04
@@ -231,12 +231,12 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: clear environment
       run: rm -rf *
     - name: Test SCI-Seq3
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest timeout 30m bash /universc/test/run_tests_sciseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_sciseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
   test-smart-seq3:
     runs-on: ubuntu-20.04
@@ -254,10 +254,10 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: clear environment
       run: rm -rf *
     - name: Test Smart-Seq3
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest timeout 30m bash /universc/test/run_tests_smartseq3_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_smartseq3_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 

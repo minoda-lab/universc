@@ -31,7 +31,7 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: Hello world 
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/cellranger_clean:latest echo "hello world"
@@ -68,15 +68,15 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: Hello world
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest echo "hello world"
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test echo "hello world"
     - name: Diagnostics
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test pwd;ls
     - name: Cell Ranger Call
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest cellranger count --help
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test cellranger count --help
     - name: UniverSC Call
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/launch_universc.sh -v
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test bash /universc/launch_universc.sh -v
     - name: Run test calls
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/test_call.sh
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test bash /universc/test/test_call.sh

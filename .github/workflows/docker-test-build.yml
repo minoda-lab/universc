@@ -21,7 +21,7 @@ jobs:
         with:
           context: ./
           file: ./Dockerfile
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
           push: false
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
@@ -30,7 +30,7 @@ jobs:
       - name: Status
         run: echo "build complete" 
       - name: Hello world
-        run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest echo "hello world"
+        run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test echo "hello world"
 
 
   test-call:
@@ -54,7 +54,7 @@ jobs:
         with:
           context: ./
           file: ./Dockerfile
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
           push: false
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
@@ -63,5 +63,5 @@ jobs:
       - name: Status
         run: echo "build complete" 
       - name: Call functions
-        run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}universc:latest git pull origin master && bash /universc/test/test_call.sh
+        run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}universc:test git pull origin master && bash /universc/test/test_call.sh
 

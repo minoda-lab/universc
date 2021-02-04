@@ -26,9 +26,9 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test
         push: false
     - name: clear environment
       run: rm -rf *
     - name: Test ICELL8
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest timeout 15m bash /universc/test/run_tests_icell8_gh_actions.sh  || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 15m bash /universc/test/run_tests_icell8_gh_actions.sh  || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
