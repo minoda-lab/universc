@@ -3,3 +3,5 @@ test-*
 GH_TOKEN.txt
 ^*txt$
 inst/.installed
+test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
+test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA

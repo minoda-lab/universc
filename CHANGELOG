@@ -1,3 +1,33 @@
+### 1.0.3
+
+- unit tests for inDrops v3, SCI-Seq, Smart-Seq3
+
+- implements support for full-length scRNA and dual indexes
+
+- improved handling of input files and automated file detection
+
+- automated testing with GitHub Actions
+
+- version for submission to peer-review
+
+### 1.0.2
+
+- unit tests for 10x, dropseq, and icell8
+
+- renaming tool and script
+
+- version for public release
+
+### 1.0.1
+
+- improved set up call to handle restoring cloupe files for 10x
+
+- support for index files for testing 10x
+
+- checking for dual index files for inDrops-v3, SmartSeq3 and Sci-Seq
+
+- adds whitelists for SmartSeq3 and MARS-Seq-2.0
+
 ### 1.0.0
 
 - full documentation of all features

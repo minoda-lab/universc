@@ -1,0 +1,82 @@
+name: Docker container tests
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Run docker
+        uses: addnab/docker-run-action@v1
+        with:
+          image: docker:latest
+          run: echo "hello world"
+
+  test-cellranger:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: docker/setup-buildx-action@v1
+    - uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        registry: ${{ env.REGISTRY }}
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: ./
+        file: ./Dockerfile
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        push: false
+    - name: Hello world 
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/cellranger_clean:latest echo "hello world"
+    - name: Diagnostics
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/cellranger_clean:latest pwd;ls
+    - name: Cell Ranger Call
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/cellranger_clean:latest cellranger count --help
+
+  test-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: What OS is running
+        run: uname -a
+      - name: Where am i                
+        run: pwd; ls
+      - name: pull updates
+        run: git pull origin master
+      - name: call UniverSC
+        run: ls launch_universc.sh 
+
+  test-universc:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: docker/setup-buildx-action@v1
+    - uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        registry: ${{ env.REGISTRY }}
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: ./
+        file: ./Dockerfile
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest
+        push: false
+    - name: Hello world
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest echo "hello world"
+    - name: Diagnostics
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest pwd;ls
+    - name: Cell Ranger Call
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest cellranger count --help
+    - name: UniverSC Call
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/launch_universc.sh -v
+    - name: Run test calls
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:latest bash /universc/test/test_call.sh

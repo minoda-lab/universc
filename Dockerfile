@@ -1,4 +1,4 @@
-#FROM ubuntu:bionic
+# FROM ubuntu:bionic
 FROM tomkellygenetics/cellranger_clean:latest
 
 RUN apt-get update \
@@ -8,6 +8,7 @@ RUN apt-get update \
  git-lfs \
  make \
  gzip \
+ pigz \
  rename
 
 RUN apt-get install -y \
@@ -16,23 +17,46 @@ RUN apt-get install -y \
   nano \
   && sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended"
 
-RUN git clone "https://github.com/TomKellyGenetics/cellranger_convert.git"
+RUN git clone "https://github.com/TomKellyGenetics/universc.git"
 
-RUN cd cellranger_convert/test/cellranger_reference/cellranger-tiny-ref/ \
- && git lfs pull
+RUN cd universc/test/cellranger_reference/cellranger-tiny-ref/ \
+ && git lfs pull \
+ && rm -rf 3.0.0 1.2.0 \ 
+ && cellranger mkref --genome=3.0.0 --fasta=genome-3.0.0.fa --genes=genes-3.0.0.gtf \
+ && cellranger mkref --genome=1.2.0 --fasta=genome-1.2.0.fa --genes=genes-1.2.0.gtf 
 
-RUN cd cellranger_convert \
+RUN cd universc \
  && make reference \
  && cd .. 
 
 RUN mkdir -p /cellranger-3.0.2.9001/cellranger-tiny-fastq \
- && ln -s /cellranger_convert/test/shared/cellranger-tiny-fastq/1.2.0 /cellranger-3.0.2.9001/cellranger-tiny-fastq \
- && ln -s /cellranger_convert/test/shared/cellranger-tiny-fastq/3.0.0 /cellranger-3.0.2.9001/cellranger-tiny-fastq
+ && ln -s /universc/test/shared/cellranger-tiny-fastq/1.2.0 /cellranger-3.0.2.9001/cellranger-tiny-fastq \
+ && ln -s /universc/test/shared/cellranger-tiny-fastq/3.0.0 /cellranger-3.0.2.9001/cellranger-tiny-fastq
 
 RUN mkdir -p /cellranger-3.0.2.9001/cellranger-tiny-ref \
- && ln -s /cellranger_convert/test/cellranger_reference/cellranger-tiny-ref/1.2.0 /cellranger-3.0.2.9001/cellranger-tiny-ref \ 
- && ln -s /cellranger_convert/test/cellranger_reference/cellranger-tiny-ref/3.0.0 /cellranger-3.0.2.9001/cellranger-tiny-ref
+ && ln -s /universc/test/cellranger_reference/cellranger-tiny-ref/1.2.0 /cellranger-3.0.2.9001/cellranger-tiny-ref \ 
+ && ln -s /universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0 /cellranger-3.0.2.9001/cellranger-tiny-ref
 
-ENV PATH cellranger_convert:$PATH
+ENV PATH universc:$PATH
 
-RUN ln -s /cellranger_convert/convert.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/conversion
+RUN ln -s /universc/launch_universc.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/universc
+
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
+
+RUN apt-get install -y \
+ python3-pip \
+ && python3 -m pip install --upgrade pip setuptools wheel \
+ && pip3 install multiqc
+
+RUN git clone https://github.com/linsalrob/fastq-pair.git \
+ && cd fastq-pair \
+ && mkdir build \
+ && cd build \
+ && gcc -std=gnu99   ../main.c ../robstr.c ../fastq_pair.c ../is_gzipped.c  -o fastq_pair \
+ && cp fastq_pair /bin/fastq_pair
+
+# RUN wget https://sourceforge.net/projects/bbmap/files/latest/download ; mv download BBMap_38.87.tar.gz \
+#  && tar -xvzf BBMap_38.87.tar.gz
+
+# ENV PATH bbmap:$PATH

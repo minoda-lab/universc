@@ -1,15 +1,9 @@
-sut:
-  build: .
-  command: echo "build complete" && bash test/test_call.sh
-
-test_10x:
-  build: .
-  command: bash test/run_tests_10x.sh
-
-test_dropseq:
-  build: .
-  command: bash test/run_tests_dropseq.sh
-
-test_icell8:
-  build: .
-  command: bash test/run_tests_icell8.sh
+version: '3'
+services:
+  universc:
+    container_name: universc
+    build: .
+    command: echo "build complete"
+  cellranger:
+    container_name: cellranger_clean
+    image: "tomkellygenetics/cellranger_clean:3.0.2.9001"

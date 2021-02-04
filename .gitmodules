@@ -1,0 +1,3 @@
+[submodule "sub/BBMap"]
+	path = sub/BBMap
+	url = https://github.com/BioInfoTools/BBMap.git
