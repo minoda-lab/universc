@@ -31,4 +31,4 @@ jobs:
     - name: clear environment
       run: rm -rf *
     - name: Test ICELL8
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 15m bash /universc/test/run_tests_icell8_gh_actions.sh  || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 15m git -C ./universc pull --ff-only origin $(git branch --show-current) 5m bash5m bash bash /universc/test/run_tests_icell8_gh_actions.sh  || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi

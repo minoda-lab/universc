@@ -97,7 +97,7 @@ jobs:
       run: rm -rf *
     - name: Test 10x
       timeout-minutes: 300
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m bash /universc/test/run_tests_10x_v2_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m git -C ./universc pull --ff-only origin $(git branch --show-current) 0m bash0m bash bash /universc/test/run_tests_10x_v2_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-10x-v3:
     runs-on: ubuntu-20.04
@@ -120,7 +120,7 @@ jobs:
     - name: clear environment
       run: rm -rf *
     - name: Test 10x
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m git -C ./universc pull --ff-only origin $(git branch --show-current) 0m bash0m bash bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-cellranger:
     runs-on: ubuntu-20.04
@@ -144,7 +144,7 @@ jobs:
       run: rm -rf *
     - name: Test Cell Ranger
       timeout-minutes: 45      
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_cellranger_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m git -C ./universc pull --ff-only origin $(git branch --show-current) 0m bash0m bash bash /universc/test/run_tests_cellranger_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-dropseq:
     runs-on: ubuntu-20.04
@@ -167,7 +167,7 @@ jobs:
     - name: clear environment
       run: rm -rf *
     - name: Test DropSeq
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 120m bash /universc/test/run_tests_dropseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 120m git -C ./universc pull --ff-only origin $(git branch --show-current) 0m bash0m bash bash /universc/test/run_tests_dropseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-icell8:
     runs-on: ubuntu-20.04
@@ -190,7 +190,7 @@ jobs:
     - name: clear environment
       run: rm -rf *
     - name: Test ICELL8
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_icell8_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m git -C ./universc pull --ff-only origin $(git branch --show-current) 0m bash0m bash bash /universc/test/run_tests_icell8_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
   test-indrops-v3:
     runs-on: ubuntu-20.04
@@ -213,7 +213,7 @@ jobs:
     - name: clear environment
       run: rm -rf *
     - name: Test inDrops v3
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_indropsv3_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m git -C ./universc pull --ff-only origin $(git branch --show-current) 0m bash0m bash bash /universc/test/run_tests_indropsv3_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
   test-sci-seq:
     runs-on: ubuntu-20.04
@@ -236,7 +236,7 @@ jobs:
     - name: clear environment
       run: rm -rf *
     - name: Test SCI-Seq3
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_sciseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m git -C ./universc pull --ff-only origin $(git branch --show-current) 0m bash0m bash bash /universc/test/run_tests_sciseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
   test-smart-seq3:
     runs-on: ubuntu-20.04
@@ -259,5 +259,5 @@ jobs:
     - name: clear environment
       run: rm -rf *
     - name: Test Smart-Seq3
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_smartseq3_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m git -C ./universc pull --ff-only origin $(git branch --show-current) 0m bash0m bash bash /universc/test/run_tests_smartseq3_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
