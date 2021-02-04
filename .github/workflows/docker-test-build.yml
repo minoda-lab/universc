@@ -63,5 +63,5 @@ jobs:
       - name: Status
         run: echo "build complete" 
       - name: Call functions
-        run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}universc:test git pull --ff-only origin $(git branch --show-current) && bash /universc/test/test_call.sh
+        run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}universc:test git -C ./universc pull --ff-only origin $(git branch --show-current) && bash /universc/test/test_call.sh
 

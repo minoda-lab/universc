@@ -85,6 +85,6 @@ jobs:
     - name: Git Status
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test git log --reverse | tail -n 10
     - name: Pull Updates
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test git pull --ff-only origin $(git branch --show-current)
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test git -C ./universc pull --ff-only origin $(git branch --show-current)
     - name: Git Status  
       run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test git log --reverse | tail -n 10
