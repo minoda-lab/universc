@@ -25,6 +25,6 @@ if [ -d test-indrop-v3 ];then
 fi
 bash launch_universc.sh --id "test-indrop-v3" --technology "indrops-v3" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
- --read1 "test/shared/indrop-v3-test/Undetermined_S0_L001_R1_001.fastq" "test/shared/indrop-v3-test/Undetermined_S0_L002_R1_001.fastq" \
- --read2 "test/shared/indrop-v3-test/Undetermined_S0_L001_R2_001.fastq" "test/shared/indrop-v3-test/Undetermined_S0_L002_R2_001.fastq" \
+ --read1 "test/shared/indrop-v3-test/Undetermined_S0_L001_R1_001.fastq.gz" "test/shared/indrop-v3-test/Undetermined_S0_L002_R1_001.fastq.gz" \
+ --read2 "test/shared/indrop-v3-test/Undetermined_S0_L001_R2_001.fastq.gz" "test/shared/indrop-v3-test/Undetermined_S0_L002_R2_001.fastq.gz" \
  --jobmode "local" --localcores 1 
