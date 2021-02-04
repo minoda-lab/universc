@@ -2186,7 +2186,7 @@ else
     if [[ "$technology" == "indrop-v3" ]]; then
         echo "  ...processsing for ${technology}"
          if [[ $verbose ]]; then
-             echo "Note: inDrops v2 should be demultiplex by sample index I2 (R3 or 4) if multiple samples are sequenced"
+             echo "Note: inDrops v3 should be demultiplex by sample index I2 (R3 or 4) if multiple samples are sequenced"
         fi
         for convFile in "${convFiles[@]}"; do
             read=$convFile
