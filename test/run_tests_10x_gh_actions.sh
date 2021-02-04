@@ -3,7 +3,7 @@
 # run tests in universc directory (parent of test directory)
 cd $(dirname ${BASH_SOURCE[0]})/..
 pwd
-git pull origin master
+git pull --ff-only origin $(git branch --show-current)
 
 cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d'(' | cut -f1 -d')'`
 cellrangerpath=`which cellranger`

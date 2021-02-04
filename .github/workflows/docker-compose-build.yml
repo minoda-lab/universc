@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - name: pull updates
+        run: git pull --ff-only origin $(git branch --show-current)
       - name: Build the stack
         run: docker-compose up -d
       - name: Status
