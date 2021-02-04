@@ -49,7 +49,7 @@ jobs:
       - name: Where am i                
         run: pwd; ls
       - name: pull updates
-        run: git pull --ff-only origin master
+        run: git pull --ff-only origin $(git branch --show-current)
       - name: call UniverSC
         run: ls launch_universc.sh 
 
