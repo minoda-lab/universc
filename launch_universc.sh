@@ -29,7 +29,7 @@ universcversion="1.0.2"
 cellrangerpath=$(which cellranger) #location of Cell Ranger
 if [[ -z $cellrangerpath ]]; then
     echo "cellranger command is not found."
-    exit 1
+#    exit 1
 fi
 ## detects version by attempting to parse "cellranger --version" (older versions do not support this by print the help header if invalid args given)
 cellrangerversion=$(cellranger --version 2>/dev/null | head -n 2 | tail -n 1 | rev | cut -f1 -d" " | rev |  cut -f2 -d'(' | cut -f1 -d')')
@@ -102,7 +102,7 @@ if ! [[ -w "$barcodedir" ]]; then
     echo "Install Cell Ranger in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
     echo "The following versions of Cell Ranger are found:"
     echo " `whereis cellranger`"
-    exit 1
+#    exit 1
 fi
 
 #convert
@@ -110,7 +110,7 @@ if ! [[ -w "$SDIR" ]]; then
     echo "Error: Trying to run launch_universc.sh installed at $SDIR"
     echo "$SDIR must be writable to run launch_universc.sh"
     echo "Install launch_universc.sh in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
-    exit 1
+#    exit 1
 fi
 ##########
 
@@ -2466,6 +2466,8 @@ echo "cellranger count --id=$id\\
 echo "##########"
 ##########
 
+
+exit 0
 
 
 #####running Cell Ranger#####
