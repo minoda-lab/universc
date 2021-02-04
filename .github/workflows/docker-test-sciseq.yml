@@ -31,4 +31,4 @@ jobs:
     - name: clear environment
       run: rm -rf *
     - name: Test SCI-Seq
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m git -C ./universc pull --ff-only origin $(git branch --show-current) 0m bash0m bash bash /universc/test/run_tests_sciseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 30m bash /universc/test/run_tests_sciseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi

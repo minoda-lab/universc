@@ -37,13 +37,13 @@ jobs:
         run: echo "hello from universc"
     - name: Call UniverSC from image
       timeout-minutes: 25
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m git -C ./universc pull --ff-only origin $(git branch --show-current) && bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
     - name: Call UniverSC from container
       timeout-minutes: 25
       uses: addnab/docker-run-action@v1
       with:
         image: tomkellygenetics/universc:test
-        run: timeout 20m git -C ./universc pull --ff-only origin $(git branch --show-current) && bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+        run: timeout 20m bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
   build:
     runs-on: ubuntu-20.04
@@ -76,7 +76,7 @@ jobs:
       run: rm -rf *
     - name: Test Cell Ranger
       timeout-minutes: 25      
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m git -C ./universc pull --ff-only origin $(git branch --show-current) && bash /universc/test/run_tests_cellranger_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m bash /universc/test/run_tests_cellranger_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
   test-10x-v2:
     runs-on: ubuntu-20.04
@@ -100,7 +100,7 @@ jobs:
       run: rm -rf *
     - name: Test 10x
       timeout-minutes: 25
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m git -C ./universc pull --ff-only origin $(git branch --show-current) && bash /universc/test/run_tests_10x_v2_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m bash /universc/test/run_tests_10x_v2_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
 
   test-10x:
     runs-on: ubuntu-20.04
@@ -124,4 +124,4 @@ jobs:
       run: rm -rf *
     - name: Test 10x
       timeout-minutes: 25
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m git -C ./universc pull --ff-only origin $(git branch --show-current) && bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m bash /universc/test/run_tests_10x_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi

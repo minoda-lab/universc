@@ -31,4 +31,4 @@ jobs:
     - name: clear environment
       run: rm -rf *
     - name: Test DropSeq
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m git -C ./universc pull --ff-only origin $(git branch --show-current) && bash /universc/test/run_tests_dropseq_gh_actions.sh  || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 20m bash /universc/test/run_tests_dropseq_gh_actions.sh  || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
