@@ -28,39 +28,20 @@ tags:
 ---
 
 
-![Docker Manual build](https://img.shields.io/docker/automated/tomkellygenetics/universc?label=dockerhub)
-![Docker Automated build](https://img.shields.io/docker/cloud/automated/tomkellygenetics/universc)
-![Docker Cloud Build](https://img.shields.io/docker/cloud/automated/tomkellygenetics/universc/latest?label=cloud%20build)
+![Docker Manual build](https://img.shields.io/docker/automated/tomkellygenetics/universc?label=docker%20local%20build)
+![Docker Cloud Build](https://img.shields.io/docker/cloud/automated/tomkellygenetics/universc?label=docker%20cloud%20build)
 ![Docker Cloud Status](https://img.shields.io/docker/cloud/build/tomkellygenetics/universc?label=cloud%20build)
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 
-![GitHub branch checks state](https://img.shields.io/github/checks-status/minoda-lab/universc/master)
+![GitHub branch checks state](https://img.shields.io/github/checks-status/minoda-lab/universc/master?label=GitHub%20checks)
 ![GitHub Release Date](https://img.shields.io/github/release-date/minoda-lab/universc)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/minoda-lab/universc/master)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/minoda-lab/universc)
-![GitHub repo size](https://img.shields.io/github/repo-size/minoda-lab/universc)
 ![GitHub issues](https://img.shields.io/github/issues/minoda-lab/universc)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/minoda-lab/universc)
-[![GitHub Views](http://hits.dwyl.com/minoda-lab/universc.svg)](http://hits.dwyl.com/minoda-lab/universc?label=GitHub%20hits)
-[![GitHub Views](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
-![GitHub search hit counter](https://img.shields.io/github/search/minoda-lab/universc/master)
-
-![GitHub all releases](https://img.shields.io/github/downloads/minoda-lab/universc/total)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/minoda-lab/universc)
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/minoda-lab/universc/1.0.3/total)
-![GitHub release (by tag)](https://img.shields.io/github/downloads/minoda-lab/universc/1.0.3/total)
-
-![GitHub forks](https://img.shields.io/github/forks/minoda-lab/universc?style=social)
-![GitHub Repo stars](https://img.shields.io/github/stars/minoda-lab/universc?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/minoda-lab/universc?style=social)
-
-![GitHub top language](https://img.shields.io/github/languages/top/minoda-lab/universc)
-![GitHub language count](https://img.shields.io/github/languages/count/minoda-lab/universc)
 
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
-
 ![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.0.3)
 ![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/1.0.2?label="layers@1.0.3")
 ![Docker Image Size (v1.0.3)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.0.3?label="image%20size@1.0.3)
@@ -68,9 +49,25 @@ tags:
 ![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/universc?sort=date)
 ![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc?sort=date)
 
+![GitHub issues](https://img.shields.io/github/issues/minoda-lab/universc)
+[![GitHub Views](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
+![GitHub search hit counter](https://img.shields.io/github/search/minoda-lab/universc/master)
+![GitHub forks](https://img.shields.io/github/forks/minoda-lab/universc?style=social)
+![GitHub Repo stars](https://img.shields.io/github/stars/minoda-lab/universc?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/minoda-lab/universc?style=social)
+
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/minoda-lab/universc)
+![GitHub repo size](https://img.shields.io/github/repo-size/minoda-lab/universc)
+![GitHub top language](https://img.shields.io/github/languages/top/minoda-lab/universc)
+![GitHub language count](https://img.shields.io/github/languages/count/minoda-lab/universc)
+
+![GitHub all releases](https://img.shields.io/github/downloads/minoda-lab/universc/total?label=GitHub%20downloads)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/minoda-lab/universc?label=GitHub%20release)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/minoda-lab/universc/1.0.3/total)
+![GitHub release (by tag)](https://img.shields.io/github/downloads/minoda-lab/universc/1.0.3/total)
+
 ![Docker CI](https://github.com/minoda-lab/universc/workflows/CI%20to%20Docker%20hub/badge.svg)
 ![Docker compose](https://github.com/minoda-lab/universc/workflows/Docker%20compose%20build/badge.svg)
-
 ![Actions Build](https://github.com/minoda-lab/universc/workflows/Docker%20container%20tests/badge.svg)
 ![Actions Tests](https://github.com/minoda-lab/universc/workflows/Run%20all%20tests%20in%20Docker/badge.svg)
 ![Actions Call](https://github.com/minoda-lab/universc/workflows/Docker%20build%20image/badge.svg)
@@ -78,7 +75,6 @@ tags:
 ![Test 10x Genomics](https://github.com/minoda-lab/universc/workflows/Test%2010x%20Genomics/badge.svg)
 ![Test DropSeq](https://github.com/minoda-lab/universc/workflows/Test%20DropSeq%20%2F%20Nadia/badge.svg)
 ![Test ICELL8](https://github.com/minoda-lab/universc/workflows/Test%20ICELL8/badge.svg)
-
 ![Test SCI-Seq](https://github.com/minoda-lab/universc/workflows/Test%20SCI%2DSeq/badge.svg)
 ![Test inDrops v3](https://github.com/minoda-lab/universc/workflows/Test%20inDrops%20v3/badge.svg)
 ![Test Smart-Seq3](https://github.com/minoda-lab/universc/workflows/Test%20Smart%2DSeq3/badge.svg)
