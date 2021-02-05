@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Wednesday 03 February 2021"
+date: "Friday 05 February 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -28,20 +28,45 @@ tags:
 ---
 
 
-![Docker Manual build](https://img.shields.io/docker/automated/tomkellygenetics/universc)
+![Docker Manual build](https://img.shields.io/docker/automated/tomkellygenetics/universc?label=dockerhub)
 ![Docker Automated build](https://img.shields.io/docker/cloud/automated/tomkellygenetics/universc)
-![Docker Build Status](https://img.shields.io/docker/cloud/build/tomkellygenetics/universc)
+![Docker Cloud Build](https://img.shields.io/docker/cloud/automated/tomkellygenetics/universc/latest?label="cloud build")
+![Docker Cloud Status](https://img.shields.io/docker/cloud/build/tomkellygenetics/universc?label="cloud build")
+![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
+![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
+
+![GitHub branch checks state](https://img.shields.io/github/checks-status/minoda-lab/universc/master)
+![GitHub Release Date](https://img.shields.io/github/release-date/minoda-lab/universc)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/minoda-lab/universc/master)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/minoda-lab/universc)
+![GitHub repo size](https://img.shields.io/github/repo-size/minoda-lab/universc)
+![GitHub issues](https://img.shields.io/github/issues/minoda-lab/universc)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/minoda-lab/universc)
+[![GitHub Views](http://hits.dwyl.com/minoda-lab/universc.svg)](http://hits.dwyl.com/minoda-lab/universc?label="GitHub hits")
 [![GitHub Views](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
+![GitHub search hit counter](https://img.shields.io/github/search/minoda-lab/universc/master)
+
+![GitHub all releases](https://img.shields.io/github/downloads/minoda-lab/universc/total)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/minoda-lab/universc)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/minoda-lab/universc/1.0.3/total)
+![GitHub release (by tag)](https://img.shields.io/github/downloads/minoda-lab/universc/1.0.3/total)
+
+![GitHub forks](https://img.shields.io/github/forks/minoda-lab/universc?style=social)
+![GitHub Repo stars](https://img.shields.io/github/stars/minoda-lab/universc?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/minoda-lab/universc?style=social)
+
+![GitHub top language](https://img.shields.io/github/languages/top/minoda-lab/universc)
+![GitHub language count](https://img.shields.io/github/languages/count/minoda-lab/universc)
 
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 
 ![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.0.3)
-![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/1.0.3)
-![Docker Image Size (v1.0.3)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.0.3)
+![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/1.0.2?label="layers@1.0.3")
+![Docker Image Size (v1.0.3)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.0.3?label="image size@1.0.3)
 
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc)
-![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest)
+![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/universc?sort=date)
 ![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc?sort=date)
 
 ![Docker CI](https://github.com/minoda-lab/universc/workflows/CI%20to%20Docker%20hub/badge.svg)
