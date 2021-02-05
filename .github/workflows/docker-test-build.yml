@@ -49,14 +49,13 @@ jobs:
           password: "${{ secrets.GITHUB_TOKEN }}"
           registry: docker.pkg.github.com
           image_name: test
-          push: false
       - name: Build from cache
         uses: whoan/docker-build-with-cache-action@v5
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           registry: ${{ env.REGISTRY }}
-          compose_file: docker-compose.yml
+          dockerfile: ./Dockerfile
           image_name: test
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
@@ -88,7 +87,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           registry: ${{ env.REGISTRY }}
-          file: ./Dockerfile
+          dockerfile: ./Dockerfile
           image_name: universc:test
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
