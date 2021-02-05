@@ -178,8 +178,8 @@ package version 1.0.2. https://github.com/TomKellyGenetics/universc
 To add further support for other technologies or troubleshoot problems, please submit an Issue 
 to the GitHub repository: https://github.com/TomKellyGenetics/universc/issues
 
-Please submit [issues](https://github.com/TomKellyGenetics/graphsim/issues) on GitHub to report
-problems or suggest features. [Pull requests](https://github.com/TomKellyGenetics/graphsim/pulls)
+Please submit [issues](https://github.com/minoda-lab/universc/issues) on GitHub to report
+problems or suggest features. [Pull requests](https://github.com/minoda-lab/universc/pulls)
 to the `dev` branch on GitHub are also welcome to add features or correct problems. Please see
 the [contributor guide](CONTRIBUTING.md) for more details.
 
