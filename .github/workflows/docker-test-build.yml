@@ -58,7 +58,6 @@ jobs:
           registry: ${{ env.REGISTRY }}
           compose_file: docker-compose.yml
           image_name: test
-          push: false
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       - name: Status
@@ -89,7 +88,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           registry: ${{ env.REGISTRY }}
-          compose_file: docker-compose.yml
+          file: ./Dockerfile
           image_name: universc:test
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
