@@ -88,7 +88,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           registry: ${{ env.REGISTRY }}
           dockerfile: ./Dockerfile
-          image_name: universc:test
+          image_name: test
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       - name: Status
