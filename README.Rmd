@@ -34,14 +34,12 @@ tags:
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 
-![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
-![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 ![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.0.3)
 ![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest?label="layers@1.0.3")
 ![Docker Image Size (v1.0.3)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.0.3?label="image%20size@1.0.3)
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc)
-![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc?sort=date)
-![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc?sort=date)
+![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest)
+![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest)
 
 ![GitHub branch checks state](https://img.shields.io/github/checks-status/minoda-lab/universc/master?label=GitHub%20checks)
 ![GitHub Release Date](https://img.shields.io/github/release-date/minoda-lab/universc)
@@ -69,9 +67,9 @@ tags:
 ![Docker CI](https://github.com/minoda-lab/universc/workflows/CI%20to%20Docker%20hub/badge.svg)
 ![Docker compose](https://github.com/minoda-lab/universc/workflows/Docker%20compose%20build/badge.svg)
 ![Actions Build](https://github.com/minoda-lab/universc/workflows/Docker%20container%20tests/badge.svg)
-![Actions Tests](https://github.com/minoda-lab/universc/workflows/Run%20all%20tests%20in%20Docker/badge.svg)
 ![Actions Call](https://github.com/minoda-lab/universc/workflows/Docker%20build%20image/badge.svg)
 
+![Actions Tests](https://github.com/minoda-lab/universc/workflows/Run%20all%20tests%20in%20Docker/badge.svg)
 ![Test 10x Genomics](https://github.com/minoda-lab/universc/workflows/Test%2010x%20Genomics/badge.svg)
 ![Test DropSeq](https://github.com/minoda-lab/universc/workflows/Test%20DropSeq%20%2F%20Nadia/badge.svg)
 ![Test ICELL8](https://github.com/minoda-lab/universc/workflows/Test%20ICELL8/badge.svg)
