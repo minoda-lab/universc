@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Friday 05 February 2021"
+date: "Saturday 06 February 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -37,7 +37,7 @@ tags:
 ![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.0.3)
 ![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest?label="layers@1.0.3")
 ![Docker Image Size (v1.0.3)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.0.3?label="image%20size@1.0.3)
-![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc)
+![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc/latest)
 ![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest)
 ![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest)
 
