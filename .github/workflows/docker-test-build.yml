@@ -75,25 +75,12 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           registry: ${{ env.REGISTRY }}
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        # Ignore the failure of a step and avoid terminating the job.
-        continue-on-error: true
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
-      - name: Build from cache
-        uses: whoan/docker-build-with-cache-action@v5
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          registry: ${{ env.REGISTRY }}
-          dockerfile: ./Dockerfile
-          image_name: test
+        run: docker build . --file Dockerfile --tag universc:test
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       - name: Status
         run: echo "build complete" 
       - name: Call functions
-        run: docker run my_awesome_image:latest  bash /universc/test/test_call.sh
+        run: docker run universc:test  bash /universc/test/test_call.sh
 
