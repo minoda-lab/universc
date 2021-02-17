@@ -199,7 +199,8 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
-                                  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq
+                                  Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
+                                  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
                                   SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"

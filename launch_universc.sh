@@ -209,7 +209,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
-                                  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq
+                                  Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
+                                  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
                                   SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
@@ -618,7 +619,9 @@ elif [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "scrb-seq" ]] || [[
     technology="scrbseq"
 elif [[ "$technology" == "seqwell" ]] || [[ "$technology" == "seq-well" ]]; then
     technology="seqwell"
-elif [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]] ||  [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
+elif [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]]
+    technology="smartseq2"
+elif [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
     technology="smartseq"
 elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "split-seq" ]]; then
     technology="splitseq"
@@ -649,12 +652,12 @@ fi
 if [[ "$technology" == "icell8" ]]; then
     echo "***WARNING: ${technology} should only be used for kits that have valid UMIs***"
 fi
-if [[ "$technology" == "smartseq" ]]; then
+if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smartseq3" ]]; then
     echo "***WARNING: ${technology} should only be used for kits that have UMIs***"
     echo "... UMI reads will be filtered using a tag sequence which will be removed"
     echo "... barcodes will derived from dual indexes"
 fi
-if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+if [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
     echo "***Note: launch_universc.sh support for barcodes in dual indexes is experimental. Make sure that samples are demultiplexed prior to running launch_universc.sh***"
 fi
 ##########
@@ -737,7 +740,11 @@ elif [[ "$technology" == "seqwell" ]]; then
     barcodelength=8
     umilength=12
     minlength=8
-elif [[ "$technology" == "smartseq" ]]; then
+elif [[ "$technology" == "smartseq2" ]]; then
+    barcodelength=16
+    umilength=8
+    minlength=16
+elif [[ "$technology" == "smartseq3" ]]; then
     barcodelength=16
     umilength=8
     minlength=16
@@ -1488,7 +1495,7 @@ else
             barcodefile=${whitelistdir}/inDrop-v3_barcodes.txt
             echo "***WARNING: ***combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
         fi
-    elif [[ "$technology" == "smartseq" ]]; then
+    elif [[ "$technology" == "smartseq3" ]]; then
         barcodefile=${whitelistdir}/SmartSeq3_barcode.txt 
     else
         echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength}bp. valid barcode will be 100% as a result***"
@@ -2375,6 +2382,10 @@ else
             mv $crIN/Concatenated_File.fastq ${convR1}
         done
     fi
+    #Smart-Seq2
+    #echo 'TCGTCGGCAGCGTCAGATGTGTATAAGAGACAG'
+    #echo 'CTGTCTCTTATACACATCTCCGAGCCCACGAGAC'
+
     #converting barcodes
     echo " adjusting barcodes of R1 files"
     if [[ $barcodeadjust != 0 ]]; then
