@@ -51,7 +51,7 @@ while (my $line = <ORIGINAL>) {
     my $adjusted = $original;
     if ($adjust_length >= 0) {
         my $length = $adjust_length;
-        $adjusted = substr ($length, 0, $adjusted);
+        $adjusted = substr ($adjusted, 0, $length);
     }
     else {
         my $length = abs ($adjust_length);
