@@ -792,6 +792,9 @@ temp_chemistry="SC3Pv2"
 if [[ $umilength -gt 10 ]]; then
     temp_chemistry="SC3Pv3"
 fi
+if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]];then
+    temp_chemistry="SC5P-PE"
+fi
 if [[ "$technology" == "10x" ]]; then
     temp_chemistry="auto"
 fi
@@ -1607,9 +1610,18 @@ if [[ "$technology" != "10x" ]]; then
         echo "Using 10x version 2 chemistry to support UMIs"
         chemistry="SC3Pv2"
     fi
-    if [[ "$chemistry" != "SC3Pv1" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
-        echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE , or SC5P-R2"
+    if [[ "$chemistry" != "threeprime" ]] &&  [[ "$chemistry" != "fiveprime" ]] && [[ "$chemistry" != "SC3Pv1" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+       echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE, SC5P-R1, or SC5P-R2"
        exit 1
+    fi
+fi
+if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]]; then
+    if [[ "$chemistry" == "fiveprime" ]];  then
+       chemistry="SC5P-PE"
+    fi
+    if [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+        echo "Error: option --chemistry must be SC5P-PE, SC5P-R1 or SC5P-R2"
+        exit
     fi
 fi
 ##########
