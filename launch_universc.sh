@@ -2414,8 +2414,10 @@ else
             echo " handling $convFile ..."
             toS=`printf '%0.sA' $(seq 1 $(($umiadjust * -1)))`
             toQ=`printf '%0.sI' $(seq 1 $(($umiadjust * -1)))`
-            keeplength=`echo $((${barcode_default}+${umi_default}-($umiadjust * -1)))`
-            sed -i "2~2s/^\(.\{${keeplength}\}\).*/\1/" $convFile #Trim off everything beyond what is needed
+            if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
+                keeplength=`echo $((${barcode_default}+${umi_default}-($umiadjust * -1)))`
+                sed -i "2~2s/^\(.\{${keeplength}\}\).*/\1/" $convFile #Trim off everything beyond what is needed
+            fi
             sed -i "2~4s/$/$toS/" $convFile #Add n characters to the end of the sequence
             sed -i "4~4s/$/$toQ/" $convFile #Add n characters to the end of the quality
             echo "  ${convFile} adjusted"
