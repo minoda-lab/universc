@@ -619,7 +619,7 @@ elif [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "scrb-seq" ]] || [[
     technology="scrbseq"
 elif [[ "$technology" == "seqwell" ]] || [[ "$technology" == "seq-well" ]]; then
     technology="seqwell"
-elif [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]]
+elif [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]]; then
     technology="smartseq2"
 elif [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
     technology="smartseq"
@@ -812,6 +812,7 @@ if [[ -z ${chemistry} ]]; then
 elif [[ "$chemistry" != "$temp_chemistry" ]]; then
     echo "***WARNING: chemistry is set to ${chemistry} where ${temp_chemistry} would have been chosen automatically. proceed with caution.***"
 fi
+
 
 #set default barcode and umi lengths
 barcode_default=16
@@ -1608,12 +1609,15 @@ fi
 #####check if chemistry matches expected input#####
 #allow "auto" only for 10x
 if [[ "$technology" != "10x" ]]; then
-    #use SC3Pv3 (umi length 12) 
-    if [[ $umilength -ge 11 ]] && [[ "$chemistry" == "SC3Pv1" ]] && [[ "$chemistry" == "SC3Pv2" ]]; then
-        echo "Using 10x version 3 chemistry to support longer UMIs"
-        chemistry="SC3Pv3"
-    else
-    #use SC3Pv2 (umi length 10)
+    #use SC3Pv3 (umi length 12)
+    if [[ $umilength -ge 11 ]]; then
+        if [[ "$chemistry" == "SC3Pv1" ]] || [[ "$chemistry" == "SC3Pv2" ]]; then
+            echo "Using 10x version 3 chemistry to support longer UMIs"
+            chemistry="SC3Pv3"
+            umi_default=12
+        fi
+    elif [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]] && [[ "$chemistry" != "fiveprime" ]]; then
+        #use SC3Pv2 (umi length 10)
         echo "Using 10x version 2 chemistry to support UMIs"
         chemistry="SC3Pv2"
     fi
@@ -1623,10 +1627,13 @@ if [[ "$technology" != "10x" ]]; then
     fi
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]]; then
+    if [[ $verbose ]]; then
+        echo $chemistry
+    fi
     if [[ "$chemistry" == "fiveprime" ]];  then
        chemistry="SC5P-PE"
     fi
-    if [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+    if [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
         echo "Error: option --chemistry must be SC5P-PE, SC5P-R1 or SC5P-R2"
         exit
     fi
@@ -2380,6 +2387,19 @@ else
 
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
+
+            #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
+            echo " handling $convFile ..."
+            tsoS="TTTCTTATATGGG"
+            tsoQ="IIIIIIIIIIIII"
+            #Add 10x TSO characters to the end of the sequence
+            sed -E "2~4s/(.{$barcodelength})(.{$umilength})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #Add n characters to the end of the quality
+            sed -E "4~4s/(.{$barcodelength})(.{$umilength})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+            sed -E "4~4s/(.{$keeplength})(.*)/\1$toQ\2/"  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            echo "  ${convFile} adjusted"
         done
     fi
     #Smart-Seq2
