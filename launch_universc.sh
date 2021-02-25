@@ -2409,17 +2409,14 @@ else
     
     #UMI
     echo " adjusting UMIs of R1 files"
-    if [[ 0 -gt $umiadjust ]]; then 
+    # check if original UMI is shorter than default
+    if [[ 0 -gt $umiadjust ]]; then
         for convFile in "${convFiles[@]}"; do
             echo " handling $convFile ..."
             toS=`printf '%0.sA' $(seq 1 $(($umiadjust * -1)))`
             toQ=`printf '%0.sI' $(seq 1 $(($umiadjust * -1)))`
             #compute length of adjusted barcode + original UMI
             keeplength=`echo $((${barcode_default}+${umi_default}-($umiadjust * -1)))`
-            if [[ $chemistry != "SC5P"* ]] && [[ $chemistry != "five"* ]]; then
-                echo "UMI trimming disabled"
-                #sed -i "2~2s/^\(.\{${keeplength}\}\).*/\1/" $convFile #Trim off everything beyond what is needed
-            fi
             #Add n characters to the end of the sequence
             sed -E "2~4s/(.{$keeplength})(.*)/\1$toS\2/"  $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
