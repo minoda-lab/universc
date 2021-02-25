@@ -2426,6 +2426,18 @@ else
             echo "  ${convFile} adjusted"
         done
     fi
+    # check if original UMI is longer than default
+    if [[ 0 -lt $umiadjust ]]; then
+        for convFile in "${convFiles[@]}"; do
+            echo " handling $convFile ..."
+            #compute length of adjusted barcode + original UMI
+            targetlength=`echo $((${barcode_default}+${umi_default}))`
+            #Remove n characters to the end of the sequence and quality score
+            sed -E "2~2s/(.{$targetlength})(.{$umiadjust})(.*)/\1\3/"  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            echo "  ${convFile} adjusted"
+        done
+    fi
 fi
 ##########
 
