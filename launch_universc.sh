@@ -621,8 +621,13 @@ elif [[ "$technology" == "seqwell" ]] || [[ "$technology" == "seq-well" ]]; then
     technology="seqwell"
 elif [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]]; then
     technology="smartseq2"
-elif [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
-    technology="smartseq"
+    nonUMI=true
+elif [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]]; then
+    technology="smartseq2-umi"
+    nonUMI=false
+elif [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
+    technology="smartseq3"
+    nonUMI=false
 elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "split-seq" ]]; then
     technology="splitseq"
 elif [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]] || [[ "$technology" == "ddseq" ]] || [[ "$technology" == "dd-seq" ]] || [[ "$technology" == "bioraad" ]]; then
@@ -932,7 +937,7 @@ fi
 #index 2
 if [[ $setup == "false" ]]; then
     #only check I2 for dual-indexed techniques
-    if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
+    if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq"* ]]; then
         if [[ ${#index2[@]} -ne ${#read1[@]} ]]; then
             if [[ ${#index2[@]} -gt 0 ]]; then
                echo " Error: number of index1 files is not matching the number of index2 files"
@@ -1497,7 +1502,7 @@ else
             echo "***WARNING: ***combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
         fi
     elif [[ "$technology" == "smartseq3" ]]; then
-        barcodefile=${whitelistdir}/SmartSeq3_barcode.txt 
+        barcodefile=${whitelistdir}/SmartSeq3_barcode.txt
     else
         echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength}bp. valid barcode will be 100% as a result***"
         barcodelength=${minlength}
@@ -2393,14 +2398,20 @@ else
             tsoS="TTTCTTATATGGG"
             tsoQ="IIIIIIIIIIIII"
             #Add 10x TSO characters to the end of the sequence
-            # echo 'sed -E "4~4s/(.{$barcodelength})(.{$umilength})(.{3})/\1\2$tsoS/"  $convFile > ${crIN}/.temp'
-            # sed -E "4~4s/(.{$barcodelength})(.{$umilength})(.{3})/\1\2$tsoS/"  $convFile > ${crIN}/.temp
-            echo 'sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp'
-            sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+            if [[ $verbose ]]; then
+                echo technology $technology
+                echo barcode: $barcodelength
+                echo umi: $umilength
+                echo $cmd
+            fi
+            # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+            eval $cmd
             mv ${crIN}/.temp $convFile
             #Add n characters to the end of the quality
-            # sed -E "4~4s/(.{$barcodelength})(.{$umilength})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
-            sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+            # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+            eval $cmd
             mv ${crIN}/.temp $convFile
             echo "  ${convFile} adjusted"
         done
