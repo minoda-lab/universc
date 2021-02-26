@@ -53,7 +53,7 @@ my $outdir = "TrimSeq4scRNAseq_out";
 GetOptions (
 	'r1=s' => \$r1,
 	'r2=s' => \$r2,
-	'index=s' => \$index,
+	'index=s@' => \$index,
 	'out=s' => \$out,
 	'mode=s' => \$mode,
 	'q_threshold=s' => \$q_threshold,
@@ -168,9 +168,6 @@ $trimmings = $trimmed_folder."/".$trimmings;
 my $polyA = "AAAAAAAAAAAAAAA";
 my $polyT = "TTTTTTTTTTTTTTT";
 
-my $nextera_pcr_primer_i7 = "CAAGCAGAAGACGGCATACGAGAT".$index."GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG";
-my $nextera_pcr_primer_i7_rc = reverse $nextera_pcr_primer_i7;
-$nextera_pcr_primer_i7_rc =~ tr/ATGC/TACG/;
 my $nextera_transposase_1 = "TCGTCGGCAGCGTCAGATGTGTATAAGAGACAG";
 my $nextera_transposase_1_rc = reverse $nextera_transposase_1;
 $nextera_transposase_1_rc =~ tr/ATGC/TACG/;
@@ -187,10 +184,6 @@ print TRIMMINGS ">As\n";
 print TRIMMINGS "$polyA\n";
 print TRIMMINGS ">Ts\n";
 print TRIMMINGS "$polyT\n";
-print TRIMMINGS ">NexTera_PCR_primer_i7\n";
-print TRIMMINGS "$nextera_pcr_primer_i7\n";
-print TRIMMINGS ">NexTera_PCR_primer_i7_rc\n";
-print TRIMMINGS "$nextera_pcr_primer_i7_rc\n";
 print TRIMMINGS ">NexteraTransposaseRead1\n";
 print TRIMMINGS "$nextera_transposase_1\n";
 print TRIMMINGS ">NexteraTransposaseRead1_rc\n";
@@ -203,6 +196,19 @@ print TRIMMINGS ">IlluminaUniversalAdapter\n";
 print TRIMMINGS "$univ_adapter\n";
 print TRIMMINGS ">IlluminaUniversalAdapter_rc\n";
 print TRIMMINGS "$univ_adapter_rc\n";
+
+my @indices = @{ $index };
+foreach my $ind (@indices) {
+	my $nextera_pcr_primer_i7 = "CAAGCAGAAGACGGCATACGAGAT".$ind."GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG";
+	my $nextera_pcr_primer_i7_rc = reverse $nextera_pcr_primer_i7;
+	$nextera_pcr_primer_i7_rc =~ tr/ATGC/TACG/;
+	
+	print TRIMMINGS ">NexTera_PCR_primer_i7_$ind\n";
+	print TRIMMINGS "$nextera_pcr_primer_i7\n";
+	print TRIMMINGS ">NexTera_PCR_primer_i7_rc_$ind\n";
+	print TRIMMINGS "$nextera_pcr_primer_i7_rc\n";
+}
+close (TRIMMINGS);
 
 #run scythe
 print " running adapter trimming with scythe\n";
