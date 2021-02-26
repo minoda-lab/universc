@@ -2393,11 +2393,14 @@ else
             tsoS="TTTCTTATATGGG"
             tsoQ="IIIIIIIIIIIII"
             #Add 10x TSO characters to the end of the sequence
-            sed -E "2~4s/(.{$barcodelength})(.{$umilength})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+            # echo 'sed -E "4~4s/(.{$barcodelength})(.{$umilength})(.{3})/\1\2$tsoS/"  $convFile > ${crIN}/.temp'
+            # sed -E "4~4s/(.{$barcodelength})(.{$umilength})(.{3})/\1\2$tsoS/"  $convFile > ${crIN}/.temp
+            echo 'sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp'
+            sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
             #Add n characters to the end of the quality
-            sed -E "4~4s/(.{$barcodelength})(.{$umilength})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
-            sed -E "4~4s/(.{$keeplength})(.*)/\1$toQ\2/"  $convFile > ${crIN}/.temp
+            # sed -E "4~4s/(.{$barcodelength})(.{$umilength})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+            sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
             echo "  ${convFile} adjusted"
         done
