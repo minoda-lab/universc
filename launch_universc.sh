@@ -619,10 +619,15 @@ elif [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "scrb-seq" ]] || [[
     technology="scrbseq"
 elif [[ "$technology" == "seqwell" ]] || [[ "$technology" == "seq-well" ]]; then
     technology="seqwell"
-elif [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]]
+elif [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]]; then
     technology="smartseq2"
-elif [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]] ||  [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
-    technology="smartseq"
+    nonUMI=true
+elif [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smart-seq2-umi" ]]; then
+    technology="smartseq2-umi"
+    nonUMI=false
+elif [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; then
+    technology="smartseq3"
+    nonUMI=false
 elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "split-seq" ]]; then
     technology="splitseq"
 elif [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]] || [[ "$technology" == "ddseq" ]] || [[ "$technology" == "dd-seq" ]] || [[ "$technology" == "bioraad" ]]; then
@@ -813,6 +818,7 @@ elif [[ "$chemistry" != "$temp_chemistry" ]]; then
     echo "***WARNING: chemistry is set to ${chemistry} where ${temp_chemistry} would have been chosen automatically. proceed with caution.***"
 fi
 
+
 #set default barcode and umi lengths
 barcode_default=16
 umi_default=10
@@ -931,7 +937,7 @@ fi
 #index 2
 if [[ $setup == "false" ]]; then
     #only check I2 for dual-indexed techniques
-    if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq" ]]; then
+    if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq"* ]]; then
         if [[ ${#index2[@]} -ne ${#read1[@]} ]]; then
             if [[ ${#index2[@]} -gt 0 ]]; then
                echo " Error: number of index1 files is not matching the number of index2 files"
@@ -1496,7 +1502,7 @@ else
             echo "***WARNING: ***combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
         fi
     elif [[ "$technology" == "smartseq3" ]]; then
-        barcodefile=${whitelistdir}/SmartSeq3_barcode.txt 
+        barcodefile=${whitelistdir}/SmartSeq3_barcode.txt
     else
         echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength}bp. valid barcode will be 100% as a result***"
         barcodelength=${minlength}
@@ -1608,12 +1614,15 @@ fi
 #####check if chemistry matches expected input#####
 #allow "auto" only for 10x
 if [[ "$technology" != "10x" ]]; then
-    #use SC3Pv3 (umi length 12) 
-    if [[ $umilength -ge 11 ]] && [[ "$chemistry" == "SC3Pv1" ]] && [[ "$chemistry" == "SC3Pv2" ]]; then
-        echo "Using 10x version 3 chemistry to support longer UMIs"
-        chemistry="SC3Pv3"
-    else
-    #use SC3Pv2 (umi length 10)
+    #use SC3Pv3 (umi length 12)
+    if [[ $umilength -ge 11 ]]; then
+        if [[ "$chemistry" == "SC3Pv1" ]] || [[ "$chemistry" == "SC3Pv2" ]]; then
+            echo "Using 10x version 3 chemistry to support longer UMIs"
+            chemistry="SC3Pv3"
+            umi_default=12
+        fi
+    elif [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]] && [[ "$chemistry" != "fiveprime" ]]; then
+        #use SC3Pv2 (umi length 10)
         echo "Using 10x version 2 chemistry to support UMIs"
         chemistry="SC3Pv2"
     fi
@@ -1623,10 +1632,13 @@ if [[ "$technology" != "10x" ]]; then
     fi
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]]; then
+    if [[ $verbose ]]; then
+        echo $chemistry
+    fi
     if [[ "$chemistry" == "fiveprime" ]];  then
        chemistry="SC5P-PE"
     fi
-    if [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R2" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+    if [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
         echo "Error: option --chemistry must be SC5P-PE, SC5P-R1 or SC5P-R2"
         exit
     fi
@@ -2380,6 +2392,28 @@ else
 
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
+
+            #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
+            echo " handling $convFile ..."
+            tsoS="TTTCTTATATGGG"
+            tsoQ="IIIIIIIIIIIII"
+            #Add 10x TSO characters to the end of the sequence
+            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+            if [[ $verbose ]]; then
+                echo technology $technology
+                echo barcode: $barcodelength
+                echo umi: $umilength
+                echo $cmd
+            fi
+            # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+            eval $cmd
+            mv ${crIN}/.temp $convFile
+            #Add n characters to the end of the quality
+            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+            # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+            eval $cmd
+            mv ${crIN}/.temp $convFile
+            echo "  ${convFile} adjusted"
         done
     fi
     #Smart-Seq2
@@ -2409,17 +2443,32 @@ else
     
     #UMI
     echo " adjusting UMIs of R1 files"
-    if [[ 0 -gt $umiadjust ]]; then 
+    # check if original UMI is shorter than default
+    if [[ 0 -gt $umiadjust ]]; then
         for convFile in "${convFiles[@]}"; do
             echo " handling $convFile ..."
             toS=`printf '%0.sA' $(seq 1 $(($umiadjust * -1)))`
             toQ=`printf '%0.sI' $(seq 1 $(($umiadjust * -1)))`
-            if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
-                keeplength=`echo $((${barcode_default}+${umi_default}-($umiadjust * -1)))`
-                sed -i "2~2s/^\(.\{${keeplength}\}\).*/\1/" $convFile #Trim off everything beyond what is needed
-            fi
-            sed -i "2~4s/$/$toS/" $convFile #Add n characters to the end of the sequence
-            sed -i "4~4s/$/$toQ/" $convFile #Add n characters to the end of the quality
+            #compute length of adjusted barcode + original UMI
+            keeplength=`echo $((${barcode_default}+${umi_default}-($umiadjust * -1)))`
+            #Add n characters to the end of the sequence
+            sed -E "2~4s/(.{$keeplength})(.*)/\1$toS\2/"  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #Add n characters to the end of the quality
+            sed -E "4~4s/(.{$keeplength})(.*)/\1$toQ\2/"  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            echo "  ${convFile} adjusted"
+        done
+    fi
+    # check if original UMI is longer than default
+    if [[ 0 -lt $umiadjust ]]; then
+        for convFile in "${convFiles[@]}"; do
+            echo " handling $convFile ..."
+            #compute length of adjusted barcode + original UMI
+            targetlength=`echo $((${barcode_default}+${umi_default}))`
+            #Remove n characters to the end of the sequence and quality score
+            sed -E "2~2s/(.{$targetlength})(.{$umiadjust})(.*)/\1\3/"  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
             echo "  ${convFile} adjusted"
         done
     fi
