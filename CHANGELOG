@@ -1,3 +1,9 @@
+### 1.1.0 (in dev)
+
+- add support for 5' technologies (e.g., Smart-Seq3, ICELL8 5')
+
+- compatilibility with counting reads for non-UMI technologies (e.g., Smart-Seq2)
+
 ### 1.0.3
 
 - unit tests for inDrops v3, SCI-Seq, Smart-Seq3
