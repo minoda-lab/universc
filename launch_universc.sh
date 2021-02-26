@@ -1501,7 +1501,7 @@ else
             barcodefile=${whitelistdir}/inDrop-v3_barcodes.txt
             echo "***WARNING: ***combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
         fi
-    elif [[ "$technology" == "smartseq3" ]]; then
+    elif [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
         barcodefile=${whitelistdir}/SmartSeq3_barcode.txt
     else
         echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength}bp. valid barcode will be 100% as a result***"
@@ -2362,8 +2362,94 @@ else
         done
     fi
     
+    #Smart-Seq2 (or Smart-Seq)
+    if [[ "$technology" == "smartseq2" ]];then
+        echo "  ...processsing for ${technology}"
+        if [[ $verbose ]]; then
+            echo "Note: SmartSeq-2 does not contain UMIs"
+        fi
+        for convFile in "${convFiles[@]}"; do
+            read=$convFile
+            convR1=$read
+            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+            convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
+            convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
+
+            #remove R1 adapter if detected
+            sed -E '
+                /^AGATGTGTATAAGAGACAG/ {
+                s/^(.{19})//g
+                n
+                n
+                s/^(.{19})//g
+                }'  $convR1 > ${crIN}/.temp
+            mv ${crIN}/.temp $convR1
+            #remove R2 adapter if detected
+            sed -E '
+                /CTGTCTCTTATACACATCT$/ {
+                s/(.{19})$//g
+                n
+                n
+                s/(.{19})$//g
+                }'  $convR2 > ${crIN}/.temp
+            mv ${crIN}/.temp $convR2
+
+            echo" ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
+            # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
+
+            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2}  --tag="AAGCAGTGGTATCAACGCAGAGTAC" --out_dir $crIN
+            echo "  ...trim tag sequence from R1"
+
+            # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
+            mv $crIN/parsed_R1.fastq ${convR1}
+            mv $crIN/parsed_R2.fastq ${convR2}
+            mv $crIN/parsed_I1.fastq ${convI1}
+            mv $crIN/parsed_I2.fastq ${convI2}
+
+            echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
+            # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+
+            #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
+            ## 16 bp barcode, GGG for TSO, no UMI
+            mv $crIN/Concatenated_File.fastq ${convR1}
+
+            # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
+            perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+            umilength=$umi_default
+            umiadjust=0
+            chemistry="SC3Pv2"
+
+            #returns a combined R1 file with barcode and mock UMI
+            ## 16 bp barcode, 10 bp UMI, GGG for TSO
+            mv $crIN/mock_UMI.fastq ${convR1}
+
+            #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
+            echo " handling $convFile ..."
+            tsoS="TTTCTTATATGGG"
+            tsoQ="IIIIIIIIIIIII"
+            #Add 10x TSO characters to the end of the sequence
+            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+            if [[ $verbose ]]; then
+                echo technology $technology
+                echo barcode: $barcodelength
+                echo umi: $umilength
+                echo $cmd
+            fi
+            # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+            eval $cmd
+            mv ${crIN}/.temp $convFile
+            #Add n characters to the end of the quality
+            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+            # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+            eval $cmd
+            mv ${crIN}/.temp $convFile
+            echo "  ${convFile} adjusted"
+       done
+    fi
+    
     #Smart-Seq3
-    if [[ "$technology" == "smartseq"* ]];then
+    if [[ "$technology" == "smartseq3" ]];then
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: SmartSeq-3 requires additional filtering for UMIs"
@@ -2377,18 +2463,18 @@ else
 
             echo "  ...remove internal for ${technology} by matching tag sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
-            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2} --out_dir $crIN
+            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2} --out_dir=$crIN --tag=
             echo "  ...trim tag sequence from R1"
 
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
-            mv $crIN/SmartSeq3_parsed_R1.fastq ${convR1}
-            mv $crIN/SmartSeq3_parsed_R2.fastq ${convR2}
-            mv $crIN/SmartSeq3_parsed_I1.fastq ${convI1}
-            mv $crIN/SmartSeq3_parsed_I2.fastq ${convI2}
+            mv $crIN/parsed_R1.fastq ${convR1}
+            mv $crIN/parsed_R2.fastq ${convR2}
+            mv $crIN/parsed_I1.fastq ${convI1}
+            mv $crIN/parsed_I2.fastq ${convI2}
 
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --tag="ATTGCGCAATG" --out_dir=$crIN
 
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
@@ -2416,9 +2502,6 @@ else
             echo "  ${convFile} adjusted"
         done
     fi
-    #Smart-Seq2
-    #echo 'TCGTCGGCAGCGTCAGATGTGTATAAGAGACAG'
-    #echo 'CTGTCTCTTATACACATCTCCGAGCCCACGAGAC'
 
     #converting barcodes
     echo " adjusting barcodes of R1 files"
