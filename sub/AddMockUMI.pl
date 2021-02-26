@@ -22,6 +22,7 @@ my $fastq_in = "";
 my $fastq_out = "mock_UMI.fastq";
 my $head_length = ""; #number of characters to have before insertion of mock UMI.
 my $umi_length = ""; #length of desired UMI
+my $out_dir = ".";
 ##########
 
 
@@ -31,7 +32,8 @@ my $umi_length = ""; #length of desired UMI
 GetOptions (
 	'fastq=s' => \$fastq_in,
 	'head_length=s' => \$head_length,
-	'umi_length=s' => \$umi_length
+	'umi_length=s' => \$umi_length,
+        'out_dir=s' => \$out_dir
 	);
 
 #checking for required options.
@@ -44,6 +46,14 @@ elsif (!$head_length) {
 elsif (!$umi_length) {
 	die "USAGE: option --umi_length <INTEGER> is required.\n";
 }
+elsif (!$out_dir) {
+        die "USAGE: option --out_dir <OUTPUT_DIRECTORY> is required.\n";
+}
+
+$fastq_out = $out_dir."/".$fastq_out;
+$fastq_out =~ s/\/\//\//;
+##########
+
 
 #checking head length
 if ( $head_length !~ /^-?\d+\.?\d*$/ ) {
