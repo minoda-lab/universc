@@ -288,6 +288,7 @@ chemistry=""
 jobmode="local"
 ncores=""
 mem=""
+nonUMI=true
 percelldata=false
 
 next=false
@@ -361,7 +362,7 @@ for op in "$@"; do
                 echo "Error: file input missing for --index1"
                 exit 1
             fi
-            ;;        
+            ;;
         -f|--file)
             shift
             if [[ "$1" != "" ]]; then
@@ -502,6 +503,11 @@ for op in "$@"; do
             ;;
         -p|--per-cell-data)
             percelldata=true
+            next=false
+            shift
+            ;;
+        --non-umi|--read-only)
+            nonUMI=true
             next=false
             shift
             ;;
