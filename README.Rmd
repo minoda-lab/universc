@@ -300,7 +300,7 @@ Technologies that may be difficult to support are those with:
 Please bear this in mind when submitting requests. We will consider to add further technologies but
 it could take significant resources to add support for these.
 
-## Installation <span id="Install"><span>
+## Installation <span id="installation"><span>
 
 This script requires Cell Ranger to be installed and exported to the PATH (version 3.0.0 or higher recommended).
 The script itself is exectuable and does not require installation to run but you can put it in your PATH or
