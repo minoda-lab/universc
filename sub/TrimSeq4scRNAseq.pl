@@ -74,6 +74,7 @@ if (!$index) {
 if (!$out) {
 	die "USAGE: option --out is required.\n";
 }
+my @indices = @{ $index };
 
 #checking option quality
 if (-e $out && -d $out) {
@@ -98,7 +99,7 @@ open (LOG, ">", "$log") or die "cannot open $log.\n";
 print LOG "#####TrimSeq4scRNAseq.pl LOG#####\n";
 print LOG "R1 file:\t$r1\n";
 print LOG "R2 file:\t$r2\n";
-print LOG "Index sequence:\t$index\n";
+print LOG "Index sequence:\t@indices\n";
 print LOG "\n";
 print LOG "Tool versions:\n";
 print LOG "\tFASTQC $fastqc_version\n";
@@ -197,7 +198,6 @@ print TRIMMINGS "$univ_adapter\n";
 print TRIMMINGS ">IlluminaUniversalAdapter_rc\n";
 print TRIMMINGS "$univ_adapter_rc\n";
 
-my @indices = @{ $index };
 foreach my $ind (@indices) {
 	my $nextera_pcr_primer_i7 = "CAAGCAGAAGACGGCATACGAGAT".$ind."GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG";
 	my $nextera_pcr_primer_i7_rc = reverse $nextera_pcr_primer_i7;
