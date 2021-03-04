@@ -180,6 +180,10 @@ my $univ_adapter = "AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT";
 my $univ_adapter_rc = reverse $univ_adapter;
 $univ_adapter_rc =~ tr/ATGC/TACG/;
 
+my $smarter_ii_a_oligo = "AAGCAGTGGTATCAACGCAGAGTAC";
+my $smarter_ii_a_oligo_rc = reverse $smarter_ii_a_oligo;
+$smarter_ii_a_oligo_rc =~ tr/ATGC/TACG/;
+
 open (TRIMMINGS, ">", "$trimmings") or die "cannot open $trimmings\n";
 print TRIMMINGS ">As\n";
 print TRIMMINGS "$polyA\n";
@@ -197,6 +201,10 @@ print TRIMMINGS ">IlluminaUniversalAdapter\n";
 print TRIMMINGS "$univ_adapter\n";
 print TRIMMINGS ">IlluminaUniversalAdapter_rc\n";
 print TRIMMINGS "$univ_adapter_rc\n";
+print TRIMMINGS ">SMARTer_II_A_oligo\n";
+print TRIMMINGS "$smarter_ii_a_oligo\n";
+print TRIMMINGS ">SMARTer_II_A_oligo_rc\n";
+print TRIMMINGS "$smarter_ii_a_oligo_rc\n";
 
 foreach my $ind (@indices) {
 	my $nextera_pcr_primer_i7 = "CAAGCAGAAGACGGCATACGAGAT".$ind."GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG";
