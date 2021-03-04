@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Wednesday 17 February 2021"
+date: "Thursday 04 March 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -300,7 +300,7 @@ Technologies that may be difficult to support are those with:
 Please bear this in mind when submitting requests. We will consider to add further technologies but
 it could take significant resources to add support for these.
 
-## Installation <span id="Install"><span>
+## Installation <span id="installation"><span>
 
 This script requires Cell Ranger to be installed and exported to the PATH (version 3.0.0 or higher recommended).
 The script itself is exectuable and does not require installation to run but you can put it in your PATH or
