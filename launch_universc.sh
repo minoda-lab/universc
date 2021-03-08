@@ -2512,8 +2512,12 @@ else
      fi
 fi
 
+if [[ $verbose ]]; then
+    echo $chemistry
+fi
+
 if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
-    r="--r1-length=NULL"
+    r=""
 else
     r="--r1-length=$totallength"
 fi
