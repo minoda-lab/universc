@@ -51,7 +51,7 @@ while (my $line = <ORIGINAL>) {
     my $adjusted = $original;
     if ($adjust_length >= 0) {
         my $length = $adjust_length;
-        $adjusted = substr ($length, 0, $adjusted);
+        $adjusted = substr ($adjusted, 0, $length);
     }
     else {
         my $length = abs ($adjust_length);
@@ -135,10 +135,12 @@ foreach my $barcode (@assigned_reads_percell) {
     $count =~ s/ $//;
     my @count = split (/ /, $count);
     
-    if (exists $percell{ $adjusted2original{$count[1]} }) {
-        my %count;
-        $count{ASSIGNED} = $count[0];
-        $percell{ $adjusted2original{$count[1]} } = \%count;
+    if (exists $adjusted2original{$count[1]}) {
+        if (exists $percell{ $adjusted2original{$count[1]} }) {
+            my %count;
+            $count{ASSIGNED} = $count[0];
+            $percell{ $adjusted2original{$count[1]} } = \%count;
+        }
     }
 }
 foreach my $barcode (sort keys %percell) {
@@ -163,10 +165,12 @@ foreach my $barcode (@mapped_reads_percell) {
     $count =~ s/ $//;
     my @count = split (/ /, $count);
 
-    if (exists $percell{ $adjusted2original{$count[1]} }) {
-        my %count = %{ $percell{ $adjusted2original{$count[1]} } };
-        $count{MAPPED} = $count[0];
-        $percell{ $adjusted2original{$count[1]} } = \%count;
+    if (exists $adjusted2original{$count[1]}) {
+        if (exists $percell{ $adjusted2original{$count[1]} }) {
+            my %count = %{ $percell{ $adjusted2original{$count[1]} } };
+            $count{MAPPED} = $count[0];
+            $percell{ $adjusted2original{$count[1]} } = \%count;
+        }
     }
 }
 foreach my $barcode (sort keys %percell) {

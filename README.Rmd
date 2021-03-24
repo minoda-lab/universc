@@ -28,33 +28,51 @@ tags:
 ---
 
 
-![Docker Manual build](https://img.shields.io/docker/automated/tomkellygenetics/universc)
-![Docker Automated build](https://img.shields.io/docker/cloud/automated/tomkellygenetics/universc)
-![Docker Build Status](https://img.shields.io/docker/cloud/build/tomkellygenetics/universc)
-[![GitHub Views](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
-
+![Docker Manual build](https://img.shields.io/docker/automated/tomkellygenetics/universc?label=docker%20local%20build)
+![Docker Cloud Build](https://img.shields.io/docker/cloud/automated/tomkellygenetics/universc?label=docker%20cloud%20build)
+![Docker Cloud Status](https://img.shields.io/docker/cloud/build/tomkellygenetics/universc?label=cloud%20build)
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 
 ![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.0.3)
-![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/1.0.3)
-![Docker Image Size (v1.0.3)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.0.3)
-
-![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc)
+![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest?label="layers@1.0.3")
+![Docker Image Size (v1.0.3)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.0.3?label="image%20size@1.0.3)
+![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc/latest)
 ![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest)
-![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc?sort=date)
+![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest)
+
+![GitHub branch checks state](https://img.shields.io/github/checks-status/minoda-lab/universc/master?label=GitHub%20checks)
+![GitHub Release Date](https://img.shields.io/github/release-date/minoda-lab/universc)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/minoda-lab/universc/master)
+![GitHub issues](https://img.shields.io/github/issues/minoda-lab/universc)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/minoda-lab/universc)
+
+[![GitHub Views](http://hits.dwyl.com/minoda-lab/universc.svg)](http://hits.dwyl.com/minoda-lab/universc)
+[![GitHub Views](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
+![GitHub search hit counter](https://img.shields.io/github/search/minoda-lab/universc/master)
+![GitHub forks](https://img.shields.io/github/forks/minoda-lab/universc?style=social)
+![GitHub Repo stars](https://img.shields.io/github/stars/minoda-lab/universc?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/minoda-lab/universc?style=social)
+
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/minoda-lab/universc)
+![GitHub repo size](https://img.shields.io/github/repo-size/minoda-lab/universc)
+![GitHub top language](https://img.shields.io/github/languages/top/minoda-lab/universc)
+![GitHub language count](https://img.shields.io/github/languages/count/minoda-lab/universc)
+
+![GitHub all releases](https://img.shields.io/github/downloads/minoda-lab/universc/total?label=GitHub%20downloads)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/minoda-lab/universc?label=GitHub%20release)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/minoda-lab/universc/1.0.3/total)
+![GitHub release (by tag)](https://img.shields.io/github/downloads/minoda-lab/universc/1.0.3/total)
 
 ![Docker CI](https://github.com/minoda-lab/universc/workflows/CI%20to%20Docker%20hub/badge.svg)
 ![Docker compose](https://github.com/minoda-lab/universc/workflows/Docker%20compose%20build/badge.svg)
-
 ![Actions Build](https://github.com/minoda-lab/universc/workflows/Docker%20container%20tests/badge.svg)
-![Actions Tests](https://github.com/minoda-lab/universc/workflows/Run%20all%20tests%20in%20Docker/badge.svg)
 ![Actions Call](https://github.com/minoda-lab/universc/workflows/Docker%20build%20image/badge.svg)
 
+![Actions Tests](https://github.com/minoda-lab/universc/workflows/Run%20all%20tests%20in%20Docker/badge.svg)
 ![Test 10x Genomics](https://github.com/minoda-lab/universc/workflows/Test%2010x%20Genomics/badge.svg)
 ![Test DropSeq](https://github.com/minoda-lab/universc/workflows/Test%20DropSeq%20%2F%20Nadia/badge.svg)
 ![Test ICELL8](https://github.com/minoda-lab/universc/workflows/Test%20ICELL8/badge.svg)
-
 ![Test SCI-Seq](https://github.com/minoda-lab/universc/workflows/Test%20SCI%2DSeq/badge.svg)
 ![Test inDrops v3](https://github.com/minoda-lab/universc/workflows/Test%20inDrops%20v3/badge.svg)
 ![Test Smart-Seq3](https://github.com/minoda-lab/universc/workflows/Test%20Smart%2DSeq3/badge.svg)
@@ -75,7 +93,7 @@ and use this tool to process single-cell RNA-Seq data from FASTQ format.
 
 **Package**
 
-UniverSC version 1.0.3
+UniverSC version 1.1.0
 
 **Maintainers**
 
@@ -159,7 +177,8 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
 -  Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
 -  SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
 -  SeqWell (12bp barcode, 8bp UMI): seqwell
--  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq
+-  Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
+-  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
 
 All technologies support 3' single-cell RNA-Seq. Barcode adjustments and
 whitelists are changed automatically. For 5' single-cell RNA-Seq, this
@@ -229,7 +248,7 @@ package version 1.0.3. [https://github.com/minoda-lab/universc](https://github.c
         abstract = {Single-cell RNA-sequencing analysis to quantify RNA molecules in individual cells has become popular owing to the large amount of information one can obtain from each experiment. We have developed UniverSC (https://github.com/minoda-lab/universc), a universal single-cell processing tool that supports any UMI-based platform. Our command-line tool enables consistent and comprehensive integration, comparison, and evaluation across data generated from a wide range of platforms.Competing Interest StatementThe authors have declared no competing interest.},
         eprint = {https://www.biorxiv.org/content/early/2021/01/19/2021.01.19.427209.full.pdf},
         journal = {{bioRxiv}},
-        note = {package version 1.0.3},
+        note = {package version 1.1.0},
         URL = {https://github.com/minoda-lab/universc},
 }
 
@@ -240,7 +259,7 @@ package version 1.0.3. [https://github.com/minoda-lab/universc](https://github.c
     title = {{UniverSC}:  a flexible cross-platform single-cell data processing pipeline},
     author = {S. Thomas Kelly, Kai Battenberg, Nicola A. Hetherington, Makoto Hayashi, and Aki Minoda},
     year = {2021},
-    note = {package version 1.0.3},
+    note = {package version 1.1.0},
     url = {https://github.com/minoda-lab/universc},
   }
 ```
@@ -252,8 +271,8 @@ package version 1.0.3. [https://github.com/minoda-lab/universc](https://github.c
 To add further support for other technologies or troubleshoot problems, please submit an Issue 
 to the GitHub repository: https://github.com/TomKellyGenetics/universc/issues
 
-Please submit [issues](https://github.com/TomKellyGenetics/graphsim/issues) on GitHub to report
-problems or suggest features. [Pull requests](https://github.com/TomKellyGenetics/graphsim/pulls)
+Please submit [issues](https://github.com/minoda-lab/universc/issues) on GitHub to report
+problems or suggest features. [Pull requests](https://github.com/minoda-lab/universc/pulls)
 to the `dev` branch on GitHub are also welcome to add features or correct problems. Please see
 the [contributor guide](CONTRIBUTING.md) for more details.
 
@@ -281,7 +300,7 @@ Technologies that may be difficult to support are those with:
 Please bear this in mind when submitting requests. We will consider to add further technologies but
 it could take significant resources to add support for these.
 
-## Installation <span id="Install"><span>
+## Installation <span id="installation"><span>
 
 This script requires Cell Ranger to be installed and exported to the PATH (version 3.0.0 or higher recommended).
 The script itself is exectuable and does not require installation to run but you can put it in your PATH or
@@ -691,7 +710,7 @@ your systems administrator.
 
 #### Pulling from remote DockerHub repository
 
-We provide a docker image for UniverSC version 1.0.3.
+We provide a docker image for UniverSC version 1.1.0.
 
 You can import it if you have docker installed.
 
@@ -984,7 +1003,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
-                                  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq
+                                  Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
+                                  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
@@ -1007,6 +1027,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                     Only applies in cluster jobmodes.
 
   -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data
+
+       --non-umi or --read-only Force counting reads by adding or replacing UMI with a mock sequence
 
        --setup                  Set up whitelists for compatibility with new technology and exit
        --as-is                  Skips the FASTQ file conversion if the file already exists

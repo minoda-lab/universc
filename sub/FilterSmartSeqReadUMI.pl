@@ -19,17 +19,17 @@ use Getopt::Long;
 
 #####Options#####
 #SmartSeq3 tag
-my $ss3t = "ATTGCGCAATG";
+my $tagseq = "ATTGCGCAATG";
 
 #setting the default values.
 my $i1 = "";
 my $i2 = "";
 my $r1 = "";
 my $r2 = "";
-my $i1_out = "SmartSeq3_parsed_I1.fastq";
-my $i2_out = "SmartSeq3_parsed_I2.fastq";
-my $r1_out = "SmartSeq3_parsed_R1.fastq";
-my $r2_out = "SmartSeq3_parsed_R2.fastq";
+my $i1_out = "parsed_I1.fastq";
+my $i2_out = "parsed_I2.fastq";
+my $r1_out = "parsed_R1.fastq";
+my $r2_out = "parsed_R2.fastq";
 my $out_dir = "";
 
 #making the options into external arguments.
@@ -38,6 +38,7 @@ GetOptions (
 	'i2=s' => \$i2,
 	'r1=s' => \$r1,
 	'r2=s' => \$r2,
+        'tag=s' => \$tagseq,
 	'out_dir=s' => \$out_dir
 	);
 
@@ -73,7 +74,7 @@ $r2_out =~ s/\/\//\//;
 
 #####MAIN#####
 #get list of reads to keep
-my @keepreads = map { ($_ + 2) / 4 } split(/\n/, `grep $ss3t $r1 -n | cut -f1 -d\:`);
+my @keepreads = map { ($_ + 2) / 4 } split(/\n/, `grep $tagseq $r1 -n | cut -f1 -d\:`);
 my %keepreads = map { $_ => 1 } @keepreads;
 
 #parse reads to keep
@@ -112,9 +113,9 @@ while (my $line = <R1>) {
 	}
 	else {
 		#trim r1 data
-		my @trim = split (/$ss3t/, $r1_seq);
+		my @trim = split (/$tagseq/, $r1_seq);
 		shift @trim;
-		my $new_r1_seq = join ("$ss3t", @trim);
+		my $new_r1_seq = join ("$tagseq", @trim);
 		my $new_r1_q = $r1_q;
 		chomp $new_r1_q;
 		$new_r1_q = reverse $new_r1_q;

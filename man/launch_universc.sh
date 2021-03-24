@@ -199,7 +199,8 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
-                                  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq
+                                  Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
+                                  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
                                   SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
@@ -260,6 +261,10 @@ Provides a conversion script to run multiple technologies and custom libraries w
            Recommended but disabled by default due to additional runtime required to parse BAM files.
            This provides more accurate summary statistics than Cell Ranger (which uses an average across cells
            that are filtered out).
+
+       --non-umi or --read-only
+           Force counting reads by adding or replacing UMI with a mock sequence so that each read
+           has a unique UMI.
 
        --setup
            Set up whitelists for compatibility with new technology. Called automatically when a new

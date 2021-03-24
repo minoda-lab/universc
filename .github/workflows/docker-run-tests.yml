@@ -167,7 +167,7 @@ jobs:
     - name: clear environment
       run: rm -rf *
     - name: Test DropSeq
-      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 120m  /universc/test/run_tests_dropseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
+      run: docker run ${{ secrets.DOCKER_HUB_USERNAME }}/universc:test timeout 45m  /universc/test/run_tests_dropseq_gh_actions.sh || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then echo exit $code; exit $code; fi
 
   test-icell8:
     runs-on: ubuntu-20.04

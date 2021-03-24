@@ -53,7 +53,7 @@ my $outdir = "TrimSeq4scRNAseq_out";
 GetOptions (
 	'r1=s' => \$r1,
 	'r2=s' => \$r2,
-	'index=s' => \$index,
+	'index=s@' => \$index,
 	'out=s' => \$out,
 	'mode=s' => \$mode,
 	'q_threshold=s' => \$q_threshold,
@@ -74,6 +74,7 @@ if (!$index) {
 if (!$out) {
 	die "USAGE: option --out is required.\n";
 }
+my @indices = @{ $index };
 
 #checking option quality
 if (-e $out && -d $out) {
@@ -98,7 +99,7 @@ open (LOG, ">", "$log") or die "cannot open $log.\n";
 print LOG "#####TrimSeq4scRNAseq.pl LOG#####\n";
 print LOG "R1 file:\t$r1\n";
 print LOG "R2 file:\t$r2\n";
-print LOG "Index sequence:\t$index\n";
+print LOG "Index sequence:\t@indices\n";
 print LOG "\n";
 print LOG "Tool versions:\n";
 print LOG "\tFASTQC $fastqc_version\n";
@@ -168,9 +169,16 @@ $trimmings = $trimmed_folder."/".$trimmings;
 my $polyA = "AAAAAAAAAAAAAAA";
 my $polyT = "TTTTTTTTTTTTTTT";
 
-my $nextera_pcr_primer_i7 = "CAAGCAGAAGACGGCATACGAGAT".$index."GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG";
-my $nextera_pcr_primer_i7_rc = reverse $nextera_pcr_primer_i7;
-$nextera_pcr_primer_i7_rc =~ tr/ATGC/TACG/;
+my $univ_adapter = "AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT";
+my $univ_adapter_rc = reverse $univ_adapter;
+$univ_adapter_rc =~ tr/ATGC/TACG/;
+my $se_pcr_primer1 = "AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT";
+my $se_pcr_primer1_rc = reverse $se_pcr_primer1;
+$se_pcr_primer1_rc =~ tr/ATGC/TACG/;
+my $rna_pcr_primer = "AATGATACGGCGACCACCGAGATCTACACGTTCAGAGTTCTACAGTCCGA";
+my $rna_pcr_primer_rc = reverse $rna_pcr_primer;
+$rna_pcr_primer_rc =~ tr/ATGC/TACG/;
+
 my $nextera_transposase_1 = "TCGTCGGCAGCGTCAGATGTGTATAAGAGACAG";
 my $nextera_transposase_1_rc = reverse $nextera_transposase_1;
 $nextera_transposase_1_rc =~ tr/ATGC/TACG/;
@@ -178,19 +186,33 @@ my $nextera_transposase_2 = "GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG";
 my $nextera_transposase_2_rc = reverse $nextera_transposase_2;
 $nextera_transposase_2_rc =~ tr/ATGC/TACG/;
 
-my $univ_adapter = "AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT";
-my $univ_adapter_rc = reverse $univ_adapter;
-$univ_adapter_rc =~ tr/ATGC/TACG/;
+my $clontech_univ_primer_long = "CTAATACGACTCACTATAGGGCAAGCAGTGGTATCAACGCAGAGT";
+my $clontech_univ_primer_long_rc = reverse $clontech_univ_primer_long;
+$clontech_univ_primer_long_rc =~ tr/ATGC/TACG/;
+my $smart_cds_primer_ii_a = "AAGCAGTGGTATCAACGCAGAGTACT";
+my $smart_cds_primer_ii_a_rc = reverse $smart_cds_primer_ii_a;
+$smart_cds_primer_ii_a_rc =~ tr/ATGC/TACG/;
+my $smarter_ii_a_oligo = "AAGCAGTGGTATCAACGCAGAGTAC";
+my $smarter_ii_a_oligo_rc = reverse $smarter_ii_a_oligo;
+$smarter_ii_a_oligo_rc =~ tr/ATGC/TACG/;
 
 open (TRIMMINGS, ">", "$trimmings") or die "cannot open $trimmings\n";
 print TRIMMINGS ">As\n";
 print TRIMMINGS "$polyA\n";
 print TRIMMINGS ">Ts\n";
 print TRIMMINGS "$polyT\n";
-print TRIMMINGS ">NexTera_PCR_primer_i7\n";
-print TRIMMINGS "$nextera_pcr_primer_i7\n";
-print TRIMMINGS ">NexTera_PCR_primer_i7_rc\n";
-print TRIMMINGS "$nextera_pcr_primer_i7_rc\n";
+print TRIMMINGS ">IlluminaUniversalAdapter\n";
+print TRIMMINGS "$univ_adapter\n";
+print TRIMMINGS ">IlluminaUniversalAdapter_rc\n";
+print TRIMMINGS "$univ_adapter_rc\n";
+print TRIMMINGS ">IlluminaSEPCRPrimer1\n";
+print TRIMMINGS "$se_pcr_primer1\n";
+print TRIMMINGS ">IlluminaSEPCRPrimer1_rc\n";
+print TRIMMINGS "$se_pcr_primer1_rc\n";
+print TRIMMINGS ">IlluminaRNAPCRPrimer\n";
+print TRIMMINGS "$rna_pcr_primer\n";
+print TRIMMINGS ">IlluminaRNAPCRPrimer_rc\n";
+print TRIMMINGS "$rna_pcr_primer_rc\n";
 print TRIMMINGS ">NexteraTransposaseRead1\n";
 print TRIMMINGS "$nextera_transposase_1\n";
 print TRIMMINGS ">NexteraTransposaseRead1_rc\n";
@@ -199,10 +221,29 @@ print TRIMMINGS ">NexteraTransposaseRead2\n";
 print TRIMMINGS "$nextera_transposase_2\n";
 print TRIMMINGS ">NexteraTransposaseRead2_rc\n";
 print TRIMMINGS "$nextera_transposase_2_rc\n";
-print TRIMMINGS ">IlluminaUniversalAdapter\n";
-print TRIMMINGS "$univ_adapter\n";
-print TRIMMINGS ">IlluminaUniversalAdapter_rc\n";
-print TRIMMINGS "$univ_adapter_rc\n";
+foreach my $ind (@indices) {
+	my $nextera_pcr_primer_i7 = "CAAGCAGAAGACGGCATACGAGAT".$ind."GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG";
+	my $nextera_pcr_primer_i7_rc = reverse $nextera_pcr_primer_i7;
+	$nextera_pcr_primer_i7_rc =~ tr/ATGC/TACG/;
+	
+	print TRIMMINGS ">NexTera_PCR_primer_i7_$ind\n";
+	print TRIMMINGS "$nextera_pcr_primer_i7\n";
+	print TRIMMINGS ">NexTera_PCR_primer_i7_rc_$ind\n";
+	print TRIMMINGS "$nextera_pcr_primer_i7_rc\n";
+}
+print TRIMMINGS ">ClontechUniversalPrimerLong\n";
+print TRIMMINGS "$clontech_univ_primer_long\n";
+print TRIMMINGS ">ClontechUniversalPrimerLong_rc\n";
+print TRIMMINGS "$clontech_univ_primer_long_rc\n";
+print TRIMMINGS ">SMART_CDS_primer_IIA\n";
+print TRIMMINGS "$smart_cds_primer_ii_a\n";
+print TRIMMINGS ">SMART_CDS_primer_IIA_rc\n";
+print TRIMMINGS "$smart_cds_primer_ii_a_rc\n";
+print TRIMMINGS ">SMARTer_II_A_oligo\n";
+print TRIMMINGS "$smarter_ii_a_oligo\n";
+print TRIMMINGS ">SMARTer_II_A_oligo_rc\n";
+print TRIMMINGS "$smarter_ii_a_oligo_rc\n";
+close (TRIMMINGS);
 
 #run scythe
 print " running adapter trimming with scythe\n";
