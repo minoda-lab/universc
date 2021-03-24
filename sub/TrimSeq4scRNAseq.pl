@@ -40,7 +40,9 @@ my $trimmed_folder = "02_TRIMMED";
 my $multi_folder = "03_MULTIQC";
 my $integrated_folder = "04_INTEGRATED";
 
-my $trimmings = "trimmed_sequences.fas";
+my $trimmings3 = "trimmed_sequences_3prime.fas";
+my $trimmings5 = "trimmed_sequences_5prime.fas";
+
 my $m_threshold = 1; #shortest contaminant to consider
 my $l_threshold = 15; #shortest length of sequence to keep after trimming
 my $p_threshold = 0.99; #my prior
@@ -164,7 +166,8 @@ $r2_at_file = $trimmed_folder."/at.".$r2_at_file;
 my $r2_atqt_file = `basename $r2_raw_file | perl -pe chomp`;
 $r2_atqt_file = $trimmed_folder."/atqt.".$r2_atqt_file;
 
-$trimmings = $trimmed_folder."/".$trimmings;
+$trimmings3 = $trimmed_folder."/".$trimmings3;
+$trimmings5 = $trimmed_folder."/".$trimmings5;
 
 my $polyA = "AAAAAAAAAAAAAAA";
 my $polyT = "TTTTTTTTTTTTTTT";
@@ -186,17 +189,13 @@ my $nextera_transposase_2 = "GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG";
 my $nextera_transposase_2_rc = reverse $nextera_transposase_2;
 $nextera_transposase_2_rc =~ tr/ATGC/TACG/;
 
-my $clontech_univ_primer_long = "CTAATACGACTCACTATAGGGCAAGCAGTGGTATCAACGCAGAGT";
-my $clontech_univ_primer_long_rc = reverse $clontech_univ_primer_long;
-$clontech_univ_primer_long_rc =~ tr/ATGC/TACG/;
-my $smart_cds_primer_ii_a = "AAGCAGTGGTATCAACGCAGAGTACT";
-my $smart_cds_primer_ii_a_rc = reverse $smart_cds_primer_ii_a;
-$smart_cds_primer_ii_a_rc =~ tr/ATGC/TACG/;
-my $smarter_ii_a_oligo = "AAGCAGTGGTATCAACGCAGAGTAC";
-my $smarter_ii_a_oligo_rc = reverse $smarter_ii_a_oligo;
-$smarter_ii_a_oligo_rc =~ tr/ATGC/TACG/;
+#                                             AGCAGTGGTATCAACGCAGAGTACATG
+#                                              GCAGTGGTATCAACGCAGAGTACATG
+my $smart_race_5prime_adapter_plus = reverse "AGCAGTGGTATCAACGCAGAGTACATG";
+my $smart_race_5prime_adapter_plus_rc = reverse $smart_race_5prime_adapter_plus;
+$smart_race_5prime_adapter_plus_rc =~ tr/ATGC/TACG/;
 
-open (TRIMMINGS, ">", "$trimmings") or die "cannot open $trimmings\n";
+open (TRIMMINGS, ">", "$trimmings3") or die "cannot open $trimmings3\n";
 print TRIMMINGS ">As\n";
 print TRIMMINGS "$polyA\n";
 print TRIMMINGS ">Ts\n";
@@ -231,24 +230,71 @@ foreach my $ind (@indices) {
 	print TRIMMINGS ">NexTera_PCR_primer_i7_rc_$ind\n";
 	print TRIMMINGS "$nextera_pcr_primer_i7_rc\n";
 }
-print TRIMMINGS ">ClontechUniversalPrimerLong\n";
-print TRIMMINGS "$clontech_univ_primer_long\n";
-print TRIMMINGS ">ClontechUniversalPrimerLong_rc\n";
-print TRIMMINGS "$clontech_univ_primer_long_rc\n";
-print TRIMMINGS ">SMART_CDS_primer_IIA\n";
-print TRIMMINGS "$smart_cds_primer_ii_a\n";
-print TRIMMINGS ">SMART_CDS_primer_IIA_rc\n";
-print TRIMMINGS "$smart_cds_primer_ii_a_rc\n";
-print TRIMMINGS ">SMARTer_II_A_oligo\n";
-print TRIMMINGS "$smarter_ii_a_oligo\n";
-print TRIMMINGS ">SMARTer_II_A_oligo_rc\n";
-print TRIMMINGS "$smarter_ii_a_oligo_rc\n";
 close (TRIMMINGS);
 
-#run scythe
-print " running adapter trimming with scythe\n";
-system "scythe -a $trimmings -q sanger -p $p_threshold -n $m_threshold -M $l_threshold --quiet $r2_raw_file | gzip >$r2_at_file";
-print LOG "\tcmd: scythe -a $trimmings -q sanger -p $p_threshold -n $m_threshold -M $l_threshold --quiet $r2_raw_file | gzip >$r2_at_file\n";
+open (TRIMMINGS, ">", $trimmings5) or die "cannot open $trimmings5.\n";
+print TRIMMINGS ">SMART_RACE_5prime_Adapter_plus5bp\n";
+print TRIMMINGS "$smart_race_5prime_adapter_plus\n";
+print TRIMMINGS ">SMART_RACE_5prime_Adapter_plus5bp_rc\n";
+print TRIMMINGS "$smart_race_5prime_adapter_plus_rc\n";
+close (TRIMMINGS);
+
+#run scythe on 3 prime end
+my $prime3 = "temp_3prime.fq";
+print " running adapter trimming with scythe (3 prime)\n";
+system "scythe -a $trimmings3 -q sanger -p $p_threshold -n $m_threshold -M $l_threshold --quiet $r2_raw_file >$prime3";
+print LOG "\tcmd: scythe -a $trimmings3 -q sanger -p $p_threshold -n $m_threshold -M $l_threshold --quiet $r2_raw_file\n";
+
+#reverse sequences for 5 prime end trimming
+my $prime3_rev = "temp_3prime_rev.fq";
+my $linecount = 0;
+open (PRIME3, "<", $prime3) or die "cannot open $prime3\n";
+open (PRIME3REV, ">", $prime3_rev) or die "cannot open $prime3_rev.\n";
+while (my $line = <PRIME3>) {
+	$linecount++;
+	if ($linecount % 2 != 0) {
+		print PRIME3REV "$line";
+	}
+	else {
+		my $new_line = $line;
+		chomp $new_line;
+		$new_line = reverse $new_line;
+		print PRIME3REV "$new_line\n";
+	}
+}
+close (PRIME3);
+close (PRIME3REV);
+
+#run scythe on 5 prime end
+my $prime5_rev = "temp_5prime_rev.fq";
+print " running adapter trimming with scythe (5 prime)\n";
+system "scythe -a $trimmings5 -q sanger -p $p_threshold -n $m_threshold -M $l_threshold --quiet $prime3_rev >$prime5_rev";
+print LOG "\tcmd: scythe -a $trimmings5 -q sanger -p $p_threshold -n $m_threshold -M $l_threshold --quiet $r2_raw_file (3prime trimmed and reversed)\n";
+
+#reverse sequences back to its original orientation
+my $prime5 = "temp_5prime.fq";
+$linecount = 0;
+open (PRIME5REV, "<", $prime5_rev) or die "cannot open $prime5_rev\n";
+open (PRIME5, ">", $prime5) or die "cannot open $prime5.\n";
+while (my $line = <PRIME5REV>) {
+	$linecount++;
+	if ($linecount % 2 != 0) {
+		print PRIME5 "$line";
+	}
+	else {
+		my $new_line = $line;
+		chomp $new_line;
+		$new_line = reverse $new_line;
+		print PRIME5 "$new_line\n";
+	}
+}
+close (PRIME5REV);
+close (PRIME5);
+system "gzip -c $prime5 >$r2_at_file";
+system "rm $prime3";
+system "rm $prime3_rev";
+system "rm $prime5_rev";
+system "rm $prime5";
 
 #run sickle
 print " running adapter trimming with sickle\n";
