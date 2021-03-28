@@ -47,8 +47,8 @@ tags:
 ![GitHub issues](https://img.shields.io/github/issues/minoda-lab/universc)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/minoda-lab/universc)
 
-[![GitHub Views](http://hits.dwyl.com/minoda-lab/universc.svg)](http://hits.dwyl.com/minoda-lab/universc)
-[![GitHub Views](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
+[![HitCount](http://hits.dwyl.com/minoda-lab/universc.svg)](http://hits.dwyl.com/minoda-lab/universc)
+[![HitCount](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
 ![GitHub search hit counter](https://img.shields.io/github/search/minoda-lab/universc/master)
 ![GitHub forks](https://img.shields.io/github/forks/minoda-lab/universc?style=social)
 ![GitHub Repo stars](https://img.shields.io/github/stars/minoda-lab/universc?style=social)
