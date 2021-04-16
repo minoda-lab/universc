@@ -1957,6 +1957,8 @@ if [[ $lock -eq 0 ]]; then
     else
        old_umi_length=$lastcall_u
     fi
+    old_rna_offset=`echo $((${lastcall_b}+${last_call_u}))`
+    new_rna_offset=`echo $((${barcodelength}+${umilength}))`
     # convert barcodes back if last technology barcode greater than 16 bp
     if [[ $old_bc_length -gt 16 ]]; then
         sed -i "s/\'barcode_read_length\': ${old_bc_length},/\'barcode_read_length\': 16,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
@@ -1966,6 +1968,10 @@ if [[ $lock -eq 0 ]]; then
     if [[ $old_umi_length -gt 12 ]]; then
         sed -i "s/\'umi_read_length\': ${old_umi_length},/\'umi_read_length\': 10/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
+    if [[ $old_rna_offset -gt 26 ]]; then
+       sed -i "s/\'rna_read_offset\': ${old_rna_offset},/\'rna_read_offset\': 26,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+       sed -i "s/\'umi_read_length\': ${old_umi_length},/\'umi_read_length\': 10/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+    fi
     # convert barcodes if new technology greater than 16 bp
     if [[ $minlength -gt 16 ]]; then
         sed -i "s/\'barcode_read_length\': 16,/\'barcode_read_length\': ${minlength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
@@ -1974,6 +1980,10 @@ if [[ $lock -eq 0 ]]; then
     # convert UMI back if new technology greater than 12 bp
     if [[ $umilength -gt 12 ]]; then
         sed -i "s/\'umi_read_length\': 10,/\'umi_read_length\': ${umilength}/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+    fi
+    if [[ $ new_rna_offset -gt 26 ]]; then
+       sed -i "s/\'rna_read_offset\': 26,/\'rna_read_offset\': ${new_rna_offset},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+       sed -i "s/\'umi_read_length\': 10,/\'umi_read_length\': ${umilength}/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
 
     echo " ${cellrangerpath} set for $technology"
