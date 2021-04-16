@@ -817,15 +817,20 @@ fi
 
 #set default barcode and umi lengths
 if [[ $minlength -gt 16 ]]; then
- barcode_default=$minlength
- else
- barcode_default=16
-fi
-if [[ "$chemistry" == "SC3Pv3" ]]; then
-    umi_default=12
+     barcode_default=$minlength
 else
-    umi_default=10
+    barcode_default=16
 fi
+if [[ $umilength -gt 12 ]]; then
+    umi_default=$umilength
+else
+    if [[ "$chemistry" == "SC3Pv3" ]]; then
+        umi_default=12
+    else
+        umi_default=10
+    fi
+fi
+
 totallength=`echo $((${barcode_default}+${umi_default}))`
 
 #adjustment lengths
