@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Thursday 04 March 2021"
+date: "Friday 16 April 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -189,7 +189,7 @@ We are developing technologies to support dual indexes and full length scRNA kit
 
 Experimental technologies (not yet supported):
 -  inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
--  Sci-Seq (8bp UMI, 22bp barcode): sciseq
+-  Sci-Seq (8bp UMI, 26bp barcode): sciseq
 -  SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
 -  SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
 
@@ -1012,7 +1012,7 @@ Mandatory arguments to long options are mandatory for short options too.
 
                                 Experimental technologies (not yet supported):
                                   inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
-                                  Sci-Seq (8bp UMI, 22bp barcode): sciseq
+                                  Sci-Seq (8bp UMI, 26bp barcode): sciseq
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
 
