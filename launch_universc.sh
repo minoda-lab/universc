@@ -767,10 +767,6 @@ elif [[ "$technology" == "custom"* ]]; then
     minlength=${barcodelength}
 fi
 
-if [[ $minlength -gt 16 ]]; then
-    minlength=16
-fi
-
 if [[ $verbose ]]; then
     echo " barcode and UMI lengths set as ${barcodelength} and ${umilength} respectively"
 fi
@@ -820,10 +816,15 @@ fi
 
 
 #set default barcode and umi lengths
-barcode_default=16
-umi_default=10
+if [[ $minlength -gt 16 ]]; then
+ barcode_default=$minlength
+ else
+ barcode_default=16
+fi
 if [[ "$chemistry" == "SC3Pv3" ]]; then
     umi_default=12
+else
+    umi_default=10
 fi
 totallength=`echo $((${barcode_default}+${umi_default}))`
 
