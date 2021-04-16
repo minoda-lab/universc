@@ -1945,8 +1945,39 @@ if [[ $lock -eq 0 ]]; then
             eval "sed -i '$(echo "${num},${num2}s/^/#/g")' $file"
         done
     fi
+
+    #determine last barcode and UMI
+    if [[ lastcall_b == "" ]]; then
+        old_bc_length=16
+    else
+        old_bc_length=$lastcall_b
+    fi
+    if [[ lastcall_u == "" ]]; then
+       old_umi_length=10
+    else
+       old_umi_length=$lastcall_u
+    fi
+    # convert barcodes back if last technology barcode greater than 16 bp
+    if [[ $old_bc_length -gt 16 ]]; then
+        sed -i "s/\'barcode_read_length\': ${old_bc_length},/\'barcode_read_length\': 16,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/\'umi_read_offset\': ${old_bc_length},/\'umi_read_offset\': 16,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+    fi
+    # convert UMI back if last technology UMI greater than 12 bp
+    if [[ $old_umi_length -gt 12 ]]; then
+        sed -i "s/\'umi_read_length\': ${old_umi_length},/\'umi_read_length\': 10/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+    fi
+    # convert barcodes if new technology greater than 16 bp
+    if [[ $minlength -gt 16 ]]; then
+        sed -i "s/\'barcode_read_length\': 16,/\'barcode_read_length\': ${minlength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/\'umi_read_offset\': 16,/\'umi_read_offset\': ${minlength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+    fi
+    # convert UMI back if new technology greater than 12 bp
+    if [[ $umilength -gt 12 ]]; then
+        sed -i "s/\'umi_read_length\': 10,/\'umi_read_length\': ${umilength}/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+    fi
+
     echo " ${cellrangerpath} set for $technology"
-    
+
     #whitelist file name
     v2=737K-august-2016.txt
     v3=3M-february-2018.txt
