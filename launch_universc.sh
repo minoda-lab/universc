@@ -1527,6 +1527,11 @@ else
             barcodefile=${whitelistdir}/inDrop-v3_barcodes.txt
             echo "***WARNING: ***combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
         fi
+    elif [[ "$technology" == "sciseq" ]]; then
+             barcodefile=${whitelistdir}/sciseq3_barcode.txt
+             if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
+                 echo "  ...generating combination of I1, I2, and RT barcodes..."
+             fi
     elif [[ "$technology" == "smartseq3" ]]; then
         barcodefile=${whitelistdir}/SmartSeq3_barcode.txt
     else
@@ -1576,6 +1581,9 @@ else
                 #allow for barcodes in index (I1) and R1
                 perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
             fi
+        elif [[ "$technology" == "sciseq" ]]; then
+             #generates all combinations of I1-I2-R1 barcodes
+             join -j 9999 ${whitelistdir}/sci-seq3_i5_barcodes.txt ${whitelistdir}/sci-seq3_i7_barcodes.txt | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g"  > ${whitelistdir}/sciseq3_barcode.txt
         else
             #generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
             echo $(eval echo $(for ii in $(eval echo {1..${barcodelength}}); do echo "{A,T,C,G}"; done | tr "\n" " " | sed "s/ //g" | xargs -I {} echo {})) | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
@@ -1947,17 +1955,20 @@ if [[ $lock -eq 0 ]]; then
     fi
 
     #determine last barcode and UMI
-    if [[ lastcall_b == "" ]]; then
+    if [[ $lastcall_b == "" ]]; then
         old_bc_length=16
     else
         old_bc_length=$lastcall_b
     fi
-    if [[ lastcall_u == "" ]]; then
+    if [[ $lastcall_u == "" ]]; then
        old_umi_length=10
     else
        old_umi_length=$lastcall_u
     fi
-    old_rna_offset=`echo $((${lastcall_b}+${last_call_u}))`
+    if [[ $verbose ]]; then
+        echo b ${lastcall_b} u ${lastcall_u} b ${barcodelength} u ${umilength}
+    fi
+    old_rna_offset=`echo $((${lastcall_b}+${lastcall_u})) || 26`
     new_rna_offset=`echo $((${barcodelength}+${umilength}))`
     # convert barcodes back if last technology barcode greater than 16 bp
     if [[ $old_bc_length -gt 16 ]]; then
