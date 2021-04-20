@@ -1458,6 +1458,7 @@ if [[ $verbose ]]; then
     echo " setting whitelist barcode file."
 fi
 
+custombarcodes=false
 if [[ -n "$barcodefile" ]]; then
     if [[ ! -f $barcodefile ]]; then
         echo "Error: File selected for option --barcodefile does not exist"
@@ -1465,6 +1466,7 @@ if [[ -n "$barcodefile" ]]; then
     else
         #getting absolute path
         barcodefile=$(readlink -f $barcodefile)
+        custombarcodes=true
         #allowing WellList from ICELL8 and other well-based techniques
         if [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
