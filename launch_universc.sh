@@ -1941,6 +1941,16 @@ if [[ $lock -eq 0 ]]; then
             eval "sed -i '$(echo "${num},${num2}s/^/#/g")' $file"
         done
     fi
+    #check for custom whitelist
+    if [[ $custombarcodes ]]; then
+        #disable detect chemistry check for custom whitelist
+        sed -i "s/ raise NoChemistryFoundException/ return best_chem \#raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/ (100\.0 \* best_frac/ \#(100\.0 \* best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+    else
+        #restore detect chemistry check for custom whitelist
+        sed -i "s/ return best_chem \#raise NoChemistryFoundException/ raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/ \#(100\.0 \* best_frac/ (100\.0 \* best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+    fi
     echo " ${cellrangerpath} set for $technology"
     
     #whitelist file name
