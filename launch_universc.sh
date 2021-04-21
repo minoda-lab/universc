@@ -218,7 +218,7 @@ Mandatory arguments to long options are mandatory for short options too.
 
                                 Experimental technologies (not yet supported):
                                   inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
-                                  Sci-Seq (8bp UMI, 26bp barcode): sciseq
+                                  Sci-Seq (8bp UMI, 30bp barcode): sciseq
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
@@ -734,9 +734,9 @@ elif [[ "$technology" == "quartz-seq2-1536" ]]; then
     umilength=8
     minlength=15
 elif [[ "$technology" == "sciseq" ]]; then
-    barcodelength=26
+    barcodelength=30
     umilength=8
-    minlength=26
+    minlength=30
 elif [[ "$technology" == "scrbseq" ]]; then
     barcodelength=6 
     umilength=10
@@ -1583,7 +1583,7 @@ else
             fi
         elif [[ "$technology" == "sciseq" ]]; then
              #generates all combinations of I1-I2-R1 barcodes
-             join -j 9999 ${whitelistdir}/sci-seq3_i5_barcodes.txt ${whitelistdir}/sci-seq3_i7_barcodes.txt | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g"  > ${whitelistdir}/sciseq3_barcode.txt
+             join -j 9999 ${whitelistdir}/sci-seq3_i5_barcodes.txt ${whitelistdir}/sci-seq3_i7_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/sciseq3_barcode.txt
         else
             #generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
             echo $(eval echo $(for ii in $(eval echo {1..${barcodelength}}); do echo "{A,T,C,G}"; done | tr "\n" " " | sed "s/ //g" | xargs -I {} echo {})) | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
@@ -1988,7 +1988,7 @@ if [[ $lock -eq 0 ]]; then
     fi
     if [[ $old_rna_offset -gt 26 ]]; then
        if [[ $verbose ]]; then
-           echo "RNA offset restored to 26 bp"
+           echo "RNA offset restored to 30 bp"
        fi
        sed -i "s/'rna_read_offset': ${old_rna_offset},/'rna_read_offset': 26,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
        sed -i "s/'umi_read_length': ${old_umi_length},/'umi_read_length': 10,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
@@ -2375,13 +2375,13 @@ else
     if [[ "$technology" == "sciseq" ]]; then
         echo "  ...remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
-            #remove adapter if detected
+            #remove adapter if detected (and hairpin/tn5 barcode)
             sed -E '
-                /^ACGACGCTCTTCCGATCT/ {
-                s/^(.{18})//g
+                /^ACGACGCTCTTCCGATCT(.{10})CAGAGC/ {
+                s/^ACGACGCTCTTCCGATCT(.{10})CAGAGC(.{18})/\2/g
                 n
                 n
-                s/^(.{18})//g
+                s/^(.{26})(.{18})/\2/g
                 }'  $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
             #swap barcode and UMI
@@ -2396,7 +2396,7 @@ else
             convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
 
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
-            # concatenate barcocdes from dual indexes to R1 as (bases 1-8 of the) barcode (bases 9-16), moving RT barcode (17-26) UMI to (27-35)
+            # concatenate barcocdes from dual indexes to R1 as (bases 1-20 of the) barcode, moving RT barcode (21-30) UMI to (31-38)
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
             perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
 

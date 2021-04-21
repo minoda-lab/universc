@@ -208,7 +208,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
 
                                 Experimental technologies (not yet supported):
                                   inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
-                                  Sci-Seq (8bp UMI, 26bp barcode): sciseq
+                                  Sci-Seq (8bp UMI, 30bp barcode): sciseq
 
            A barcode whitelist is provided for all beads or wells for the following technologies:
 
