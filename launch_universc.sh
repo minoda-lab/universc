@@ -1984,14 +1984,14 @@ if [[ $lock -eq 0 ]]; then
         if [[ $verbose ]]; then
            echo "umi default restored to 10 bp"
         fi
-        sed -i "s/'umi_read_length': ${old_umi_length},/'umi_read_length': 10/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/'umi_read_length': ${old_umi_length},/'umi_read_length': 10,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
     if [[ $old_rna_offset -gt 26 ]]; then
        if [[ $verbose ]]; then
            echo "RNA offset restored to 26 bp"
        fi
        sed -i "s/'rna_read_offset': ${old_rna_offset},/'rna_read_offset': 26,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-       sed -i "s/'umi_read_length': ${old_umi_length},/'umi_read_length': 10/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+       sed -i "s/'umi_read_length': ${old_umi_length},/'umi_read_length': 10,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
     # convert barcodes if new technology greater than 16 bp
     if [[ $minlength -gt 16 ]]; then
@@ -2006,14 +2006,14 @@ if [[ $lock -eq 0 ]]; then
         if [[ $verbose ]]; then
             echo "umi length set to $umilength"
         fi
-        sed -i "s/'umi_read_length': 10,/'umi_read_length': ${umilength}/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/'umi_read_length': 10,/'umi_read_length': ${umilength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
     if [[ $new_rna_offset -gt 26 ]]; then
        if [[ $verbose ]]; then
            echo "RNA offset set to $new_rna_offset"
        fi
        sed -i "s/'rna_read_offset': 26,/'rna_read_offset': ${new_rna_offset},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-       sed -i "s/'umi_read_length': 10,/'umi_read_length': ${umilength}/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+       sed -i "s/'umi_read_length': 10,/'umi_read_length': ${umilength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
 
     echo " ${cellrangerpath} set for $technology"
