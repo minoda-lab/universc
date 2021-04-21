@@ -203,10 +203,13 @@ Mandatory arguments to long options are mandatory for short options too.
                                   ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
+                                  inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
                                   MARS-Seq (6bp barcode, 10bp UMI): marsseq, marsseq-v1
                                   MARS-Seq2 (7bp barcode, 8bp UMI): marsseq2, marsseq-v2
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
+                                  SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
+                                  SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
                                   Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
@@ -215,10 +218,6 @@ Mandatory arguments to long options are mandatory for short options too.
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
-
-                                Experimental technologies (not yet supported):
-                                  inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
-                                  Sci-Seq (8bp UMI, 30bp barcode): sciseq
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
@@ -614,7 +613,11 @@ elif [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2
 elif [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]]; then
     technology="quartz-seq2-1536"
 elif [[ "$technology" == "sciseq" ]] || [[ "$technology" == "sci-seq" ]]; then
-    technology="sciseq"
+    technology="sciseq3"
+elif [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sci-seq2" ]]; then
+     technology="sciseq2"
+elif [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "sci-seq3" ]]; then
+     technology="sciseq3"
 elif [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "scrb-seq" ]] || [[ "$technology" == "mcscrbseq" ]] || [[ "$technology" == "mcscrb-seq" ]]; then
     technology="scrbseq"
 elif [[ "$technology" == "seqwell" ]] || [[ "$technology" == "seq-well" ]]; then
@@ -733,10 +736,14 @@ elif [[ "$technology" == "quartz-seq2-1536" ]]; then
     barcodelength=15
     umilength=8
     minlength=15
-elif [[ "$technology" == "sciseq" ]]; then
+elif [[ "$technology" == "sciseq2" ]]; then
     barcodelength=30
     umilength=8
     minlength=30
+elif [[ "$technology" == "sciseq3" ]]; then
+     barcodelength=40
+     umilength=8
+    minlength=40
 elif [[ "$technology" == "scrbseq" ]]; then
     barcodelength=6 
     umilength=10
@@ -945,7 +952,7 @@ fi
 #index 2
 if [[ $setup == "false" ]]; then
     #only check I2 for dual-indexed techniques
-    if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "smartseq"* ]]; then
+    if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "smartseq"* ]]; then
         if [[ ${#index2[@]} -ne ${#read1[@]} ]]; then
             if [[ ${#index2[@]} -gt 0 ]]; then
                echo " Error: number of index1 files is not matching the number of index2 files"
@@ -1472,7 +1479,7 @@ if [[ -n "$barcodefile" ]]; then
         #getting absolute path
         barcodefile=$(readlink -f $barcodefile)
         #allowing WellList from ICELL8 and other well-based techniques
-        if [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq" ]] || [[ "$technology" == "custom" ]]; then
+        if [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
             n_col=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             if [[ $n_col -eq 1 ]]; then
@@ -1527,7 +1534,12 @@ else
             barcodefile=${whitelistdir}/inDrop-v3_barcodes.txt
             echo "***WARNING: ***combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
         fi
-    elif [[ "$technology" == "sciseq" ]]; then
+    elif [[ "$technology" == "sciseq2" ]]; then
+             barcodefile=${whitelistdir}/sciseq2_barcode.txt
+             if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
+                 echo "  ...generating combination of I1, I2, and RT barcodes..."
+             fi
+    elif [[ "$technology" == "sciseq3" ]]; then
              barcodefile=${whitelistdir}/sciseq3_barcode.txt
              if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
                  echo "  ...generating combination of I1, I2, and RT barcodes..."
@@ -1581,10 +1593,20 @@ else
                 #allow for barcodes in index (I1) and R1
                 perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
             fi
-        elif [[ "$technology" == "sciseq" ]]; then
+        elif [[ "$technology" == "sciseq2" ]]; then
              #generates all combinations of I1-I2-R1 barcodes
-             join -j 9999 ${whitelistdir}/sci-seq3_i5_barcodes.txt ${whitelistdir}/sci-seq3_i7_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/sciseq3_barcode.txt
-        else
+             if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
+                 join -j 9999 ${whitelistdir}/sci-seq3_i5_barcodes.txt ${whitelistdir}/sci-seq3_i7_barcodes.txt | sed "s/ //g" \
+                 | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/sciseq2_barcode.txt
+             fi
+        elif [[ "$technology" == "sciseq3" ]]; then
+             if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
+                 #generates all combinations of I1-I2-R1 barcodes
+                 join -j 9999 ${whitelistdir}/sci-seq3_i5_barcodes.txt ${whitelistdir}/sci-seq3_i7_barcodes.txt | sed "s/ //g" \
+                 | join -j 9999 - ${whitelistdir}/sci-seq3_hp_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" \
+                 | awk '!a[$0]++'  > ${whitelistdir}/sciseq3_barcode.txt
+             fi
+         else
             #generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
             echo $(eval echo $(for ii in $(eval echo {1..${barcodelength}}); do echo "{A,T,C,G}"; done | tr "\n" " " | sed "s/ //g" | xargs -I {} echo {})) | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
         fi
@@ -2372,21 +2394,55 @@ else
     fi
     
     #Sci-Seq: remove adapter and swap barcode and UMI
-    if [[ "$technology" == "sciseq" ]]; then
+    if [[ "$technology" == "sciseq2" ]]; then
         echo "  ...remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
-            #remove adapter if detected (and hairpin/tn5 barcode)
+            #remove adapter if detected (two-level indexing)
+            sed -E '
+                /^ACGACGCTCTTCCGATCT/ {
+                s/^ACGACGCTCTTCCGATCT(.{18})/\1/g
+                n
+                n
+                s/^(.{18})(.{18})/\2/g
+                }'  $convFile > ${crIN}/.temp
+             mv ${crIN}/.temp $convFile
+             #swap barcode and UMI
+            echo "  ...barcode and UMI swapped for ${technology}"
+            sed -E '2~2s/(.{8})(.{10})/\2\1/' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+
+            read=$convFile
+            convR1=$read
+            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+            convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
+            convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
+
+            echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
+            # concatenate barcocdes from dual indexes to R1 as (bases 1-20 of the) barcode, moving RT barcode (21-30) UMI to (31-38)
+            # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+
+            #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
+            mv $crIN/Concatenated_File.fastq ${convR1}
+        done
+    fi
+
+
+    if [[ "$technology" == "sciseq3" ]]; then
+        echo "  ...remove adapter for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove adapter if detected (and keep hairpin/tn5 barcode)
             sed -E '
                 /^ACGACGCTCTTCCGATCT(.{10})CAGAGC/ {
-                s/^ACGACGCTCTTCCGATCT(.{10})CAGAGC(.{18})/\2/g
+                s/^ACGACGCTCTTCCGATCT(.{10})CAGAGC(.{18})/\1\2/g
                 n
                 n
-                s/^(.{26})(.{18})/\2/g
+                s/^(.{26})(.{10})(.{6})(.{18})/\2\4/g
                 }'  $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
             #swap barcode and UMI
             echo "  ...barcode and UMI swapped for ${technology}"
-            sed -E '2~2s/(.{8})(.{10})/\2\1/' $convFile > ${crIN}/.temp
+            sed -E '2~2s/(.{10})(.{8})(.{10})/\3\1\2/' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile            
 
             read=$convFile
@@ -2402,7 +2458,6 @@ else
 
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
-
         done
     fi
     
