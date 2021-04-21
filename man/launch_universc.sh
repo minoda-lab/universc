@@ -193,10 +193,13 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
                                   inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
+                                  inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
                                   MARS-Seq (6bp barcode, 10bp UMI): marsseq, marsseq-v1
                                   MARS-Seq2 (7bp barcode, 8bp UMI): marsseq2, marsseq-v2   
                                   Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
+                                  SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
+                                  SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
                                   Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
@@ -206,13 +209,9 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
 
-                                Experimental technologies (not yet supported):
-                                  inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
-                                  Sci-Seq (8bp UMI, 30bp barcode): sciseq
-
            A barcode whitelist is provided for all beads or wells for the following technologies:
 
-                 10x Genomics, ICELL8, inDrops-v2, and QuartzSeq2
+                 10x Genomics, ICELL8, inDrops-v2, inDrops-v3, SCI-Seq (2-level), SCI-Seq3, SmartSeq3, and QuartzSeq2
 
             Where no known barcodes are available all possible barcodes of the expected length are
             generated and converted if the permutations have not been computed already.
