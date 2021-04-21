@@ -1942,14 +1942,20 @@ if [[ $lock -eq 0 ]]; then
         done
     fi
     #check for custom whitelist
-    if [[ $custombarcodes ]]; then
+    if [[ $custombarcodes == "true" ]]; then
         #disable detect chemistry check for custom whitelist
-        sed -i "s/ raise NoChemistryFoundException/ return best_chem \#raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-        sed -i "s/ (100\.0 \* best_frac/ \#(100\.0 \* best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        if [[ $verbose ]]; then
+            echo "disable detect chemistry check..."
+        fi
+        sed -i "s/ raise NoChemistryFoundException/ return best_chem #raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/ (100\.0 \* best_frac/ #(100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     else
+         if [[ $verbose ]]; then
+             echo "restore detect chemistry check..."
+        fi
         #restore detect chemistry check for custom whitelist
         sed -i "s/ return best_chem \#raise NoChemistryFoundException/ raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-        sed -i "s/ \#(100\.0 \* best_frac/ (100\.0 \* best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/ \#(100\.0 \* best_frac/ (100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
     echo " ${cellrangerpath} set for $technology"
     
