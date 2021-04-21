@@ -215,6 +215,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
                                   SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
+                                  SPLiT-Seq2 (10bp UMI, 24bp barcode): splitseq2
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
@@ -633,6 +634,8 @@ elif [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; 
     nonUMI=false
 elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "split-seq" ]]; then
     technology="splitseq"
+elif [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "split-seq2" ]] || [[ "$technology" == "splitseq-v2" ]] || [[ "$technology" == "split-seq-v2" ]]; then
+    technology="splitseq2"
 elif [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]] || [[ "$technology" == "ddseq" ]] || [[ "$technology" == "dd-seq" ]] || [[ "$technology" == "bioraad" ]]; then
     technology="surecell"
 elif [[ "$technology" == "custom"* ]]; then
@@ -764,6 +767,10 @@ elif [[ "$technology" == "splitseq" ]]; then
     barcodelength=18
     umilength=10
     minlength=18
+elif [[ "$technology" == "splitseq2" ]]; then
+     barcodelength=24
+     umilength=10
+     minlength=24
 elif [[ "$technology" == "surecell" ]]; then
     barcodelength=18
     umilength=8
@@ -1378,7 +1385,7 @@ if [[ "$technology" == "indrop-v3" ]]; then
 fi
 
 #inverting R1 and R2 for specific technologies
-if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "splitseq" ]]; then
+if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]]; then
     #invert read1 and read2
     echo "***WARNING: technology is set to ${technology}. barcodes on Read 2 will be used***"
     tmp=$read1
@@ -1479,7 +1486,7 @@ if [[ -n "$barcodefile" ]]; then
         #getting absolute path
         barcodefile=$(readlink -f $barcodefile)
         #allowing WellList from ICELL8 and other well-based techniques
-        if [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "custom" ]]; then
+        if [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "splitseq" ]]|| [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
             n_col=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             if [[ $n_col -eq 1 ]]; then
@@ -2481,7 +2488,7 @@ else
     #SPLiT-Seq: correct phase blocks and swap barcode and UMI (if a whitelist and 18bp barcode can be supported)
     ## https://github.com/hms-dbmi/dropEst/issues/80
     ## https://github.com/sdparekh/zUMIs/wiki/Protocol-specific-setup
-    if [[ "$technology" == "splitseq" ]]; then
+    if [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]]; then
         echo "  ...remove adapter and phase blocks for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers (swap barcode and UMI)
