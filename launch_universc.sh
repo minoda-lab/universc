@@ -1603,13 +1603,13 @@ else
         elif [[ "$technology" == "sciseq2" ]]; then
              #generates all combinations of I1-I2-R1 barcodes
              if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
-                 join -j 9999 ${whitelistdir}/sci-seq3_i5_barcodes.txt ${whitelistdir}/sci-seq3_i7_barcodes.txt | sed "s/ //g" \
+                 join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" \
                  | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/sciseq2_barcode.txt
              fi
         elif [[ "$technology" == "sciseq3" ]]; then
              if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
                  #generates all combinations of I1-I2-R1 barcodes
-                 join -j 9999 ${whitelistdir}/sci-seq3_i5_barcodes.txt ${whitelistdir}/sci-seq3_i7_barcodes.txt | sed "s/ //g" \
+                 join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" \
                  | join -j 9999 - ${whitelistdir}/sci-seq3_hp_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" \
                  | awk '!a[$0]++'  > ${whitelistdir}/sciseq3_barcode.txt
              fi
@@ -2449,7 +2449,7 @@ else
             mv ${crIN}/.temp $convFile
             #swap barcode and UMI
             echo "  ...barcode and UMI swapped for ${technology}"
-            sed -E '2~2s/(.{10})(.{8})(.{10})/\3\1\2/' $convFile > ${crIN}/.temp
+            sed -E '2~2s/(.{10})(.{8})(.{10})/\1\3\2/' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile            
 
             read=$convFile
