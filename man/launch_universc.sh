@@ -210,6 +210,14 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
 
+                                Experimental
+                                   Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
+                                   STRT-Seq (6 bp barcode, no UMI)
+                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI)
+                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI)
+                                   SmartSeq2 (16 bp barcode, no UMI)
+
            A barcode whitelist is provided for all beads or wells for the following technologies:
 
                  10x Genomics, ICELL8, inDrops-v2, inDrops-v3, SCI-Seq (2-level), SCI-Seq3, SmartSeq3, and QuartzSeq2

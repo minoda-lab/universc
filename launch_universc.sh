@@ -220,6 +220,14 @@ Mandatory arguments to long options are mandatory for short options too.
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
 
+                                Experimental
+                                   Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
+                                   STRT-Seq (6 bp barcode, no UMI)
+                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI)
+                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI)
+                                   SmartSeq2 (16 bp barcode, no UMI)
+
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
