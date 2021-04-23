@@ -2455,14 +2455,23 @@ else
                 s/^.{18}//g
                 }'  $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
-            #remove linker
+            #remove linker (10 bp barcodes)
             sed -E '
                 /^(.{10})CAGAGC/ {
                 s/^(.{10})CAGAGC(.{18})/\1\2/g
                 n
                 n
-                s/^(.{26})(.{10})(.{6})(.{18})/\2\4/g
+                s/^(.{10})(.{6})(.{18})/\1\3/g
                 }'  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #remove linker (9 bp barcodes)
+            sed -E '
+                /^(.{9})CAGAGC/ {
+                s/^(.{9})CAGAGC(.{18})/E\1\2/g
+                n
+                n
+                s/^(.{9})(.{6})(.{18})/F\1\3/g
+                }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
             #swap barcode and UMI
             echo "  ...barcode and UMI swapped for ${technology}"
