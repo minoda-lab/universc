@@ -2447,31 +2447,29 @@ else
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected (and keep hairpin/tn5 barcode)
             ## TruSeq adapter: ACGACGCTCTTCCGATCT
-            sed -E '
+            cat $convFile | sed -E '
                 /^ACGACGCTCTTCCGATCT/ {
                 s/^ACGACGCTCTTCCGATCT//g
                 n
                 n
                 s/^.{18}//g
-                }'  $convFile > ${crIN}/.temp
-            mv ${crIN}/.temp $convFile
-            #remove linker (10 bp barcodes)
-            sed -E '
-                /^(.{10})CAGAGC/ {
-                s/^(.{10})CAGAGC(.{18})/\1\2/g
-                n
-                n
-                s/^(.{10})(.{6})(.{18})/\1\3/g
-                }'  $convFile > ${crIN}/.temp
-            mv ${crIN}/.temp $convFile
-            #remove linker (9 bp barcodes)
-            sed -E '
+                }' |
+           #remove linker (10 bp barcodes)
+           sed -E '
                 /^(.{9})CAGAGC/ {
-                s/^(.{9})CAGAGC(.{18})/E\1\2/g
+                s/^(.{9})CAGAGC(.{18})/T\1CAGAGC\2/g
                 n
                 n
-                s/^(.{9})(.{6})(.{18})/F\1\3/g
-                }' $convFile > ${crIN}/.temp
+                s/^(.{9})(.{6})(.{18})/F\1\2\3/g
+                }' |
+           #remove linker (9 bp barcodes)
+           sed -E '
+                /^(.{10})CAGAGC/ {
+                s/^(.{10})CAGAGC/\1/g
+                n
+                n
+                s/^(.{10})(.{6})/\1/g
+                }'  > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
             #swap barcode and UMI
             echo "  ...barcode and UMI swapped for ${technology}"
