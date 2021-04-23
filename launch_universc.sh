@@ -1603,18 +1603,24 @@ else
         elif [[ "$technology" == "sciseq2" ]]; then
              #generates all combinations of I1-I2-R1 barcodes
              if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
-                 join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" \
-                 | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/sciseq2_barcode.txt
+                 join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" | \
+                 join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/sciseq2_barcode.txt
              fi
         elif [[ "$technology" == "sciseq3" ]]; then
              if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
                  #generates all combinations of I1-I2-R1 barcodes
-                 join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" \
-                 | join -j 9999 - ${whitelistdir}/sci-seq3_hp_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" \
-                 | awk '!a[$0]++'  > ${whitelistdir}/sciseq3_barcode.txt
+                 join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" | \
+                 join -j 9999 - ${whitelistdir}/sci-seq3_hp_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" \
+                 > ${whitelistdir}/sciseq3_barcode.txt
+                 ## to filter unique lines: awk '!a[$0]++'  > ${whitelistdir}/sciseq3_barcode.txt
              fi
-         else
+        else
             #generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
+            if [[ ${barcodelength} -ge 12 ]]; then
+                echo "  ... generating all permutations of A,T,C,G of length ${barcodelength}"
+                echo "  WARNING: for large barcodes this could take a lot of time and memory"
+                echo "  Please use a known barcode whitelist if possible"
+            fi
             echo $(eval echo $(for ii in $(eval echo {1..${barcodelength}}); do echo "{A,T,C,G}"; done | tr "\n" " " | sed "s/ //g" | xargs -I {} echo {})) | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
         fi
     fi
@@ -2405,6 +2411,7 @@ else
         echo "  ...remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected (two-level indexing)
+             ## TruSeq adapter: ACGACGCTCTTCCGATCT
             sed -E '
                 /^ACGACGCTCTTCCGATCT/ {
                 s/^ACGACGCTCTTCCGATCT(.{18})/\1/g
@@ -2439,9 +2446,19 @@ else
         echo "  ...remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected (and keep hairpin/tn5 barcode)
+            ## TruSeq adapter: ACGACGCTCTTCCGATCT
             sed -E '
-                /^ACGACGCTCTTCCGATCT(.{10})CAGAGC/ {
-                s/^ACGACGCTCTTCCGATCT(.{10})CAGAGC(.{18})/\1\2/g
+                /^ACGACGCTCTTCCGATCT/ {
+                s/^ACGACGCTCTTCCGATCT//g
+                n
+                n
+                s/^.{18}//g
+                }'  $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #remove linker
+            sed -E '
+                /^(.{10})CAGAGC/ {
+                s/^(.{10})CAGAGC(.{18})/\1\2/g
                 n
                 n
                 s/^(.{26})(.{10})(.{6})(.{18})/\2\4/g
