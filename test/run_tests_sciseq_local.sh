@@ -21,20 +21,21 @@ fi
 
 ##unpigz -k test/shared/sciseq-v3-test/SRR7827205*fastq.gz
 
-if [ -f test/shared/sciseq-v3-test/SRR7827205_S1_L001_R1_001.fastq ]; then
-    rename "s/_S1_L001/_L001/" test/shared/sciseq-v3-test/SRR7827205_S1_L001_R1_001.fastq*
-fi
-if [ -f test/shared/sciseq-v3-test/SRR7827205_S1_L001_R1_001.fastq ]; then
-    rename "s/_S1_L001/_L001/" test/shared/sciseq-v3-test/SRR7827205_S1_L001_R1_001.fastq*
-fi
-if [ -f test/shared/sciseq-v3-test/SRR7827205_S2_L002_R1_001.fastq ]; then
-    rename -n "s/_S2_L002/_L002/" test/shared/sciseq-v3-test/SRR7827205_S2_L002_R1_001.fastq*
-fi
-if [ -f test/shared/sciseq-v3-test/SRR7827205_S2_L002_R2_001.fastq ]; then
-    rename -n "s/_S2_L002/_L002/" test/shared/sciseq-v3-test/SRR7827205_S2_L002_R2_001.fastq*
-fi
-if [ -d test-icell8-72618-KU812-2-lanes ];then
-    rm -rf test-icell8-72618_KU812-2-lanes
+mv  test/shared/sciseq-v3-test/SRR7827205_S1_L001_R1_001.fastq.gz  test/shared/sciseq-v3-test/SRR7827205_S1_R1.fastq.gz
+mv  test/shared/sciseq-v3-test/SRR7827205_S1_L001_R2_001.fastq.gz  test/shared/sciseq-v3-test/SRR7827205_S1_R2.fastq.gz
+mv  test/shared/sciseq-v3-test/SRR7827205_S1_L001_I1_001.fastq.gz  test/shared/sciseq-v3-test/SRR7827205_S1_I1.fastq.gz
+mv  test/shared/sciseq-v3-test/SRR7827205_S1_L001_I2_001.fastq.gz  test/shared/sciseq-v3-test/SRR7827205_S1_I2.fastq.gz
+
+#if [ -f test/shared/sciseq-v3-test/SRR7827205_S1_L001_R1_001.fastq ]; then
+#    rename "s/_S1_L001/_S1/" test/shared/sciseq-v3-test/SRR7827205_S1_L001_R1_001.fastq*
+#    rename "s/_001//" test/shared/sciseq-v3-test/SRR7827205_S1_R1_001.fastq*
+#fi
+#if [ -f test/shared/sciseq-v3-test/SRR7827205_S1_L001_R2_001.fastq ]; then
+#    rename "s/_S1_L001/_S1/" test/shared/sciseq-v3-test/SRR7827205_S1_L001_R2_001.fastq*
+#    rename "s/_001//" test/shared/sciseq-v3-test/SRR7827205_S1_R2_001.fastq*
+#fi
+if [ -d test-sciseq ];then
+    rm -rf test-sciseq
 fi
 
 if [[ ! -f whitelists/sciseq3_barcode_test.txt ]]; then
@@ -49,14 +50,8 @@ bash launch_universc.sh --id "test-sciseq" --technology "sciseq" \
  --barcodefile whitelists/sciseq3_barcode_test.txt \
  --jobmode "local" --localcores 1 --verbose
 
-bash launch_universc.sh --id "test-sciseq" --technology "sciseq" \
- --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
- --read1 "test/shared/sciseq-v3-test/SRR7827205_S1_R1.fastq.gz" \
- --read2 "test/shared/sciseq-v3-test/SRR7827205_S1_R2.fastq.gz" \
- --jobmode "local" --localcores 1 
-
 if [ -f test/shared/sciseq-v3-test/SRR7827205_S1_L001_R1_001.fastq.gz ]; then
-    rename "s/_S1_L001/_S1/" test/shared/sciseq-v3-test/SRR7827 205_S1_L001_[IR][12]_001.fastq*
+    rename "s/_S1_L001/_S1/" test/shared/sciseq-v3-test/SRR7827205_S1_L001_[IR][12]_001.fastq*
     rename "s/_001//" test/shared/sciseq-v3-test/SRR7827205_S1_[IR][12]_001.fastq*
 fi
 gzip test/shared/sciseq-v3-test/SRR7827205_S1_[IR][12].fastq
