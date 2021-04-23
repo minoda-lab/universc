@@ -1611,6 +1611,10 @@ else
              fi
     elif [[ "$technology" == "smartseq3" ]]; then
         barcodefile=${whitelistdir}/SmartSeq3_barcode.txt
+    elif [[ "$technology" == "strt-seq" ]]; then
+         barcodefile=${whitelistdir}/STRTSeq_barcode.txt
+    elif [[ "$technology" == "strt-seq-c1" ]]; then
+         barcodefile=${whitelistdir}/STRTSeqC1_barcode.txt
     else
         echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength}bp. valid barcode will be 100% as a result***"
         barcodelength=${minlength}
@@ -2549,7 +2553,51 @@ else
             mv $crIN/Concatenated_File.fastq ${convR1}
         done
     fi
-    
+
+    #STRT-Seq
+    if [[ "$technology" == "strt-seq" ]]; then
+        echo "  ...processsing for ${technology}"
+        if [[ $verbose ]]; then
+            echo "Note: STRT-Seq does not contain UMIs"
+        fi
+        for convFile in "${convFiles[@]}"; do
+            read=$convFile
+            convR1=$read
+
+            # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
+            echo "  ...generate mock UMI for compatibility"
+            perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+            umilength=$umi_default
+            umiadjust=0
+            chemistry="SC5P-PE"
+            #returns a combined R1 file with barcode and mock UMI
+            ## 6 bp barcode, 10 bp UMI, GGG for TSO
+            mv $crIN/mock_UMI.fastq ${convR1}
+
+            #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
+            echo " handling $convFile ..."
+            tsoS="TTTCTTATATGGG"
+            tsoQ="IIIIIIIIIIIII"
+            #Add 10x TSO characters to the end of the sequence
+            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+            if [[ $verbose ]]; then
+                echo technology $technology
+                echo barcode: $barcodelength
+                echo umi: $umilength
+                echo $cmd
+            fi
+            # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+            eval $cmd
+            mv ${crIN}/.temp $convFile
+            #Add n characters to the end of the quality
+            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+            # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+            eval $cmd
+            mv ${crIN}/.temp $convFile
+            echo "  ${convFile} adjusted"
+       done
+    fi
+
     #SureCell: remove adapter and correct phase blocks
     ## https://github.com/Hoohm/dropSeqPipe/issues/42
     if [[ "$technology" == "surecell" ]]; then
