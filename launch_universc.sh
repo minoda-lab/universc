@@ -1615,6 +1615,8 @@ else
          barcodefile=${whitelistdir}/STRTSeq_barcode.txt
     elif [[ "$technology" == "strt-seq-c1" ]]; then
          barcodefile=${whitelistdir}/STRTSeqC1_barcode.txt
+     elif [[ "$technology" == "strt-seq-2i" ]]; then
+         barcodefile=${whitelistdir}/STRTSeq2i_barcode.txt
     else
         echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength}bp. valid barcode will be 100% as a result***"
         barcodelength=${minlength}
@@ -1675,6 +1677,12 @@ else
                  join -j 9999 - ${whitelistdir}/sci-seq3_hp_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" \
                  > ${whitelistdir}/sciseq3_barcode.txt
                  ## to filter unique lines: awk '!a[$0]++'  > ${whitelistdir}/sciseq3_barcode.txt
+             fi
+        elif [[ "$technology" == "strt-seq-2i" ]]; then
+             if [[ ! -f ${whitelistdir}/STRTSeq2i_barcode.txt ]]; then
+                 #generates all combinations of I1-I2-R1 barcodes
+                 join -j 9999 ${whitelistdir}/AllPossibilities_5_barcodes.txt ${whitelistdir}/STRTSeqC1_barcode.txt | sed "s/ //g" | \
+                 > ${whitelistdir}/STRTSeq2i_barcode_barcode.txt
              fi
         else
             #generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
@@ -2555,24 +2563,44 @@ else
     fi
 
     #STRT-Seq
-    if [[ "$technology" == "strt-seq" ]]; then
+    if [[ "$technology" == "strt-seq" ]] || [[ "$technology" == "strt-seq-c1" ]] || [[ "$technology" == "strt-seq-2i" ]]; then
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
-            echo "Note: STRT-Seq does not contain UMIs"
+            if [[ "$technology" == "strt-seq" ]]; then
+                echo "Note: STRT-Seq does not contain UMIs"
+            fi
         fi
         for convFile in "${convFiles[@]}"; do
             read=$convFile
             convR1=$read
 
-            # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
-            echo "  ...generate mock UMI for compatibility"
-            perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
-            umilength=$umi_default
-            umiadjust=0
-            chemistry="SC5P-PE"
-            #returns a combined R1 file with barcode and mock UMI
-            ## 6 bp barcode, 10 bp UMI, GGG for TSO
-            mv $crIN/mock_UMI.fastq ${convR1}
+            if [[ "$technology" == "strt-seq" ]]; then
+                # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
+                echo "  ...generate mock UMI for compatibility"
+                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                umilength=$umi_default
+                umiadjust=0
+                chemistry="SC5P-PE"
+
+                #returns a combined R1 file with barcode and mock UMI
+                ## 6 bp barcode, 10 bp UMI, GGG for TSO
+                mv $crIN/mock_UMI.fastq ${convR1}
+            fi
+            if [[ "$technology" == "strt-seq-c1" ]]; then
+                convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
+                chemistry="SC5P-R1"
+                echo "  ...concatencate barcodes to R1 from I1 index files"
+                # concatenate barcocdes from I1 index to R1 as barcode (bases 1-8)
+                perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --ref_fastq=${convR1} --out_dir $crIN
+            fi
+            if [[ "$technology" == "strt-seq-2i" ]]; then
+                convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
+                convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
+                chemistry="SC5P-R1"
+                echo "  ...concatencate barcodes to R1 from I1 and I2index files"
+                # concatenate barcocdes from I1 index to R1 as barcode (bases 1-8)
+                perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+            fi
 
             #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
             echo " handling $convFile ..."
