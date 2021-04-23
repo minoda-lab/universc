@@ -603,6 +603,8 @@ elif [[ "$technology" == "celseq" ]] || [[ "$technology" == "cel-seq" ]]; then
     technology="celseq"
 elif [[ "$technology" == "celseq2" ]] || [[ "$technology" == "cel-seq2" ]]; then
     technology="celseq2"
+elif [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd" ]] || [[ "$technology" == "rhapsody" ]] || [[ "$technology" == "bdrhapsody" ]]; then
+    technology="bd-rhapsody"
 elif [[ "$technology" == "nadia" ]] || [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
     technology="nadia"
 elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]]; then
@@ -617,6 +619,8 @@ elif [[ "$technology" == "marsseq" ]] || [[ "$technology" == "mars-seq" ]] || [[
     technology="marsseq-v1"
 elif [[ "$technology" == "marsseq2" ]] || [[ "$technology" == "mars-seq2" ]] || [[ "$technology" == "marsseq-v2" ]] || [[ "$technology" == "mars-seq-v2" ]] || [[ "$technology" == "marsseqv2" ]] || [[ "$technology" == "mars-seqv2" ]]; then
     technology="marsseq-v2"
+elif [[ "$technology" == "microwell-seq" ]] || [[ "$technology" == "micro-well" ]] || [[ "$technology" == "microwell" ]] || [[ "$technology" == "microwellseq" ]]; then
+     technology="microwellseq"
 elif [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]]; then
     technology="quartz-seq2-384"
 elif [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]]; then
@@ -644,6 +648,12 @@ elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "split-seq" ]]; th
     technology="splitseq"
 elif [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "split-seq2" ]] || [[ "$technology" == "splitseq-v2" ]] || [[ "$technology" == "split-seq-v2" ]]; then
     technology="splitseq2"
+elif [[ "$technology" == "strt-seq" ]] || [[ "$technology" == "strt" ]] || [[ "$technology" == "strtseq" ]]; then
+     technology="strt-seq"
+elif [[ "$technology" == "strt-seq-c1" ]] || [[ "$technology" == "strt-seqc1" ]] || [[ "$technology" == "strtseqc1" ]] || [[ "$technology" == "strtseq-c1" ]]; then
+     technology="strt-seq-c1"
+elif [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "strt-seq2i" ]] || [[ "$technology" == "strtseq2i" ]] || [[ "$technology" == "strtseq-2i" ]]; then
+     technology="strt-seq-2i"
 elif [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]] || [[ "$technology" == "ddseq" ]] || [[ "$technology" == "dd-seq" ]] || [[ "$technology" == "bioraad" ]]; then
     technology="surecell"
 elif [[ "$technology" == "custom"* ]]; then
@@ -707,6 +717,10 @@ elif [[ "$technology" == "10x-v3" ]]; then
     barcodelength=16
     umilength=12
     minlength=16
+elif [[ "$technology" == "bd-rhapsody" ]]; then
+    barcodelength=27
+    umilength=8
+    minlength=27
 elif [[ "$technology" == "celseq" ]]; then
     barcodelength=8
     umilength=4
@@ -735,6 +749,10 @@ elif [[ "$technology" == "marsseq-v1" ]]; then
     barcodelength=6
     umilength=10
     minlength=6
+elif [[ "$technology" == "microwellseq" ]]; then
+    barcodelength=18
+    umilength=6
+    minlength=18
 elif [[ "$technology" == "marsseq-v2" ]]; then
     barcodelength=7
     umilength=8
@@ -779,6 +797,18 @@ elif [[ "$technology" == "splitseq2" ]]; then
      barcodelength=24
      umilength=10
      minlength=24
+elif [[ "$technology" == "strt-seq" ]]; then
+    barcodelength=6
+    umilength=0
+    minlength=6
+elif [[ "$technology" == "strt-seq-c1" ]]; then
+    barcodelength=8
+    umilength=5
+    minlength=8
+elif [[ "$technology" == "strt-seq-2i" ]]; then
+    barcodelength=13
+    umilength=6
+    minlength=13
 elif [[ "$technology" == "surecell" ]]; then
     barcodelength=18
     umilength=8
@@ -1494,7 +1524,7 @@ if [[ -n "$barcodefile" ]]; then
         #getting absolute path
         barcodefile=$(readlink -f $barcodefile)
         #allowing WellList from ICELL8 and other well-based techniques
-        if [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "splitseq" ]]|| [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "custom" ]]; then
+        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
             n_col=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             if [[ $n_col -eq 1 ]]; then
@@ -1528,11 +1558,21 @@ if [[ -n "$barcodefile" ]]; then
 else
     if [[ "$technology" == "10x"* ]]; then
         barcodefile="default:10x"
+    elif [[ "$technology" == "bd-rhapsody" ]]; then
+             barcodefile=${whitelistdir}/bd_rhapsody_barcode.txt
+             if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
+                 echo "  ...generating combination of I1, I2, and RT barcodes..."
+             fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${whitelistdir}/ICELL8_barcode.txt
 	echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in ICELL8. valid barcode will be an overestimate***"
     elif [[ "$technology" == "marsseq-v2" ]]; then
         barcodefile=${whitelistdir}/MARS-Seq2_barcode.txt
+    elif [[ "$technology" == "microwellseq" ]]; then
+             barcodefile=${whitelistdir}/microwellseq_barcode.txt
+             if [[ ! -f ${whitelistdir}/microwellseq_barcode.txt ]]; then
+                 echo "  ...generating combination of I1, I2, and RT barcodes..."
+             fi
     elif [[ "$technology" == "quartz-seq2-384" ]]; then
         barcodefile=${whitelistdir}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
@@ -1557,6 +1597,16 @@ else
     elif [[ "$technology" == "sciseq3" ]]; then
              barcodefile=${whitelistdir}/sciseq3_barcode.txt
              if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
+                 echo "  ...generating combination of I1, I2, and RT barcodes..."
+             fi
+    elif [[ "$technology" == "splitseq" ]]; then
+             barcodefile=${whitelistdir}/splitseq_barcode.txt
+             if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
+                 echo "  ...generating combination of I1, I2, and RT barcodes..."
+             fi
+    elif [[ "$technology" == "splitseq2" ]]; then
+             barcodefile=${whitelistdir}/splitseq2_barcode.txt
+             if [[ ! -f ${whitelistdir}/splitseq2_barcode.txt ]]; then
                  echo "  ...generating combination of I1, I2, and RT barcodes..."
              fi
     elif [[ "$technology" == "smartseq3" ]]; then
