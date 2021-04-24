@@ -1657,7 +1657,13 @@ else
         if [[ $verbose ]]; then
             echo "  generating a new barcode whitelist for ${technology}"
         fi
-        if [[ "$technology" == "indrop-v"* ]]; then
+        if [[ "$technology" == "bd-rhapsody" ]]; then
+             if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
+                 #generates all combinations of I1-I2-R1 barcodes
+                 join -j 9999 ${whitelistdir}/bd_rhapsody_cell_label_section1.txt ${whitelistdir}/bd_rhapsody_cell_label_section2.txt | sed "s/ //g" | \
+                 join -j 9999 - ${whitelistdir}/bd_rhapsody_cell_label_section3.txt | sed "s/ //g"  > ${whitelistdir}/bd_rhapsody_barcode.txt
+             fi
+        elif [[ "$technology" == "indrop-v"* ]]; then
             if [[ "$technology" == "indrop-v1" ]] || [[ $technology"" == "indrop-v2" ]]; then
                  perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v2 ${whitelistdir}
             elif [[ "$technology" == "indrop-v3" ]]; then
@@ -2392,6 +2398,22 @@ else
         done
     fi
     
+    #BD Rhapsody: remove adapters
+    if [[ "$technology" == "bd-rhapsody" ]]; then
+        echo "  ...remove adapter and phase blocks for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{9})ACTGGCCTGCGA(.{9})GGTAGCGGTGACA(.{9})(.{8})/ {
+                s/.*(.{9})ACTGGCCTGCGA(.{9})GGTAGCGGTGACA(.{9})(.{8})/\1\2\3\4/g
+                n
+                n
+                s/.*(.{6}).{12}(.{6}).{13}(.{6})(.{8})/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    
     #inDrops: remove adapter (see links below for details)
     ## https://github.com/BUStools/bustools/issues/4
     ## https://teichlab.github.io/scg_lib_structs/methods_html/inDrop.html
@@ -2634,7 +2656,7 @@ else
             #remove phase blocks and linkers
             sed -E '
                 /.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC/ {
-                s/.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC.*/\1\2\3\4/g
+                s/.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC/\1\2\3\4/g
                 n
                 n
                 s/.*(.{6}).{15}(.{6}).{15}(.{6}).{3}(.{8}).{3}/\1\2\3\4/g
