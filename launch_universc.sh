@@ -1684,6 +1684,15 @@ else
                  > ${whitelistdir}/sciseq3_barcode.txt
                  ## to filter unique lines: awk '!a[$0]++'  > ${whitelistdir}/sciseq3_barcode.txt
              fi
+        elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]]; then
+             #generates all combinations of I1-I2-R1 barcodes
+             if [[ ! -f ${whitelistdir}/splitseq2_barcode.txt ]]; then
+                 join -j 9999 ${whitelistdir}/split-seq_round1_barcode.txt ${whitelistdir}/split-seq_round2_barcode.txt | sed "s/ //g" | \
+                 join -j 9999 - ${whitelistdir}/split-seq_round3_barcode.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/splitseq2_barcode.txt
+             fi
+             if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
+                 cp ${whitelistdir}/splitseq2_barcode.txt ${whitelistdir}/splitseq_barcode.txt
+             fi
         elif [[ "$technology" == "strt-seq-2i" ]]; then
              if [[ ! -f ${whitelistdir}/STRTSeq2i_barcode.txt ]]; then
                  #generates all combinations of I1-I2-R1 barcodes
@@ -2446,9 +2455,9 @@ else
         for convFile in "${convFiles[@]}"; do
             read=$convFile
             convR1=$read
-            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
-            convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
-            convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
+            convR2=$(echo $read | perl -pne 's/(.*)_R2/$1_R1/' )
+            convI1=$(echo $read | perl -pne 's/(.*)_R2/$1_I1/' )
+            convI2=$(echo $read | perl -pne 's/(.*)_R2/$1_I2/' )
 
             # (R1 -> R2; R2 -> I1; R3 -> I2; R4 -> R1)
             # v3 : summer 2016 redesign requiring manual demultiplexing.
@@ -2665,10 +2674,10 @@ else
         done
     fi
     
-    #SPLiT-Seq: correct phase blocks and swap barcode and UMI (if a whitelist and 18bp barcode can be supported)
+    #SPLiT-Seq: correct phase blocks and swap barcode and UMI (if a whitelist and 24 bp barcode can be supported)
     ## https://github.com/hms-dbmi/dropEst/issues/80
     ## https://github.com/sdparekh/zUMIs/wiki/Protocol-specific-setup
-    if [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]]; then
+    if [[ "$technology" == "splitseq" ]]; then
         echo "  ...remove adapter and phase blocks for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers (swap barcode and UMI)
@@ -2681,6 +2690,29 @@ else
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         echo "  ...barcode and UMI swapped for ${technology}" #performed by \1 above
+        done
+    fi
+    if [[ "$technology" == "splitseq2" ]]; then
+        echo "  ...remove adapter and phase blocks for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*CGAATGCTCTGGCCTTCGGACGATCATGGG(.{8})CAAGTATGCAGCGCGCTCAAGCACGTGGAT(.{8})AGTCGTACGCCGATGCGAAACATCGGCCAC(.{8})(.{10})$/ {
+                s/.*CGAATGCTCTGGCCTTCGGACGATCATGGG(.{8})CAAGTATGCAGCGCGCTCAAGCACGTGGAT(.{8})AGTCGTACGCCGATGCGAAACATCGGCCAC(.{8})(.{10})$/\1\2\3\4/g
+                n
+                n
+                s/.*.{30}(.{8}).{30}(.{8}).{30}(.{8})(.{10})$/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #remove phase blocks and linkers (reverse complement if R2 matched)
+            sed -E '
+                /^(.{10})(.{8})GTGGCCGATGTTTCGCATCGGCGTACGACT(.{8})ATCCACGTGCTTGAGCGCGCTGCATACTTG(.{8})CCCATGATCGTCCGAAGGCCAGAGCATTCG/ {
+                s/^(.{10})(.{8})GTGGCCGATGTTTCGCATCGGCGTACGACT(.{8})ATCCACGTGCTTGAGCGCGCTGCATACTTG(.{8})CCCATGATCGTCCGAAGGCCAGAGCATTCG/\4\3\2\1/g
+                n
+                n
+                s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8})$/\4/3/2/1/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
         done
     fi
     
