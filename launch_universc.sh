@@ -1687,8 +1687,8 @@ else
         elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]]; then
              #generates all combinations of I1-I2-R1 barcodes
              if [[ ! -f ${whitelistdir}/splitseq2_barcode.txt ]]; then
-                 join -j 9999 ${whitelistdir}/split-seq_round1_barcode.txt ${whitelistdir}/split-seq_round2_barcode.txt | sed "s/ //g" | \
-                 join -j 9999 - ${whitelistdir}/split-seq_round3_barcode.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/splitseq2_barcode.txt
+                 join -j 9999 ${whitelistdir}/split-seq2_round1_barcode.txt ${whitelistdir}/split-seq2_round2_barcode.txt | sed "s/ //g" | \
+                 join -j 9999 - ${whitelistdir}/split-seq2_round3_barcode.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/splitseq2_barcode.txt
              fi
              if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
                  cp ${whitelistdir}/splitseq2_barcode.txt ${whitelistdir}/splitseq_barcode.txt
