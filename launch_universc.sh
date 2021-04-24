@@ -214,8 +214,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
                                   Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
-                                  SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
-                                  SPLiT-Seq2 (10bp UMI, 24bp barcode): splitseq2
+                                  SPLiT-Seq (10bp UMI, 24bp barcode): splitseq
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
@@ -647,7 +646,7 @@ elif [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; 
 elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "split-seq" ]]; then
     technology="splitseq"
 elif [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "split-seq2" ]] || [[ "$technology" == "splitseq-v2" ]] || [[ "$technology" == "split-seq-v2" ]]; then
-    technology="splitseq2"
+    technology="splitseq"
 elif [[ "$technology" == "strt-seq" ]] || [[ "$technology" == "strt" ]] || [[ "$technology" == "strtseq" ]]; then
      technology="strt-seq"
 elif [[ "$technology" == "strt-seq-c1" ]] || [[ "$technology" == "strt-seqc1" ]] || [[ "$technology" == "strtseqc1" ]] || [[ "$technology" == "strtseq-c1" ]]; then
@@ -790,10 +789,6 @@ elif [[ "$technology" == "smartseq3" ]]; then
     umilength=8
     minlength=16
 elif [[ "$technology" == "splitseq" ]]; then
-    barcodelength=18
-    umilength=10
-    minlength=18
-elif [[ "$technology" == "splitseq2" ]]; then
      barcodelength=24
      umilength=10
      minlength=24
@@ -1604,11 +1599,6 @@ else
              if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
                  echo "  ...generating combination of I1, I2, and RT barcodes..."
              fi
-    elif [[ "$technology" == "splitseq2" ]]; then
-             barcodefile=${whitelistdir}/splitseq2_barcode.txt
-             if [[ ! -f ${whitelistdir}/splitseq2_barcode.txt ]]; then
-                 echo "  ...generating combination of I1, I2, and RT barcodes..."
-             fi
     elif [[ "$technology" == "smartseq3" ]]; then
         barcodefile=${whitelistdir}/SmartSeq3_barcode.txt
     elif [[ "$technology" == "strt-seq" ]]; then
@@ -1684,14 +1674,11 @@ else
                  > ${whitelistdir}/sciseq3_barcode.txt
                  ## to filter unique lines: awk '!a[$0]++'  > ${whitelistdir}/sciseq3_barcode.txt
              fi
-        elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]]; then
+        elif [[ "$technology" == "splitseq" ]]; then
              #generates all combinations of I1-I2-R1 barcodes
-             if [[ ! -f ${whitelistdir}/splitseq2_barcode.txt ]]; then
-                 join -j 9999 ${whitelistdir}/split-seq2_round1_barcode.txt ${whitelistdir}/split-seq2_round2_barcode.txt | sed "s/ //g" | \
-                 join -j 9999 - ${whitelistdir}/split-seq2_round3_barcode.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/splitseq2_barcode.txt
-             fi
              if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
-                 cp ${whitelistdir}/splitseq2_barcode.txt ${whitelistdir}/splitseq_barcode.txt
+                 join -j 9999 ${whitelistdir}/split-seq_round1_barcode.txt ${whitelistdir}/split-seq_round2_barcode.txt | sed "s/ //g" | \
+                 join -j 9999 - ${whitelistdir}/split-seq_round3_barcode.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/splitseq_barcode.txt
              fi
         elif [[ "$technology" == "strt-seq-2i" ]]; then
              if [[ ! -f ${whitelistdir}/STRTSeq2i_barcode.txt ]]; then
@@ -2678,21 +2665,6 @@ else
     ## https://github.com/hms-dbmi/dropEst/issues/80
     ## https://github.com/sdparekh/zUMIs/wiki/Protocol-specific-setup
     if [[ "$technology" == "splitseq" ]]; then
-        echo "  ...remove adapter and phase blocks for ${technology}"
-        for convFile in "${convFiles[@]}"; do
-            #remove phase blocks and linkers (swap barcode and UMI)
-            sed -E '
-                /^([ATCGA]{92})/ {
-                s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8})*/\2\3\4\1/g
-                n
-                n
-                s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8})*/\2\3\4\1/g
-                }' $convFile > ${crIN}/.temp
-            mv ${crIN}/.temp $convFile
-        echo "  ...barcode and UMI swapped for ${technology}" #performed by \1 above
-        done
-    fi
-    if [[ "$technology" == "splitseq2" ]]; then
         echo "  ...remove adapter and phase blocks for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers

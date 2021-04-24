@@ -67,7 +67,7 @@
 </ul>
 <p>All technologies support 3' single-cell RNA-Seq. Barcode adjustments and whitelists are changed automatically. For 5' single-cell RNA-Seq, this is only supported for 10x Genomics version 2 chemistry. This is detected automatically but can be configured with the <code>--chemistry</code> argument.</p>
 <p>We are developing technologies to support dual indexes and full length scRNA kits.</p>
-<p>Experimental technologies (not yet supported): - inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3 - Sci-Seq (8bp UMI, 30bp barcode): sciseq - SPLiT-Seq (10bp UMI, 18bp barcode): splitseq - SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad</p>
+<p>Experimental technologies (not yet supported): - BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody - inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3 - Microwell-Seq (18 bp barcode, 6 bp UMI): microwell - SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2 - SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3 - SPLiT-Seq (10bp UMI, 24 bp barcode): splitseq - SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad - STRT-Seq (6 bp barcode, no UMI) - STRT-Seq-C1 (8 bp barode, 5 bp UMI) - STRT-Seq-2i (13 bp barcode, 6 bp UMI) - SmartSeq2 (16 bp barcode, no UMI)</p>
 <h4 id="dual-indexing">Dual-indexing</h4>
 <p>For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use &quot;bcl2fastq&quot; before calling UniverSC:</p>
 <pre><code>   /usr/local/bin/bcl2fastq  -v --runfolder-dir &quot;/path/to/illumina/bcls&quot;  --output-dir &quot;./Data/Intensities/BaseCalls&quot;\
@@ -484,8 +484,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
                                   Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
-                                  SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
-                                  SPLiT-Seq2 (10bp UMI, 24bp barcode): splitseq2
+                                  SPLiT-Seq (10bp UMI, 24bp barcode): splitseq
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name &quot;custom&quot; and length of barcode and UMI separated by &quot;_&quot;
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10

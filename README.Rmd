@@ -188,11 +188,17 @@ automatically but can be configured with the `--chemistry` argument.
 We are developing technologies to support dual indexes and full length scRNA kits.
 
 Experimental technologies (not yet supported):
+-  BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
 -  inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
--  Sci-Seq (8bp UMI, 30bp barcode): sciseq
--  SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
+-  Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+-  SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
+-  SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
+-  SPLiT-Seq (10bp UMI, 24 bp barcode): splitseq
 -  SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
-
+-  STRT-Seq (6 bp barcode, no UMI)
+-  STRT-Seq-C1 (8 bp barode, 5 bp UMI)
+-  STRT-Seq-2i (13 bp barcode, 6 bp UMI)
+-  SmartSeq2 (16 bp barcode, no UMI)
 
 #### Dual-indexing
 
@@ -1009,8 +1015,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   SeqWell (12bp barcode, 8bp UMI): seqwell
                                   Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
-                                  SPLiT-Seq (10bp UMI, 18bp barcode): splitseq
-                                  SPLiT-Seq2 (10bp UMI, 24bp barcode): splitseq2
+                                  SPLiT-Seq (10bp UMI, 24bp barcode): splitseq
                                   SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
