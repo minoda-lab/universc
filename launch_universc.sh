@@ -1660,6 +1660,12 @@ else
                 #allow for barcodes in index (I1) and R1
                 perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
             fi
+        elif [[ "$technology" == "microwellseq" ]]; then
+            if [[ ! -f ${whitelistdir}/microwellseq_barcode.txt ]]; then
+                 #generates all combinations of R1 barcodes
+                 join -j 9999 ${whitelistdir}/microwell-seq_barcodeA.txt ${whitelistdir}/microwell-seq_barcodeB.txt | sed "s/ //g" | \
+                 join -j 9999 - ${whitelistdir}/microwell-seq_barcodeC.txt > ${whitelistdir}/microwellseq_barcode.txt
+            fi
         elif [[ "$technology" == "sciseq2" ]]; then
              #generates all combinations of I1-I2-R1 barcodes
              if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
@@ -2461,6 +2467,22 @@ else
 
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
+        done
+    fi
+    
+    #Microwell-Seq: remove linkers
+    if [[ "$technology" == "microwellseq" ]]; then
+        echo "  ...remove adapter and phase blocks for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{6})CGACTCACTACAGGG(.{6})TCGGTGACACGATCG(.{6})(.{6})/ {
+                s/.*(.{6})CGACTCACTACAGGG(.{6})TCGGTGACACGATCG(.{6})(.{6})/\1\2\3\4/g
+                n
+                n
+                s/.*(.{6}).{15}(.{6}).{15}(.{6})(.{6})$/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
         done
     fi
     
