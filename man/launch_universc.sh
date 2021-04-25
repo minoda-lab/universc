@@ -216,6 +216,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                    STRT-Seq-C1 (8 bp barode, 5 bp UMI)
                                    STRT-Seq-2i (13 bp barcode, 6 bp UMI)
                                    SmartSeq2 (16 bp barcode, no UMI)
+                                   SCIFI-Seq (27 bp barcode, 8 bp UMI
 
            A barcode whitelist is provided for all beads or wells for the following technologies:
 

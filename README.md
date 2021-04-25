@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Saturday 24 April 2021"
+date: "Sunday 25 April 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -1027,6 +1027,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI)
                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI)
                                   SmartSeq2 (16 bp barcode, no UMI)
+                                  SCIFI-Seq (27 bp barcode, 8 bp UMI
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
 

@@ -1027,6 +1027,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI)
                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI)
                                   SmartSeq2 (16 bp barcode, no UMI)
+                                  SCIFI-Seq (27 bp barcode, 8 bp UMI
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
 
