@@ -1465,6 +1465,7 @@ if [[ $verbose ]]; then
     echo " setting whitelist barcode file."
 fi
 
+custombarcodes=false
 if [[ -n "$barcodefile" ]]; then
     if [[ ! -f $barcodefile ]]; then
         echo "Error: File selected for option --barcodefile does not exist"
@@ -1472,6 +1473,7 @@ if [[ -n "$barcodefile" ]]; then
     else
         #getting absolute path
         barcodefile=$(readlink -f $barcodefile)
+        custombarcodes=true
         #allowing WellList from ICELL8 and other well-based techniques
         if [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
@@ -1949,6 +1951,22 @@ if [[ $lock -eq 0 ]]; then
             fi
             eval "sed -i '$(echo "${num},${num2}s/^/#/g")' $file"
         done
+    fi
+    #check for custom whitelist
+    if [[ $custombarcodes == "true" ]]; then
+        #disable detect chemistry check for custom whitelist
+        if [[ $verbose ]]; then
+            echo "disable detect chemistry check..."
+        fi
+        sed -i "s/ raise NoChemistryFoundException/ return best_chem #raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/ (100\.0 \* best_frac/ #(100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+    else
+         if [[ $verbose ]]; then
+             echo "restore detect chemistry check..."
+        fi
+        #restore detect chemistry check for custom whitelist
+        sed -i "s/ return best_chem \#raise NoChemistryFoundException/ raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/ \#(100\.0 \* best_frac/ (100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
     echo " ${cellrangerpath} set for $technology"
     
