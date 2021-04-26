@@ -211,7 +211,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
                                   SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
-                                  SeqWell (12bp barcode, 8bp UMI): seqwell
+                                  SeqWell (12bp barcode, 8bp UMI): plexwell, seqwell, seqwells3
                                   Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
                                   SPLiT-Seq (10bp UMI, 24bp barcode): splitseq
@@ -635,7 +635,7 @@ elif [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "scifi-seq" ]] || 
       technology="scifiseq"
 elif [[ "$technology" == "scrbseq" ]] || [[ "$technology" == "scrb-seq" ]] || [[ "$technology" == "mcscrbseq" ]] || [[ "$technology" == "mcscrb-seq" ]]; then
     technology="scrbseq"
-elif [[ "$technology" == "seqwell" ]] || [[ "$technology" == "seq-well" ]]; then
+elif [[ "$technology" == "plexwell" ]] || [[ "$technology" == "plex-well" ]] ||  [[ "$technology" == "seqwell" ]] || [[ "$technology" == "seq-well" ]] ||  [[ "$technology" == "seqwells3" ]] || [[ "$technology" == "seq-well-s3" ]]; then
     technology="seqwell"
 elif [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smart-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smart-seq2" ]]; then
     technology="smartseq2"

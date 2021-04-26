@@ -201,7 +201,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
                                   SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
                                   SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
-                                  SeqWell (12bp barcode, 8bp UMI): seqwell
+                                  SeqWell (12bp barcode, 8bp UMI): plexwell, seqwell, seqwells3
                                   Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
                                   SPLiT-Seq (10bp UMI, 24bp barcode): splitseq
