@@ -2737,11 +2737,28 @@ else
     if [[ "$technology" == "quartz-seq" ]] && [[ "$technology" == "ramda-seq" ]]; then
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
-            echo "Note: ICELL8 v2 does not contain UMIs"
+            echo "Note: ${technology} does not contain UMIs"
         fi
         for convFile in "${convFiles[@]}"; do
+            
+            read=$convFile
+            convR1=$read
+            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+            convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
+            
+            #detect index length
+            indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
+            barcodelength=$indexlength
+            
+            echo "  ...concatencate barcodes to R1 from I1 index files"
+            # concatenate barcocdes from index to R1 as (bases 1-6 of the) barcode, moving (read to start at base 7-)
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --ref_fastq=${convR1} --out_dir $crIN
+            
+            #returns a combined R1 file with I1-R1 concatenated (I1 is cell barcode)
+            mv $crIN/Concatenated_File.fastq ${convR1}
+            
             if [[ $nonUMI ]]; then
-                # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
+                # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
                 perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
                 umilength=$umi_default
                 umiadjust=0
@@ -2749,7 +2766,7 @@ else
                     chemistry="SC3Pv2"
                 fi
                 #returns a combined R1 file with barcode and mock UMI
-                ## 11 bp barcode, 10 bp UMI (TSO not handled yet)
+                ## 6 bp barcode, 10 bp UMI (TSO not handled yet)
                 mv $crIN/mock_UMI.fastq ${convR1}
             fi
         done
