@@ -2733,26 +2733,29 @@ else
         done
     fi
     
+    #Quartz-Seq and RamDA-Seq: add mock UMI for non-UMI techniques
     if [[ "$technology" == "quartz-seq" ]] && [[ "$technology" == "ramda-seq" ]]; then
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: ICELL8 v2 does not contain UMIs"
         fi
         for convFile in "${convFiles[@]}"; do
-            # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
-            perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
-            umilength=$umi_default
-            umiadjust=0
-            if [[ $chemistry == "SC3Pv3"]; then
-                chemistry="SC3Pv2"
+            if [[ $nonUMI ]]; then
+                # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
+                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                umilength=$umi_default
+                umiadjust=0
+                if [[ $chemistry == "SC3Pv3"]; then
+                    chemistry="SC3Pv2"
+                fi
+                #returns a combined R1 file with barcode and mock UMI
+                ## 11 bp barcode, 10 bp UMI (TSO not handled yet)
+                mv $crIN/mock_UMI.fastq ${convR1}
             fi
-            #returns a combined R1 file with barcode and mock UMI
-            ## 11 bp barcode, 10 bp UMI (TSO not handled yet)
-            mv $crIN/mock_UMI.fastq ${convR1}
         done
     fi
     
-    #QuartzSeq: remove adapter
+    #Quartz-Seq2: remove adapter
     if [[ "$technology" == "quartz-seq2-384" ]]; then
         for convFile in "${convFiles[@]}"; do
         echo "  ...remove adapter for ${technology}"
