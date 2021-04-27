@@ -1385,13 +1385,12 @@ fi
 
 
 #generate missing indexes if required (generating I1 and I2)
-if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-ci" ]] ; then
+if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] ; then
      echo "dual indexes I1 and I2 required for $technology"
      if [[ ${#index2[@]} -le 1 ]]; then
          echo " automatically generating I1 and I2 index files from file headers"
          index1=("${read1[@]}")
          index2=("${read1[@]}")
-         #for ii in $(seq 1 1 ${#read1[@]}); do
          for ii in ${!read1[@]}; do
              #iterate over read1 inputs
              R1_file=${read1[$(( $ii -1 ))]}
@@ -1430,6 +1429,48 @@ if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sciseq2" ]] || [[ 
         fi
     else
         echo " dual indexes found"
+    fi
+fi
+
+
+if [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "strt-seq-c1" ]]; then
+     echo "dual indexes I1 and I2 required for $technology"
+     if [[ ${#index2[@]} -le 1 ]]; then
+         echo " automatically generating I1 index files from file headers"
+         index1=("${read1[@]}")
+         for ii in ${!read1[@]}; do
+             #iterate over read1 inputs
+             R1_file=${read1[$(( $ii -1 ))]}
+             R2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_R2/' )
+             I1_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I1/' )
+
+             if [[ $verbose ]]; then
+                 echo $R1_file
+                 echo $R2_file
+                 echo $I1_file
+             fi
+             # copies index 1 to next line (1st to 2nd) and deletes 3rd line (only if index 1 doesn't contain '+' character)
+             cat $R1_file | sed -E "/x/! s/ (.):(.):(.):(.*)$/ \1:\2:\3:\4$\n\4/g" > $I1_file
+             linediff=$(grep -n "^+" $I1_file | head -n 2 | cut -d: -f1 |  awk 'NR==1{p=$1;next} END{print $1-p}')
+             if [[ $linediff -eq 5 ]];then
+                 #remove lines if matched only
+                 sed "3~5d" > $I1_file
+             else
+                 cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | sed "3~5d" > $I1_file
+             fi
+             indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
+             qualscores=$(seq 1 $indexlength | xargs -I {} printf I)
+             if [[ $verbose ]]; then
+                 echo index of length $indexlength gives quality score $qualscores
+             fi
+            sed -i "4~4s/^.*$/${qualscores}/g" $I1_file
+            index1+=("$I1_file")
+        done
+        if [[ $verbose ]]; then
+            echo index1: $index1
+        fi
+    else
+        echo " index found"
     fi
 fi
 
