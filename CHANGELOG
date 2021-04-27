@@ -1,6 +1,12 @@
 ### 1.1.0 (in dev)
 
-- add support for 5' technologies (e.g., Smart-Seq3, ICELL8 5')
+- add support for 5' technologies (e.g., Smart-Seq3, ICELL8 5', STRT-Seq)
+
+- add support for barcodes longer than 16 bp
+
+- add full support for combinatorial indexing (e.g., BD Rhapsody, Microwell-Seq, SCI-RNA-Seq, SPLiT-Seq, SureCell/ddSEQ)
+
+- add full support for dual indexes (e.g., inDrops v3, SCI-RNA-Seq, Smart-Seq3)
 
 - compatilibility with counting reads for non-UMI technologies (e.g., Smart-Seq2)
 
