@@ -245,7 +245,9 @@ Mandatory arguments to long options are mandatory for short options too.
   
   -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data
   
-       --non-umi or --read-only Force counting reads by adding or replacing UMI with a mock sequence
+       --non-umi or --read-only Force counting reads by adding or replacing UMI with a mock sequence.
+                                Available for: ICELL8, Smart-Seq2
+                                Default for: Quartz-Seq, RamDA-Seq, Smart-Seq, Smart-Seq2, STRT-Seq
   
        --setup                  Set up whitelists for compatibility with new technology and exit
        --as-is                  Skips the FASTQ file conversion if the file already exists
