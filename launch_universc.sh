@@ -620,6 +620,9 @@ elif [[ "$technology" == "nadia" ]] || [[ "$technology" == "dropseq" ]] || [[ "$
     technology="nadia"
 elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]]; then
     technology="icell8"
+elif [[ "$technology" == "icell8-non-umi" ]] || [[ "$technology" == "icell8-nonumi" ]]; then
+    technology="icell8"
+    nonUMI=true
 elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
     technology="indrop-v1"
 elif [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
@@ -632,10 +635,16 @@ elif [[ "$technology" == "marsseq2" ]] || [[ "$technology" == "mars-seq2" ]] || 
     technology="marsseq-v2"
 elif [[ "$technology" == "microwell-seq" ]] || [[ "$technology" == "micro-well" ]] || [[ "$technology" == "microwell" ]] || [[ "$technology" == "microwellseq" ]]; then
      technology="microwellseq"
+elif [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "quartzseq" ]] || [[ "$technology" == "quartz-seq1" ]]; then
+     technology="quartz-seq"
+     nonUMI=true
 elif [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]]; then
     technology="quartz-seq2-384"
 elif [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]]; then
     technology="quartz-seq2-1536"
+elif [[ "$technology" == "rambda-seq" ]] || [[ "$technology" == "ram-da-seq" ]] || [[ "$technology" == "ramda-seq" ]]; then
+     technology="rambda-seq"
+     nonUMI=true
 elif [[ "$technology" == "sciseq" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "sci-rna-seq" ]]; then
     technology="sciseq3"
 elif [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sci-seq2" ]]; then
@@ -663,6 +672,7 @@ elif [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "split-seq2" ]] |
     technology="splitseq"
 elif [[ "$technology" == "strt-seq" ]] || [[ "$technology" == "strt" ]] || [[ "$technology" == "strtseq" ]]; then
      technology="strt-seq"
+     nonUMI=true
 elif [[ "$technology" == "strt-seq-c1" ]] || [[ "$technology" == "strt-seqc1" ]] || [[ "$technology" == "strtseqc1" ]] || [[ "$technology" == "strtseq-c1" ]]; then
      technology="strt-seq-c1"
 elif [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "strt-seq2i" ]] || [[ "$technology" == "strtseq2i" ]] || [[ "$technology" == "strtseq-2i" ]]; then
