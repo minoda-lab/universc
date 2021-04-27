@@ -3018,7 +3018,7 @@ else
             
             echo "  ...remove internal for ${technology} by matching tag sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
-            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2} --out_dir=$crIN --tag=
+            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2} --tag="ATTGCGCAATG" --out_dir=$crIN
             echo "  ...trim tag sequence from R1"
             
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
@@ -3029,8 +3029,13 @@ else
 
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
+<<<<<<< HEAD
             perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --tag="ATTGCGCAATG" --out_dir=$crIN
             
+=======
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir=$crIN
+
+>>>>>>> c38e32ea3cb07d74951b60e666b6885377f7b77a
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
             
