@@ -1657,7 +1657,7 @@ if [[ -n "$barcodefile" ]]; then
         barcodefile=$(readlink -f $barcodefile)
         custombarcodes=true
         #allowing WellList from ICELL8 and other well-based techniques
-        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
+        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
             n_col=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             if [[ $n_col -eq 1 ]]; then
@@ -2627,7 +2627,7 @@ else
                 perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
                 umilength=$umi_default
                 umiadjust=0
-                if [[ $chemistry == "SC3Pv3"]; then
+                if [[ $chemistry == "SC3Pv3" ]]; then
                     chemistry="SC3Pv2"
                 fi
                 
@@ -2761,7 +2761,7 @@ else
                 perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
                 umilength=$umi_default
                 umiadjust=0
-                if [[ $chemistry == "SC3Pv3"]; then
+                if [[ $chemistry == "SC3Pv3" ]]; then
                     chemistry="SC3Pv2"
                 fi
                 #returns a combined R1 file with barcode and mock UMI
@@ -3215,45 +3215,7 @@ else
         fi
     fi
     
-    #replace UMI with mock UMI to count reads (for technologies not already containing mock UMI)
-    if [[ $technology != "icell8" ]] && [[ $technology != "ramda-seq" ]] && [[ $technology != "quartz-seq" ]] && [[ $technology != "smartseq" ]] && [[ $technology != "smartseq2" ]] && [[ $technology != "strt-seq" ]]; then
-        if [[ $nonUMI ]]; then
-             echo "WARNING: removing true UMI and replacing with Mock UMI"
-             echo "NOTICE: results will result read counts not UMI"
-             echo "## this behaviour is not recommended unless integrating with non-UMI data ##"
-             
-             #remove inflated umi (to replace with mock and count as reads)
-             cmd=$(echo 'sed -E "
-                             /^(.{'$barcodelength'})(.{'${umilength}'})(.*)/ {
-                            s/^(.{'$barcodelength'})(.{'${umilength}'})(.*)/\1\3/g
-                            n
-                            n
-                            s/^(.{'$barcodelength'})(.{'${umilength}'})(.*)/\1\3/g
-                            }" $convFile > ${crIN}/.temp
-                         mv ${crIN}/.temp $convFile')
-            if [[ $verbose ]]; then
-                 echo technology $technology
-                 echo barcode: $barcodelength
-                 echo umi: $umilength
-                 echo $cmd
-             fi
-             eval $cmd
-
-             # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
-             perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
-             umilength=$umi_default
-             umiadjust=0
-             if [[ $chemistry == "SC3Pv3"]; then
-                 chemistry="SC3Pv2"
-             fi
-             
-             #returns a combined R1 file with barcode and mock UMI
-             ## barcode, 10 bp UMI, followed by TSO (if applicable)
-             mv $crIN/mock_UMI.fastq ${convR1}
-        fi
-    fi
-    
-    #UMI
+    #convert UMI
     echo " adjusting UMIs of R1 files"
     # check if original UMI is shorter than default
     if [[ 0 -gt $umiadjust ]]; then
@@ -3272,6 +3234,59 @@ else
             echo "  ${convFile} adjusted"
         done
     fi
+    
+    #replace UMI with mock UMI to count reads (for technologies not already containing mock UMI)
+    if [[ $technology != "icell8" ]] && [[ $technology != "ramda-seq" ]] && [[ $technology != "quartz-seq" ]] && [[ $technology != "smartseq" ]] && [[ $technology != "smartseq2" ]] && [[ $technology != "strt-seq" ]]; then
+        if [[ $nonUMI ]]; then
+            echo "WARNING: removing true UMI and replacing with Mock UMI"
+            echo "NOTICE: results will result read counts not UMI"
+            echo "## this behaviour is not recommended unless integrating with non-UMI data ##"
+             
+            for convFile in "${convFiles[@]}"; do
+                convR1=$convFile
+                #remove inflated umi (to replace with mock and count as reads)
+                sed -E "
+                    /^(.{16})(.{10})(.*)/ {
+                    s/^(.{16})(.{10})(.*)/\1\3/g
+                    n
+                    n
+                    s/^(.{16})(.{10})(.*)/\1\3/g
+                }" $convFile > ${crIN}/.temp\n
+                mv ${crIN}/.temp $convFile'
+                if [[ $chemistry == "SC3Pv3" ]]; then
+                    chemistry="SC3Pv2"
+                fi
+                #cmd=$(echo 'sed -E "
+                #                /^(.{'$barcodelength'})(.{'${umilength}'})(.*)/ {
+                #               s/^(.{'$barcodelength'})(.{'${umilength}'})(.*)/\1\3/g
+                #               n
+                #               n
+                #               s/^(.{'$barcodelength'})(.{'${umilength}'})(.*)/\1\3/g
+                #               }" $convFile > ${crIN}/.temp\n
+                #            mv ${crIN}/.temp $convFile')
+                if [[ $verbose ]]; then
+                    echo technology $technology
+                    echo barcode: $barcodelength
+                     echo umi: $umilength
+                #    echo $cmd
+                fi
+                #eval $cmd
+                
+                # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
+                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                umilength=$umi_default
+                umiadjust=0
+                if [[ $chemistry == "SC3Pv3" ]]; then
+                    chemistry="SC3Pv2"
+                fi
+                
+                #returns a combined R1 file with barcode and mock UMI
+                ## barcode, 10 bp UMI, followed by TSO (if applicable)
+                mv $crIN/mock_UMI.fastq ${convR1}
+            done
+        fi
+    fi
+    
     # check if original UMI is longer than default
     if [[ 0 -lt $umiadjust ]]; then
         for convFile in "${convFiles[@]}"; do
