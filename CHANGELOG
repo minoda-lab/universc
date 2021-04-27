@@ -4,6 +4,8 @@
 
 - compatilibility with counting reads for non-UMI technologies (e.g., Smart-Seq2)
 
+- support custom whitelists from mixed samples with a low fraction of reads
+
 ### 1.0.3
 
 - unit tests for inDrops v3, SCI-Seq, Smart-Seq3
