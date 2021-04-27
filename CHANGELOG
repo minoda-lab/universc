@@ -8,7 +8,7 @@
 
 - add full support for dual indexes (e.g., inDrops v3, SCI-RNA-Seq, Smart-Seq3)
 
-- compatilibility with counting reads for non-UMI technologies (e.g., Smart-Seq2)
+- compatilibility with counting reads for non-UMI technologies (e.g., ICELL8-v2, Quartz-Seq, RamDA-Seq, Smart-Seq2, STRT-Seq)
 
 - support custom whitelists from mixed samples with a low fraction of reads
 
