@@ -200,22 +200,27 @@ Mandatory arguments to long options are mandatory for short options too.
                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
-                                  Drop-Seq (12 bp barcode, 8 bp UMI): nadia, dropseq
+                                  Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
+                                  ICELL8 version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
                                   ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
                                   inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19 bp barcode, 6 bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (16 bp barcode, 6 bp UMI): indrops-v3, 1cellbio-v3
+                                  Nadia (12 bp barcode, 8 bp UMI): nadia, dropseq
                                   MARS-Seq (6 bp barcode, 10 bp UMI): marsseq, marsseq-v1
-                                  MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2   
+                                  MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2
                                   Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+                                  QuartzSeq (6 bp index, no UMI): quartz-seq
                                   Quartz-Seq2 (14 bp barcode, 8 bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15 bp barcode, 8 bp UMI): quartzseq2-1536
+                                  RamDA-Seq (6 bp index, no UMI): ramda-seq
                                   SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
                                   SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
                                   SCIFI-Seq (27 bp barcode, 8 bp UMI
                                   SCRB-Seq (6 bp barcode, 10 bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12 bp barcode, 8 bp UMI): plexwell, seqwell, seqwells3
-                                  Smart-seq, Smart-seq2 (16 bp barcode, No UMI): smartseq2
+                                  Smart-seq (16 bp barcode, No UMI): smartseq
+                                  Smart-seq2 (16 bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
                                   SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
                                   STRT-Seq (6 bp barcode, no UMI)
@@ -224,12 +229,6 @@ Mandatory arguments to long options are mandatory for short options too.
                                   SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
-
-                                Experimental
-                                  ICELL8 (11 bp barcode, no UMI)
-                                  RamDA-Seq (6 bp index, no UMI)
-                                  QuartzSeq (6 bp index, no UMI)
-                                  SmartSeq2 (16 bp barcode, no UMI)
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
@@ -245,7 +244,9 @@ Mandatory arguments to long options are mandatory for short options too.
   
   -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data
   
-       --non-umi or --read-only Force counting reads by adding or replacing UMI with a mock sequence
+       --non-umi or --read-only Force counting reads by adding or replacing UMI with a mock sequence.
+                                Available for: ICELL8, Smart-Seq2
+                                Default for: Quartz-Seq, RamDA-Seq, Smart-Seq, Smart-Seq2, STRT-Seq
   
        --setup                  Set up whitelists for compatibility with new technology and exit
        --as-is                  Skips the FASTQ file conversion if the file already exists
@@ -618,8 +619,11 @@ elif [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd" ]] || [[ "
     technology="bd-rhapsody"
 elif [[ "$technology" == "nadia" ]] || [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
     technology="nadia"
-elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]]; then
+elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]] ||  [[ "$technology" == "icell8-v3" ]] ||  [[ "$technology" == "icell8v3" ]]; then
     technology="icell8"
+elif [[ "$technology" == "icell8-non-umi" ]] || [[ "$technology" == "icell8-nonumi" ]] ||  [[ "$technology" == "icell8-v2" ]] ||  [[ "$technology" == "icell8v2" ]]; then
+    technology="icell8"
+    nonUMI=true
 elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
     technology="indrop-v1"
 elif [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
@@ -632,10 +636,16 @@ elif [[ "$technology" == "marsseq2" ]] || [[ "$technology" == "mars-seq2" ]] || 
     technology="marsseq-v2"
 elif [[ "$technology" == "microwell-seq" ]] || [[ "$technology" == "micro-well" ]] || [[ "$technology" == "microwell" ]] || [[ "$technology" == "microwellseq" ]]; then
      technology="microwellseq"
+elif [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "quartzseq" ]] || [[ "$technology" == "quartz-seq1" ]]; then
+     technology="quartz-seq"
+     nonUMI=true
 elif [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2-384" ]] || [[ "$technology" == "quartz-seq2-v3.1" ]] || [[ "$technology" == "quartzseq2-v3.1" ]] || [[ "$technology" == "quartzseq2v3.1" ]]; then
     technology="quartz-seq2-384"
 elif [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]]; then
     technology="quartz-seq2-1536"
+elif [[ "$technology" == "rambda-seq" ]] || [[ "$technology" == "lamda-seq" ]] || [[ "$technology" == "lambda-seq" ]] || [[ "$technology" == "ramdaseq" ]] || [[ "$technology" == "ram-da-seq" ]] || [[ "$technology" == "ramda-seq" ]]; then
+     technology="ramda-seq"
+     nonUMI=true
 elif [[ "$technology" == "sciseq" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "sci-rna-seq" ]]; then
     technology="sciseq3"
 elif [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sci-seq2" ]]; then
@@ -663,6 +673,7 @@ elif [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "split-seq2" ]] |
     technology="splitseq"
 elif [[ "$technology" == "strt-seq" ]] || [[ "$technology" == "strt" ]] || [[ "$technology" == "strtseq" ]]; then
      technology="strt-seq"
+     nonUMI=true
 elif [[ "$technology" == "strt-seq-c1" ]] || [[ "$technology" == "strt-seqc1" ]] || [[ "$technology" == "strtseqc1" ]] || [[ "$technology" == "strtseq-c1" ]]; then
      technology="strt-seq-c1"
 elif [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "strt-seq2i" ]] || [[ "$technology" == "strtseq2i" ]] || [[ "$technology" == "strtseq-2i" ]]; then
@@ -748,10 +759,14 @@ elif [[ "$technology" == "nadia" ]]; then
     minlength=12
 elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
-    umilength=14
+    if [[ $nonUMI ]]; then
+       umilength=0
+    else
+       umilength=14
+    fi
     minlength=11
 elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
-    barcodelength=19 
+    barcodelength=19
     umilength=6
     minlength=16
 elif [[ "$technology" == "indrop-v3" ]]; then
@@ -770,6 +785,12 @@ elif [[ "$technology" == "marsseq-v2" ]]; then
     barcodelength=7
     umilength=8
     minlength=7
+elif [[ "$technology" == "quartz-seq" ]] && [[ "$technology" == "ramda-seq" ]]; then
+    barcodelength=16
+    if [[ $nonUMI ]]; then
+       umilength=0
+    fi
+    minlength=16
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
@@ -798,13 +819,13 @@ elif [[ "$technology" == "seqwell" ]]; then
     barcodelength=8
     umilength=12
     minlength=8
-elif [[ "$technology" == "smartseq2" ]]; then
+elif [[ "$technology" == "smartseq2" ]] && [[ "$technology" == "smartseq3" ]]; then
     barcodelength=16
-    umilength=8
-    minlength=16
-elif [[ "$technology" == "smartseq3" ]]; then
-    barcodelength=16
-    umilength=8
+    if [[ $nonUMI ]]; then
+       umilength=0
+    else
+       umilength=8
+    fi
     minlength=16
 elif [[ "$technology" == "splitseq" ]]; then
      barcodelength=24
@@ -1636,7 +1657,7 @@ if [[ -n "$barcodefile" ]]; then
         barcodefile=$(readlink -f $barcodefile)
         custombarcodes=true
         #allowing WellList from ICELL8 and other well-based techniques
-        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
+        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
             n_col=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             if [[ $n_col -eq 1 ]]; then
@@ -2565,6 +2586,82 @@ else
         done
     fi
     
+    #ICELL8 version 2 (non-UMI technology)
+    if [[ "$technology" == "icell8" ]] && [[ $nonUMI ]]; then
+        echo "  ...processsing for ${technology}"
+        if [[ $verbose ]]; then
+            echo "Note: ICELL8 v2 does not contain UMIs"
+        fi
+        for convFile in "${convFiles[@]}"; do
+            read=$convFile
+            convR1=$read
+            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+            
+            if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
+                ## echo " ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
+                # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
+                
+                perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --tag="AAAAAAAAAAAAAAAAAAAA" --out_dir $crIN
+                echo "  ...trim tag sequence from R1"
+                
+                # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
+                mv $crIN/parsed_R1.fastq ${convR1}
+                mv $crIN/parsed_R2.fastq ${convR2}
+                mv $crIN/parsed_I1.fastq ${convI1}
+                mv $crIN/parsed_I2.fastq ${convI2}
+                
+            fi
+            
+            if [[ $nonUMI ]]; then
+                #remove inflated umi (to replace with mock and count as reads)
+                sed -E '
+                    /^(.{11})(.{14})(.*)/ {
+                    s/^(.{11})(.{14})(.*)/\1\3/g
+                    n
+                    n
+                    s/^(.{11})(.{14})(.*)/\1\3/g
+                    }' $convFile > ${crIN}/.temp
+                mv ${crIN}/.temp $convFile
+
+                # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
+                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                umilength=$umi_default
+                umiadjust=0
+                if [[ $chemistry == "SC3Pv3" ]]; then
+                    chemistry="SC3Pv2"
+                fi
+                
+                #returns a combined R1 file with barcode and mock UMI
+                ## 16 bp barcode, 10 bp UMI, GGG for TSO
+                mv $crIN/mock_UMI.fastq ${convR1}
+            fi
+            
+            if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
+                #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
+                echo " handling $convFile ..."
+                tsoS="TTTCTTATATGGG" #<- confirm tag sequence with Takara reps
+                tsoQ="IIIIIIIIIIIII"
+                #Add 10x TSO characters to the end of the sequence
+                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+                if [[ $verbose ]]; then
+                    echo technology $technology
+                    echo barcode: $barcodelength
+                    echo umi: $umilength
+                    echo $cmd
+                fi
+                # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+                eval $cmd
+                mv ${crIN}/.temp $convFile
+                #Add n characters to the end of the quality
+                cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+                # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+                eval $cmd
+                mv ${crIN}/.temp $convFile
+            fi
+            echo "  ${convFile} adjusted"
+       done
+    fi
+    
     #inDrops: remove adapter (see links below for details)
     ## https://github.com/BUStools/bustools/issues/4
     ## https://teichlab.github.io/scg_lib_structs/methods_html/inDrop.html
@@ -2635,7 +2732,46 @@ else
         done
     fi
     
-    #QuartzSeq: remove adapter
+    #Quartz-Seq and RamDA-Seq: add mock UMI for non-UMI techniques
+    if [[ "$technology" == "quartz-seq" ]] && [[ "$technology" == "ramda-seq" ]]; then
+        echo "  ...processsing for ${technology}"
+        if [[ $verbose ]]; then
+            echo "Note: ${technology} does not contain UMIs"
+        fi
+        for convFile in "${convFiles[@]}"; do
+            
+            read=$convFile
+            convR1=$read
+            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+            convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
+            
+            #detect index length
+            indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
+            barcodelength=$indexlength
+            
+            echo "  ...concatencate barcodes to R1 from I1 index files"
+            # concatenate barcocdes from index to R1 as (bases 1-6 of the) barcode, moving (read to start at base 7-)
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --ref_fastq=${convR1} --out_dir $crIN
+            
+            #returns a combined R1 file with I1-R1 concatenated (I1 is cell barcode)
+            mv $crIN/Concatenated_File.fastq ${convR1}
+            
+            if [[ $nonUMI ]]; then
+                # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
+                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                umilength=$umi_default
+                umiadjust=0
+                if [[ $chemistry == "SC3Pv3" ]]; then
+                    chemistry="SC3Pv2"
+                fi
+                #returns a combined R1 file with barcode and mock UMI
+                ## 6 bp barcode, 10 bp UMI (TSO not handled yet)
+                mv $crIN/mock_UMI.fastq ${convR1}
+            fi
+        done
+    fi
+    
+    #Quartz-Seq2: remove adapter
     if [[ "$technology" == "quartz-seq2-384" ]]; then
         for convFile in "${convFiles[@]}"; do
         echo "  ...remove adapter for ${technology}"
@@ -2949,7 +3085,7 @@ else
                 }'  $convR2 > ${crIN}/.temp
             mv ${crIN}/.temp $convR2
 
-            echo" ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
+            echo " ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
 
             perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2}  --tag="AAGCAGTGGTATCAACGCAGAGTAC" --out_dir $crIN
@@ -3079,7 +3215,44 @@ else
         fi
     fi
     
-    #UMI
+    #replace UMI with mock UMI to count reads (for technologies not already containing mock UMI)
+    if [[ $technology != "icell8" ]] && [[ $technology != "ramda-seq" ]] && [[ $technology != "quartz-seq" ]] && [[ $technology != "smartseq" ]] && [[ $technology != "smartseq2" ]] && [[ $technology != "strt-seq" ]]; then
+        if [[ $nonUMI ]]; then
+            echo "WARNING: removing true UMI and replacing with Mock UMI"
+            echo "NOTICE: results will result read counts not UMI"
+            echo "## this behaviour is not recommended unless integrating with non-UMI data ##"
+             
+            for convFile in "${convFiles[@]}"; do
+                convR1=$convFile
+                #remove inflated umi (to replace with mock and count as reads) by non-standard evaluation to depend on variable umi-length
+                cmd=$(echo 'sed -E "2~4s/\^(.{'$barcodelength'})(.{'${umilength}'})(.\*)$/\1\3/" '$convFile' > '${crIN}'/.temp')
+                if [[ $verbose ]]; then
+                    echo technology $technology
+                    echo barcode: $barcodelength
+                    echo umi: $umilength
+                    echo $cmd
+                fi
+                eval $cmd
+                mv ${crIN}/.temp $convFile
+                
+                if [[ $chemistry == "SC3Pv3" ]]; then
+                     chemistry="SC3Pv2"
+                fi
+                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                umilength=$umi_default
+                umiadjust=0
+                if [[ $chemistry == "SC3Pv3" ]]; then
+                    chemistry="SC3Pv2"
+                fi
+                
+                #returns a combined R1 file with barcode and mock UMI
+                ## barcode, 10 bp UMI, followed by TSO (if applicable)
+                mv $crIN/mock_UMI.fastq ${convR1}
+            done
+        fi
+    fi
+    
+    #convert UMI
     echo " adjusting UMIs of R1 files"
     # check if original UMI is shorter than default
     if [[ 0 -gt $umiadjust ]]; then
@@ -3098,6 +3271,7 @@ else
             echo "  ${convFile} adjusted"
         done
     fi
+    
     # check if original UMI is longer than default
     if [[ 0 -lt $umiadjust ]]; then
         for convFile in "${convFiles[@]}"; do

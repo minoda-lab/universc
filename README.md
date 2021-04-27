@@ -168,8 +168,10 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
 -  CEL-Seq
     -  CEL-Seq  (8 bp barcode, 4 bp UMI): celseq
     -  CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
--  Drop-Seq (12 bp barcode, 8 bp UMI): nadia, dropseq
--  ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
+-  Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
+-  ICELL8
+    -  ICELL8 version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
+    -  ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
 -  inDrops
     -  inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
     -  inDrops version 2 (19 bp barcode, 6 bp UMI): indrops-v2, 1cellbio-v2
@@ -178,10 +180,13 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
     -  MARS-Seq  (6 bp barcode, 10 bp UMI): marsseq, marsseq-v1
     -  MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2   
 -  Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+-  Nadia (12 bp barcode, 8 bp UMI): nadia, dropseq
 -  Quartz-Seq
+    -  QuartzSeq (6 bp index, no UMI): quartz-seq
     -  Quartz-Seq2 (14 bp barcode, 8 bp UMI): quartzseq2-384
     -  Quartz-Seq2 (15 bp barcode, 8 bp UMI): quartzseq2-1536
--  Single-cell combinatorial indexing
+-  RamDA-Seq (6 bp index, no UMI): ramda-seq
+-  Single-cell combinatorial indexing (SCI-RNA-Seq)
    -  SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
    -  SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
    -  SCIFI-Seq (27 bp barcode, 8 bp UMI): scifiseq
@@ -189,8 +194,9 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
 -  SeqWell (12 bp barcode, 8 bp UMI): plexwell, seqwell, seqwells3
 -  SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
 -  Smart-seq
-   -  Smart-seq2 (16 bp barcode, No UMI): smartseq2
-   -  Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
+   -  Smart-Seq (16 bp barcode, No UMI): smartseq
+   -  Smart-Seq2 (16 bp barcode, No UMI): smartseq2
+   -  Smart-Seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
 -  STRT-Seq
     -  STRT-Seq (6 bp barcode, no UMI)
     -  STRT-Seq-C1 (8 bp barode, 5 bp UMI)
@@ -199,17 +205,17 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
 
 All technologies support 3' single-cell RNA-Seq. Barcode adjustments and
 whitelists are changed automatically. For 5' single-cell RNA-Seq, this
-is only supported for 10x Genomics version 2 chemistry. This is detected
-automatically but can be configured with the `--chemistry` argument.
+is only supported for 10x Genomics version 2 chemistry, ICELL8, 
+Smart-Seq, and STRT-Seq.
+For 10x Genomics, this is detected automatically but can be
+configured with the `--chemistry` argument.
+For other technologies, the template switching oligonucleotide
+is automatically converted to the match the 10x sequence. 
 
-We are developing technologies to support dual indexes and full length scRNA kits.
-
-Experimental technologies (not yet supported):
--  ICELL8 (11 bp barcode, no UMI)
--  RamDA-Seq (6 bp index, no UMI)
--  QuartzSeq (6 bp index, no UMI)
--  SmartSeq2 (16 bp barcode, no UMI)
-
+Single indexes are supported for STRT-Seq, Quartz-Seq, and RamDA-Seq.
+Dual indexes are supported for inDrops-v3, SCI-RNA-Seq, scifi-seq, and Smart-Seq.
+Combinatorial indexing technologies have linkers between barcodes removed
+automatically to match the barcode whitelist.
 
 #### Dual-indexing
 
@@ -231,6 +237,10 @@ Custom inputs are also supported by giving the name "custom" and length of barco
 
 Custom barcode files are also supported for preset technologies. These are particularly useful for well-based
 technologies to demutliplex based on the wells.
+
+Note that custom inputs do not remove linker or adapter sequences for combinatorial indexng technologies.
+These must be removed from the Read 1 file before running UniverSC. To request a preset technology
+setting instead, please submit a feature request on GitHub as described below.
 
 ## Release
 
@@ -1012,22 +1022,27 @@ Mandatory arguments to long options are mandatory for short options too.
                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
-                                  Drop-Seq (12 bp barcode, 8 bp UMI): nadia, dropseq
+                                  Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
+                                  ICELL8 version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
                                   ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
                                   inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19 bp barcode, 6 bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (16 bp barcode, 6 bp UMI): indrops-v3, 1cellbio-v3
+                                  Nadia (12 bp barcode, 8 bp UMI): nadia, dropseq
                                   MARS-Seq (6 bp barcode, 10 bp UMI): marsseq, marsseq-v1
                                   MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2   
                                   Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+                                  QuartzSeq (6 bp index, no UMI): quartz-seq
                                   Quartz-Seq2 (14 bp barcode, 8 bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15 bp barcode, 8 bp UMI): quartzseq2-1536
+                                  RamDA-Seq (6 bp index, no UMI): ramda-seq
                                   SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
                                   SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
                                   SCIFI-Seq (27 bp barcode, 8 bp UMI
                                   SCRB-Seq (6 bp barcode, 10 bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12 bp barcode, 8 bp UMI): plexwell, seqwell, seqwells3
-                                  Smart-seq, Smart-seq2 (16 bp barcode, No UMI): smartseq2
+                                  Smart-seq (16 bp barcode, No UMI): smartseq
+                                  Smart-seq2 (16 bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
                                   SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
                                   STRT-Seq (6 bp barcode, no UMI)
@@ -1036,12 +1051,6 @@ Mandatory arguments to long options are mandatory for short options too.
                                   SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
-
-                                Experimental
-                                  ICELL8 (11 bp barcode, no UMI)
-                                  RamDA-Seq (6 bp index, no UMI)
-                                  QuartzSeq (6 bp index, no UMI)
-                                  SmartSeq2 (16 bp barcode, no UMI)
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
 

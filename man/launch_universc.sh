@@ -190,22 +190,27 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
-                                  Drop-Seq (12 bp barcode, 8 bp UMI): nadia, dropseq
+                                  Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
+                                  ICELL8 version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
                                   ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
                                   inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19 bp barcode, 6 bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (16 bp barcode, 6 bp UMI): indrops-v3, 1cellbio-v3
+                                  Nadia (12 bp barcode, 8 bp UMI): nadia, dropseq
                                   MARS-Seq (6 bp barcode, 10 bp UMI): marsseq, marsseq-v1
-                                  MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2   
+                                  MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2
                                   Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+                                  QuartzSeq (6 bp index, no UMI): quartz-seq
                                   Quartz-Seq2 (14 bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15 bp barcode, 8bp UMI): quartzseq2-1536
+                                  RamDA-Seq (6 bp index, no UMI): ramda-seq
                                   SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
                                   SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
                                   SCIFI-Seq (27 bp barcode, 8 bp UMI
                                   SCRB-Seq (6 bp barcode, 10 bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12 bp barcode, 8 bp UMI): plexwell, seqwell, seqwells3
-                                  Smart-seq, Smart-seq2 (16 bp barcode, No UMI): smartseq2
+                                  Smart-seq (16 bp barcode, No UMI): smartseq
+                                  Smart-seq2 (16 bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
                                   SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
                                   STRT-Seq (6 bp barcode, no UMI)
@@ -214,12 +219,6 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
-
-                                Experimental
-                                  ICELL8 (11 bp barcode, no UMI)
-                                  RamDA-Seq (6 bp index, no UMI)
-                                  QuartzSeq (6 bp index, no UMI)
-                                  SmartSeq2 (16 bp barcode, no UMI)
 
            A barcode whitelist is provided for all beads or wells for the following technologies:
 
