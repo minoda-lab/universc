@@ -10,6 +10,8 @@
 
 - compatilibility with counting reads for non-UMI technologies (e.g., ICELL8-v2, Quartz-Seq, RamDA-Seq, Smart-Seq2, STRT-Seq)
 
+- implements option to replace UMI with mock UMI to force counting reads only
+
 - support custom whitelists from mixed samples with a low fraction of reads
 
 ### 1.0.3
