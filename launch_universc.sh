@@ -3029,13 +3029,8 @@ else
 
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
-<<<<<<< HEAD
             perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --tag="ATTGCGCAATG" --out_dir=$crIN
             
-=======
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir=$crIN
-
->>>>>>> c38e32ea3cb07d74951b60e666b6885377f7b77a
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
             
