@@ -644,8 +644,8 @@ elif [[ "$technology" == "quartz-seq2-384" ]] || [[ "$technology" == "quartzseq2
     technology="quartz-seq2-384"
 elif [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq2-1536" ]] || [[ "$technology" == "quartz-seq2-v3.2" ]] || [[ "$technology" == "quartzseq2-v3.2" ]] || [[ "$technology" == "quartzseq2v3.2" ]]; then
     technology="quartz-seq2-1536"
-elif [[ "$technology" == "rambda-seq" ]] || [[ "$technology" == "ram-da-seq" ]] || [[ "$technology" == "ramda-seq" ]]; then
-     technology="rambda-seq"
+elif [[ "$technology" == "rambda-seq" ]] || [[ "$technology" == "lamda-seq" ]] || [[ "$technology" == "lambda-seq" ]] || [[ "$technology" == "ramdaseq" ]] || [[ "$technology" == "ram-da-seq" ]] || [[ "$technology" == "ramda-seq" ]]; then
+     technology="ramda-seq"
      nonUMI=true
 elif [[ "$technology" == "sciseq" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "sci-rna-seq" ]]; then
     technology="sciseq3"
@@ -760,10 +760,14 @@ elif [[ "$technology" == "nadia" ]]; then
     minlength=12
 elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
-    umilength=14
+    if [[ $nonUMI ]]; then
+       umilength=0
+    else
+       umilength=14
+    fi
     minlength=11
 elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
-    barcodelength=19 
+    barcodelength=19
     umilength=6
     minlength=16
 elif [[ "$technology" == "indrop-v3" ]]; then
@@ -782,6 +786,12 @@ elif [[ "$technology" == "marsseq-v2" ]]; then
     barcodelength=7
     umilength=8
     minlength=7
+elif [[ "$technology" == "quartz-seq" ]] && [[ "$technology" == "ramda-seq" ]]; then
+    barcodelength=16
+    if [[ $nonUMI ]]; then
+       umilength=0
+    fi
+    minlength=16
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
@@ -810,13 +820,13 @@ elif [[ "$technology" == "seqwell" ]]; then
     barcodelength=8
     umilength=12
     minlength=8
-elif [[ "$technology" == "smartseq2" ]]; then
+elif [[ "$technology" == "smartseq2" ]] && [[ "$technology" == "smartseq3" ]]; then
     barcodelength=16
-    umilength=8
-    minlength=16
-elif [[ "$technology" == "smartseq3" ]]; then
-    barcodelength=16
-    umilength=8
+    if [[ $nonUMI ]]; then
+       umilength=0
+    else
+       umilength=8
+    fi
     minlength=16
 elif [[ "$technology" == "splitseq" ]]; then
      barcodelength=24
@@ -1648,7 +1658,7 @@ if [[ -n "$barcodefile" ]]; then
         barcodefile=$(readlink -f $barcodefile)
         custombarcodes=true
         #allowing WellList from ICELL8 and other well-based techniques
-        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
+        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
             n_col=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             if [[ $n_col -eq 1 ]]; then
@@ -2720,6 +2730,25 @@ else
                 s/.*(.{6}).{15}(.{6}).{15}(.{6})(.{6})$/\1\2\3\4/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
+        done
+    fi
+    
+    if [[ "$technology" == "quartz-seq" ]] && [[ "$technology" == "ramda-seq" ]]; then
+        echo "  ...processsing for ${technology}"
+        if [[ $verbose ]]; then
+            echo "Note: ICELL8 v2 does not contain UMIs"
+        fi
+        for convFile in "${convFiles[@]}"; do
+            # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
+            perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+            umilength=$umi_default
+            umiadjust=0
+            if [[ $chemistry == "SC3Pv3"]; then
+                chemistry="SC3Pv2"
+            fi
+            #returns a combined R1 file with barcode and mock UMI
+            ## 11 bp barcode, 10 bp UMI (TSO not handled yet)
+            mv $crIN/mock_UMI.fastq ${convR1}
         done
     fi
     
