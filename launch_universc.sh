@@ -2578,7 +2578,7 @@ else
     fi
     
     #ICELL8 version 2 (non-UMI technology)
-    if [[ "$technology" == "icell8" ]] && [[ $nonUMI ]];;then
+    if [[ "$technology" == "icell8" ]] && [[ $nonUMI ]]; then
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: ICELL8 v2 does not contain UMIs"
@@ -2603,15 +2603,29 @@ else
                 
             fi
             
-            # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
-            perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
-            umilength=$umi_default
-            umiadjust=0
-            chemistry="SC3Pv2"
-            
-            #returns a combined R1 file with barcode and mock UMI
-            ## 16 bp barcode, 10 bp UMI, GGG for TSO
-            mv $crIN/mock_UMI.fastq ${convR1}
+            if [[ $nonUMI ]]; then
+                #remove inflated umi (to replace with mock and count as reads)
+                sed -E '
+                    /^(.{11})(.{14})(.*)/ {
+                    s/^(.{11})(.{14})(.*)/\1\3/g
+                    n
+                    n
+                    s/^(.{11})(.{14})(.*)/\1\3/g
+                    }' $convFile > ${crIN}/.temp
+                mv ${crIN}/.temp $convFile
+
+                # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
+                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                umilength=$umi_default
+                umiadjust=0
+                if [[ $chemistry == "SC3Pv3"]; then
+                    chemistry="SC3Pv2"
+                fi
+                
+                #returns a combined R1 file with barcode and mock UMI
+                ## 16 bp barcode, 10 bp UMI, GGG for TSO
+                mv $crIN/mock_UMI.fastq ${convR1}
+            fi
             
             if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
                 #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
