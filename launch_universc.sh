@@ -3215,6 +3215,43 @@ else
         fi
     fi
     
+    #replace UMI with mock UMI to count reads (for technologies not already containing mock UMI)
+    if [[ $technology != "icell8" ]] && [[ $technology != "ramda-seq" ]] && [[ $technology != "quartz-seq" ]] && [[ $technology != "smartseq" ]] && [[ $technology != "smartseq2" ]] && [[ $technology != "strt-seq" ]]; then
+        if [[ $nonUMI ]]; then
+            echo "WARNING: removing true UMI and replacing with Mock UMI"
+            echo "NOTICE: results will result read counts not UMI"
+            echo "## this behaviour is not recommended unless integrating with non-UMI data ##"
+             
+            for convFile in "${convFiles[@]}"; do
+                convR1=$convFile
+                #remove inflated umi (to replace with mock and count as reads) by non-standard evaluation to depend on variable umi-length
+                cmd=$(echo 'sed -E "2~4s/\^(.{'$barcodelength'})(.{'${umilength}'})(.\*)$/\1\3/" '$convFile' > '${crIN}'/.temp')
+                if [[ $verbose ]]; then
+                    echo technology $technology
+                    echo barcode: $barcodelength
+                    echo umi: $umilength
+                    echo $cmd
+                fi
+                eval $cmd
+                mv ${crIN}/.temp $convFile
+                
+                if [[ $chemistry == "SC3Pv3" ]]; then
+                     chemistry="SC3Pv2"
+                fi
+                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                umilength=$umi_default
+                umiadjust=0
+                if [[ $chemistry == "SC3Pv3" ]]; then
+                    chemistry="SC3Pv2"
+                fi
+                
+                #returns a combined R1 file with barcode and mock UMI
+                ## barcode, 10 bp UMI, followed by TSO (if applicable)
+                mv $crIN/mock_UMI.fastq ${convR1}
+            done
+        fi
+    fi
+    
     #convert UMI
     echo " adjusting UMIs of R1 files"
     # check if original UMI is shorter than default
@@ -3233,58 +3270,6 @@ else
             mv ${crIN}/.temp $convFile
             echo "  ${convFile} adjusted"
         done
-    fi
-    
-    #replace UMI with mock UMI to count reads (for technologies not already containing mock UMI)
-    if [[ $technology != "icell8" ]] && [[ $technology != "ramda-seq" ]] && [[ $technology != "quartz-seq" ]] && [[ $technology != "smartseq" ]] && [[ $technology != "smartseq2" ]] && [[ $technology != "strt-seq" ]]; then
-        if [[ $nonUMI ]]; then
-            echo "WARNING: removing true UMI and replacing with Mock UMI"
-            echo "NOTICE: results will result read counts not UMI"
-            echo "## this behaviour is not recommended unless integrating with non-UMI data ##"
-             
-            for convFile in "${convFiles[@]}"; do
-                convR1=$convFile
-                #remove inflated umi (to replace with mock and count as reads)
-                sed -E "
-                    /^(.{16})(.{10})(.*)/ {
-                    s/^(.{16})(.{10})(.*)/\1\3/g
-                    n
-                    n
-                    s/^(.{16})(.{10})(.*)/\1\3/g
-                }" $convFile > ${crIN}/.temp\n
-                mv ${crIN}/.temp $convFile'
-                if [[ $chemistry == "SC3Pv3" ]]; then
-                    chemistry="SC3Pv2"
-                fi
-                #cmd=$(echo 'sed -E "
-                #                /^(.{'$barcodelength'})(.{'${umilength}'})(.*)/ {
-                #               s/^(.{'$barcodelength'})(.{'${umilength}'})(.*)/\1\3/g
-                #               n
-                #               n
-                #               s/^(.{'$barcodelength'})(.{'${umilength}'})(.*)/\1\3/g
-                #               }" $convFile > ${crIN}/.temp\n
-                #            mv ${crIN}/.temp $convFile')
-                if [[ $verbose ]]; then
-                    echo technology $technology
-                    echo barcode: $barcodelength
-                     echo umi: $umilength
-                #    echo $cmd
-                fi
-                #eval $cmd
-                
-                # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
-                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
-                umilength=$umi_default
-                umiadjust=0
-                if [[ $chemistry == "SC3Pv3" ]]; then
-                    chemistry="SC3Pv2"
-                fi
-                
-                #returns a combined R1 file with barcode and mock UMI
-                ## barcode, 10 bp UMI, followed by TSO (if applicable)
-                mv $crIN/mock_UMI.fastq ${convR1}
-            done
-        fi
     fi
     
     # check if original UMI is longer than default
