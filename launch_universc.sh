@@ -2577,6 +2577,68 @@ else
         done
     fi
     
+    #ICELL8 version 2 (non-UMI technology)
+    if [[ "$technology" == "icell8" ]] && [[ $nonUMI ]];;then
+        echo "  ...processsing for ${technology}"
+        if [[ $verbose ]]; then
+            echo "Note: ICELL8 v2 does not contain UMIs"
+        fi
+        for convFile in "${convFiles[@]}"; do
+            read=$convFile
+            convR1=$read
+            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+            
+            if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
+                ## echo " ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
+                # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
+                
+                perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --tag="AAAAAAAAAAAAAAAAAAAA" --out_dir $crIN
+                echo "  ...trim tag sequence from R1"
+                
+                # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
+                mv $crIN/parsed_R1.fastq ${convR1}
+                mv $crIN/parsed_R2.fastq ${convR2}
+                mv $crIN/parsed_I1.fastq ${convI1}
+                mv $crIN/parsed_I2.fastq ${convI2}
+                
+            fi
+            
+            # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
+            perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+            umilength=$umi_default
+            umiadjust=0
+            chemistry="SC3Pv2"
+            
+            #returns a combined R1 file with barcode and mock UMI
+            ## 16 bp barcode, 10 bp UMI, GGG for TSO
+            mv $crIN/mock_UMI.fastq ${convR1}
+            
+            if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
+                #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
+                echo " handling $convFile ..."
+                tsoS="TTTCTTATATGGG" #<- confirm tag sequence with Takara reps
+                tsoQ="IIIIIIIIIIIII"
+                #Add 10x TSO characters to the end of the sequence
+                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+                if [[ $verbose ]]; then
+                    echo technology $technology
+                    echo barcode: $barcodelength
+                    echo umi: $umilength
+                    echo $cmd
+                fi
+                # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+                eval $cmd
+                mv ${crIN}/.temp $convFile
+                #Add n characters to the end of the quality
+                cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+                # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+                eval $cmd
+                mv ${crIN}/.temp $convFile
+            fi
+            echo "  ${convFile} adjusted"
+       done
+    fi
+    
     #inDrops: remove adapter (see links below for details)
     ## https://github.com/BUStools/bustools/issues/4
     ## https://teichlab.github.io/scg_lib_structs/methods_html/inDrop.html
@@ -2961,7 +3023,7 @@ else
                 }'  $convR2 > ${crIN}/.temp
             mv ${crIN}/.temp $convR2
 
-            echo" ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
+            echo " ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
 
             perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2}  --tag="AAGCAGTGGTATCAACGCAGAGTAC" --out_dir $crIN
