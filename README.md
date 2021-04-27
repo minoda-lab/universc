@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Monday 26 April 2021"
+date: "Tuesday 27 April 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -162,14 +162,14 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
 #### Pre-set configurations
 
 -  10x Genomics (version automatically detected): 10x, chromium
-    -  10x Genomics version 2 (16bp barcode, 10bp UMI): 10x-v2, chromium-v2
-    -  10x Genomics version 3 (16bp barcode, 12bp UMI): 10x-v3, chromium-v3
+    -  10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
+    -  10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
 -  BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
 -  CEL-Seq
-    -  CEL-Seq  (8bp barcode, 4bp UMI): celseq
-    -  CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
--  Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
--  ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
+    -  CEL-Seq  (8 bp barcode, 4 bp UMI): celseq
+    -  CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
+-  Drop-Seq (12 bp barcode, 8 bp UMI): nadia, dropseq
+-  ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
 -  inDrops
     -  inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
     -  inDrops version 2 (19 bp barcode, 6 bp UMI): indrops-v2, 1cellbio-v2
@@ -1007,38 +1007,40 @@ Mandatory arguments to long options are mandatory for short options too.
   -t,  --technology PLATFORM    Name of technology used to generate data.
                                 Supported technologies:
                                   10x Genomics (version automatically detected): 10x, chromium
-                                  10x Genomics version 2 (16bp barcode, 10bp UMI): 10x-v2, chromium-v2
-                                  10x Genomics version 3 (16bp barcode, 12bp UMI): 10x-v3, chromium-v3
+                                  10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
+                                  10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
-                                  CEL-Seq (8bp barcode, 4bp UMI): celseq
-                                  CEL-Seq2 (6bp UMI, 6bp barcode): celseq2
-                                  Drop-Seq (12bp barcode, 8bp UMI): nadia, dropseq
-                                  ICELL8 version 3 (11bp barcode, 14bp UMI): icell8 or custom
-                                  inDrops version 1 (19bp barcode, 6bp UMI): indrops-v1, 1cellbio-v1
-                                  inDrops version 2 (19bp barcode, 6bp UMI): indrops-v2, 1cellbio-v2
-                                  inDrops version 3 (16bp barcode, 6bp UMI): indrops-v3, 1cellbio-v3
-                                  MARS-Seq (6bp barcode, 10bp UMI): marsseq, marsseq-v1
-                                  MARS-Seq2 (7bp barcode, 8bp UMI): marsseq2, marsseq-v2   
+                                  CEL-Seq (8 bp barcode, 4 bp UMI): celseq
+                                  CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
+                                  Drop-Seq (12 bp barcode, 8 bp UMI): nadia, dropseq
+                                  ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
+                                  inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
+                                  inDrops version 2 (19 bp barcode, 6 bp UMI): indrops-v2, 1cellbio-v2
+                                  inDrops version 3 (16 bp barcode, 6 bp UMI): indrops-v3, 1cellbio-v3
+                                  MARS-Seq (6 bp barcode, 10 bp UMI): marsseq, marsseq-v1
+                                  MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2   
                                   Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
-                                  Quartz-Seq2 (14bp barcode, 8bp UMI): quartzseq2-384
-                                  Quartz-Seq2 (15bp barcode, 8bp UMI): quartzseq2-1536
+                                  Quartz-Seq2 (14 bp barcode, 8 bp UMI): quartzseq2-384
+                                  Quartz-Seq2 (15 bp barcode, 8 bp UMI): quartzseq2-1536
                                   SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
                                   SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
                                   SCIFI-Seq (27 bp barcode, 8 bp UMI
-                                  SCRB-Seq (6bp barcode, 10bp UMI): scrbseq, mcscrbseq
-                                  SeqWell (12bp barcode, 8bp UMI): plexwell, seqwell, seqwells3
-                                  Smart-seq, Smart-seq2 (16bp barcode, No UMI): smartseq2
-                                  Smart-seq2-UMI, Smart-seq3 (16bp barcode, 8bp UMI): smartseq3
-                                  SPLiT-Seq (10bp UMI, 24bp barcode): splitseq
+                                  SCRB-Seq (6 bp barcode, 10 bp UMI): scrbseq, mcscrbseq
+                                  SeqWell (12 bp barcode, 8 bp UMI): plexwell, seqwell, seqwells3
+                                  Smart-seq, Smart-seq2 (16 bp barcode, No UMI): smartseq2
+                                  Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
+                                  SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
                                   STRT-Seq (6 bp barcode, no UMI)
                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI)
                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI)
-                                  SureCell (18bp barcode, 8bp UMI): surecell, ddseq, biorad
+                                  SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
-                                  e.g. Custom (16bp barcode, 10bp UMI): custom_16_10
+                                  e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
 
                                 Experimental
                                   ICELL8 (11 bp barcode, no UMI)
+                                  RamDA-Seq (6 bp index, no UMI)
+                                  QuartzSeq (6 bp index, no UMI)
                                   SmartSeq2 (16 bp barcode, no UMI)
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
