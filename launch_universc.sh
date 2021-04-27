@@ -1421,9 +1421,58 @@ if [[ "$technology" == "indrop-v3" ]]; then
         echo " indexes ${index1[@]} and ${index2[@]} found for ${technology}"
     else
         if [[ $setup == "false" ]]; then
-            echo "ERROR: note that ${technology} expects dual indexes: I1 and I2 OR R2 and R3"
-            exit 1
+            echo "WARNING: note that ${technology} expects dual indexes: I1 and I2 OR R2 and R3"
         fi
+    fi
+fi
+
+
+#generate missing indexes if required (generating I1 and I2)
+if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-ci" ]] ; then
+     echo "dual indexes I1 and I2 required for $technology"
+     if [[ ${#index2[@]} -le 1 ]]; then
+         echo " automatically generating I1 and I2 index files from file headers"
+         index1=("${read1[@]}")
+         index2=("${read1[@]}")
+         #for ii in $(seq 1 1 ${#read1[@]}); do
+         for ii in ${!read1[@]}; do
+             #iterate over read1 inputs
+             R1_file=${read1[$(( $ii -1 ))]}
+             R2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_R2/' )
+             I1_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I1/' )
+             I2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I2/' )
+
+             if [[ $verbose ]]; then
+                 echo $R1_file
+                 echo $R2_file
+                 echo $I1_file
+                 echo $I2_file
+             fi
+             # copies index 1 to next line (1st to 2nd) and deletes 3rd line
+             cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | sed "3~5d" > $I1_file
+             indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
+             qualscores=$(seq 1 $indexlength | xargs -I {} printf I)
+             if [[ $verbose ]]; then
+                 echo index of length $indexlength gives quality score $qualscores
+             fi
+            sed -i "4~4s/^.*$/${qualscores}/g" $I1_file
+            # copies index 2 to next line (1st to 2nd) and deletes 3rd line
+            cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\5/g" | sed "3~5d" >  $I2_file
+            index2length=$(($(head $I2_file -n 2 | tail -n 1 | wc -c) -1))
+            qualscores2=$(seq 1 $index2length | xargs -I {} printf I)
+            if [[ $verbose ]]; then
+                echo index2 of length $index2length gives quality score $qualscores2
+            fi
+            sed -i "4~4s/^.*$/${qualscores2})/g" $I2_file
+            index1+=("$I1_file")
+            index2+=("$I2_file")
+        done
+        if [[ $verbose ]]; then
+            echo index1: $index1
+            echo index2: $index2
+        fi
+    else
+        echo " dual indexes found"
     fi
 fi
 
