@@ -226,10 +226,10 @@ Mandatory arguments to long options are mandatory for short options too.
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
 
                                 Experimental
-                                  ICELL8 (11 bp barcode, no UMI)
-                                  RamDA-Seq (6 bp index, no UMI)
-                                  QuartzSeq (6 bp index, no UMI)
-                                  SmartSeq2 (16 bp barcode, no UMI)
+                                  ICELL8 (11 bp barcode, no UMI): icell8-non-umi, icell8-v2
+                                  RamDA-Seq (6 bp index, no UMI): ramda-seq
+                                  QuartzSeq (6 bp index, no UMI): quartz-seq
+                                  SmartSeq2 (16 bp barcode, no UMI): smartseq, smartseq2
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
@@ -620,9 +620,9 @@ elif [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd" ]] || [[ "
     technology="bd-rhapsody"
 elif [[ "$technology" == "nadia" ]] || [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
     technology="nadia"
-elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]]; then
+elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]] ||  [[ "$technology" == "icell8-v3" ]] ||  [[ "$technology" == "icell8v3" ]]; then
     technology="icell8"
-elif [[ "$technology" == "icell8-non-umi" ]] || [[ "$technology" == "icell8-nonumi" ]]; then
+elif [[ "$technology" == "icell8-non-umi" ]] || [[ "$technology" == "icell8-nonumi" ]] ||  [[ "$technology" == "icell8-v2" ]] ||  [[ "$technology" == "icell8v2" ]]; then
     technology="icell8"
     nonUMI=true
 elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then

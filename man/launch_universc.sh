@@ -216,10 +216,10 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
 
                                 Experimental
-                                  ICELL8 (11 bp barcode, no UMI)
-                                  RamDA-Seq (6 bp index, no UMI)
-                                  QuartzSeq (6 bp index, no UMI)
-                                  SmartSeq2 (16 bp barcode, no UMI)
+                                  ICELL8 (11 bp barcode, no UMI): icell8-non-umi, icell8-v2
+                                  RamDA-Seq (6 bp index, no UMI) ramda-seq
+                                  QuartzSeq (6 bp index, no UMI): quartz-seq
+                                  SmartSeq2 (16 bp barcode, no UMI):smart-seq2
 
            A barcode whitelist is provided for all beads or wells for the following technologies:
 

@@ -92,7 +92,7 @@
 </ul>
 <p>All technologies support 3' single-cell RNA-Seq. Barcode adjustments and whitelists are changed automatically. For 5' single-cell RNA-Seq, this is only supported for 10x Genomics version 2 chemistry. This is detected automatically but can be configured with the <code>--chemistry</code> argument.</p>
 <p>We are developing technologies to support dual indexes and full length scRNA kits.</p>
-<p>Experimental technologies (not yet supported): - ICELL8 (11 bp barcode, no UMI) - RamDA-Seq (6 bp index, no UMI) - QuartzSeq (6 bp index, no UMI) - SmartSeq2 (16 bp barcode, no UMI)</p>
+<p>Experimental technologies (not yet supported): - ICELL8 (11 bp barcode, no UMI): icell8-non-umi, icell8-v2 - RamDA-Seq (6 bp index, no UMI): ramda-seq - QuartzSeq (6 bp index, no UMI): quartz-seq - SmartSeq2 (16 bp barcode, no UMI): smartseq, smartseq2</p>
 <h4 id="dual-indexing">Dual-indexing</h4>
 <p>For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use &quot;bcl2fastq&quot; before calling UniverSC:</p>
 <pre><code>   /usr/local/bin/bcl2fastq  -v --runfolder-dir &quot;/path/to/illumina/bcls&quot;  --output-dir &quot;./Data/Intensities/BaseCalls&quot;\
@@ -521,10 +521,10 @@ Mandatory arguments to long options are mandatory for short options too.
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
 
                                 Experimental
-                                  ICELL8 (11 bp barcode, no UMI)
-                                  RamDA-Seq (6 bp index, no UMI)
-                                  QuartzSeq (6 bp index, no UMI)
-                                  SmartSeq2 (16 bp barcode, no UMI)
+                                  ICELL8 (11 bp barcode, no UMI): icell8-non-umi, icell8-v2
+                                  RamDA-Seq (6 bp index, no UMI): ramda-seq
+                                  QuartzSeq (6 bp index, no UMI): quartz-seq
+                                  SmartSeq2 (16 bp barcode, no UMI): smartseq2
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
 

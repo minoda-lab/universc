@@ -205,10 +205,10 @@ automatically but can be configured with the `--chemistry` argument.
 We are developing technologies to support dual indexes and full length scRNA kits.
 
 Experimental technologies (not yet supported):
--  ICELL8 (11 bp barcode, no UMI)
--  RamDA-Seq (6 bp index, no UMI)
--  QuartzSeq (6 bp index, no UMI)
--  SmartSeq2 (16 bp barcode, no UMI)
+-  ICELL8 (11 bp barcode, no UMI): icell8-non-umi, icell8-v2
+-  RamDA-Seq (6 bp index, no UMI): ramda-seq
+-  QuartzSeq (6 bp index, no UMI): quartz-seq
+-  SmartSeq2 (16 bp barcode, no UMI): smartseq, smartseq2
 
 
 #### Dual-indexing
@@ -1038,10 +1038,10 @@ Mandatory arguments to long options are mandatory for short options too.
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
 
                                 Experimental
-                                  ICELL8 (11 bp barcode, no UMI)
-                                  RamDA-Seq (6 bp index, no UMI)
-                                  QuartzSeq (6 bp index, no UMI)
-                                  SmartSeq2 (16 bp barcode, no UMI)
+                                  ICELL8 (11 bp barcode, no UMI): icell8-non-umi, icell8-v2
+                                  RamDA-Seq (6 bp index, no UMI): ramda-seq
+                                  QuartzSeq (6 bp index, no UMI): quartz-seq
+                                  SmartSeq2 (16 bp barcode, no UMI): smartseq2
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
 
