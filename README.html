@@ -99,13 +99,16 @@
 <li>SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad</li>
 </ul>
 <p>All technologies support 3' single-cell RNA-Seq. Barcode adjustments and whitelists are changed automatically. For 5' single-cell RNA-Seq, this is only supported for 10x Genomics version 2 chemistry, ICELL8, Smart-Seq, and STRT-Seq. For 10x Genomics, this is detected automatically but can be configured with the <code>--chemistry</code> argument. For other technologies, the template switching oligonucleotide is automatically converted to the match the 10x sequence.</p>
+<p>By default, UMIs are supported where available so with the following exceptions for non-UMI technologies: ICELL8 v2, RamDA-Seq, Quartz-Seq, Smart-Seq, Smart-Seq2. Other techniques can be forced to replace the UMI with a mock sequence for counting reads only with <code>--non-umi</code> or <code>--read-only</code> arguments. Forcing non-UMI techniques is <em>not recommended</em> unless you are integrating non-UMI and UMI-based technologies. It is not necessary to specific <code>--non-umi</code> for non-UMI techniques as these will be used automatically when applicable. For ICELL8 and Smart-Seq where both non-UMI (icell8-v2, smartseq2) and UMI-based (icell8-v3, smartseq3) techniques are available it is possible to specify which to use.</p>
 <p>Single indexes are supported for STRT-Seq, Quartz-Seq, and RamDA-Seq. Dual indexes are supported for inDrops-v3, SCI-RNA-Seq, scifi-seq, and Smart-Seq. Combinatorial indexing technologies have linkers between barcodes removed automatically to match the barcode whitelist.</p>
-<h4 id="dual-indexing">Dual-indexing</h4>
+<h4 id="demultiplexing-for-dual-indexing">Demultiplexing for dual-indexing</h4>
 <p>For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use &quot;bcl2fastq&quot; before calling UniverSC:</p>
 <pre><code>   /usr/local/bin/bcl2fastq  -v --runfolder-dir &quot;/path/to/illumina/bcls&quot;  --output-dir &quot;./Data/Intensities/BaseCalls&quot;\
                                 --sample-sheet &quot;/path/to/SampleSheet.csv&quot; --create-fastq-for-index-reads\
                                 --use-bases-mask Y26n,I8n,I8n,Y50n  --mask-short-adapter-reads 0\
                                 --minimum-trimmed-read-length 0</code></pre>
+<p>Please adjust the lengths for <code>--use-bases-mask</code> accordingly for read 1, index 1 (i7), index 2 (i5), and read 2. Ensure that <code>--create-fastq-for-index-read</code> is used where possible. If a sequencing facility has demultiplexed the samples for you without this, UniverSC will attempt to extract index sequences from FASTQ headers in read 1. Using <code>--no-lane-splitting</code> is optional as UniverSC can process an arbirtary number of lanes.</p>
+<p>There is no need to specify index sequences in the same sheet for cell barcodes, using &quot;NNNNNNNN&quot; will match all samples and the cell barcodes will be distinguished by the single-cell processing pipeline. Index sequences should only be used to demultiplex samples and replicates (not cells).</p>
 <h4 id="custom-inputs">Custom inputs</h4>
 <p>Custom inputs are also supported by giving the name &quot;custom&quot; and length of barcode and UMI separated by a &quot;_&quot; character.</p>
 <p>e.g. Custom (16bp barcode, 10bp UMI): <code>custom_16_10</code></p>

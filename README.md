@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Tuesday 27 April 2021"
+date: "Wednesday 28 April 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -212,12 +212,24 @@ configured with the `--chemistry` argument.
 For other technologies, the template switching oligonucleotide
 is automatically converted to the match the 10x sequence. 
 
+By default, UMIs are supported where available so with the following
+exceptions for non-UMI technologies:
+ICELL8 v2, RamDA-Seq, Quartz-Seq, Smart-Seq, Smart-Seq2.
+Other techniques can be forced to replace the UMI with a mock sequence
+for counting reads only with `--non-umi` or `--read-only` arguments.
+Forcing non-UMI techniques is _not recommended_ unless you are 
+integrating non-UMI and UMI-based technologies. It is not necessary
+to specific `--non-umi` for non-UMI techniques as these will be used
+automatically when applicable. For ICELL8 and Smart-Seq where both
+non-UMI (icell8-v2, smartseq2) and UMI-based (icell8-v3, smartseq3)
+techniques are available it is possible to specify which to use.
+
 Single indexes are supported for STRT-Seq, Quartz-Seq, and RamDA-Seq.
 Dual indexes are supported for inDrops-v3, SCI-RNA-Seq, scifi-seq, and Smart-Seq.
 Combinatorial indexing technologies have linkers between barcodes removed
 automatically to match the barcode whitelist.
 
-#### Dual-indexing
+#### Demultiplexing for dual-indexing
 
 For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use "bcl2fastq"
 before calling UniverSC:
@@ -228,6 +240,15 @@ before calling UniverSC:
                                 --use-bases-mask Y26n,I8n,I8n,Y50n  --mask-short-adapter-reads 0\
                                 --minimum-trimmed-read-length 0
 ```
+
+Please adjust the lengths for `--use-bases-mask` accordingly for read 1, index 1 (i7), index 2 (i5), and read 2.
+Ensure that `--create-fastq-for-index-read` is used where possible. If a sequencing facility has demultiplexed
+the samples for you without this, UniverSC will attempt to extract index sequences from FASTQ headers in read 1.
+Using `--no-lane-splitting` is optional as UniverSC can process an arbirtary number of lanes.
+
+There is no need to specify index sequences in the same sheet for cell barcodes, using "NNNNNNNN" will match all 
+samples and the cell barcodes will be distinguished by the single-cell processing pipeline. Index sequences should
+only be used to demultiplex samples and replicates (not cells).
 
 #### Custom inputs
 

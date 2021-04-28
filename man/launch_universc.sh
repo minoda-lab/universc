@@ -95,6 +95,11 @@ Provides a conversion script to run multiple technologies and custom libraries w
                 /usr/local/bin/bcl2fastq -v --runfolder-dir "/path/to/illumina/bcls"  --output-dir "./Data/Intensities/BaseCalls"\
                                             --sample-sheet "/path/to/SampleSheet.csv" --create-fastq-for-index-reads
 
+            Index 1 file is required for the following technologies, in addition to those requiring Index 2.
+            UniverSC will attempt to extract them from Read 1 headers if not found:
+
+                   inDrops-v3, STRT-Seq-C1
+
   -I2, --index2 FILE
             Index (I2) FASTQ file to pass to Cell Ranger (OPTIONAL). Contains the indexes 
             for each sample. (In the case of Illumina paired-ends these are the i5 indexes).
@@ -148,6 +153,11 @@ Provides a conversion script to run multiple technologies and custom libraries w
 
             Note: processing dual-indexed files is not stable. If behaviour is not as you expect,
             we welcome you to contact us on GitHub to help you out.
+
+            Index 1 and Index 2 files are required for the following technologies
+            UniverSC will attempt to extract them from Read 1 headers if not found:
+
+                   SCI-RNA-Seq, SCI-RNA-Seq3, scifi-seq, Smart-Seq2, Smart-Seq3, STRT-Seq-2i
 
   -f,  --file NAME
             Path and the name of FASTQ files to pass to Cell Ranger (prefix before R1 or R2)
@@ -220,12 +230,25 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
 
-           A barcode whitelist is provided for all beads or wells for the following technologies:
+            A barcode whitelist is provided for all beads or wells for the following technologies:
 
-                 10x Genomics, ICELL8, inDrops-v2, inDrops-v3, SCI-Seq (2-level), SCI-Seq3, SmartSeq3, and QuartzSeq2
+                  10x Genomics, ICELL8, inDrops-v2, inDrops-v3, SCI-Seq (2-level), SCI-Seq3, SmartSeq3, and QuartzSeq2
 
             Where no known barcodes are available all possible barcodes of the expected length are
             generated and converted if the permutations have not been computed already.
+
+            Linkers are automatically removed from the following technologies:
+
+                  BD Rhapsody, inDrops-v1, Microwell-Seq, SCI-Seq3 Split-Seq, Smart-Seq2, Smart-Seq3, SureCell
+
+            The following technologies default to non-UMI parameters (others can be forced):
+
+                  ICELL8-v2, RamDA-Seq, Quartz-Seq, Smart-Seq, Smart-Seq2
+
+            The following technologies require Index 1 or Index 2 sequences (see above):
+
+                  inDrops-v3,  SCI-RNA-Seq, SCI-RNA-Seq3, scifi-seq, Smart-Seq2, Smart-Seq3, STRT-Seq-2i, STRT-Seq-C1
+
 
   -b,  --barcodefile FILE
             Custom barcode list in plain text (with each line containing a barcode). Please provide
