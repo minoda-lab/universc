@@ -203,8 +203,10 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
     -  STRT-Seq-2i (13 bp barcode, 6 bp UMI)
 -  SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
 
-All technologies support 3' single-cell RNA-Seq. Barcode adjustments and
-whitelists are changed automatically. For 5' single-cell RNA-Seq, this
+#### Chemistry settings available
+
+All technologies support 3′ single-cell RNA-Seq. Barcode adjustments and
+whitelists are changed automatically. For 5′ single-cell RNA-Seq, this
 is only supported for 10x Genomics version 2 chemistry, ICELL8, 
 Smart-Seq, and STRT-Seq.
 For 10x Genomics, this is detected automatically but can be
@@ -212,9 +214,14 @@ configured with the `--chemistry` argument.
 For other technologies, the template switching oligonucleotide
 is automatically converted to the match the 10x sequence. 
 
+#### Support for UMI-based and non-UMI technologies 
+
 By default, UMIs are supported where available so with the following
 exceptions for non-UMI technologies:
 ICELL8 v2, RamDA-Seq, Quartz-Seq, Smart-Seq, Smart-Seq2.
+While using UMI is recommended we provide a mock UMI for counting
+reads for these technologies (and data from previous versions).
+
 Other techniques can be forced to replace the UMI with a mock sequence
 for counting reads only with `--non-umi` or `--read-only` arguments.
 Forcing non-UMI techniques is _not recommended_ unless you are 
@@ -224,6 +231,9 @@ automatically when applicable. For ICELL8 and Smart-Seq where both
 non-UMI (icell8-v2, smartseq2) and UMI-based (icell8-v3, smartseq3)
 techniques are available it is possible to specify which to use.
 
+#### Single and dual indexed technologies
+
+Where needed the cell barcode can be detected in the index I1 or I2 file.
 Single indexes are supported for STRT-Seq, Quartz-Seq, and RamDA-Seq.
 Dual indexes are supported for inDrops-v3, SCI-RNA-Seq, scifi-seq, and Smart-Seq.
 Combinatorial indexing technologies have linkers between barcodes removed
