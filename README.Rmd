@@ -1076,6 +1076,8 @@ Mandatory arguments to long options are mandatory for short options too.
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
 
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: SC3Pv2 (default), SC5P-PE, or SC5P-R2
+                                    5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies
+                                    All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics and ICELL8 allow choosing which to use.
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: local (default), sge, lsf, or a .template file
        --localcores NUM         Set max cores the pipeline may request at one time.

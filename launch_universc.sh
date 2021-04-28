@@ -232,7 +232,10 @@ Mandatory arguments to long options are mandatory for short options too.
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
-  -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', or 'SC5P-R2'
+  -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', 'SC5P-R1', or 'SC5P-R2'
+                                    5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies
+                                    All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics and ICELL8 allow choosing which to use.
+
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
        --localcores NUM         Set max cores the pipeline may request at one time.
@@ -2637,12 +2640,78 @@ else
             fi
             
             if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
+                #remove TSO adapters (from ends)
+                sed -E '
+                    /^TTACTATGCCGCTGGTGGCTCTAGATGTGAGAAAGGG/ {
+                    s/^TTACTATGCCGCTGGTGGCTCTAGATGTGAGAAAGGG/GGG/g
+                    n
+                    n
+                    s/^(.{34})(.{3})/\2//g
+                }'  $convFile > ${crIN}/.temp
+                mv ${crIN}/.temp $convFile
+                sed -E '
+                    /^AGATCGGAAGAGCGTCGTGTAGGG/ {
+                    s/^AGATCGGAAGAGCGTCGTGTAGGG/GGG/g
+                    n
+                    n
+                    s/^(.{21})(.{3})/\2//g
+                }'  $convFile > ${crIN}/.temp
+                mv ${crIN}/.temp $convFile
+                sed -E '
+                    /^GCGTCGTGTAGGG/ {
+                    s/^GCGTCGTGTAGGG/GGG/g
+                    n
+                    n
+                    s/^(.{10})(.{3})/\2//g
+                }'  $convFile > ${crIN}/.temp
+                mv ${crIN}/.temp $convFile
+                sed -E '
+                    /^TGTGAGAAAGGG/ {
+                    s/^TGTGAGAAAGGG/GGG/g
+                    n
+                    n
+                    s/(.{9})(.{3})/\2//g
+                }'  $convFile > ${crIN}/.temp
+                mv ${crIN}/.temp $convFile
+                #remove TSO adapters (from after cell barcode) #<- confirm tag sequence with Takara reps (appears to be CB-UMI-GGG)
+                sed -E '
+                    /^(.{11})(.{14})TTACTATGCCGCTGGTGGCTCTAGATGTGAGAAAGGG/ {
+                    s/^(.{11})(.{14})TTACTATGCCGCTGGTGGCTCTAGATGTGAGAAAGGG/\1\2GGG/g
+                    n
+                    n
+                    s/^(.{11})(.{14})(.{34})(.{3})/\1\2\4//g
+                }'  $convFile > ${crIN}/.temp
+                mv ${crIN}/.temp $convFile
+                sed -E '
+                    /^(.{11})(.{14})AGATCGGAAGAGCGTCGTGTAGGG/ {
+                    s/^(.{11})(.{14})AGATCGGAAGAGCGTCGTGTAGGG/\1\2GGG/g
+                    n
+                    n
+                    s/^(.{11})(.{14})(.{21})(.{3})/\1\2\4//g
+                }'  $convFile > ${crIN}/.temp
+                mv ${crIN}/.temp $convFile
+                sed -E '
+                    /^(.{11})(.{14})GCGTCGTGTAGGG/ {
+                    s/^(.{11})(.{14})GCGTCGTGTAGGG/\1\2GGG/g
+                    n
+                    n
+                    s/^(.{11})(.{14})(.{10})(.{3})/\1\2\4//g
+                }'  $convFile > ${crIN}/.temp
+                mv ${crIN}/.temp $convFile
+                sed -E '
+                    /^(.{11})(.{14})TGTGAGAAAGGG/ {
+                    s/^(.{11})(.{14})TGTGAGAAAGGG/\1\2GGG/g
+                    n
+                    n
+                    s/(.{11})(.{14})(.{9})(.{3})/\1\2\4//g
+                }'  $convFile > ${crIN}/.temp
+                mv ${crIN}/.temp $convFile
                 #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
                 echo " handling $convFile ..."
                 tsoS="TTTCTTATATGGG" #<- confirm tag sequence with Takara reps
                 tsoQ="IIIIIIIIIIIII"
                 #Add 10x TSO characters to the end of the sequence
-                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp') #<- confirm tag sequence (GGG) with Takara reps
                 if [[ $verbose ]]; then
                     echo technology $technology
                     echo barcode: $barcodelength

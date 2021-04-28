@@ -257,12 +257,15 @@ Provides a conversion script to run multiple technologies and custom libraries w
   -c,  --chemistry CHEM
             Assay configuration, autodetection is not possible for converted files:
 
-                SC3Pv2 (default), SC3Pv3, SC5P-PE, or SC5P-R2
+                SC3Pv2 (default), SC3Pv3, SC5P-PE, SC5P-R1, or SC5P-R2
 
             Chemistry can only be automatically detected for 10x Genomics Chromium as it relies
             on matches to a barcode whitelist. For other technologies we do not recommend changing
             the chemistry input. All samples are converted to contain the barcode and UMI in Read1
             as used for SC3Pv2. SC3Pv3 is only used for technologies with longer UMI.
+
+            5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies
+            All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics and ICELL8 allow choosing which to use.
 
   -n,  --force-cells NUM
             Force pipeline to use this number of cells, bypassing the cell detection algorithm.
