@@ -349,14 +349,16 @@ It is also helpful to describe the technology, such as:
 
 Technologies that may be difficult to support are those with:
 
-- barcodes longer than 16bp (only up to 16bp at the end will be used with the rest trimmed off)
-- UMIs longer than 12bp (only upto 12bp at the begging will be used with the rest trimmed off)
-- barcodes longer or varying length
+- barcodes longer than 16bp
+- barcodes with phase blocks or varying length
+- UMIs longer than 12bp
+- technologies that do not have UMI
 - combinatorial indexing
-- dual indexing 
+- dual indexing
 
 Please bear this in mind when submitting requests. We will consider to add further technologies but
-it could take significant resources to add support for these.
+it could take significant resources to add support for techniques with these designs.
+Note that updates to the tool have added support for several examples of these.
 
 ## Installation <span id="installation"><span>
 

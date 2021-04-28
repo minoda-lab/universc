@@ -162,13 +162,14 @@
 </ul>
 <p>Technologies that may be difficult to support are those with:</p>
 <ul>
-<li>barcodes longer than 16bp (only up to 16bp at the end will be used with the rest trimmed off)</li>
-<li>UMIs longer than 12bp (only upto 12bp at the begging will be used with the rest trimmed off)</li>
-<li>barcodes longer or varying length</li>
+<li>barcodes longer than 16bp</li>
+<li>barcodes with phase blocks or varying length</li>
+<li>UMIs longer than 12bp</li>
+<li>technologies that do not have UMI</li>
 <li>combinatorial indexing</li>
 <li>dual indexing</li>
 </ul>
-<p>Please bear this in mind when submitting requests. We will consider to add further technologies but it could take significant resources to add support for these.</p>
+<p>Please bear this in mind when submitting requests. We will consider to add further technologies but it could take significant resources to add support for techniques with these designs. Note that updates to the tool have added support for several examples of these.</p>
 <h2 id="installation">Installation <span id="installation"><span></h2>
 <p>This script requires Cell Ranger to be installed and exported to the PATH (version 3.0.0 or higher recommended). The script itself is exectuable and does not require installation to run but you can put it in your PATH or bin of your Cell Ranger install if you wish to do so. We provide scripts to do this for your convenience.</p>
 <p>See the details below on how set up Cell Ranger and launch_universc.sh.</p>
