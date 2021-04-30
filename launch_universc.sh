@@ -1742,7 +1742,26 @@ else
                  echo "  ...generating combination of I1, I2, and RT barcodes..."
              fi
     elif [[ "$technology" == "quartz-seq" ]];
-        barcodefile=${whitelistdir}/Illumina_TruSeq_LT_Index1_i7_barcodes.txt
+        indexlength=$(($(head $index1([0]) -n 2 | tail -n 1 | wc -c) -1))
+        if [[ -f $index2([0]) ]]; then
+            index2length=$(($(head $index2([0]) -n 2 | tail -n 1 | wc -c) -1))
+            barcodelength=$(($indexlength + $index2length))
+            if [[ -f ${whitelistdir}/Illumina_dual_barcodes.txt ]];then
+                cat ${whitelistdir}/Illumina_TruSeq_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
+                cat ${whitelistdir}/Illumina_TruSeq_Index1_i5_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i5_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
+                join -j 9999 ${whitelistdir}/Illumina_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Index1_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_dual_barcodes.txt
+
+            fi
+            barcodefile=${whitelistdir}/Illumina_dual_barcodes.txt
+        else
+            barcodelength=$indexlength
+            if [[ $indexlength -eq 6 ]]; then
+                barcodefile=${whitelistdir}/Illumina_TruSeq_LT_Index1_i7_barcodes.txt
+            else
+                cat ${whitelistdir}/Illumina_TruSeq_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt >${whitelistdir}/Illumina_Index1_i7_barcodes.txt
+                barcodefile=${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt
+            fi
+        fi
     elif [[ "$technology" == "quartz-seq2-384" ]]; then
         barcodefile=${whitelistdir}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
@@ -1836,7 +1855,7 @@ else
         elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
             if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]];then
                 #generates all combinations of I1-I2 barcodes
-                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
+                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
             fi
         elif [[ "$technology" == "indrop-v"* ]]; then
             if [[ "$technology" == "indrop-v1" ]] || [[ $technology"" == "indrop-v2" ]]; then
@@ -2628,27 +2647,37 @@ else
         done
     fi
     
-     elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
+    #C1, Quartz-Seq and RamDA-Seq: add mock UMI for non-UMI techniques
+    elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq" ]]; then
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: ${technology} does not contain UMIs"
         fi
         for convFile in "${convFiles[@]}"; do
-            
             read=$convFile
             convR1=$read
             convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
             convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
-            convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
             
-            #detect index length
-            indexlength=$(($(head $convI1 -n 2 | tail -n 1 | wc -c) -1))
-            index2length=$(($(head $convI2 -n 2 | tail -n 1 | wc -c) -1))
-            barcodelength=$(($indexlength = $index2length))
-            
-            echo "  ...concatencate barcodes to R1 from I1 index files"
-            # concatenate barcocdes from index to R1 as (bases 1-6 of the) barcode, moving (read to start at base 7-)
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+            #detect barcode length from index sequence
+            indexlength=$(($(head $index1([0]) -n 2 | tail -n 1 | wc -c) -1))
+            barcodelength=$indexlength
+            #detect whether index 2 files exist
+            if [[ -f $index2([0]) ]]; then
+                #detect barcode length from length of both index sequences
+                index2length=$(($(head $index2([0]) -n 2 | tail -n 1 | wc -c) -1))
+                barcodelength=$(($indexlength + $index2length))
+                convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
+                
+                echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
+                # concatenate barcocdes from index to R1 as (bases 1-16 of the) barcode, moving (read to start at base 17-)
+                perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+            else
+                barcodelength=$indexlength
+                echo "  ...concatencate barcodes to R1 from I1 index files"
+                # concatenate barcocdes from index to R1 as (bases 1-6 of the) barcode, moving (read to start at base 7-)
+                perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --ref_fastq=${convR1} --out_dir $crIN
+            fi
             
             #returns a combined R1 file with I1-R1 concatenated (I1 is cell barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
@@ -2877,45 +2906,6 @@ else
                 s/.*(.{6}).{15}(.{6}).{15}(.{6})(.{6})$/\1\2\3\4/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
-        done
-    fi
-    
-    #Quartz-Seq and RamDA-Seq: add mock UMI for non-UMI techniques
-    if [[ "$technology" == "quartz-seq" ]]; then
-        echo "  ...processsing for ${technology}"
-        if [[ $verbose ]]; then
-            echo "Note: ${technology} does not contain UMIs"
-        fi
-        for convFile in "${convFiles[@]}"; do
-            
-            read=$convFile
-            convR1=$read
-            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
-            convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
-            
-            #detect index length
-            indexlength=$(($(head $convI1 -n 2 | tail -n 1 | wc -c) -1))
-            barcodelength=$indexlength
-            
-            echo "  ...concatencate barcodes to R1 from I1 index files"
-            # concatenate barcocdes from index to R1 as (bases 1-6 of the) barcode, moving (read to start at base 7-)
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --ref_fastq=${convR1} --out_dir $crIN
-            
-            #returns a combined R1 file with I1-R1 concatenated (I1 is cell barcode)
-            mv $crIN/Concatenated_File.fastq ${convR1}
-            
-            if [[ $nonUMI ]]; then
-                # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
-                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
-                umilength=$umi_default
-                umiadjust=0
-                if [[ $chemistry == "SC3Pv3" ]]; then
-                    chemistry="SC3Pv2"
-                fi
-                #returns a combined R1 file with barcode and mock UMI
-                ## 6 bp barcode, 10 bp UMI (TSO not handled yet)
-                mv $crIN/mock_UMI.fastq ${convR1}
-            fi
         done
     fi
     
