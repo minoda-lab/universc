@@ -2693,7 +2693,32 @@ else
                 #returns a combined R1 file with barcode and mock UMI
                 ## 6 bp barcode, 10 bp UMI (TSO not handled yet)
                 mv $crIN/mock_UMI.fastq ${convR1}
+           fi
+           
+            if [[ "$technology" == "c1-cage" ]]; then
+                #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
+                echo " handling $convFile ..."
+                tsoS="TTTCTTATATGGG"
+                tsoQ="IIIIIIIIIIIII"
+                chemistry="SC5P-PE"
+                #Add 10x TSO characters to the end of the sequence (removes 'NNNNNNNNTATAGGG')
+                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{8})TATAGGG/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+                if [[ $verbose ]]; then
+                    echo technology $technology
+                    echo barcode: $barcodelength
+                    echo umi: $umilength
+                    echo $cmd
+                fi
+                # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+                eval $cmd
+                mv ${crIN}/.temp $convFile
+                #Add n characters to the end of the quality
+                cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{8})(.{7})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+                # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+                eval $cmd
+                mv ${crIN}/.temp $convFile
             fi
+            echo "  ${convFile} adjusted"
         done
     fi
     
