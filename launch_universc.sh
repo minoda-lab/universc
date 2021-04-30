@@ -619,8 +619,10 @@ elif [[ "$technology" == "10x-v3" ]] || [[ "$technology" == "chromium-v3" ]]; th
     technology="10x-v3"
 elif [[ "$technology" == "c1" ]] || [[ "$technology" == "c1-fluidigm" ]] || [[ "$technology" == "fluidigm" ]] || [[ "$technology" == "fluidigm-c1" ]]|| [[ "$technology" == "fluidigmc1" ]] ||  [[ "$technology" == "c1-rna-seq" ]]|| [[ "$technology" == "c1-mrna-seq" ]] ||  [[ "$technology" == "c1-rnaseq" ]]|| [[ "$technology" == "c1-scrna" ]]; then
     technology="fluidigm-c1"
+      nonUMI=true
 elif [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "c1cage" ]] || [[ "$technology" == "cage-c1" ]] || [[ "$technology" == "cagec1" ]]; then
     technology="c1-cage"
+      nonUMI=true
 elif [[ "$technology" == "celseq" ]] || [[ "$technology" == "cel-seq" ]]; then
     technology="celseq"
 elif [[ "$technology" == "celseq2" ]] || [[ "$technology" == "cel-seq2" ]]; then
@@ -1685,7 +1687,7 @@ if [[ -n "$barcodefile" ]]; then
         barcodefile=$(readlink -f $barcodefile)
         custombarcodes=true
         #allowing WellList from ICELL8 and other well-based techniques
-        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
+        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
             n_col=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             if [[ $n_col -eq 1 ]]; then
@@ -1724,6 +1726,11 @@ else
              if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
                  echo "  ...generating combination of I1, I2, and RT barcodes..."
              fi
+    elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
+             barcodefile=${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
+             if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]]; then
+                 echo "  ...generating combination of I1 and I2 barcodes..."
+             fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${whitelistdir}/ICELL8_barcode.txt
 	echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in ICELL8. valid barcode will be an overestimate***"
@@ -1734,6 +1741,8 @@ else
              if [[ ! -f ${whitelistdir}/microwellseq_barcode.txt ]]; then
                  echo "  ...generating combination of I1, I2, and RT barcodes..."
              fi
+    elif [[ "$technology" == "quartz-seq" ]];
+        barcodefile=${whitelistdir}/Illumina_TruSeq_LT_Index1_i7_barcodes.txt
     elif [[ "$technology" == "quartz-seq2-384" ]]; then
         barcodefile=${whitelistdir}/Quartz-Seq2-384_barcode.txt
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
@@ -1824,6 +1833,11 @@ else
                  join -j 9999 ${whitelistdir}/bd_rhapsody_cell_label_section1.txt ${whitelistdir}/bd_rhapsody_cell_label_section2.txt | sed "s/ //g" | \
                  join -j 9999 - ${whitelistdir}/bd_rhapsody_cell_label_section3.txt | sed "s/ //g"  > ${whitelistdir}/bd_rhapsody_barcode.txt
              fi
+        elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
+            if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]];then
+                #generates all combinations of I1-I2 barcodes
+                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
+            fi
         elif [[ "$technology" == "indrop-v"* ]]; then
             if [[ "$technology" == "indrop-v1" ]] || [[ $technology"" == "indrop-v2" ]]; then
                  perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v2 ${whitelistdir}
@@ -2614,6 +2628,46 @@ else
         done
     fi
     
+     elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
+        echo "  ...processsing for ${technology}"
+        if [[ $verbose ]]; then
+            echo "Note: ${technology} does not contain UMIs"
+        fi
+        for convFile in "${convFiles[@]}"; do
+            
+            read=$convFile
+            convR1=$read
+            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+            convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
+            convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
+            
+            #detect index length
+            indexlength=$(($(head $convI1 -n 2 | tail -n 1 | wc -c) -1))
+            index2length=$(($(head $convI2 -n 2 | tail -n 1 | wc -c) -1))
+            barcodelength=$(($indexlength = $index2length))
+            
+            echo "  ...concatencate barcodes to R1 from I1 index files"
+            # concatenate barcocdes from index to R1 as (bases 1-6 of the) barcode, moving (read to start at base 7-)
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+            
+            #returns a combined R1 file with I1-R1 concatenated (I1 is cell barcode)
+            mv $crIN/Concatenated_File.fastq ${convR1}
+            
+            if [[ $nonUMI ]]; then
+                # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
+                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                umilength=$umi_default
+                umiadjust=0
+                if [[ $chemistry == "SC3Pv3" ]]; then
+                    chemistry="SC3Pv2"
+                fi
+                #returns a combined R1 file with barcode and mock UMI
+                ## 6 bp barcode, 10 bp UMI (TSO not handled yet)
+                mv $crIN/mock_UMI.fastq ${convR1}
+            fi
+        done
+    fi
+    
     #ICELL8 version 2 (non-UMI technology)
     if [[ "$technology" == "icell8" ]] && [[ $nonUMI ]]; then
         echo "  ...processsing for ${technology}"
@@ -2827,7 +2881,7 @@ else
     fi
     
     #Quartz-Seq and RamDA-Seq: add mock UMI for non-UMI techniques
-    if [[ "$technology" == "quartz-seq" ]] && [[ "$technology" == "ramda-seq" ]]; then
+    if [[ "$technology" == "quartz-seq" ]]; then
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: ${technology} does not contain UMIs"
@@ -2840,7 +2894,7 @@ else
             convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
             
             #detect index length
-            indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
+            indexlength=$(($(head $convI1 -n 2 | tail -n 1 | wc -c) -1))
             barcodelength=$indexlength
             
             echo "  ...concatencate barcodes to R1 from I1 index files"
