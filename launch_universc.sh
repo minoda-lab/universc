@@ -198,6 +198,9 @@ Mandatory arguments to long options are mandatory for short options too.
                                   10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
                                   10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
+                                  C1 Fluidigm (16 bp barcode, No UMI): c1, fluidgm-c1
+                                  C1 CAGE (16 bp, No UMI): c1-cage
+                                  C1 RamDA-Seq (16 bp, No UMI): c1-ramda-seq
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
@@ -213,7 +216,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   QuartzSeq (6 bp index, no UMI): quartz-seq
                                   Quartz-Seq2 (14 bp barcode, 8 bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15 bp barcode, 8 bp UMI): quartzseq2-1536
-                                  RamDA-Seq (6 bp index, no UMI): ramda-seq
+                                  RamDA-Seq (16 bp barcode, no UMI): ramda-seq
                                   SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
                                   SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
                                   SCIFI-Seq (27 bp barcode, 8 bp UMI
@@ -614,6 +617,10 @@ elif [[ "$technology" == "10x-v2" ]] || [[ "$technology" == "chromium-v2" ]]; th
     technology="10x-v2"
 elif [[ "$technology" == "10x-v3" ]] || [[ "$technology" == "chromium-v3" ]]; then
     technology="10x-v3"
+elif [[ "$technology" == "c1" ]] || [[ "$technology" == "c1-fluidigm" ]] || [[ "$technology" == "fluidigm" ]] || [[ "$technology" == "fluidigm-c1" ]]|| [[ "$technology" == "fluidigmc1" ]] ||  [[ "$technology" == "c1-rna-seq" ]]|| [[ "$technology" == "c1-mrna-seq" ]] ||  [[ "$technology" == "c1-rnaseq" ]]|| [[ "$technology" == "c1-scrna" ]]; then
+    technology="fluidigm-c1"
+elif [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "c1cage" ]] || [[ "$technology" == "cage-c1" ]] || [[ "$technology" == "cagec1" ]]; then
+    technology="c1-cage"
 elif [[ "$technology" == "celseq" ]] || [[ "$technology" == "cel-seq" ]]; then
     technology="celseq"
 elif [[ "$technology" == "celseq2" ]] || [[ "$technology" == "cel-seq2" ]]; then
@@ -648,6 +655,9 @@ elif [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq
     technology="quartz-seq2-1536"
 elif [[ "$technology" == "rambda-seq" ]] || [[ "$technology" == "lamda-seq" ]] || [[ "$technology" == "lambda-seq" ]] || [[ "$technology" == "ramdaseq" ]] || [[ "$technology" == "ram-da-seq" ]] || [[ "$technology" == "ramda-seq" ]]; then
      technology="ramda-seq"
+     nonUMI=true
+elif [[ "$technology" == "rambda-seq-c1" ]] || [[ "$technology" == "lamda-seq-c1" ]] || [[ "$technology" == "lambda-seq-c1" ]] || [[ "$technology" == "ramdaseqc1" ]] || [[ "$technology" == "ram-da-seq-c1" ]] || [[ "$technology" == "ramda-seq-c1" ]] || [[ "$technology" == "ramda-seqc1" ]] [[ "$technology" == "c1-rambda-seq" ]] || [[ "$technology" == "c1-lamda-seq" ]] || [[ "$technology" == "c1-lambda-seq" ]] || [[ "$technology" == "c1-ramdaseq" ]] || [[ "$technology" == "c1-ram-da-seq" ]] || [[ "$technology" == "c1ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
+     technology="c1-ramda-seq"
      nonUMI=true
 elif [[ "$technology" == "sciseq" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "sci-rna-seq" ]]; then
     technology="sciseq3"
@@ -706,9 +716,9 @@ if [[ $verbose ]]; then
 fi
 
 if [[ "$technology" == "icell8" ]]; then
-    echo "***WARNING: ${technology} should only be used for kits that have valid UMIs***"
+    echo "***WARNING: ${technology}-v3 should only be used for kits that have valid UMIs***"
 fi
-if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smartseq3" ]]; then
+if [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smartseq3" ]]; then
     echo "***WARNING: ${technology} should only be used for kits that have UMIs***"
     echo "... UMI reads will be filtered using a tag sequence which will be removed"
     echo "... barcodes will derived from dual indexes"
@@ -748,6 +758,14 @@ elif [[ "$technology" == "bd-rhapsody" ]]; then
     barcodelength=27
     umilength=8
     minlength=27
+elif [[ "$technology" == "fluidigm-c1" ]]; then
+     barcodelength=16
+     umilength=0
+     minlength=16
+elif [[ "$technology" == "c1-cage" ]]; then
+     barcodelength=16
+     umilength=0
+     minlength=16
 elif [[ "$technology" == "celseq" ]]; then
     barcodelength=8
     umilength=4
@@ -788,12 +806,18 @@ elif [[ "$technology" == "marsseq-v2" ]]; then
     barcodelength=7
     umilength=8
     minlength=7
-elif [[ "$technology" == "quartz-seq" ]] && [[ "$technology" == "ramda-seq" ]]; then
-    barcodelength=16
+elif [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]; then
+     barcodelength=16
+     if [[ $nonUMI ]]; then
+         umilength=0
+     fi
+     minlength=16
+elif [[ "$technology" == "quartz-seq" ]]; then
+    barcodelength=6
     if [[ $nonUMI ]]; then
        umilength=0
     fi
-    minlength=16
+    minlength=6
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
@@ -877,9 +901,10 @@ if [[ -n $chemistry ]]; then
     [[ "$chemistry" != "SC3Pv2" ]] && \
     [[ "$chemistry" != "SC3Pv3" ]] && \
     [[ "$chemistry" != "SC5P-PE" ]] && \
+    [[ "$chemistry" != "SC5P-R1" ]] && \
     [[ "$chemistry" != "SC5P-R2" ]] && \
     [[ "$chemistry" != "SC-FB" ]]; then
-        echo "Error: option -c can be auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC5P-PE, SC5P-R2, or SC-FB"
+        echo "Error: option -c can be auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC5P-PE, SC5P-R1, SC5P-R2, or SC-FB"
 	exit 1
     fi
 fi
@@ -889,7 +914,7 @@ temp_chemistry="SC3Pv2"
 if [[ $umilength -gt 10 ]]; then
     temp_chemistry="SC3Pv3"
 fi
-if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]];then
+if [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq"* ]]; then
     temp_chemistry="SC5P-PE"
 fi
 if [[ "$technology" == "10x" ]]; then
