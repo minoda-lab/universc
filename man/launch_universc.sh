@@ -203,6 +203,8 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
                                   ICELL8 version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
                                   ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
+                                  ICELL8 5′ scRNA with TCR OR kit (10bp barcode, 8 bp UMI): icell8-5-prime
+                                  ICELL8 full-length scRNA with Smart-Seq (16 bp barcode, No UMI): icell8-full-length
                                   inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19 bp barcode, 6 bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (16 bp barcode, 6 bp UMI): indrops-v3, 1cellbio-v3

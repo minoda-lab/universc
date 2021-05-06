@@ -204,8 +204,10 @@ Mandatory arguments to long options are mandatory for short options too.
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
-                                  ICELL8 version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
-                                  ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
+                                  ICELL8 3′ scRNA version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
+                                  ICELL8 3′ scRNA version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
+                                  ICELL8 5′ scRNA with TCR OR kit (10bp barcode, 8 bp UMI): icell8-5-prime
+                                  ICELL8 full-length scRNA with Smart-Seq (16 bp barcode, No UMI): icell8-full-length
                                   inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19 bp barcode, 6 bp UMI): indrops-v2, 1cellbio-v2
                                   inDrops version 3 (16 bp barcode, 6 bp UMI): indrops-v3, 1cellbio-v3
@@ -633,9 +635,32 @@ elif [[ "$technology" == "nadia" ]] || [[ "$technology" == "dropseq" ]] || [[ "$
     technology="nadia"
 elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]] ||  [[ "$technology" == "icell8-v3" ]] ||  [[ "$technology" == "icell8v3" ]]; then
     technology="icell8"
+    #set as "icell8-5-prime" if called by chemistry
+    if [[ "$chemistry" == "SC5P-"* ]] || [[ "$chemistry" == "fiveprime" ]]; then
+        technology="icell8-icell8-5-prime"
+        nonUMI=false
+    fi
 elif [[ "$technology" == "icell8-non-umi" ]] || [[ "$technology" == "icell8-nonumi" ]] ||  [[ "$technology" == "icell8-v2" ]] ||  [[ "$technology" == "icell8v2" ]]; then
     technology="icell8"
     nonUMI=true
+elif [[ "$technology" == "icell8-five-prime" ]] || [[ "$technology" == "icell8fiveprime" ]] ||  [[ "$technology" == "icell8-5p" ]] ||  [[ "$technology" == "icell85p" ]]; then
+    technology="icell8-5-prime"
+    nonUMI=false
+    if [[ -z ${chemistry} ]] || [[ ${chemistry} == "SC3Pv"* ]]; then
+        if [[ $verbose ]]; then
+            echo "setting chemistry for 5' scRNA"
+        fi
+        chemistry="SC5P-PE"
+    fi
+elif [[ "$technology" == "icell8-full" ]] || [[ "$technology" == "icell8-fl" ]] ||  [[ "$technology" == "icell8fl" ]] ||  [[ "$technology" == "smartseq-icell8" ]] || [[ "$technology" == "smart-seq-icell8" ]] || [[ "$technology" == "icell8-smart-seq" ]] || [[ "$technology" == "icell8smartseq" ]]; then
+    technology="icell8-full-length"
+    nonUMI=true
+    if [[ -z ${chemistry} ]] || [[ ${chemistry} == "SC3Pv"* ]]; then
+        if [[ $verbose ]]; then
+            echo "setting chemistry for 5' scRNA"
+        fi
+        chemistry="SC5P-PE"
+    fi
 elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
     technology="indrop-v1"
 elif [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
@@ -788,6 +813,10 @@ elif [[ "$technology" == "icell8" ]]; then
        umilength=14
     fi
     minlength=11
+elif [[ "$technology" == "icell8-5-prime" ]]; then
+    barcodelength=10
+    umilength=8
+    minlength=10
 elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
     barcodelength=19
     umilength=6
@@ -808,18 +837,6 @@ elif [[ "$technology" == "marsseq-v2" ]]; then
     barcodelength=7
     umilength=8
     minlength=7
-elif [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]; then
-     barcodelength=16
-     if [[ $nonUMI ]]; then
-         umilength=0
-     fi
-     minlength=16
-elif [[ "$technology" == "quartz-seq" ]]; then
-    barcodelength=6
-    if [[ $nonUMI ]]; then
-       umilength=0
-    fi
-    minlength=6
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
@@ -848,7 +865,7 @@ elif [[ "$technology" == "seqwell" ]]; then
     barcodelength=8
     umilength=12
     minlength=8
-elif [[ "$technology" == "smartseq2" ]] && [[ "$technology" == "smartseq3" ]]; then
+elif [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
     barcodelength=16
     if [[ $nonUMI ]]; then
        umilength=0
@@ -1490,7 +1507,7 @@ fi
 
 
 #generate missing indexes if required (generating I1 and I2)
-if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] ; then
+if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] ; then
      echo "dual indexes I1 and I2 required for $technology"
      if [[ ${#index2[@]} -le 1 ]]; then
          echo " automatically generating I1 and I2 index files from file headers"
@@ -1734,6 +1751,13 @@ else
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${whitelistdir}/ICELL8_barcode.txt
 	echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in ICELL8. valid barcode will be an overestimate***"
+    elif [[ "$technology" == "icell8-5-prime" ]]; then
+        barcodefile=${whitelistdir}/ICELL8_TCR_barcode.txt
+  elif [[ "$technology" == "icell8-full-length" ]]; then
+        barcodefile=${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt
+        if [[ ! -f ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt ]]; then
+            echo "  ...generating combination of I1 and I2 barcodes..."
+        fi
     elif [[ "$technology" == "marsseq-v2" ]]; then
         barcodefile=${whitelistdir}/MARS-Seq2_barcode.txt
     elif [[ "$technology" == "microwellseq" ]]; then
@@ -1859,6 +1883,11 @@ else
             if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]];then
                 #generates all combinations of I1-I2 barcodes
                 join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
+            fi
+        elif [[ "$technology" == "icell8-full-length" ]]; then
+            if [[ ! -f ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt ]]; then
+                #generates all combinations of I1-I2 barcodes
+                join -j 9999 ${whitelistdir}/ICELL8_full_length_Index1_i7_barcodes.txt ${whitelistdir}/ICELL8_full_length_Index2_i5_barcodes.txt |  sed "s/ //g" > ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt
             fi
         elif [[ "$technology" == "indrop-v"* ]]; then
             if [[ "$technology" == "indrop-v1" ]] || [[ $technology"" == "indrop-v2" ]]; then
@@ -1991,7 +2020,7 @@ if [[ "$technology" != "10x" ]]; then
        exit 1
     fi
 fi
-if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]]; then
+if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
     if [[ $verbose ]]; then
         echo $chemistry
     fi
@@ -2651,7 +2680,7 @@ else
     fi
     
     #C1, Quartz-Seq and RamDA-Seq: add mock UMI for non-UMI techniques
-    elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq" ]]; then
+    elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq" ]]; then
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: ${technology} does not contain UMIs"
