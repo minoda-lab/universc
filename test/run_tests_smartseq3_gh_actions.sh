@@ -35,9 +35,14 @@ if [[ -d test-smartseq3 ]]; then
     rm -rf test-smartseq3
 fi
 
+whitelistdir=whitelists
+join -j 9999 ${whitelistdir}/Aligent_SureSelectXT_Index1_i7_barcodes.txt  ${whitelistdir}/Aligent_SureSelectXT_Index2_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Aligent_SureSelectXT_dual_barcodes.txt
+
+
 # call on smartseq3 with files
 bash launch_universc.sh --id "test-smartseq3" --technology "smartseq" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --read1 "test/shared/smartseq3-test/Smartseq3_diySpike_R1" \
  --read2 "test/shared/smartseq3-test/Smartseq3_diySpike_R2" \
+ --barcodefile "${whitelistdir}/Aligent_SureSelectXT_dual_barcodes.txt" \
  --jobmode "local" --localcores 1 
