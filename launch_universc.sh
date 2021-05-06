@@ -2725,6 +2725,8 @@ else
                 #returns a combined R1 file with barcode and mock UMI
                 ## 6 bp barcode, 10 bp UMI (TSO not handled yet)
                 mv $crIN/mock_UMI.fastq ${convR1}
+                #avoids mock UMI being generated twice
+                nonUMI=false
            fi
            
             if [[ "$technology" == "c1-cage" ]]; then
@@ -2755,7 +2757,7 @@ else
     fi
     
     #ICELL8 version 2 (non-UMI technology)
-    if [[ "$technology" == "icell8" ]] && [[ $nonUMI ]]; then
+    if [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell8-5-prime" ]] || [[ "$technology" == "icell8-full-length" ]]; then
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: ICELL8 v2 does not contain UMIs"
@@ -2766,18 +2768,20 @@ else
             convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
             
             if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
-                ## echo " ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
-                # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
-                
-                perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --tag="AAAAAAAAAAAAAAAAAAAA" --out_dir $crIN
-                echo "  ...trim tag sequence from R1"
-                
-                # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
-                mv $crIN/parsed_R1.fastq ${convR1}
-                mv $crIN/parsed_R2.fastq ${convR2}
-                mv $crIN/parsed_I1.fastq ${convI1}
-                mv $crIN/parsed_I2.fastq ${convI2}
-                
+                if [[ "$technology" == "icell8-full-length" ]]; then
+                    ## echo " ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
+                    # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
+                    
+                    #same as SmartSeq2
+                    perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --tag="AAGCAGTGGTATCAACGCAGAGTAC" --out_dir $crIN
+                    echo "  ...trim tag sequence from R1"
+                    
+                    # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
+                    mv $crIN/parsed_R1.fastq ${convR1}
+                    mv $crIN/parsed_R2.fastq ${convR2}
+                    mv $crIN/parsed_I1.fastq ${convI1}
+                    mv $crIN/parsed_I2.fastq ${convI2}
+                fi
             fi
             
             if [[ $nonUMI ]]; then
@@ -2804,6 +2808,7 @@ else
                 mv $crIN/mock_UMI.fastq ${convR1}
             fi
             
+            #subroutine for icell8-5-prime (5' scRNA with TSO adapters) or icell8-full-length (assumes barcodes and mock UMI added above)
             if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
                 #remove TSO adapters (from ends)
                 sed -E '
@@ -2875,20 +2880,20 @@ else
                 echo " handling $convFile ..."
                 tsoS="TTTCTTATATGGG" #<- confirm tag sequence with Takara reps
                 tsoQ="IIIIIIIIIIIII"
-                #Add 10x TSO characters to the end of the sequence
-                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp') #<- confirm tag sequence (GGG) with Takara reps
+                #Add 10x TSO characters to the end of the sequence (remove 'CCGGG' linker)
+                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{5})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp') #<- confirm tag sequence (GGG) with Takara reps
                 if [[ $verbose ]]; then
                     echo technology $technology
                     echo barcode: $barcodelength
                     echo umi: $umilength
                     echo $cmd
                 fi
-                # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+                # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{10})(.{8})(.{5})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
                 eval $cmd
                 mv ${crIN}/.temp $convFile
                 #Add n characters to the end of the quality
-                cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
-                # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+                cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{5})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+                # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{10})(.{8})(.{5})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
                 eval $cmd
                 mv ${crIN}/.temp $convFile
             fi
