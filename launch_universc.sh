@@ -1799,7 +1799,10 @@ else
                  echo "  ...generating combination of I1, I2, and RT barcodes..."
              fi
     elif [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
-        barcodefile=${whitelistdir}/SmartSeq3_barcode.txt
+        barcodefile=${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
+        if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]]; then
+            echo "  ...generating combination of I1 and I2 barcodes..."
+        fi
     elif [[ "$technology" == "strt-seq" ]]; then
          barcodefile=${whitelistdir}/STRTSeq_barcode.txt
     elif [[ "$technology" == "strt-seq-c1" ]]; then
@@ -1852,7 +1855,7 @@ else
                  join -j 9999 ${whitelistdir}/bd_rhapsody_cell_label_section1.txt ${whitelistdir}/bd_rhapsody_cell_label_section2.txt | sed "s/ //g" | \
                  join -j 9999 - ${whitelistdir}/bd_rhapsody_cell_label_section3.txt | sed "s/ //g"  > ${whitelistdir}/bd_rhapsody_barcode.txt
              fi
-        elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
+        elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] ||  [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
             if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]];then
                 #generates all combinations of I1-I2 barcodes
                 join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
