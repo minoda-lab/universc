@@ -28,6 +28,7 @@ my $matrix_file = $indir."/outs/filtered_feature_bc_matrix/matrix.mtx.gz";
 my $summary_file = $indir."/outs/metrics_summary.csv";
 my $bam_file = $indir."/outs/possorted_genome_bam.bam";
 my $out_file = $indir."/outs/basic_stats.txt";
+my $standard_length = 16;
 
 if (! -e $indir) {
     die "Error: Data directory needs to be specified.\n";
@@ -50,8 +51,7 @@ while (my $line = <ORIGINAL>) {
     
     my $adjusted = $original;
     if ($adjust_length >= 0) {
-        my $length = $adjust_length;
-        $adjusted = substr ($adjusted, 0, $length);
+        $adjusted = substr ($adjusted, $adjust_length, $standard_length);
     }
     else {
         my $length = abs ($adjust_length);
@@ -60,6 +60,7 @@ while (my $line = <ORIGINAL>) {
     }
     
     $adjusted2original{$adjusted} = $original;
+    print "Original($original) -> Adjusted($adjusted) $adjust_length\n";
 }
 close (ORIGINAL);
 
