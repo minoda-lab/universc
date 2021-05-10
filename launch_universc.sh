@@ -683,7 +683,7 @@ elif [[ "$technology" == "quartz-seq2-1536" ]] || [[ "$technology" == "quartzseq
 elif [[ "$technology" == "rambda-seq" ]] || [[ "$technology" == "lamda-seq" ]] || [[ "$technology" == "lambda-seq" ]] || [[ "$technology" == "ramdaseq" ]] || [[ "$technology" == "ram-da-seq" ]] || [[ "$technology" == "ramda-seq" ]]; then
      technology="ramda-seq"
      nonUMI=true
-elif [[ "$technology" == "rambda-seq-c1" ]] || [[ "$technology" == "lamda-seq-c1" ]] || [[ "$technology" == "lambda-seq-c1" ]] || [[ "$technology" == "ramdaseqc1" ]] || [[ "$technology" == "ram-da-seq-c1" ]] || [[ "$technology" == "ramda-seq-c1" ]] || [[ "$technology" == "ramda-seqc1" ]] [[ "$technology" == "c1-rambda-seq" ]] || [[ "$technology" == "c1-lamda-seq" ]] || [[ "$technology" == "c1-lambda-seq" ]] || [[ "$technology" == "c1-ramdaseq" ]] || [[ "$technology" == "c1-ram-da-seq" ]] || [[ "$technology" == "c1ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
+elif [[ "$technology" == "rambda-seq-c1" ]] || [[ "$technology" == "lamda-seq-c1" ]] || [[ "$technology" == "lambda-seq-c1" ]] || [[ "$technology" == "ramdaseqc1" ]] || [[ "$technology" == "ram-da-seq-c1" ]] || [[ "$technology" == "ramda-seq-c1" ]] || [[ "$technology" == "ramda-seqc1" ]] || [[ "$technology" == "c1-rambda-seq" ]] || [[ "$technology" == "c1-lamda-seq" ]] || [[ "$technology" == "c1-lambda-seq" ]] || [[ "$technology" == "c1-ramdaseq" ]] || [[ "$technology" == "c1-ram-da-seq" ]] || [[ "$technology" == "c1ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
      technology="c1-ramda-seq"
      nonUMI=true
 elif [[ "$technology" == "sciseq" ]] || [[ "$technology" == "sci-seq" ]] || [[ "$technology" == "sci-rna-seq" ]]; then
@@ -1765,9 +1765,9 @@ else
              if [[ ! -f ${whitelistdir}/microwellseq_barcode.txt ]]; then
                  echo "  ...generating combination of I1, I2, and RT barcodes..."
              fi
-    elif [[ "$technology" == "quartz-seq" ]];
+    elif [[ "$technology" == "quartz-seq" ]]; then
         indexlength=$(($(head $index1([0]) -n 2 | tail -n 1 | wc -c) -1))
-        if [[ -f $index2([0]) ]]; then
+        if [[ -f $(echo ${index2}([0])) ]]; then
             index2length=$(($(head $index2([0]) -n 2 | tail -n 1 | wc -c) -1))
             barcodelength=$(($indexlength + $index2length))
             if [[ -f ${whitelistdir}/Illumina_dual_barcodes.txt ]];then
@@ -2680,7 +2680,7 @@ else
     fi
     
     #C1, Quartz-Seq and RamDA-Seq: add mock UMI for non-UMI techniques
-    elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq" ]]; then
+    if [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq" ]]; then
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: ${technology} does not contain UMIs"
@@ -2695,7 +2695,7 @@ else
             indexlength=$(($(head $index1([0]) -n 2 | tail -n 1 | wc -c) -1))
             barcodelength=$indexlength
             #detect whether index 2 files exist
-            if [[ -f $index2([0]) ]]; then
+            if [[ -f $(echo ${index2}([0])) ]]; then
                 #detect barcode length from length of both index sequences
                 index2length=$(($(head $index2([0]) -n 2 | tail -n 1 | wc -c) -1))
                 barcodelength=$(($indexlength + $index2length))
