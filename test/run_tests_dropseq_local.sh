@@ -42,7 +42,7 @@ bash launch_universc.sh --id "test-dropseq" --technology "nadia" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --read1 "test/shared/dropseq-test/SRR1873277_Sample1_R1" \
  --read2 "test/shared/dropseq-test/SRR1873277_Sample1_R2" \
- --jobmode "local" --localcores 2 --localmem 4 
+ --per-cell-data --jobmode "local" --localcores 2 --localmem 4 
 
 # reset test data (compress)
  if [[ -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq ]]; then

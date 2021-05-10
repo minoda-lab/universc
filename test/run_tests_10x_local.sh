@@ -102,7 +102,7 @@ bash launch_universc.sh --id "test-10x-v3" --technology "10x" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --file "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
  "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002" \
-  --jobmode "local" --localcores 2 --localmem 4 
+ --per-cell-data --jobmode "local" --localcores 2 --localmem 4 
 
 # compress all input files
 if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/*fastq ]]; then

@@ -148,7 +148,7 @@ bash launch_universc.sh --id "test-icell8-72618_NCI-H2452-2-lanes" --technology 
  --read1 "test/shared/icell8-test/72618_NCI-H2452_L001_R1_001.fastq" "test/shared/icell8-test/72618_NCI-H2452_L002_R1_001.fastq" \
  --read2 "test/shared/icell8-test/72618_NCI-H2452_L001_R2_001.fastq" "test/shared/icell8-test/72618_NCI-H2452_L002_R2_001.fastq" \
  --barcodefile "test/shared/icell8-test/WellList.txt" \
- --jobmode "sge"
+ --per-cell-data --jobmode "sge"
 if [ -f test/shared/icell8-test/72618_NCI-H2452_S1_L001_R1_001.fastq ]; then
     rename "s/_S1_L001/_L001/" test/shared/icell8-test/72618_NCI-H2452_S1_L001_R1_001.fastq
 fi
@@ -163,4 +163,4 @@ bash launch_universc.sh --id "test-icell8-72618_NCI-H2452-1-lane" --technology "
  --read1 "test/shared/icell8-test/72618_NCI-H2452_L001_R1_001.fastq" \
  --read2 "test/shared/icell8-test/72618_NCI-H2452_L001_R2_001.fastq" \
  --barcodefile "test/shared/icell8-test/WellList.txt" \
- --jobmode "sge"
+ --per-cell-data --jobmode "sge"

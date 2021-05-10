@@ -48,7 +48,7 @@ bash launch_universc.sh --id "test-sciseq" --technology "sciseq" \
  --read1 "test/shared/sciseq-v3-test/SRR7827205_S1_R1.fastq.gz" \
  --read2 "test/shared/sciseq-v3-test/SRR7827205_S1_R2.fastq.gz" \
  --barcodefile whitelists/sciseq3_barcode_test.txt \
- --jobmode "local" --localcores 1 --verbose
+ --per-cell-data --jobmode "local" --localcores 1 --verbose
 
 if [ -f test/shared/sciseq-v3-test/SRR7827205_S1_L001_R1_001.fastq.gz ]; then
     rename "s/_S1_L001/_S1/" test/shared/sciseq-v3-test/SRR7827205_S1_L001_[IR][12]_001.fastq*

@@ -41,7 +41,7 @@ bash launch_universc.sh --id "test-icell8-72618_KU812-2-lanes" --technology "iCe
  --read1 "test/shared/icell8-test/72618_KU812_L001_R1_001.fastq" "test/shared/icell8-test/72618_KU812_L002_R1_001.fastq" \
  --read2 "test/shared/icell8-test/72618_KU812_L001_R2_001.fastq" "test/shared/icell8-test/72618_KU812_L002_R2_001.fastq" \
  --barcodefile "test/shared/icell8-test/WellList.txt" \
- --jobmode "local" --localcores 1 
+ --per-cell-data --jobmode "local" --localcores 1 
 if [ -f test/shared/icell8-test/72618_KU812_S1_L001_R1_001.fastq ]; then
     rename "s/_S1_L001/_L001/" test/shared/icell8-test/72618_KU812_S1_L001_R1_001.fastq*
 fi
@@ -62,7 +62,7 @@ bash launch_universc.sh --id "test-icell8-72618_KU812-1-lane" --technology "iCel
  --read1 "test/shared/icell8-test/72618_KU812_L001_R1_001.fastq" \
  --read2 "test/shared/icell8-test/72618_KU812_L001_R2_001.fastq" \
  --barcodefile "test/shared/icell8-test/WellList.txt" \
- --jobmode "local" --localcores 1 
+ --per-cell-data --jobmode "local" --localcores 1 
 if [ -f test/shared/icell8-test/72618_KU812_S1_L001_R1_001.fastq ]; then
     rename "s/_S1_L001/_L001/" test/shared/icell8-test/72618_KU812_S1_L001_R1_001.fastq*
 fi
