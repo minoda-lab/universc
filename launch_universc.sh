@@ -1853,7 +1853,7 @@ if [[ $verbose ]]; then
 fi
 if [[ -f ${barcodefile} ]]; then
     if [[ $verbose ]]; then
-        echo "  barcodefile file exists"
+        echo "  barcodefile file exists: ${barcodefile}"
     fi
     if ! [[ "${barcodefile}" == "${whitelistdir}"* ]]; then
         if [[ $verbose ]]; then
@@ -3635,7 +3635,15 @@ fi
 #####extracting per cell data#####
 if [[ $percelldata == true ]]; then
     echo "generating basic run statistics and per cell data"
-    perl ${PERCELLSTATS} ${barcodefile} ${barcodeadjust} ${id}
+    if [[ ${barcodefile} == "default:10x" ]]; then
+        barcodefile=${barcodedir}/${v3}.gz
+        gunzip ${barcodefile}
+        barcodefile=`echo ${barcodefile} | sed 's/\.[^.]*$//'`
+        perl ${PERCELLSTATS} ${barcodefile} ${barcodeadjust} ${id}
+        gzip ${barcodefile}
+    else
+        perl ${PERCELLSTATS} ${barcodefile} ${barcodeadjust} ${id}
+    fi
     echo "per cell data generated"
 fi
 ##########
