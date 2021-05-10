@@ -262,6 +262,10 @@ Provides a conversion script to run multiple technologies and custom libraries w
            This provides more accurate summary statistics than Cell Ranger (which uses an average across cells
            that are filtered out).
 
+       --non-umi or --read-only
+           Force counting reads by adding or replacing UMI with a mock sequence so that each read
+           has a unique UMI.
+
        --setup
            Set up whitelists for compatibility with new technology. Called automatically when a new
            technology is run and no other technology is running. Recommended to run before submitting

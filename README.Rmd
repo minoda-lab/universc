@@ -93,7 +93,7 @@ and use this tool to process single-cell RNA-Seq data from FASTQ format.
 
 **Package**
 
-UniverSC version 1.0.3
+UniverSC version 1.1.0
 
 **Maintainers**
 
@@ -248,7 +248,7 @@ package version 1.0.3. [https://github.com/minoda-lab/universc](https://github.c
         abstract = {Single-cell RNA-sequencing analysis to quantify RNA molecules in individual cells has become popular owing to the large amount of information one can obtain from each experiment. We have developed UniverSC (https://github.com/minoda-lab/universc), a universal single-cell processing tool that supports any UMI-based platform. Our command-line tool enables consistent and comprehensive integration, comparison, and evaluation across data generated from a wide range of platforms.Competing Interest StatementThe authors have declared no competing interest.},
         eprint = {https://www.biorxiv.org/content/early/2021/01/19/2021.01.19.427209.full.pdf},
         journal = {{bioRxiv}},
-        note = {package version 1.0.3},
+        note = {package version 1.1.0},
         URL = {https://github.com/minoda-lab/universc},
 }
 
@@ -259,7 +259,7 @@ package version 1.0.3. [https://github.com/minoda-lab/universc](https://github.c
     title = {{UniverSC}:  a flexible cross-platform single-cell data processing pipeline},
     author = {S. Thomas Kelly, Kai Battenberg, Nicola A. Hetherington, Makoto Hayashi, and Aki Minoda},
     year = {2021},
-    note = {package version 1.0.3},
+    note = {package version 1.1.0},
     url = {https://github.com/minoda-lab/universc},
   }
 ```
@@ -710,7 +710,7 @@ your systems administrator.
 
 #### Pulling from remote DockerHub repository
 
-We provide a docker image for UniverSC version 1.0.3.
+We provide a docker image for UniverSC version 1.1.0.
 
 You can import it if you have docker installed.
 
@@ -1027,6 +1027,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                     Only applies in cluster jobmodes.
 
   -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data
+
+       --non-umi or --read-only Force counting reads by adding or replacing UMI with a mock sequence
 
        --setup                  Set up whitelists for compatibility with new technology and exit
        --as-is                  Skips the FASTQ file conversion if the file already exists
