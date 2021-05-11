@@ -308,7 +308,7 @@ chemistry=""
 jobmode="local"
 ncores=""
 mem=""
-nonUMI=true
+nonUMI=false
 percelldata=false
 
 next=false
@@ -807,7 +807,7 @@ elif [[ "$technology" == "nadia" ]]; then
     minlength=12
 elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
-    if [[ $nonUMI ]]; then
+    if [[ $nonUMI == "true" ]]; then
        umilength=0
     else
        umilength=14
@@ -815,7 +815,7 @@ elif [[ "$technology" == "icell8" ]]; then
     minlength=11
 elif [[ "$technology" == "icell8-5-prime" ]]; then
     barcodelength=10
-    if [[ $nonUMI ]]; then
+    if [[ $nonUMI == "true" ]]; then
         umilength=0
     else
         umilength=8
@@ -871,7 +871,7 @@ elif [[ "$technology" == "seqwell" ]]; then
     minlength=8
 elif [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
     barcodelength=16
-    if [[ $nonUMI ]]; then
+    if [[ $nonUMI == "true" ]]; then
        umilength=0
     else
        umilength=8
@@ -2718,7 +2718,10 @@ else
             #returns a combined R1 file with I1-R1 concatenated (I1 is cell barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
             
-            if [[ $nonUMI ]]; then
+            if [[ $nonUMI == "true" ]]; then
+                if [[ $verbose ]]; then
+                    echo "adding mock UMI"
+                fi
                 # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
                 perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
                 umilength=$umi_default
@@ -2765,6 +2768,8 @@ else
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: ICELL8 v2 does not contain UMIs"
+            echo "chem: chemistry"
+            echo "non-UMI: $nonUMI"
         fi
         for convFile in "${convFiles[@]}"; do
             read=$convFile
@@ -2788,11 +2793,15 @@ else
                 fi
             fi
             
-            if [[ $nonUMI ]]; then
+            if [[ $nonUMI == "true" ]]; then
                 if [[ $chemistry == "SC3P"* ]] && [[ "$technology" == "icell8" ]]; then
+                    if [[ $verbose ]]; then
+                        echo "remove UMI to replace with mock"
+                    fi
                     #remove inflated umi (to replace with mock and count as reads)
                     sed -E '
-                        /^(.{11})(.{14})(.*)/ {
+                        /^@/ {
+                        n
                         s/^(.{11})(.{14})(.*)/\1\3/g
                         n
                         n
@@ -2801,6 +2810,9 @@ else
                     mv ${crIN}/.temp $convFile
                 fi
                 
+                if [[ $verbose ]]; then
+                    echo "adding mock UMI"
+                fi
                 # add mock UMI (count reads instead of UMI) barcodelength=10 or 11, umi_default=10 <- default for "icell8-5-prime" and "icell8-full-length"
                 perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
                 umilength=$umi_default
@@ -3374,7 +3386,7 @@ else
     
     #replace UMI with mock UMI to count reads (for technologies not already containing mock UMI)
     if [[ $technology != "icell8" ]] && [[ $technology != "ramda-seq" ]] && [[ $technology != "quartz-seq" ]] && [[ $technology != "smartseq" ]] && [[ $technology != "smartseq2" ]] && [[ $technology != "strt-seq" ]]; then
-        if [[ $nonUMI ]]; then
+        if [[ $nonUMI == "true" ]]; then
             echo "WARNING: removing true UMI and replacing with Mock UMI"
             echo "NOTICE: results will result read counts not UMI"
             echo "## this behaviour is not recommended unless integrating with non-UMI data ##"
