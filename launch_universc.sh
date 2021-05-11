@@ -1513,7 +1513,7 @@ fi
 #generate missing indexes if required (generating I1 and I2)
 if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] ; then
      echo "dual indexes I1 and I2 required for $technology"
-     if [[ ${#index2[@]} -le 1 ]]; then
+     if [[ ${#index2[@]} -le 0 ]]; then
          echo " automatically generating I1 and I2 index files from file headers"
          index1=("${read1[@]}")
          index2=("${read1[@]}")
@@ -1545,7 +1545,7 @@ if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-lengt
             if [[ $verbose ]]; then
                 echo index2 of length $index2length gives quality score $qualscores2
             fi
-            sed -i "4~4s/^.*$/${qualscores2})/g" $I2_file
+            sed -i "4~4s/^.*$/${qualscores2}/g" $I2_file
             index1+=("$I1_file")
             index2+=("$I2_file")
         done
@@ -2026,7 +2026,7 @@ if [[ "$technology" != "10x" ]]; then
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
     if [[ $verbose ]]; then
-        echo $chemistry
+        echo "  Using $chemistry for $technology"
     fi
     if [[ "$chemistry" == "fiveprime" ]];  then
        chemistry="SC5P-PE"
@@ -3331,10 +3331,10 @@ else
             mv $crIN/parsed_R2.fastq ${convR2}
             mv $crIN/parsed_I1.fastq ${convI1}
             mv $crIN/parsed_I2.fastq ${convI2}
-
+            
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --tag="ATTGCGCAATG" --out_dir=$crIN
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir=$crIN
             
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
@@ -3344,20 +3344,24 @@ else
             tsoS="TTTCTTATATGGG"
             tsoQ="IIIIIIIIIIIII"
             #Add 10x TSO characters to the end of the sequence
-            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+            cmd=$(echo 'sed -E "2~4s/^(.{'$barcodelength'})(.{'${umilength}'})(.{'3'})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
             if [[ $verbose ]]; then
                 echo technology $technology
                 echo barcode: $barcodelength
                 echo umi: $umilength
                 echo $cmd
             fi
-            # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+            # run command with barcode and umi length, e.g.,: sed -E "2~4s/^(.{16})(.{8})(.{'3'})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
             eval $cmd
             mv ${crIN}/.temp $convFile
             #Add n characters to the end of the quality
-            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
-            # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+            cmd=$(echo 'sed -E "4~4s/^(.{'$barcodelength'})(.{'${umilength}'})(.{'3'})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+            # run command with barcode and umi length, e.g.,: sed -E "4~4s/^(.{16})(.{8})(.{'3'})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+            if [[ $verbose ]]; then
+                echo $cmd
+            fi
             eval $cmd
+            #returns an R file with the TSO replaced with the 13 bp 10x Genomics sequence
             mv ${crIN}/.temp $convFile
             echo "  ${convFile} adjusted"
         done
