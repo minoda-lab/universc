@@ -36,7 +36,7 @@
 <h3 id="supported-technologies">Supported Technologies</h3>
 <p>In principle, any technology with a cell barcode and unique molecular identifier (UMI) can be supported.</p>
 <p>The following technologies have been tested to ensure that they give the expected results: 10x Genomics, Nadia (DropSeq), ICELL8 version 3</p>
-<p>We provide the following preset configurations for convenience based on published data and configurations used by other pipelines (e.g, DropSeqPipe and Kallisto/Bustools). To add further support for other technologies or troubleshoot problems, please submit an Issue to the GitHub repository: <a href="https://github.com/TomKellyGenetics/universc/issues">TomKellyGenetics/universc</a> as described in <a href="#Issues">Bug Reports</a> below.</p>
+<p>We provide the following preset configurations for convenience based on published data and configurations used by other pipelines (e.g, DropSeqPipe and Kallisto/Bustools). To add further support for other technologies or troubleshoot problems, please submit an Issue to the GitHub repository: <a href="https://github.com/minoda-lab/universc/issues">minoda-lab/universc</a> as described in <a href="#Issues">Bug Reports</a> below.</p>
 <p>Some changes to the Cell Ranger install are required to run other technologies. Therefore we provide settings for 10x Genomics which restores settings for the Chromium instrument. We therefore recommend using 'convert' for processing all data from different technologies as the tool manages these changes. Please note that on a single install of Cell Ranger, multiple technologies or multiple samples of the same technology with different whitelist barcodes cannot be run cannot be run simultaneousely (the tool will also check for this to avoid causing problems with existing runs). Multiple samples of the same technology with the same barcode whitelist can be run simultaneously.</p>
 <p>If you are using <code>UniverSC</code> you should also do so to run 10x Genomics data. If you wish to restore Cell Ranger to default settings, see the <a href="#Uninstalling">installation</a> or <a href="#Debugging">troubleshooting</a> sections below.</p>
 <h4 id="pre-set-configurations">Pre-set configurations</h4>
@@ -176,7 +176,7 @@ cat Sample1_I2_file.fastq.gz Sample2_I2_file.fastq.gz Sample3_I2_file.fastq.gz &
   }</code></pre>
 <h3 id="bug-reports">Bug Reports <span id="Issues"><span></h3>
 <h4 id="reporting-issues">Reporting issues</h4>
-<p>To add further support for other technologies or troubleshoot problems, please submit an Issue to the GitHub repository: https://github.com/TomKellyGenetics/universc/issues</p>
+<p>To add further support for other technologies or troubleshoot problems, please submit an Issue to the GitHub repository: https://github.com/minoda-lab/universc/issues</p>
 <p>Please submit <a href="https://github.com/minoda-lab/universc/issues">issues</a> on GitHub to report problems or suggest features. <a href="https://github.com/minoda-lab/universc/pulls">Pull requests</a> to the <code>dev</code> branch on GitHub are also welcome to add features or correct problems. Please see the <a href="CONTRIBUTING.md">contributor guide</a> for more details.</p>
 <h3 id="requesting-new-technologies">Requesting new technologies</h3>
 <p>Where possible, please provide an minimal example of the first few lines of each FASTQ file for testing purposes.</p>
@@ -205,7 +205,7 @@ cat Sample1_I2_file.fastq.gz Sample2_I2_file.fastq.gz Sample3_I2_file.fastq.gz &
 <h4 id="download-universc">Download UniverSC</h4>
 <p>To download UniverSC open a terminal prompt and enter the following commands.</p>
 <pre><code>cd $HOME/Downloads
-git clone https://github.com/TomKellyGenetics/universc.git
+git clone https://github.com/minoda-lab/universc.git
 cd universc</code></pre>
 <h3 id="quick-start">Quick Start</h3>
 <p>If you already have Cell Ranger installed, then you can run the script without installing it.</p>
@@ -217,7 +217,7 @@ bash $HOME/Downloads/universc/launch_universc.sh</code></pre>
 <h3 id="runnning-in-a-git-repository">Runnning in a git repository</h3>
 <p>If you are running code in a git repository you can add UniverSC as a submodule.</p>
 <pre><code>cd $/HOME/my_git_repo
-git submodule add https://github.com/TomKellyGenetics/universc.git
+git submodule add https://github.com/minoda-lab/universc.git
 bash universc/launch_universc.sh</code></pre>
 <h3 id="system-requirements">System Requirements</h3>
 <p>In principle, the script can run on any Unix systems with Cell Ranger installed. You can check whether Cell Ranger is already availble by running:</p>
@@ -234,14 +234,14 @@ cellranger count --version</code></pre>
 <p>However, we recommend to use the open-source release of Cell Ranger on GitHub. This is release on an MIT License and is not subject to the 10x Genomics End User License Agreement.</p>
 <p>We provide open-source repositories with minor updates for compatibility with current versions of dependencies.</p>
 <p>The code is available here:</p>
-<p><a href="https://github.com/TomKellyGenetics/cellranger/releases" class="uri">https://github.com/TomKellyGenetics/cellranger/releases</a></p>
+<p><a href="https://github.com/minoda-lab/cellranger/releases" class="uri">https://github.com/minoda-lab/cellranger/releases</a></p>
 <p>We also provide Docker images for Cell Ranger versions 2.0.2, 2.1.0, 2.1.1, and 3.0.2:</p>
-<p><a href="https://github.com/TomKellyGenetics/cellranger_clean/packages" class="uri">https://github.com/TomKellyGenetics/cellranger_clean/packages</a></p>
+<p><a href="https://github.com/minoda-lab/cellranger_clean/packages" class="uri">https://github.com/minoda-lab/cellranger_clean/packages</a></p>
 <p><a href="https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags" class="uri">https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags</a></p>
 <h4 id="cluster-mode-configuration">Cluster Mode configuration</h4>
 <h4 id="software-requirements">Software Requirements</h4>
 <p>These have been pre-installed in the Docker image described above.</p>
-<p>A full example of installation is available in the <a href="https://github.com/TomKellyGenetics/cellranger">GitHub repository</a> and on <a href="https://hub.docker.com/r/tomkellygenetics/cellranger_clean/dockerfile">DockerHub</a>.</p>
+<p>A full example of installation is available in the <a href="https://github.com/minoda-lab/cellranger">GitHub repository</a> and on <a href="https://hub.docker.com/r/tomkellygenetics/cellranger_clean/dockerfile">DockerHub</a>.</p>
 <ul>
 <li>Python 2.7.13</li>
 <li>rust 1.28.0</li>
@@ -317,14 +317,14 @@ bash launch_universc.sh</code></pre>
 <h5 id="running-the-script">Running the script</h5>
 <p>Adding the script to the PATH is not absolutely neccessary, it can be called as follows from the directory that it is downloaded in.</p>
 <pre><code>cd $HOME/Downloads
-git clone https://github.com/TomKellyGenetics/universc.git
+git clone https://github.com/minoda-lab/universc.git
 cd universc
 bash launch_universc.sh</code></pre>
 <h5 id="automated-configuration">Automated configuration</h5>
 <p>We provide a Makefile with all necessary configurations to automatically check whether launch_universc.sh is installed correctly.</p>
 <p>You can specify any directory to install as a &quot;prefix&quot;. This will create a directory &quot;$HOME/local/universc-0.3&quot; where the files needed will be stored.</p>
 <pre><code>cd $HOME/Downloads
-git clone https://github.com/TomKellyGenetics/universc.git
+git clone https://github.com/minoda-lab/universc.git
 make
 make install prefix=$HOME/local</code></pre>
 <p>It is also possible to add the current working directory as the installed directory.</p>
@@ -393,7 +393,7 @@ docker run hello-world    </code></pre>
 <p>Either of these shells are supported.</p>
 <h5 id="building-the-docker-image-locally">Building the Docker image locally</h5>
 <p>The Dockerfile is provided in the repository so it can be built from source. This will build a Docker image with the latest version of universc provided that updates to dependencies on GitHub are still compatible.</p>
-<pre><code>git clone https://github.com/TomKellyGenetics/universc.git
+<pre><code>git clone https://github.com/minoda-lab/universc.git
 docker build -t universc:latest .  </code></pre>
 <p>Please bear mind that it can take considerable time to install all necessary dependencies. A stable internet connection is required.</p>
 <h3 id="manual-configuration">Manual configuration</h3>

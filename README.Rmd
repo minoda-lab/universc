@@ -147,7 +147,7 @@ The following technologies have been tested to ensure that they give the expecte
 
 We provide the following preset configurations for convenience based on published data and configurations used by other pipelines 
 (e.g, DropSeqPipe and Kallisto/Bustools). To add further support for other technologies or troubleshoot problems, please submit an Issue
-to the GitHub repository: [TomKellyGenetics/universc](https://github.com/TomKellyGenetics/universc/issues)
+to the GitHub repository: [minoda-lab/universc](https://github.com/minoda-lab/universc/issues)
 as described in [Bug Reports](#Issues) below.
 
 Some changes to the Cell Ranger install are required to run other technologies. Therefore we provide settings for 10x Genomics
@@ -376,7 +376,7 @@ package version 1.0.3. [https://github.com/minoda-lab/universc](https://github.c
 #### Reporting issues
 
 To add further support for other technologies or troubleshoot problems, please submit an Issue 
-to the GitHub repository: https://github.com/TomKellyGenetics/universc/issues
+to the GitHub repository: https://github.com/minoda-lab/universc/issues
 
 Please submit [issues](https://github.com/minoda-lab/universc/issues) on GitHub to report
 problems or suggest features. [Pull requests](https://github.com/minoda-lab/universc/pulls)
@@ -423,7 +423,7 @@ To download UniverSC open a terminal prompt and enter the following commands.
 
 ```
 cd $HOME/Downloads
-git clone https://github.com/TomKellyGenetics/universc.git
+git clone https://github.com/minoda-lab/universc.git
 cd universc
 ```
 
@@ -451,7 +451,7 @@ If you are running code in a git repository you can add UniverSC as a submodule.
 
 ```
 cd $/HOME/my_git_repo
-git submodule add https://github.com/TomKellyGenetics/universc.git
+git submodule add https://github.com/minoda-lab/universc.git
 bash universc/launch_universc.sh
 ```
 
@@ -498,11 +498,11 @@ with current versions of dependencies.
 
 The code is available here:
 
-[https://github.com/TomKellyGenetics/cellranger/releases](https://github.com/TomKellyGenetics/cellranger/releases)
+[https://github.com/minoda-lab/cellranger/releases](https://github.com/minoda-lab/cellranger/releases)
 
 We also provide Docker images for Cell Ranger versions 2.0.2, 2.1.0, 2.1.1, and 3.0.2:
 
-[https://github.com/TomKellyGenetics/cellranger_clean/packages](https://github.com/TomKellyGenetics/cellranger_clean/packages)
+[https://github.com/minoda-lab/cellranger_clean/packages](https://github.com/minoda-lab/cellranger_clean/packages)
 
 [https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags](https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags)
 
@@ -512,7 +512,7 @@ We also provide Docker images for Cell Ranger versions 2.0.2, 2.1.0, 2.1.1, and 
 
 These have been pre-installed in the Docker image described above.
 
-A full example of installation is available in the [GitHub repository](https://github.com/TomKellyGenetics/cellranger)
+A full example of installation is available in the [GitHub repository](https://github.com/minoda-lab/cellranger)
 and on [DockerHub](https://hub.docker.com/r/tomkellygenetics/cellranger_clean/dockerfile).
 
 - Python 2.7.13
@@ -656,7 +656,7 @@ be called as follows from the directory that it is downloaded in.
 
 ```
 cd $HOME/Downloads
-git clone https://github.com/TomKellyGenetics/universc.git
+git clone https://github.com/minoda-lab/universc.git
 cd universc
 bash launch_universc.sh
 ```
@@ -672,7 +672,7 @@ the files needed will be stored.
 
 ```
 cd $HOME/Downloads
-git clone https://github.com/TomKellyGenetics/universc.git
+git clone https://github.com/minoda-lab/universc.git
 make
 make install prefix=$HOME/local
 ```
@@ -853,7 +853,7 @@ universc provided that updates to dependencies on GitHub
 are still compatible.
 
 ```
-git clone https://github.com/TomKellyGenetics/universc.git
+git clone https://github.com/minoda-lab/universc.git
 docker build -t universc:latest .  
 ```
 
