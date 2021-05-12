@@ -3,7 +3,7 @@
 - add support for new technologies:
   -  5′ scRNA technologies (e.g., Smart-Seq3, ICELL8 5′ , STRT-Seq)
   -  full support for combinatorial indexing (e.g., BD Rhapsody, Microwell-Seq, SCI-RNA-Seq, SPLiT-Seq, SureCell/ddSEQ)
-  -  full support for dual indexes (e.g., inDrops v3, SCI-RNA-Seq, Smart-Seq3)
+  -  full support for dual indexes (e.g., Fluidigm C1, ICELL8 full-length, inDrops v3, SCI-RNA-Seq, Smart-Seq3)
   -  non-UMI technologies (e.g., ICELL8-v2, Quartz-Seq, RamDA-Seq, Smart-Seq2, STRT-Seq)
 
 - add support for barcodes longer than 16 bp
@@ -13,6 +13,8 @@
   - implements an option to replace UMI with mock UMI to force counting reads only
 
 - support custom whitelists from mixed samples with a low fraction of reads
+
+- update test cases for renaming files and compressed inputs
 
 - bug fixes for computing summary statistics
 
