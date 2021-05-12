@@ -1776,8 +1776,8 @@ else
             barcodelength=$(($indexlength + $index2length))
             if [[ -f ${whitelistdir}/Illumina_dual_barcodes.txt ]];then
                 cat ${whitelistdir}/Illumina_TruSeq_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
-                cat ${whitelistdir}/Illumina_TruSeq_Index1_i5_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i5_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
-                join -j 9999 ${whitelistdir}/Illumina_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Index1_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_dual_barcodes.txt
+                cat ${whitelistdir}/Illumina_TruSeq_Index2_i5_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
+                join -j 9999 ${whitelistdir}/Illumina_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Index2_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_dual_barcodes.txt
 
             fi
             barcodefile=${whitelistdir}/Illumina_dual_barcodes.txt
@@ -1886,7 +1886,7 @@ else
         elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] ||  [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
             if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]];then
                 #generates all combinations of I1-I2 barcodes
-                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
+                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
             fi
         elif [[ "$technology" == "icell8-full-length" ]]; then
             if [[ ! -f ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt ]]; then
