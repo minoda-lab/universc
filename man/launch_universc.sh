@@ -249,7 +249,8 @@ Provides a conversion script to run multiple technologies and custom libraries w
 
             The following technologies require Index 1 or Index 2 sequences (see above):
 
-                  inDrops-v3,  SCI-RNA-Seq, SCI-RNA-Seq3, scifi-seq, Smart-Seq2, Smart-Seq3, STRT-Seq-2i, STRT-Seq-C1
+                  Fluidigm C1, ICELL8 full-length, inDrops-v3, Quartz-Seq, RamDA-Seq,
+                  SCI-RNA-Seq, SCI-RNA-Seq3, scifi-seq, Smart-Seq2, Smart-Seq3, STRT-Seq-2i, STRT-Seq-C1
 
 
   -b,  --barcodefile FILE

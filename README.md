@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Thursday 06 May 2021"
+date: "Wednesday 12 May 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -47,8 +47,8 @@ tags:
 ![GitHub issues](https://img.shields.io/github/issues/minoda-lab/universc)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/minoda-lab/universc)
 
-[![HitCount](http://hits.dwyl.com/minoda-lab/universc.svg)](http://hits.dwyl.com/minoda-lab/universc)
-[![HitCount](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
+[![GitHub Views](http://hits.dwyl.com/minoda-lab/universc.svg)](http://hits.dwyl.com/minoda-lab/universc)
+[![GitHub Views](http://hits.dwyl.com/tomkellygenetics/universc.svg)](http://hits.dwyl.com/tomkellygenetics/universc)
 ![GitHub search hit counter](https://img.shields.io/github/search/minoda-lab/universc/master)
 ![GitHub forks](https://img.shields.io/github/forks/minoda-lab/universc?style=social)
 ![GitHub Repo stars](https://img.shields.io/github/stars/minoda-lab/universc?style=social)
@@ -236,15 +236,16 @@ techniques are available it is possible to specify which to use.
 #### Single and dual indexed technologies
 
 Where needed the cell barcode can be detected in the index I1 or I2 file.
-Single indexes are supported for STRT-Seq, Quartz-Seq, and RamDA-Seq.
-Dual indexes are supported for inDrops-v3, SCI-RNA-Seq, scifi-seq, and Smart-Seq.
+Single indexes are supported for STRT-Seq and Quartz-Seq.
+Dual indexes are supported for Fluidigm C1, ICELL8 full-length, 
+inDrops-v3, RamDA-Seq, SCI-RNA-Seq, scifi-seq, and Smart-Seq.
 Combinatorial indexing technologies have linkers between barcodes removed
 automatically to match the barcode whitelist.
 
 #### Demultiplexing for dual-indexing
 
-For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use "bcl2fastq"
-before calling UniverSC:
+For dual-indexed technologies such as Fluidigm C1, inDrops-v3, Sci-Seq,
+SmartSeq3 it is advised to use "bcl2fastq" before calling UniverSC:
 
 ```
    /usr/local/bin/bcl2fastq  -v --runfolder-dir "/path/to/illumina/bcls"  --output-dir "./Data/Intensities/BaseCalls"\
@@ -254,13 +255,59 @@ before calling UniverSC:
 ```
 
 Please adjust the lengths for `--use-bases-mask` accordingly for read 1, index 1 (i7), index 2 (i5), and read 2.
-Ensure that `--create-fastq-for-index-read` is used where possible. If a sequencing facility has demultiplexed
-the samples for you without this, UniverSC will attempt to extract index sequences from FASTQ headers in read 1.
+Ensure that `--create-fastq-for-index-read` is used where possible.
 Using `--no-lane-splitting` is optional as UniverSC can process an arbirtary number of lanes.
-
-There is no need to specify index sequences in the same sheet for cell barcodes, using "NNNNNNNN" will match all 
+There is no need to specify index sequences in the same sheet for cell barcodes, using "NNNNNNNN" will match all
 samples and the cell barcodes will be distinguished by the single-cell processing pipeline. Index sequences should
 only be used to demultiplex samples and replicates (not cells).
+
+#### Missing index sequences
+
+If a sequencing facility has demultiplexed the samples for you without this,
+UniverSC will attempt to extract index sequences from FASTQ headers in read 1.
+If index sequences are not stored in the file headers and samples have already
+been demultiplexed, a dummy index file of the same number of reads as R1 and R2
+will be required. As a workaroudn, you can generate this by copying the R1 and R2
+files and replacing the sequences with the first barcode in the relevant whitelist.
+For example:
+
+```
+index1="TAAGGCGA"
+index2="AAGGAGTA"
+
+# create new files
+cp R1_file.fastq I1_file.fastq
+cp R2_file.fastq I2_file.fastq
+
+# replace sequences
+sed -i "2~4s/^.*$/${index1}/g" I1_file.fastq
+sed -i "2~4s/^.*$/${index2}/g" I2_file.fastq
+
+# replace quality scores
+sed -i "4~4s/^.*$/IIIIIIII/g" I1_file.fastq I2_file.fastq
+```
+
+This results in a new "sample index" for each demultiplexed sample.
+To combine demultiplexed sampls for dual indexed techniques use the following:
+
+```
+# for fastq files
+cat Sample1_R1_file.fastq Sample2_R1_file.fastq Sample3_R1_file.fastq > Combined_R1_file.fastq
+cat Sample1_R2_file.fastq Sample2_R2_file.fastq Sample3_R2_file.fastq > Combined_R2_file.fastq
+cat Sample1_I1_file.fastq Sample2_I1_file.fastq Sample3_I1_file.fastq > Combined_I1_file.fastq
+cat Sample1_I2_file.fastq Sample2_I2_file.fastq Sample3_I2_file.fastq > Combined_I2_file.fastq
+
+# for compressed files (not need to uncompress)
+cat Sample1_R1_file.fastq.gz Sample2_R1_file.fastq.gz Sample3_R1_file.fastq.gz > Combined_R1_file.fastq.gz
+cat Sample1_R2_file.fastq.gz Sample2_R2_file.fastq.gz Sample3_R2_file.fastq.gz > Combined_R2_file.fastq.gz
+cat Sample1_I1_file.fastq.gz Sample2_I1_file.fastq.gz Sample3_I1_file.fastq.gz > Combined_I1_file.fastq.gz
+cat Sample1_I2_file.fastq.gz Sample2_I2_file.fastq.gz Sample3_I2_file.fastq.gz > Combined_I2_file.fastq.gz
+```
+
+As this needs to done on a case-by-case basis it has not been implemented by the UniverSC core functions.
+We provide this workaround for using published data and data already processed by sequencing facilities.
+Please contact the maintainers or file an issue on GitHub if you are having problems with this case.
+
 
 #### Custom inputs
 
