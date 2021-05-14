@@ -43,26 +43,35 @@ elsif (! -e $feature_file || ! -e $raw_barcode_file || ! -e $filtered_barcode_fi
 #####MAIN#####
 #make a hash of original and adjusted barcodes
 my %adjusted2original;
-open (ORIGINAL, "<$barcodefile") or die "cannot open $barcodefile.\n";
-while (my $line = <ORIGINAL>) {
-    my $original = $line;
-    $original =~ s/\r//sig;
-    $original =~ s/\n//sig;
-    
-    my $adjusted = $original;
-    if ($adjust_length >= 0) {
-        $adjusted = substr ($adjusted, $adjust_length, $standard_length);
+if ($barcodefile =~ m/^default\:10x$/) {
+    my $originals = `zcat $filtered_barcode_file | cut -f1 -d'-'`;
+    chomp $originals;
+    my @originals = split (/\n/, $originals);
+    foreach my $original (@originals) {
+        $adjusted2original{$original} = $original;
     }
-    else {
-        my $length = abs ($adjust_length);
-        my $As = "A" x $length;
-        $adjusted = $As.$adjusted;
-    }
-    
-    $adjusted2original{$adjusted} = $original;
-    print "Original($original) -> Adjusted($adjusted) $adjust_length\n";
 }
-close (ORIGINAL);
+else {
+    open (ORIGINAL, "<$barcodefile") or die "cannot open $barcodefile.\n";
+    while (my $line = <ORIGINAL>) {
+        my $original = $line;
+        $original =~ s/\r//sig;
+        $original =~ s/\n//sig;
+        
+        my $adjusted = $original;
+        if ($adjust_length >= 0) {
+            $adjusted = substr ($adjusted, $adjust_length, $standard_length);
+        }
+        else {
+            my $length = abs ($adjust_length);
+            my $As = "A" x $length;
+            $adjusted = $As.$adjusted;
+        }
+        
+        $adjusted2original{$adjusted} = $original;
+    }
+    close (ORIGINAL);
+}
 
 #gene count
 print " getting gene count.\n";
@@ -135,10 +144,10 @@ foreach my $barcode (@assigned_reads_percell) {
     $count =~ s/^ //;
     $count =~ s/ $//;
     my @count = split (/ /, $count);
-    
+   
     if (exists $adjusted2original{$count[1]}) {
         if (exists $percell{ $adjusted2original{$count[1]} }) {
-            my %count;
+	    my %count;
             $count{ASSIGNED} = $count[0];
             $percell{ $adjusted2original{$count[1]} } = \%count;
         }
@@ -207,10 +216,9 @@ foreach my $entry (@umicount) {
 }
 foreach my $id (keys %umicount) {
     if (exists $percell{ $barcodes{$id} }) {
-        my %data = %{ $percell{ $barcodes{$id} } };
-        $data{UMI} = $umicount{$id};
-        
-        $percell{ $barcodes{$id} } = \%data;
+        my %barcode = %{ $percell{ $barcodes{$id} } };
+        $barcode{UMI} = $umicount{$id};
+        $percell{$barcodes{$id}} = \%barcode;
     }
 }
 foreach my $barcode (sort keys %percell) {
