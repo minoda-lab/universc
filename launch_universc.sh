@@ -3635,15 +3635,7 @@ fi
 #####extracting per cell data#####
 if [[ $percelldata == true ]]; then
     echo "generating basic run statistics and per cell data"
-    if [[ ${barcodefile} == "default:10x" ]]; then
-        barcodefile=${barcodedir}/${v3}.gz
-        gunzip ${barcodefile}
-        barcodefile=`echo ${barcodefile} | sed 's/\.[^.]*$//'`
-        perl ${PERCELLSTATS} ${barcodefile} ${barcodeadjust} ${id}
-        gzip ${barcodefile}
-    else
-        perl ${PERCELLSTATS} ${barcodefile} ${barcodeadjust} ${id}
-    fi
+    perl ${PERCELLSTATS} ${barcodefile} ${barcodeadjust} ${id}
     echo "per cell data generated"
 fi
 ##########
