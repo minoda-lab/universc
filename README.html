@@ -36,7 +36,7 @@
 <h3 id="supported-technologies">Supported Technologies</h3>
 <p>In principle, any technology with a cell barcode and unique molecular identifier (UMI) can be supported.</p>
 <p>The following technologies have been tested to ensure that they give the expected results: 10x Genomics, Nadia (DropSeq), ICELL8 version 3</p>
-<p>We provide the following preset configurations for convenience based on published data and configurations used by other pipelines (e.g, DropSeqPipe and Kallisto/Bustools). To add further support for other technologies or troubleshoot problems, please submit an Issue to the GitHub repository: <a href="https://github.com/TomKellyGenetics/universc/issues">TomKellyGenetics/universc</a> as described in <a href="#Issues">Bug Reports</a> below.</p>
+<p>We provide the following preset configurations for convenience based on published data and configurations used by other pipelines (e.g, DropSeqPipe and Kallisto/Bustools). To add further support for other technologies or troubleshoot problems, please submit an Issue to the GitHub repository: <a href="https://github.com/minoda-lab/universc/issues">minoda-lab/universc</a> as described in <a href="#Issues">Bug Reports</a> below.</p>
 <p>Some changes to the Cell Ranger install are required to run other technologies. Therefore we provide settings for 10x Genomics which restores settings for the Chromium instrument. We therefore recommend using 'convert' for processing all data from different technologies as the tool manages these changes. Please note that on a single install of Cell Ranger, multiple technologies or multiple samples of the same technology with different whitelist barcodes cannot be run cannot be run simultaneousely (the tool will also check for this to avoid causing problems with existing runs). Multiple samples of the same technology with the same barcode whitelist can be run simultaneously.</p>
 <p>If you are using <code>UniverSC</code> you should also do so to run 10x Genomics data. If you wish to restore Cell Ranger to default settings, see the <a href="#Uninstalling">installation</a> or <a href="#Debugging">troubleshooting</a> sections below.</p>
 <h4 id="pre-set-configurations">Pre-set configurations</h4>
@@ -57,7 +57,7 @@
 <ul>
 <li>ICELL8 version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2</li>
 <li>ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom</li>
-<li>ICELL8 5′ scRNA with TCR OR kit (10bp barcode, 8 bp UMI): icell8-5-prime</li>
+<li>ICELL8 5′ scRNA with TCR OR kit (10bp barcode, NO bp UMI): icell8-5-prime</li>
 <li>ICELL8 full-length scRNA with Smart-Seq (16 bp barcode, No UMI): icell8-full-length</li>
 </ul></li>
 <li>inDrops
@@ -106,15 +106,42 @@
 <p>By default, UMIs are supported where available so with the following exceptions for non-UMI technologies: ICELL8 v2, RamDA-Seq, Quartz-Seq, Smart-Seq, Smart-Seq2. While using UMI is recommended we provide a mock UMI for counting reads for these technologies (and data from previous versions).</p>
 <p>Other techniques can be forced to replace the UMI with a mock sequence for counting reads only with <code>--non-umi</code> or <code>--read-only</code> arguments. Forcing non-UMI techniques is <em>not recommended</em> unless you are integrating non-UMI and UMI-based technologies. It is not necessary to specific <code>--non-umi</code> for non-UMI techniques as these will be used automatically when applicable. For ICELL8 and Smart-Seq where both non-UMI (icell8-v2, smartseq2) and UMI-based (icell8-v3, smartseq3) techniques are available it is possible to specify which to use.</p>
 <h4 id="single-and-dual-indexed-technologies">Single and dual indexed technologies</h4>
-<p>Where needed the cell barcode can be detected in the index I1 or I2 file. Single indexes are supported for STRT-Seq, Quartz-Seq, and RamDA-Seq. Dual indexes are supported for inDrops-v3, SCI-RNA-Seq, scifi-seq, and Smart-Seq. Combinatorial indexing technologies have linkers between barcodes removed automatically to match the barcode whitelist.</p>
+<p>Where needed the cell barcode can be detected in the index I1 or I2 file. Single indexes are supported for STRT-Seq and Quartz-Seq. Dual indexes are supported for Fluidigm C1, ICELL8 full-length, inDrops-v3, RamDA-Seq, SCI-RNA-Seq, scifi-seq, and Smart-Seq. Combinatorial indexing technologies have linkers between barcodes removed automatically to match the barcode whitelist.</p>
 <h4 id="demultiplexing-for-dual-indexing">Demultiplexing for dual-indexing</h4>
-<p>For dual-indexed technologies such as inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use &quot;bcl2fastq&quot; before calling UniverSC:</p>
+<p>For dual-indexed technologies such as Fluidigm C1, inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use &quot;bcl2fastq&quot; before calling UniverSC:</p>
 <pre><code>   /usr/local/bin/bcl2fastq  -v --runfolder-dir &quot;/path/to/illumina/bcls&quot;  --output-dir &quot;./Data/Intensities/BaseCalls&quot;\
                                 --sample-sheet &quot;/path/to/SampleSheet.csv&quot; --create-fastq-for-index-reads\
                                 --use-bases-mask Y26n,I8n,I8n,Y50n  --mask-short-adapter-reads 0\
                                 --minimum-trimmed-read-length 0</code></pre>
-<p>Please adjust the lengths for <code>--use-bases-mask</code> accordingly for read 1, index 1 (i7), index 2 (i5), and read 2. Ensure that <code>--create-fastq-for-index-read</code> is used where possible. If a sequencing facility has demultiplexed the samples for you without this, UniverSC will attempt to extract index sequences from FASTQ headers in read 1. Using <code>--no-lane-splitting</code> is optional as UniverSC can process an arbirtary number of lanes.</p>
-<p>There is no need to specify index sequences in the same sheet for cell barcodes, using &quot;NNNNNNNN&quot; will match all samples and the cell barcodes will be distinguished by the single-cell processing pipeline. Index sequences should only be used to demultiplex samples and replicates (not cells).</p>
+<p>Please adjust the lengths for <code>--use-bases-mask</code> accordingly for read 1, index 1 (i7), index 2 (i5), and read 2. Ensure that <code>--create-fastq-for-index-read</code> is used where possible. Using <code>--no-lane-splitting</code> is optional as UniverSC can process an arbirtary number of lanes. There is no need to specify index sequences in the same sheet for cell barcodes, using &quot;NNNNNNNN&quot; will match all samples and the cell barcodes will be distinguished by the single-cell processing pipeline. Index sequences should only be used to demultiplex samples and replicates (not cells).</p>
+<h4 id="missing-index-sequences">Missing index sequences</h4>
+<p>If a sequencing facility has demultiplexed the samples for you without this, UniverSC will attempt to extract index sequences from FASTQ headers in read 1. If index sequences are not stored in the file headers and samples have already been demultiplexed, a dummy index file of the same number of reads as R1 and R2 will be required. As a workaroudn, you can generate this by copying the R1 and R2 files and replacing the sequences with the first barcode in the relevant whitelist. For example:</p>
+<pre><code>index1=&quot;TAAGGCGA&quot;
+index2=&quot;AAGGAGTA&quot;
+
+# create new files
+cp R1_file.fastq I1_file.fastq
+cp R2_file.fastq I2_file.fastq
+
+# replace sequences
+sed -i &quot;2~4s/^.*$/${index1}/g&quot; I1_file.fastq
+sed -i &quot;2~4s/^.*$/${index2}/g&quot; I2_file.fastq
+
+# replace quality scores
+sed -i &quot;4~4s/^.*$/IIIIIIII/g&quot; I1_file.fastq I2_file.fastq</code></pre>
+<p>This results in a new &quot;sample index&quot; for each demultiplexed sample. To combine demultiplexed sampls for dual indexed techniques use the following:</p>
+<pre><code># for fastq files
+cat Sample1_R1_file.fastq Sample2_R1_file.fastq Sample3_R1_file.fastq &gt; Combined_R1_file.fastq
+cat Sample1_R2_file.fastq Sample2_R2_file.fastq Sample3_R2_file.fastq &gt; Combined_R2_file.fastq
+cat Sample1_I1_file.fastq Sample2_I1_file.fastq Sample3_I1_file.fastq &gt; Combined_I1_file.fastq
+cat Sample1_I2_file.fastq Sample2_I2_file.fastq Sample3_I2_file.fastq &gt; Combined_I2_file.fastq
+
+# for compressed files (not need to uncompress)
+cat Sample1_R1_file.fastq.gz Sample2_R1_file.fastq.gz Sample3_R1_file.fastq.gz &gt; Combined_R1_file.fastq.gz
+cat Sample1_R2_file.fastq.gz Sample2_R2_file.fastq.gz Sample3_R2_file.fastq.gz &gt; Combined_R2_file.fastq.gz
+cat Sample1_I1_file.fastq.gz Sample2_I1_file.fastq.gz Sample3_I1_file.fastq.gz &gt; Combined_I1_file.fastq.gz
+cat Sample1_I2_file.fastq.gz Sample2_I2_file.fastq.gz Sample3_I2_file.fastq.gz &gt; Combined_I2_file.fastq.gz</code></pre>
+<p>As this needs to done on a case-by-case basis it has not been implemented by the UniverSC core functions. We provide this workaround for using published data and data already processed by sequencing facilities. Please contact the maintainers or file an issue on GitHub if you are having problems with this case.</p>
 <h4 id="custom-inputs">Custom inputs</h4>
 <p>Custom inputs are also supported by giving the name &quot;custom&quot; and length of barcode and UMI separated by a &quot;_&quot; character.</p>
 <p>e.g. Custom (16bp barcode, 10bp UMI): <code>custom_16_10</code></p>
@@ -149,7 +176,7 @@
   }</code></pre>
 <h3 id="bug-reports">Bug Reports <span id="Issues"><span></h3>
 <h4 id="reporting-issues">Reporting issues</h4>
-<p>To add further support for other technologies or troubleshoot problems, please submit an Issue to the GitHub repository: https://github.com/TomKellyGenetics/universc/issues</p>
+<p>To add further support for other technologies or troubleshoot problems, please submit an Issue to the GitHub repository: https://github.com/minoda-lab/universc/issues</p>
 <p>Please submit <a href="https://github.com/minoda-lab/universc/issues">issues</a> on GitHub to report problems or suggest features. <a href="https://github.com/minoda-lab/universc/pulls">Pull requests</a> to the <code>dev</code> branch on GitHub are also welcome to add features or correct problems. Please see the <a href="CONTRIBUTING.md">contributor guide</a> for more details.</p>
 <h3 id="requesting-new-technologies">Requesting new technologies</h3>
 <p>Where possible, please provide an minimal example of the first few lines of each FASTQ file for testing purposes.</p>
@@ -178,7 +205,7 @@
 <h4 id="download-universc">Download UniverSC</h4>
 <p>To download UniverSC open a terminal prompt and enter the following commands.</p>
 <pre><code>cd $HOME/Downloads
-git clone https://github.com/TomKellyGenetics/universc.git
+git clone https://github.com/minoda-lab/universc.git
 cd universc</code></pre>
 <h3 id="quick-start">Quick Start</h3>
 <p>If you already have Cell Ranger installed, then you can run the script without installing it.</p>
@@ -190,7 +217,7 @@ bash $HOME/Downloads/universc/launch_universc.sh</code></pre>
 <h3 id="runnning-in-a-git-repository">Runnning in a git repository</h3>
 <p>If you are running code in a git repository you can add UniverSC as a submodule.</p>
 <pre><code>cd $/HOME/my_git_repo
-git submodule add https://github.com/TomKellyGenetics/universc.git
+git submodule add https://github.com/minoda-lab/universc.git
 bash universc/launch_universc.sh</code></pre>
 <h3 id="system-requirements">System Requirements</h3>
 <p>In principle, the script can run on any Unix systems with Cell Ranger installed. You can check whether Cell Ranger is already availble by running:</p>
@@ -207,14 +234,14 @@ cellranger count --version</code></pre>
 <p>However, we recommend to use the open-source release of Cell Ranger on GitHub. This is release on an MIT License and is not subject to the 10x Genomics End User License Agreement.</p>
 <p>We provide open-source repositories with minor updates for compatibility with current versions of dependencies.</p>
 <p>The code is available here:</p>
-<p><a href="https://github.com/TomKellyGenetics/cellranger/releases" class="uri">https://github.com/TomKellyGenetics/cellranger/releases</a></p>
+<p><a href="https://github.com/minoda-lab/cellranger/releases" class="uri">https://github.com/minoda-lab/cellranger/releases</a></p>
 <p>We also provide Docker images for Cell Ranger versions 2.0.2, 2.1.0, 2.1.1, and 3.0.2:</p>
-<p><a href="https://github.com/TomKellyGenetics/cellranger_clean/packages" class="uri">https://github.com/TomKellyGenetics/cellranger_clean/packages</a></p>
+<p><a href="https://github.com/minoda-lab/cellranger_clean/packages" class="uri">https://github.com/minoda-lab/cellranger_clean/packages</a></p>
 <p><a href="https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags" class="uri">https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags</a></p>
 <h4 id="cluster-mode-configuration">Cluster Mode configuration</h4>
 <h4 id="software-requirements">Software Requirements</h4>
 <p>These have been pre-installed in the Docker image described above.</p>
-<p>A full example of installation is available in the <a href="https://github.com/TomKellyGenetics/cellranger">GitHub repository</a> and on <a href="https://hub.docker.com/r/tomkellygenetics/cellranger_clean/dockerfile">DockerHub</a>.</p>
+<p>A full example of installation is available in the <a href="https://github.com/minoda-lab/cellranger">GitHub repository</a> and on <a href="https://hub.docker.com/r/tomkellygenetics/cellranger_clean/dockerfile">DockerHub</a>.</p>
 <ul>
 <li>Python 2.7.13</li>
 <li>rust 1.28.0</li>
@@ -290,14 +317,14 @@ bash launch_universc.sh</code></pre>
 <h5 id="running-the-script">Running the script</h5>
 <p>Adding the script to the PATH is not absolutely neccessary, it can be called as follows from the directory that it is downloaded in.</p>
 <pre><code>cd $HOME/Downloads
-git clone https://github.com/TomKellyGenetics/universc.git
+git clone https://github.com/minoda-lab/universc.git
 cd universc
 bash launch_universc.sh</code></pre>
 <h5 id="automated-configuration">Automated configuration</h5>
 <p>We provide a Makefile with all necessary configurations to automatically check whether launch_universc.sh is installed correctly.</p>
 <p>You can specify any directory to install as a &quot;prefix&quot;. This will create a directory &quot;$HOME/local/universc-0.3&quot; where the files needed will be stored.</p>
 <pre><code>cd $HOME/Downloads
-git clone https://github.com/TomKellyGenetics/universc.git
+git clone https://github.com/minoda-lab/universc.git
 make
 make install prefix=$HOME/local</code></pre>
 <p>It is also possible to add the current working directory as the installed directory.</p>
@@ -366,7 +393,7 @@ docker run hello-world    </code></pre>
 <p>Either of these shells are supported.</p>
 <h5 id="building-the-docker-image-locally">Building the Docker image locally</h5>
 <p>The Dockerfile is provided in the repository so it can be built from source. This will build a Docker image with the latest version of universc provided that updates to dependencies on GitHub are still compatible.</p>
-<pre><code>git clone https://github.com/TomKellyGenetics/universc.git
+<pre><code>git clone https://github.com/minoda-lab/universc.git
 docker build -t universc:latest .  </code></pre>
 <p>Please bear mind that it can take considerable time to install all necessary dependencies. A stable internet connection is required.</p>
 <h3 id="manual-configuration">Manual configuration</h3>
@@ -516,7 +543,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
                                   ICELL8 version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
                                   ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
-                                  ICELL8 5′ scRNA with TCR OR kit (10bp barcode, 8 bp UMI): icell8-5-prime
+                                  ICELL8 5′ scRNA with TCR OR kit (10bp barcode, NO bp UMI): icell8-5-prime
                                   ICELL8 full-length scRNA with Smart-Seq (16 bp barcode, No UMI): icell8-full-length
                                   inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19 bp barcode, 6 bp UMI): indrops-v2, 1cellbio-v2

@@ -24,4 +24,4 @@ bash launch_universc.sh --id "test-sciseq" --technology "sciseq" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --read1 "test/shared/sciseq-v3-test/SRR7827205_S1_R1.fastq.gz" \
  --read2 "test/shared/sciseq-v3-test/SRR7827205_S1_R2.fastq.gz" \
- --jobmode "local" --localcores 1 
+ --per-cell-data --jobmode "local" --localcores 1 

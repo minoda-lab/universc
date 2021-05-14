@@ -92,17 +92,102 @@ if [[ -d input4cellranger_test-10x-v3 ]]; then
     rm -rf input4cellranger_test-10x-v3
 fi
 # unzip input data
-if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001/*fastq.gz ]]; then
-    unpigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001/*fastq.gz
+if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq.gz ]]; then
+    unpigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001*fastq.gz
+    rm -rf test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001*fastq.gz
 fi
-if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002/*fastq.gz ]]; then
-    unpigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002/*fastq.gz
+if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq.gz ]]; then
+    unpigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002*fastq.gz
+    rm -rf  test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002*fastq.gz
 fi
 bash launch_universc.sh --id "test-10x-v3" --technology "10x" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --file "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
  "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002" \
-  --jobmode "local" --localcores 2 --localmem 4 
+ --per-cell-data --jobmode "local" --localcores 2 --localmem 4
+
+# call convert on 10x with multiple lanes with compressed files
+if [[ -d test-10x-v3-zip ]]; then
+    rm -rf test-10x-v3-zip
+fi
+if [[ -d input4cellranger_test-10x-v3-zip ]]; then
+    rm -rf input4cellranger_test-10x-v3-zip
+fi
+# unzip input data
+if [[ ! -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq.gz ]]; then
+    pigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001*fastq
+    rm -rf  test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001*fastq
+fi
+if [[ ! -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq.gz ]]; then
+    pigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002*fastq
+    rm -rf test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002*fastq
+fi
+bash launch_universc.sh --id "test-10x-v3-zip" --technology "10x" \
+ --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --file "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
+ "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002" \
+ --per-cell-data --jobmode "local" --localcores 2 --localmem 4
+
+# call convert on 10x with multiple lanes with *some* compressed files
+if [[ -d test-10x-v3-zip-mix ]]; then
+    rm -rf test-10x-v3-zip-mix
+fi
+if [[ -d input4cellranger_test-10x-v3-zip-mix ]]; then
+    rm -rf input4cellranger_test-10x-v3-zip-mix
+fi
+# unzip input data
+if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq.gz ]]; then
+    unpigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001*fastq.gz
+    rm -rf  test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001*fastq.gz
+fi
+if [[ ! -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq.gz ]]; then
+    pigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002*fastq
+    rm -rf  test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002*fastq
+fi
+bash launch_universc.sh --id "test-10x-v3-zip-mix" --technology "10x" \
+ --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --file "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
+ "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002" \
+ --per-cell-data --jobmode "local" --localcores 2 --localmem 4
+
+# call convert on 10x with multiple lanes with *some* compressed files
+if [[ -d test-10x-v3-zip-mix-2 ]]; then
+    rm -rf test-10x-v3-zip-mix-2
+fi
+if [[ -d input4cellranger_test-10x-v3-zip-mix-2 ]]; then
+    rm -rf input4cellranger_test-10x-v3-zip-mix-2
+fi
+# unzip input data
+if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq.gz ]]; then
+    unpigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq.gz
+    rm -rf  test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq.gz
+    pigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R2_001.fastq
+    rm -rf  test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R2_001.fastq
+fi
+if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq.gz ]]; then
+    unpigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq.gz
+    rm -rf  test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq.gz
+    pigz -f test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq
+    rm -rf  test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq
+fi
+bash launch_universc.sh --id "test-10x-v3-zip-mix-2" --technology "10x" \
+ --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --file "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
+ "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002" \
+ --per-cell-data --jobmode "local" --localcores 2 --localmem 4
+
+# call convert on 10x with multiple lanes with *some* compressed files
+if [[ -d test-10x-v3-zip-mix-3 ]]; then
+    rm -rf test-10x-v3-zip-mix-3
+fi
+if [[ -d input4cellranger_test-10x-v3-zip-mix-3 ]]; then
+    rm -rf input4cellranger_test-10x-v3-zip-mix-3
+fi
+bash launch_universc.sh --id "test-10x-v3-zip-mix-3" --technology "10x" \
+ --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
+ --file "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
+ "test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002" \
+ --per-cell-data --jobmode "local" --localcores 2 --localmem 4
 
 # compress all input files
 if [[ -f test/shared/cellranger-tiny-fastq/3.0.0/*fastq ]]; then

@@ -206,7 +206,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
                                   ICELL8 3′ scRNA version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
                                   ICELL8 3′ scRNA version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
-                                  ICELL8 5′ scRNA with TCR OR kit (10bp barcode, 8 bp UMI): icell8-5-prime
+                                  ICELL8 5′ scRNA with TCR OR kit (10bp barcode, NO bp UMI): icell8-5-prime
                                   ICELL8 full-length scRNA with Smart-Seq (16 bp barcode, No UMI): icell8-full-length
                                   inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19 bp barcode, 6 bp UMI): indrops-v2, 1cellbio-v2
@@ -308,7 +308,7 @@ chemistry=""
 jobmode="local"
 ncores=""
 mem=""
-nonUMI=true
+nonUMI=false
 percelldata=false
 
 next=false
@@ -645,7 +645,7 @@ elif [[ "$technology" == "icell8-non-umi" ]] || [[ "$technology" == "icell8-nonu
     nonUMI=true
 elif [[ "$technology" == "icell8-five-prime" ]] || [[ "$technology" == "icell8fiveprime" ]] ||  [[ "$technology" == "icell8-5p" ]] ||  [[ "$technology" == "icell85p" ]]; then
     technology="icell8-5-prime"
-    nonUMI=false
+    nonUMI=true
     if [[ -z ${chemistry} ]] || [[ ${chemistry} == "SC3Pv"* ]]; then
         if [[ $verbose ]]; then
             echo "setting chemistry for 5' scRNA"
@@ -807,7 +807,7 @@ elif [[ "$technology" == "nadia" ]]; then
     minlength=12
 elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
-    if [[ $nonUMI ]]; then
+    if [[ $nonUMI == "true" ]]; then
        umilength=0
     else
        umilength=14
@@ -815,7 +815,11 @@ elif [[ "$technology" == "icell8" ]]; then
     minlength=11
 elif [[ "$technology" == "icell8-5-prime" ]]; then
     barcodelength=10
-    umilength=8
+    if [[ $nonUMI == "true" ]]; then
+        umilength=0
+    else
+        umilength=8
+    fi
     minlength=10
 elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
     barcodelength=19
@@ -867,7 +871,7 @@ elif [[ "$technology" == "seqwell" ]]; then
     minlength=8
 elif [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
     barcodelength=16
-    if [[ $nonUMI ]]; then
+    if [[ $nonUMI == "true" ]]; then
        umilength=0
     else
        umilength=8
@@ -1509,7 +1513,7 @@ fi
 #generate missing indexes if required (generating I1 and I2)
 if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] ; then
      echo "dual indexes I1 and I2 required for $technology"
-     if [[ ${#index2[@]} -le 1 ]]; then
+     if [[ ${#index2[@]} -le 0 ]]; then
          echo " automatically generating I1 and I2 index files from file headers"
          index1=("${read1[@]}")
          index2=("${read1[@]}")
@@ -1541,7 +1545,7 @@ if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-lengt
             if [[ $verbose ]]; then
                 echo index2 of length $index2length gives quality score $qualscores2
             fi
-            sed -i "4~4s/^.*$/${qualscores2})/g" $I2_file
+            sed -i "4~4s/^.*$/${qualscores2}/g" $I2_file
             index1+=("$I1_file")
             index2+=("$I2_file")
         done
@@ -1772,8 +1776,8 @@ else
             barcodelength=$(($indexlength + $index2length))
             if [[ -f ${whitelistdir}/Illumina_dual_barcodes.txt ]];then
                 cat ${whitelistdir}/Illumina_TruSeq_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
-                cat ${whitelistdir}/Illumina_TruSeq_Index1_i5_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i5_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
-                join -j 9999 ${whitelistdir}/Illumina_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Index1_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_dual_barcodes.txt
+                cat ${whitelistdir}/Illumina_TruSeq_Index2_i5_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
+                join -j 9999 ${whitelistdir}/Illumina_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Index2_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_dual_barcodes.txt
 
             fi
             barcodefile=${whitelistdir}/Illumina_dual_barcodes.txt
@@ -1882,7 +1886,7 @@ else
         elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] ||  [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
             if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]];then
                 #generates all combinations of I1-I2 barcodes
-                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
+                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
             fi
         elif [[ "$technology" == "icell8-full-length" ]]; then
             if [[ ! -f ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt ]]; then
@@ -2022,7 +2026,7 @@ if [[ "$technology" != "10x" ]]; then
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
     if [[ $verbose ]]; then
-        echo $chemistry
+        echo "  Using $chemistry for $technology"
     fi
     if [[ "$chemistry" == "fiveprime" ]];  then
        chemistry="SC5P-PE"
@@ -2714,7 +2718,10 @@ else
             #returns a combined R1 file with I1-R1 concatenated (I1 is cell barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
             
-            if [[ $nonUMI ]]; then
+            if [[ $nonUMI == "true" ]]; then
+                if [[ $verbose ]]; then
+                    echo "adding mock UMI"
+                fi
                 # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
                 perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
                 umilength=$umi_default
@@ -2761,6 +2768,8 @@ else
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: ICELL8 v2 does not contain UMIs"
+            echo "chem: chemistry"
+            echo "non-UMI: $nonUMI"
         fi
         for convFile in "${convFiles[@]}"; do
             read=$convFile
@@ -2784,18 +2793,27 @@ else
                 fi
             fi
             
-            if [[ $nonUMI ]]; then
-                #remove inflated umi (to replace with mock and count as reads)
-                sed -E '
-                    /^(.{11})(.{14})(.*)/ {
-                    s/^(.{11})(.{14})(.*)/\1\3/g
-                    n
-                    n
-                    s/^(.{11})(.{14})(.*)/\1\3/g
-                    }' $convFile > ${crIN}/.temp
-                mv ${crIN}/.temp $convFile
-
-                # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
+            if [[ $nonUMI == "true" ]]; then
+                if [[ $chemistry == "SC3P"* ]] && [[ "$technology" == "icell8" ]]; then
+                    if [[ $verbose ]]; then
+                        echo "remove UMI to replace with mock"
+                    fi
+                    #remove inflated umi (to replace with mock and count as reads)
+                    sed -E '
+                        /^@/ {
+                        n
+                        s/^(.{11})(.{14})(.*)/\1\3/g
+                        n
+                        n
+                        s/^(.{11})(.{14})(.*)/\1\3/g
+                        }' $convFile > ${crIN}/.temp
+                    mv ${crIN}/.temp $convFile
+                fi
+                
+                if [[ $verbose ]]; then
+                    echo "adding mock UMI"
+                fi
+                # add mock UMI (count reads instead of UMI) barcodelength=10 or 11, umi_default=10 <- default for "icell8-5-prime" and "icell8-full-length"
                 perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
                 umilength=$umi_default
                 umiadjust=0
@@ -2812,88 +2830,39 @@ else
             if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
                 #remove TSO adapters (from ends)
                 sed -E '
-                    /^TTACTATGCCGCTGGTGGCTCTAGATGTGAGAAAGGG/ {
-                    s/^TTACTATGCCGCTGGTGGCTCTAGATGTGAGAAAGGG/GGG/g
+                    /^(.{10})(.{10})GCGTCGTGTAGGG/ {
+                    s/^(.{10})(.{10})GCGTCGTGTAGGG/\1\2GGG/g
                     n
                     n
-                    s/^(.{34})(.{3})/\2//g
+                    s/^(.{10})(.{10})(.{10})(.{3})/\1\2\4//g
                 }'  $convFile > ${crIN}/.temp
                 mv ${crIN}/.temp $convFile
                 sed -E '
-                    /^AGATCGGAAGAGCGTCGTGTAGGG/ {
-                    s/^AGATCGGAAGAGCGTCGTGTAGGG/GGG/g
+                    /^(.{10})(.{10})TGTGAGAAAGGG/ {
+                    s/^(.{10})(.{10})TGTGAGAAAGGG/\1\2GGG/g
                     n
                     n
-                    s/^(.{21})(.{3})/\2//g
-                }'  $convFile > ${crIN}/.temp
-                mv ${crIN}/.temp $convFile
-                sed -E '
-                    /^GCGTCGTGTAGGG/ {
-                    s/^GCGTCGTGTAGGG/GGG/g
-                    n
-                    n
-                    s/^(.{10})(.{3})/\2//g
-                }'  $convFile > ${crIN}/.temp
-                mv ${crIN}/.temp $convFile
-                sed -E '
-                    /^TGTGAGAAAGGG/ {
-                    s/^TGTGAGAAAGGG/GGG/g
-                    n
-                    n
-                    s/(.{9})(.{3})/\2//g
-                }'  $convFile > ${crIN}/.temp
-                mv ${crIN}/.temp $convFile
-                #remove TSO adapters (from after cell barcode) #<- confirm tag sequence with Takara reps (appears to be CB-UMI-GGG)
-                sed -E '
-                    /^(.{11})(.{14})TTACTATGCCGCTGGTGGCTCTAGATGTGAGAAAGGG/ {
-                    s/^(.{11})(.{14})TTACTATGCCGCTGGTGGCTCTAGATGTGAGAAAGGG/\1\2GGG/g
-                    n
-                    n
-                    s/^(.{11})(.{14})(.{34})(.{3})/\1\2\4//g
-                }'  $convFile > ${crIN}/.temp
-                mv ${crIN}/.temp $convFile
-                sed -E '
-                    /^(.{11})(.{14})AGATCGGAAGAGCGTCGTGTAGGG/ {
-                    s/^(.{11})(.{14})AGATCGGAAGAGCGTCGTGTAGGG/\1\2GGG/g
-                    n
-                    n
-                    s/^(.{11})(.{14})(.{21})(.{3})/\1\2\4//g
-                }'  $convFile > ${crIN}/.temp
-                mv ${crIN}/.temp $convFile
-                sed -E '
-                    /^(.{11})(.{14})GCGTCGTGTAGGG/ {
-                    s/^(.{11})(.{14})GCGTCGTGTAGGG/\1\2GGG/g
-                    n
-                    n
-                    s/^(.{11})(.{14})(.{10})(.{3})/\1\2\4//g
-                }'  $convFile > ${crIN}/.temp
-                mv ${crIN}/.temp $convFile
-                sed -E '
-                    /^(.{11})(.{14})TGTGAGAAAGGG/ {
-                    s/^(.{11})(.{14})TGTGAGAAAGGG/\1\2GGG/g
-                    n
-                    n
-                    s/(.{11})(.{14})(.{9})(.{3})/\1\2\4//g
+                    s/(.{10})(.{10})(.{9})(.{3})/\1\2\4//g
                 }'  $convFile > ${crIN}/.temp
                 mv ${crIN}/.temp $convFile
                 #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
                 echo " handling $convFile ..."
                 tsoS="TTTCTTATATGGG" #<- confirm tag sequence with Takara reps
                 tsoQ="IIIIIIIIIIIII"
-                #Add 10x TSO characters to the end of the sequence (remove 'CCGGG' linker)
-                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{5})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp') #<- confirm tag sequence (GGG) with Takara reps
+                #Add 10x TSO characters to the end of the sequence (remove 'GGG' linker)
+                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp') #<- confirm tag sequence (GGG) with Takara reps
                 if [[ $verbose ]]; then
                     echo technology $technology
                     echo barcode: $barcodelength
                     echo umi: $umilength
                     echo $cmd
                 fi
-                # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{10})(.{8})(.{5})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+                # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{10})(.{10})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
                 eval $cmd
                 mv ${crIN}/.temp $convFile
                 #Add n characters to the end of the quality
-                cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{5})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
-                # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{10})(.{8})(.{5})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+                cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+                # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{10})(.{10})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
                 eval $cmd
                 mv ${crIN}/.temp $convFile
             fi
@@ -3362,10 +3331,10 @@ else
             mv $crIN/parsed_R2.fastq ${convR2}
             mv $crIN/parsed_I1.fastq ${convI1}
             mv $crIN/parsed_I2.fastq ${convI2}
-
+            
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --tag="ATTGCGCAATG" --out_dir=$crIN
+            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir=$crIN
             
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
@@ -3375,20 +3344,24 @@ else
             tsoS="TTTCTTATATGGG"
             tsoQ="IIIIIIIIIIIII"
             #Add 10x TSO characters to the end of the sequence
-            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+            cmd=$(echo 'sed -E "2~4s/^(.{'$barcodelength'})(.{'${umilength}'})(.{'3'})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
             if [[ $verbose ]]; then
                 echo technology $technology
                 echo barcode: $barcodelength
                 echo umi: $umilength
                 echo $cmd
             fi
-            # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+            # run command with barcode and umi length, e.g.,: sed -E "2~4s/^(.{16})(.{8})(.{'3'})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
             eval $cmd
             mv ${crIN}/.temp $convFile
             #Add n characters to the end of the quality
-            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
-            # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+            cmd=$(echo 'sed -E "4~4s/^(.{'$barcodelength'})(.{'${umilength}'})(.{'3'})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+            # run command with barcode and umi length, e.g.,: sed -E "4~4s/^(.{16})(.{8})(.{'3'})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
+            if [[ $verbose ]]; then
+                echo $cmd
+            fi
             eval $cmd
+            #returns an R file with the TSO replaced with the 13 bp 10x Genomics sequence
             mv ${crIN}/.temp $convFile
             echo "  ${convFile} adjusted"
         done
@@ -3417,7 +3390,7 @@ else
     
     #replace UMI with mock UMI to count reads (for technologies not already containing mock UMI)
     if [[ $technology != "icell8" ]] && [[ $technology != "ramda-seq" ]] && [[ $technology != "quartz-seq" ]] && [[ $technology != "smartseq" ]] && [[ $technology != "smartseq2" ]] && [[ $technology != "strt-seq" ]]; then
-        if [[ $nonUMI ]]; then
+        if [[ $nonUMI == "true" ]]; then
             echo "WARNING: removing true UMI and replacing with Mock UMI"
             echo "NOTICE: results will result read counts not UMI"
             echo "## this behaviour is not recommended unless integrating with non-UMI data ##"

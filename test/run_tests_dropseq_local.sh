@@ -20,9 +20,13 @@ fi
 
 ## test drop-seq data
 # unzip input data
-if [[ -f test/shared/dropseq-test/*fastq.gz ]]; then
-    unpigz -f test/shared/dropseq-test/*fastq.gz
+if [[ -f test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz ]]; then
+    unpigz -f test/shared/dropseq-test/SRR1873277_Sample1_R1.fastq.gz
 fi
+if [[ -f test/shared/dropseq-test/SRR1873277_Sample1_R2.fastq.gz ]]; then
+    unpigz -f test/shared/dropseq-test/SRR1873277_Sample1_R2.fastq.gz
+fi
+
 # test manual setup
 bash launch_universc.sh -t "nadia" --setup
 
@@ -42,11 +46,11 @@ bash launch_universc.sh --id "test-dropseq" --technology "nadia" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --read1 "test/shared/dropseq-test/SRR1873277_Sample1_R1" \
  --read2 "test/shared/dropseq-test/SRR1873277_Sample1_R2" \
- --jobmode "local" --localcores 2 --localmem 4 
+ --per-cell-data --jobmode "local" --localcores 2 --localmem 4 
 
 # reset test data (compress)
- if [[ -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq ]]; then
-   gzip -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq
+if [[ -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq ]]; then
+    gzip -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R1_001.fastq
 fi
 if [[ -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R2_001.fastq ]]; then
     gzip -f test/shared/dropseq-test/SRR1873277_Sample1_S1_L001_R2_001.fastq
