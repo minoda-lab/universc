@@ -2324,6 +2324,8 @@ if [[ $lock -eq 0 ]]; then
         fi
         sed -i "s/ raise NoChemistryFoundException/ return best_chem #raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
         sed -i "s/ (100\.0 \* best_frac/ #(100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/return msg/return None #msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/return msg/return None #msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/check.py
     else
          if [[ $verbose ]]; then
              echo "restore detect chemistry check..."
@@ -2331,6 +2333,8 @@ if [[ $lock -eq 0 ]]; then
         #restore detect chemistry check for custom whitelist
         sed -i "s/ return best_chem \#raise NoChemistryFoundException/ raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
         sed -i "s/ \#(100\.0 \* best_frac/ (100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+         sed -i "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+         sed -i "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/check.py
     fi
 
     #determine last barcode and UMI
