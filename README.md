@@ -199,15 +199,15 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
    -  SCIFI-Seq (27 bp barcode, 8 bp UMI): scifiseq
 -  SCRB-Seq (6 bp barcode, 10 bp UMI): scrbseq, mcscrbseq
 -  SeqWell (12 bp barcode, 8 bp UMI): plexwell, seqwell, seqwells3
--  SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
 -  Smart-seq
    -  Smart-Seq (16 bp barcode, No UMI): smartseq
    -  Smart-Seq2 (16 bp barcode, No UMI): smartseq2
    -  Smart-Seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
+-  SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
 -  STRT-Seq
-    -  STRT-Seq (6 bp barcode, no UMI)
-    -  STRT-Seq-C1 (8 bp barode, 5 bp UMI)
-    -  STRT-Seq-2i (13 bp barcode, 6 bp UMI)
+    -  STRT-Seq (6 bp barcode, no UMI): strt-seq
+    -  STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
+    -  STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
 -  SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
 
 #### Chemistry settings available
@@ -1138,9 +1138,9 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Smart-seq2 (16 bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
                                   SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
-                                  STRT-Seq (6 bp barcode, no UMI)
-                                  STRT-Seq-C1 (8 bp barode, 5 bp UMI)
-                                  STRT-Seq-2i (13 bp barcode, 6 bp UMI)
+                                  STRT-Seq (6 bp barcode, no UMI): strt-seq
+                                  STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
+                                  STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
                                   SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
