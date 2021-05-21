@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Wednesday 12 May 2021"
+date: "Friday 21 May 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -164,6 +164,7 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
 -  10x Genomics (version automatically detected): 10x, chromium
     -  10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
     -  10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
+-  Aligent Bravo B (16 bp barcode, No UMI): aligent, bravo 
 -  BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
 -  CEL-Seq
     -  CEL-Seq  (8 bp barcode, 4 bp UMI): celseq
@@ -1101,6 +1102,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   10x Genomics (version automatically detected): 10x, chromium
                                   10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
                                   10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
+                                  Aligent Bravo B (16 bp barcode, No UMI): aligent, bravo
                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
