@@ -166,6 +166,10 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
     -  10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
 -  Aligent Bravo B (16 bp barcode, No UMI): aligent, bravo 
 -  BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
+-  C1
+    -  C1 Fluidigm (16 bp barcode, No UMI): c1, fluidgm-c1
+    -  C1 CAGE (16 bp, No UMI): c1-cage
+    -  C1 RamDA-Seq (16 bp, No UMI): c1-ramda-seq
 -  CEL-Seq
     -  CEL-Seq  (8 bp barcode, 4 bp UMI): celseq
     -  CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
@@ -1104,6 +1108,9 @@ Mandatory arguments to long options are mandatory for short options too.
                                   10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
                                   Aligent Bravo B (16 bp barcode, No UMI): aligent, bravo
                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
+                                  C1 Fluidigm (16 bp barcode, No UMI): c1, fluidgm-c1
+                                  C1 CAGE (16 bp, No UMI): c1-cage
+                                  C1 RamDA-Seq (16 bp, No UMI): c1-ramda-seq
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
