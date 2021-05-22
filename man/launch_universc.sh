@@ -200,6 +200,9 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
+                                  C1 Fluidigm (16 bp barcode, No UMI): c1, fluidgm-c1
+                                  C1 CAGE (16 bp, No UMI): c1-cage
+                                  C1 RamDA-Seq (16 bp, No UMI): c1-ramda-seq
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
                                   ICELL8 version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
                                   ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom

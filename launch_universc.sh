@@ -20,7 +20,7 @@
 install=false
 
 ######UniverSC version#####
-universcversion="1.1.0"
+universcversion="1.1.1"
 ##########
 
 
@@ -197,6 +197,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   10x Genomics (version automatically detected): 10x, chromium
                                   10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
                                   10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
+                                  Aligent Bravo B (16 bp barcode, No UMI): aligent, bravo
                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
                                   C1 Fluidigm (16 bp barcode, No UMI): c1, fluidgm-c1
                                   C1 CAGE (16 bp, No UMI): c1-cage
@@ -228,9 +229,9 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Smart-seq2 (16 bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
                                   SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
-                                  STRT-Seq (6 bp barcode, no UMI)
-                                  STRT-Seq-C1 (8 bp barode, 5 bp UMI)
-                                  STRT-Seq-2i (13 bp barcode, 6 bp UMI)
+                                  STRT-Seq (6 bp barcode, no UMI): strt-seq
+                                  STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
+                                  STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
                                   SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
@@ -619,18 +620,21 @@ elif [[ "$technology" == "10x-v2" ]] || [[ "$technology" == "chromium-v2" ]]; th
     technology="10x-v2"
 elif [[ "$technology" == "10x-v3" ]] || [[ "$technology" == "chromium-v3" ]]; then
     technology="10x-v3"
+elif [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd" ]] || [[ "$technology" == "rhapsody" ]] || [[ "$technology" == "bdrhapsody" ]]; then
+    technology="bd-rhapsody"
+elif [[ "$technology" == "aligent" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "aligent-bravo" ]] || [[ "$technology" =="bravo-b" ]] || [[ "$technology" == "aligent-bravo-b" ]]; then
+    techology="bravo"
+    nonUMI=false
 elif [[ "$technology" == "c1" ]] || [[ "$technology" == "c1-fluidigm" ]] || [[ "$technology" == "fluidigm" ]] || [[ "$technology" == "fluidigm-c1" ]]|| [[ "$technology" == "fluidigmc1" ]] ||  [[ "$technology" == "c1-rna-seq" ]]|| [[ "$technology" == "c1-mrna-seq" ]] ||  [[ "$technology" == "c1-rnaseq" ]]|| [[ "$technology" == "c1-scrna" ]]; then
     technology="fluidigm-c1"
-      nonUMI=true
+    nonUMI=true
 elif [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "c1cage" ]] || [[ "$technology" == "cage-c1" ]] || [[ "$technology" == "cagec1" ]]; then
     technology="c1-cage"
-      nonUMI=true
+    nonUMI=true
 elif [[ "$technology" == "celseq" ]] || [[ "$technology" == "cel-seq" ]]; then
     technology="celseq"
 elif [[ "$technology" == "celseq2" ]] || [[ "$technology" == "cel-seq2" ]]; then
     technology="celseq2"
-elif [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd" ]] || [[ "$technology" == "rhapsody" ]] || [[ "$technology" == "bdrhapsody" ]]; then
-    technology="bd-rhapsody"
 elif [[ "$technology" == "nadia" ]] || [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
     technology="nadia"
 elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]] ||  [[ "$technology" == "icell8-v3" ]] ||  [[ "$technology" == "icell8v3" ]]; then
@@ -638,7 +642,7 @@ elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]] ||  [[ 
     #set as "icell8-5-prime" if called by chemistry
     if [[ "$chemistry" == "SC5P-"* ]] || [[ "$chemistry" == "fiveprime" ]]; then
         technology="icell8-icell8-5-prime"
-        nonUMI=false
+        nonUMI=true
     fi
 elif [[ "$technology" == "icell8-non-umi" ]] || [[ "$technology" == "icell8-nonumi" ]] ||  [[ "$technology" == "icell8-v2" ]] ||  [[ "$technology" == "icell8v2" ]]; then
     technology="icell8"
@@ -731,7 +735,6 @@ elif [[ "$technology" == "custom"* ]]; then
             echo "Error: option -t needs to be a technology listed or custom_<barcode>_<UMI>"
             exit 1
         fi
-	setup=true
     fi
 else
     echo "Error: option -t needs to be a technology listed or custom_<barcode>_<UMI>"
@@ -869,7 +872,7 @@ elif [[ "$technology" == "seqwell" ]]; then
     barcodelength=8
     umilength=12
     minlength=8
-elif [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
+elif [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "bravo" ]]; then
     barcodelength=16
     if [[ $nonUMI == "true" ]]; then
        umilength=0
@@ -1511,7 +1514,7 @@ fi
 
 
 #generate missing indexes if required (generating I1 and I2)
-if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] ; then
+if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "bravo" ]]; then
      echo "dual indexes I1 and I2 required for $technology"
      if [[ ${#index2[@]} -le 0 ]]; then
          echo " automatically generating I1 and I2 index files from file headers"
@@ -1708,7 +1711,7 @@ if [[ -n "$barcodefile" ]]; then
         barcodefile=$(readlink -f $barcodefile)
         custombarcodes=true
         #allowing WellList from ICELL8 and other well-based techniques
-        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
+        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
             n_col=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             if [[ $n_col -eq 1 ]]; then
@@ -1743,15 +1746,20 @@ else
     if [[ "$technology" == "10x"* ]]; then
         barcodefile="default:10x"
     elif [[ "$technology" == "bd-rhapsody" ]]; then
-             barcodefile=${whitelistdir}/bd_rhapsody_barcode.txt
-             if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
-                 echo "  ...generating combination of I1, I2, and RT barcodes..."
-             fi
+        barcodefile=${whitelistdir}/bd_rhapsody_barcode.txt
+        if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
+            echo "  ...generating combination of I1, I2, and RT barcodes..."
+        fi
+    elif [[ "$technology" == "bravo" ]]; then
+        barcodefile=${whitelistdir}/KAPA_UDI_dual_barcodes.txt
+        if [[ ! -f ${whitelistdir}/KAPA_UDI_dual_barcodes.txt
+            echo "  ...generating combination of I1, I2, and RT barcodes..."
+        fi
     elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
-             barcodefile=${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
-             if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]]; then
-                 echo "  ...generating combination of I1 and I2 barcodes..."
-             fi
+        barcodefile=${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
+        if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]]; then
+            echo "  ...generating combination of I1 and I2 barcodes..."
+        fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${whitelistdir}/ICELL8_barcode.txt
 	echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in ICELL8. valid barcode will be an overestimate***"
@@ -1765,10 +1773,10 @@ else
     elif [[ "$technology" == "marsseq-v2" ]]; then
         barcodefile=${whitelistdir}/MARS-Seq2_barcode.txt
     elif [[ "$technology" == "microwellseq" ]]; then
-             barcodefile=${whitelistdir}/microwellseq_barcode.txt
-             if [[ ! -f ${whitelistdir}/microwellseq_barcode.txt ]]; then
-                 echo "  ...generating combination of I1, I2, and RT barcodes..."
-             fi
+        barcodefile=${whitelistdir}/microwellseq_barcode.txt
+        if [[ ! -f ${whitelistdir}/microwellseq_barcode.txt ]]; then
+            echo "  ...generating combination of I1, I2, and RT barcodes..."
+        fi
     elif [[ "$technology" == "quartz-seq" ]]; then
         indexlength=$(($(head $index1([0]) -n 2 | tail -n 1 | wc -c) -1))
         if [[ -f $(echo ${index2}([0])) ]]; then
@@ -1883,6 +1891,11 @@ else
                  join -j 9999 ${whitelistdir}/bd_rhapsody_cell_label_section1.txt ${whitelistdir}/bd_rhapsody_cell_label_section2.txt | sed "s/ //g" | \
                  join -j 9999 - ${whitelistdir}/bd_rhapsody_cell_label_section3.txt | sed "s/ //g"  > ${whitelistdir}/bd_rhapsody_barcode.txt
              fi
+        elif [[ "$technology" == "bravo" ]]; then
+            if [[ ! -f barcodefile=${whitelistdir}/KAPA_UDI_dual_barcodes.txt ]]; then
+                  #generates all combinations of I1-I2-R1 barcodes
+                  join -j 9999 ${whitelistdir}/KAPA_UDI_Index1_i7.txt ${whitelistdir}/KAPA_UDI_Index5_i5.txt | sed "s/ //g" > ${whitelistdir}/KAPA_UDI_dual_barcodes.txt
+            fi
         elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] ||  [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
             if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]];then
                 #generates all combinations of I1-I2 barcodes
@@ -2325,6 +2338,8 @@ if [[ $lock -eq 0 ]]; then
         fi
         sed -i "s/ raise NoChemistryFoundException/ return best_chem #raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
         sed -i "s/ (100\.0 \* best_frac/ #(100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/return msg/return None #msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/return msg/return None #msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/check.py
     else
          if [[ $verbose ]]; then
              echo "restore detect chemistry check..."
@@ -2332,6 +2347,8 @@ if [[ $lock -eq 0 ]]; then
         #restore detect chemistry check for custom whitelist
         sed -i "s/ return best_chem \#raise NoChemistryFoundException/ raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
         sed -i "s/ \#(100\.0 \* best_frac/ (100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+         sed -i "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+         sed -i "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/check.py
     fi
 
     #determine last barcode and UMI
@@ -2684,7 +2701,7 @@ else
     fi
     
     #C1, Quartz-Seq and RamDA-Seq: add mock UMI for non-UMI techniques
-    if [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq" ]]; then
+    if [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq" ]]; then
         echo "  ...processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: ${technology} does not contain UMIs"

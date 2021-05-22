@@ -1,3 +1,14 @@
+
+### 1.1.1
+
+- update paths in documentation
+
+- bug fixes for 10x per cell data for auto chemistry
+
+- bug fixes for custom technology input without exiting setup
+
+- bug fixes for short barcode whitelist with low fraction of reads
+
 ### 1.1.0
 
 - add support for new technologies:
