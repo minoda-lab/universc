@@ -622,7 +622,7 @@ elif [[ "$technology" == "10x-v3" ]] || [[ "$technology" == "chromium-v3" ]]; th
     technology="10x-v3"
 elif [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd" ]] || [[ "$technology" == "rhapsody" ]] || [[ "$technology" == "bdrhapsody" ]]; then
     technology="bd-rhapsody"
-elif [[ "$technology" == "aligent" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "aligent-bravo" ]] || [[ "$technology" =="bravo-b" ]] || [[ "$technology" == "aligent-bravo-b" ]]; then
+elif [[ "$technology" == "aligent" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "aligent-bravo" ]] || [[ "$technology" == "bravo-b" ]] || [[ "$technology" == "aligent-bravo-b" ]]; then
     techology="bravo"
     nonUMI=false
 elif [[ "$technology" == "c1" ]] || [[ "$technology" == "c1-fluidigm" ]] || [[ "$technology" == "fluidigm" ]] || [[ "$technology" == "fluidigm-c1" ]]|| [[ "$technology" == "fluidigmc1" ]] ||  [[ "$technology" == "c1-rna-seq" ]]|| [[ "$technology" == "c1-mrna-seq" ]] ||  [[ "$technology" == "c1-rnaseq" ]]|| [[ "$technology" == "c1-scrna" ]]; then
@@ -1752,7 +1752,7 @@ else
         fi
     elif [[ "$technology" == "bravo" ]]; then
         barcodefile=${whitelistdir}/KAPA_UDI_dual_barcodes.txt
-        if [[ ! -f ${whitelistdir}/KAPA_UDI_dual_barcodes.txt
+        if [[ ! -f ${whitelistdir}/KAPA_UDI_dual_barcodes.txt ]]; then
             echo "  ...generating combination of I1, I2, and RT barcodes..."
         fi
     elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
