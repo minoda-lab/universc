@@ -20,7 +20,7 @@
 install=false
 
 ######UniverSC version#####
-universcversion="1.1.1"
+universcversion="1.1.3"
 ##########
 
 
@@ -64,8 +64,11 @@ fi
 echo "Running launch_universc.sh in '$SDIR'"
 
 TOOLS=${SDIR}/sub
+ADDMOCKUMI=${TOOLS}/AddMockUMI.pl
 BARCODERECOVER=${TOOLS}/RecoverBarcodes.pl
 MAKEINDROPBARCODES=${TOOLS}/MakeIndropBarcodes.pl
+FILTERSMARTSEQREADUMI=${TOOLS}/FilterSmartSeqReadUMI.pl
+CONCATENATEBARCODES=${TOOLS}/ConcatenateDualIndexBarcodes.pl
 PERCELLSTATS=${TOOLS}/ExtractBasicStats.pl
 ##########
 
@@ -622,7 +625,7 @@ elif [[ "$technology" == "10x-v3" ]] || [[ "$technology" == "chromium-v3" ]]; th
     technology="10x-v3"
 elif [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd" ]] || [[ "$technology" == "rhapsody" ]] || [[ "$technology" == "bdrhapsody" ]]; then
     technology="bd-rhapsody"
-elif [[ "$technology" == "aligent" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "aligent-bravo" ]] || [[ "$technology" =="bravo-b" ]] || [[ "$technology" == "aligent-bravo-b" ]]; then
+elif [[ "$technology" == "aligent" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "aligent-bravo" ]] || [[ "$technology" == "bravo-b" ]] || [[ "$technology" == "aligent-bravo-b" ]]; then
     techology="bravo"
     nonUMI=false
 elif [[ "$technology" == "c1" ]] || [[ "$technology" == "c1-fluidigm" ]] || [[ "$technology" == "fluidigm" ]] || [[ "$technology" == "fluidigm-c1" ]]|| [[ "$technology" == "fluidigmc1" ]] ||  [[ "$technology" == "c1-rna-seq" ]]|| [[ "$technology" == "c1-mrna-seq" ]] ||  [[ "$technology" == "c1-rnaseq" ]]|| [[ "$technology" == "c1-scrna" ]]; then
@@ -1752,7 +1755,7 @@ else
         fi
     elif [[ "$technology" == "bravo" ]]; then
         barcodefile=${whitelistdir}/KAPA_UDI_dual_barcodes.txt
-        if [[ ! -f ${whitelistdir}/KAPA_UDI_dual_barcodes.txt
+        if [[ ! -f ${whitelistdir}/KAPA_UDI_dual_barcodes.txt ]]; then
             echo "  ...generating combination of I1, I2, and RT barcodes..."
         fi
     elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
@@ -2724,12 +2727,12 @@ else
                 
                 echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
                 # concatenate barcocdes from index to R1 as (bases 1-16 of the) barcode, moving (read to start at base 17-)
-                perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+                perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir $crIN
             else
                 barcodelength=$indexlength
                 echo "  ...concatencate barcodes to R1 from I1 index files"
                 # concatenate barcocdes from index to R1 as (bases 1-6 of the) barcode, moving (read to start at base 7-)
-                perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --ref_fastq=${convR1} --out_dir $crIN
+                perl ${CONCATENATEBARCODES} --additive ${convI1} --ref_fastq ${convR1} --out_dir $crIN
             fi
             
             #returns a combined R1 file with I1-R1 concatenated (I1 is cell barcode)
@@ -2740,7 +2743,7 @@ else
                     echo "adding mock UMI"
                 fi
                 # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
-                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir $crIN --head_length $barcodelength --umi_length $umi_default
                 umilength=$umi_default
                 umiadjust=0
                 if [[ $chemistry == "SC3Pv3" ]]; then
@@ -2799,7 +2802,7 @@ else
                     # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
                     
                     #same as SmartSeq2
-                    perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --tag="AAGCAGTGGTATCAACGCAGAGTAC" --out_dir $crIN
+                    perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --tag 'AAGCAGTGGTATCAACGCAGAGTAC' --out_dir $crIN
                     echo "  ...trim tag sequence from R1"
                     
                     # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
@@ -2831,7 +2834,7 @@ else
                     echo "adding mock UMI"
                 fi
                 # add mock UMI (count reads instead of UMI) barcodelength=10 or 11, umi_default=10 <- default for "icell8-5-prime" and "icell8-full-length"
-                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir $crIN --head_length $barcodelength --umi_length $umi_default
                 umilength=$umi_default
                 umiadjust=0
                 if [[ $chemistry == "SC3Pv3" ]]; then
@@ -2934,7 +2937,7 @@ else
             echo "  ...concatencate barcodes to R1 from I1 index file"
             # concatenate barcocdes from dual indexes to R1 as (bases 1-8 of the) barcode (bases 1-16), moving UMI to (17-22)
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --ref_fastq=${convR1} --out_dir $crIN
+            perl ${CONCATENATEBARCODES} --additive ${convI1} --ref_fastq ${convR1} --out_dir $crIN
             
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
@@ -3015,7 +3018,7 @@ else
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as (bases 1-20 of the) barcode, moving RT barcode (21-30) UMI to (31-38)
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+            perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
 
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
@@ -3067,7 +3070,7 @@ else
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as (bases 1-20 of the) barcode, moving RT barcode (21-30) UMI to (31-38)
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+            perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
             
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
@@ -3107,7 +3110,7 @@ else
             echo "  ...concatencate 10x ATAC barcodes to R1 from I2 index files"
             # concatenate barcocdes from dual indexes to R1 as (bases 1-16 of the 27 bp) barcode, moving RT barcode (17-27) UMI to (28-35)
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+            perl ${CONCATENATEBARCODES} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
 
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
@@ -3129,8 +3132,8 @@ else
             if [[ "$technology" == "strt-seq" ]]; then
                 # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
                 echo "  ...generate mock UMI for compatibility"
-                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
-                umilength=$umi_default
+                perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir ${crIN} --head_length ${barcodelength} --umi_length ${umi_default}
+                umilength=${umi_default}
                 umiadjust=0
                 chemistry="SC5P-PE"
 
@@ -3143,7 +3146,7 @@ else
                 chemistry="SC5P-R1"
                 echo "  ...concatencate barcodes to R1 from I1 index files"
                 # concatenate barcocdes from I1 index to R1 as barcode (bases 1-8)
-                perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --ref_fastq=${convR1} --out_dir $crIN
+                perl ${CONCATENATEBARCODES} --additive ${convI1} --ref_fastq ${convR1} --out_dir ${crIN}
             fi
             if [[ "$technology" == "strt-seq-2i" ]]; then
                 convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
@@ -3151,11 +3154,11 @@ else
                 chemistry="SC5P-R1"
                 echo "  ...concatencate barcodes to R1 from I1 and I2index files"
                 # concatenate barcocdes from I1 index to R1 as barcode (bases 1-8)
-                perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+                perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
             fi
 
             #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
-            echo " handling $convFile ..."
+            echo " handling ${convFile} ..."
             tsoS="TTTCTTATATGGG"
             tsoQ="IIIIIIIIIIIII"
             #Add 10x TSO characters to the end of the sequence
@@ -3274,7 +3277,7 @@ else
             echo " ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
 
-            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2}  --tag="AAGCAGTGGTATCAACGCAGAGTAC" --out_dir $crIN
+            perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2}  --tag 'AAGCAGTGGTATCAACGCAGAGTAC' --out_dir ${crIN}
             echo "  ...trim tag sequence from R1"
 
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
@@ -3285,15 +3288,15 @@ else
 
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir $crIN
+            perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
 
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             ## 16 bp barcode, GGG for TSO, no UMI
             mv $crIN/Concatenated_File.fastq ${convR1}
 
             # add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
-            perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
-            umilength=$umi_default
+            perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir ${crIN} --head_length ${barcodelength} --umi_length ${umi_default}
+            umilength=${umi_default}
             umiadjust=0
             chemistry="SC3Pv2"
 
@@ -3340,7 +3343,7 @@ else
             
             echo "  ...remove internal for ${technology} by matching tag sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
-            perl sub/FilterSmartSeqReadUMI.pl --r1=${convR1} --r2=${convR2} --i1=${convI1} --i2=${convI2} --tag="ATTGCGCAATG" --out_dir=$crIN
+            perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'ATTGCGCAATG' --out_dir ${crIN}
             echo "  ...trim tag sequence from R1"
             
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
@@ -3351,7 +3354,7 @@ else
             
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
-            perl sub/ConcatenateDualIndexBarcodes.pl --additive=${convI1} --additive=${convI2} --ref_fastq=${convR1} --out_dir=$crIN
+            perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
             
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
@@ -3428,7 +3431,7 @@ else
                 if [[ $chemistry == "SC3Pv3" ]]; then
                      chemistry="SC3Pv2"
                 fi
-                perl sub/AddMockUMI.pl --fastq=${convR1} --out_dir $crIN --head_length=$barcodelength --umi_length=$umi_default
+                perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir $crIN --head_length ${barcodelength} --umi_length ${umi_default}
                 umilength=$umi_default
                 umiadjust=0
                 if [[ $chemistry == "SC3Pv3" ]]; then

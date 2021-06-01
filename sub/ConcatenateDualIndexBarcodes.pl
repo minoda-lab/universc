@@ -27,7 +27,7 @@ my $out_dir = "";
 #making the options into external arguments.
 GetOptions (
 	'ref_fastq=s' => \$ref_fastq,
-	'additives=s' => \@additives,
+	'additive=s' => \@additives,
 	'out_dir=s' => \$out_dir
 	);
 
@@ -36,7 +36,7 @@ if (!$ref_fastq) {
 	die "USAGE: option --ref_fastq <Reference.fastq> is required.\n";
 }
 elsif (scalar @additives < 1) {
-	die "USAGE: option --additives <additional.fastq> is required.\n";
+	die "USAGE: option --additive <additional.fastq> is required.\n";
 }
 elsif (!$out_dir) {
 	die "USAGE: option --out_dir <OUTPUT_DIRECTORY> is required.\n";
