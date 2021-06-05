@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #    UniverSC
 #    Copyright (C) 2019  Tom Kelly; Kai Battenberg 
@@ -3342,7 +3342,7 @@ else
             convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
             
             echo "  ...remove internal for ${technology} by matching tag sequence for UMI reads"
-            # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
+            # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as adapters 
             perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'ATTGCGCAATG' --out_dir ${crIN}
             echo "  ...trim tag sequence from R1"
             
