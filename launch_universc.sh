@@ -20,7 +20,7 @@
 install=false
 
 ######UniverSC version#####
-universcversion="1.1.3"
+universcversion="1.1.2"
 ##########
 
 
@@ -3111,7 +3111,7 @@ else
             # concatenate barcocdes from dual indexes to R1 as (bases 1-16 of the 27 bp) barcode, moving RT barcode (17-27) UMI to (28-35)
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
             perl ${CONCATENATEBARCODES} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
-
+            
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
         done
@@ -3276,7 +3276,6 @@ else
 
             echo " ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
-
             perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2}  --tag 'AAGCAGTGGTATCAACGCAGAGTAC' --out_dir ${crIN}
             echo "  ...trim tag sequence from R1"
 
