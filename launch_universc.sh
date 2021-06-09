@@ -3343,7 +3343,7 @@ else
             echo "  ...remove internal for ${technology} by matching tag sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as adapters 
             perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'ATTGCGCAATG' --out_dir ${crIN}
-            echo "  ...parsing reads with tag sequence and swoping 10x TSO for R1"
+            echo "  ...parsing reads with tag sequence and replacing with 10x TSO for R1"
             
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
             mv $crIN/parsed_R1.fastq ${convR1}
@@ -3370,7 +3370,7 @@ else
             echo "  ${convFile} adjusted"
         done
     fi
-
+    
     #converting barcodes
     echo " adjusting barcodes of R1 files"
     if [[ $barcodeadjust != 0 ]]; then
