@@ -3350,6 +3350,12 @@ else
             mv $crIN/parsed_R2.fastq ${convR2}
             mv $crIN/parsed_I1.fastq ${convI1}
             mv $crIN/parsed_I2.fastq ${convI2}
+            if [[ $verbose ]]; then
+                cp  ${convR1}  $crIN/parsed_R1.fastq
+                cp  ${convR1}  $crIN/parsed_R1.fastq
+                cp  ${convR1}  $crIN/parsed_R1.fastq
+                cp  ${convR1}  $crIN/parsed_R1.fastq
+            fi
             
             echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
@@ -3357,6 +3363,9 @@ else
             
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
+            if [[ $verbose ]]; then
+                cp ${convR1}  $crIN/Concatenated_File.fastq
+            fi
             
             #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
             echo " handling $convFile ..."
