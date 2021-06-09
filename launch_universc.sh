@@ -3343,7 +3343,7 @@ else
             echo "  ...remove internal for ${technology} by matching tag sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as adapters 
             perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'ATTGCGCAATG' --out_dir ${crIN}
-            echo "  ...trim tag sequence from R1"
+            echo "  ...parsing reads with tag sequence and swoping 10x TSO for R1"
             
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
             mv $crIN/parsed_R1.fastq ${convR1}
@@ -3358,30 +3358,6 @@ else
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
             
-            #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
-            echo " handling $convFile ..."
-            tsoS="TTTCTTATATGGG"
-            tsoQ="IIIIIIIIIIIII"
-            #Add 10x TSO characters to the end of the sequence
-            cmd=$(echo 'sed -E "2~4s/^(.{'$barcodelength'})(.{'${umilength}'})(.{'3'})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
-            if [[ $verbose ]]; then
-                echo technology $technology
-                echo barcode: $barcodelength
-                echo umi: $umilength
-                echo $cmd
-            fi
-            # run command with barcode and umi length, e.g.,: sed -E "2~4s/^(.{16})(.{8})(.{'3'})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
-            eval $cmd
-            mv ${crIN}/.temp $convFile
-            #Add n characters to the end of the quality
-            cmd=$(echo 'sed -E "4~4s/^(.{'$barcodelength'})(.{'${umilength}'})(.{'3'})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
-            # run command with barcode and umi length, e.g.,: sed -E "4~4s/^(.{16})(.{8})(.{'3'})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
-            if [[ $verbose ]]; then
-                echo $cmd
-            fi
-            eval $cmd
-            #returns an R file with the TSO replaced with the 13 bp 10x Genomics sequence
-            mv ${crIN}/.temp $convFile
             echo "  ${convFile} adjusted"
         done
     fi

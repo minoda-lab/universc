@@ -12,14 +12,20 @@ use warnings;
 use Getopt::Long;
 
 #####SCRIPT DESCRIPTION#####
-#Script "FilterSmartSeqReadUMI.pl" given a set of I1, I2, R1, and R2, trims and parses R1 and only keep the corresponding reads in the other files.
+#Script "FilterSmartSeqReadUMI.pl" given a set of I1, I2, R1, R2, tag, will generate
+#   1. R1 file parsed and converted based on tag and TSO sequence respectively
+#   2. R2, I1, and I2 files with reads corresponding to R1
 ###########
 
 
 
 #####Options#####
-#SmartSeq3 tag
-my $tagseq = "ATTGCGCAATG";
+#target tag
+my $tag = "";
+
+#target tso
+my $tso_10x = "TTTCTTATATGGG";
+my $tso_10x_q = "IIIIIIIIIIIII";
 
 #setting the default values.
 my $i1 = "";
@@ -34,11 +40,11 @@ my $out_dir = "";
 
 #making the options into external arguments.
 GetOptions (
+	'tag=s' => \$tag,
 	'i1=s' => \$i1,
 	'i2=s' => \$i2,
 	'r1=s' => \$r1,
 	'r2=s' => \$r2,
-        'tag=s' => \$tagseq,
 	'out_dir=s' => \$out_dir
 	);
 
@@ -55,6 +61,9 @@ elsif (!$r1) {
 elsif (!$r2) {
 	die "USAGE: option --r2 <R2.fastq> is required.\n";
 }
+elsif (!$tag) {
+	die "USAGE: option --tag <TARGET_TAG_SEQUENCE> is required.\n";
+}
 elsif (!$out_dir) {
 	die "USAGE: option --out_dir <OUTPUT_DIRECTORY> is required.\n";
 }
@@ -68,15 +77,20 @@ $r1_out = $out_dir."/".$r1_out;
 $r1_out =~ s/\/\//\//;
 $r2_out = $out_dir."/".$r2_out;
 $r2_out =~ s/\/\//\//;
+
+#set technology
+my $technology = "";
+if ($tag eq "AAGCAGTGGTATCAACGCAGAGTAC") {
+	$technology = "SmartSeq2";
+}
+elsif ($tag eq "ATTGCGCAATG") {
+	$technology = "SmartSeq3";
+}
 ##########
 
 
 
 #####MAIN#####
-#get list of reads to keep
-my @keepreads = map { ($_ + 2) / 4 } split(/\n/, `grep $tagseq $r1 -n | cut -f1 -d\:`);
-my %keepreads = map { $_ => 1 } @keepreads;
-
 #parse reads to keep
 my $readcount = 0;
 open (I1, "<", $i1) or die "cannot open $i1.\n";
@@ -108,39 +122,61 @@ while (my $line = <R1>) {
 	my $r2_plus = <R2>;
 	my $r2_q = <R2>;
 	
-	if (!exists $keepreads{$readcount}) {
+	#remove reads without a tag
+	if ($r1_seq !~ m/$tag/) {
 		next;
 	}
-	else {
-		#trim r1 data
-		my @trim = split (/$tagseq/, $r1_seq);
-		shift @trim;
-		my $new_r1_seq = join ("$tagseq", @trim);
-		my $new_r1_q = $r1_q;
-		chomp $new_r1_q;
-		$new_r1_q = reverse $new_r1_q;
-		$new_r1_q = substr ($new_r1_q, 0, length($new_r1_seq) - 1);
-		$new_r1_q = reverse $new_r1_q;
-		$new_r1_q = $new_r1_q."\n";
-		
-		#print out data
-		print I1OUT "$i1_head";
-		print I1OUT "$i1_seq";
-		print I1OUT "$i1_plus";
-		print I1OUT "$i1_q";
-		print I2OUT "$i2_head";
-		print I2OUT "$i2_seq";
-		print I2OUT "$i2_plus";
-		print I2OUT "$i2_q";
-		print R1OUT "$r1_head";
-		print R1OUT "$new_r1_seq";
-		print R1OUT "$r1_plus";
-		print R1OUT "$new_r1_q";
-		print R2OUT "$r2_head";
-		print R2OUT "$r2_seq";
-		print R2OUT "$r2_plus";
-		print R2OUT "$r2_q";
+	
+	#trim r1 data by tag
+	my $r1_trim_seq = $r1_seq;
+	my @trim = split (/$tag/, $r1_trim_seq);
+	shift @trim;
+	$r1_trim_seq = join ("$tag", @trim);
+	$r1_trim_seq = $r1_trim_seq;
+	my $r1_trim_q = $r1_q;
+	chomp $r1_trim_q;
+	$r1_trim_q = reverse $r1_trim_q;
+	$r1_trim_q = substr ($r1_trim_q, 0, length($r1_trim_seq) - 1);
+	$r1_trim_q = reverse $r1_trim_q;
+	$r1_trim_q = $r1_trim_q."\n";
+	
+	#remove reads too short after trimming
+	if ($technology eq "SmartSeq2" && length($r1_trim_seq) < 3) {
+		next;
 	}
+	elsif ($technology eq "SmartSeq3" && length($r1_trim_seq) < 11) {
+		next;
+	}
+	
+	#replacing tso
+	my $r1_trim_swop_seq;
+	my $r1_trim_swop_q;
+	if ($technology eq "SmartSeq2") {
+		$r1_trim_swop_seq = $tso_10x.(substr ($r1_trim_seq, 3));
+		$r1_trim_swop_q = $tso_10x_q.(substr ($r1_trim_q, 3));
+	}
+	elsif ($technology eq "SmartSeq3") {
+		$r1_trim_swop_seq = (substr ($r1_trim_seq, 0, 8)).$tso_10x.(substr ($r1_trim_seq, 11));
+		$r1_trim_swop_q = (substr ($r1_trim_q, 0, 8)).$tso_10x_q.(substr ($r1_trim_q, 11));
+	}
+	
+	#print out data
+	print I1OUT "$i1_head";
+	print I1OUT "$i1_seq";
+	print I1OUT "$i1_plus";
+	print I1OUT "$i1_q";
+	print I2OUT "$i2_head";
+	print I2OUT "$i2_seq";
+	print I2OUT "$i2_plus";
+	print I2OUT "$i2_q";
+	print R1OUT "$r1_head";
+	print R1OUT "$r1_trim_swop_seq";
+	print R1OUT "$r1_plus";
+	print R1OUT "$r1_trim_swop_q";
+	print R2OUT "$r2_head";
+	print R2OUT "$r2_seq";
+	print R2OUT "$r2_plus";
+	print R2OUT "$r2_q";
 }
 close (I1);
 close (I2);
