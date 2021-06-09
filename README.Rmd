@@ -151,7 +151,7 @@ to the GitHub repository: [minoda-lab/universc](https://github.com/minoda-lab/un
 as described in [Bug Reports](#Issues) below.
 
 Some changes to the Cell Ranger install are required to run other technologies. Therefore we provide settings for 10x Genomics
-which restores settings for the Chromium instrument. We therefore recommend using 'convert' for processing all data from different
+which restores settings for the Chromium instrument. We therefore recommend using UnicerSC for processing all data from different
 technologies as the tool manages these changes. Please note that on a single install of Cell Ranger, multiple technologies or multiple samples 
 of the same technology with different whitelist barcodes cannot be run cannot be run simultaneousely (the tool will also check for this to
 avoid causing problems with existing runs). Multiple samples of the same technology with the same barcode whitelist can be run simultaneously.
@@ -832,20 +832,20 @@ You can import it if you have docker installed.
 docker pull tomkellygenetics/universc:latest
 ```
 
-Then you can run convert with:
+Then you can run UniverSC with:
 
 ```
-run -it tomkellygenetics/universc:latest launch_universc.sh
+docker run -it tomkellygenetics/universc:latest launch_universc.sh
 ```
 
 You can open a shell in the docker image with:
 
 ```
-run -it tomkellygenetics/universc:latest /bin/bash
+docker run -it tomkellygenetics/universc:latest /bin/bash
 ```
 
 ```
-run -it tomkellygenetics/universc:latest /bin/zsh 
+docker run -it tomkellygenetics/universc:latest /bin/zsh 
 ```
 
 Either of these shells are supported.
@@ -1203,7 +1203,7 @@ cellranger count --id="tiny-count-v3" \
 #### Running launch_universc.sh on 10x data
 
 ```
-# call convert on 10x with multiple lanes
+# call UniverSC on 10x with multiple lanes
 bash /universc/launch_universc.sh --id "test-10x-v3" --technology "10x" \
  --reference "/universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --file "/universc/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001" \
@@ -1295,8 +1295,7 @@ cellrangerpath=`which cellranger`
 rm ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock
 ```
 
-When doing this *please ensure that no other instances are running* for Cell Ranger
-convert.
+When doing this *please ensure that no other instances are running* for UniverSC.
 
 You can also see the current configuration of UniverSC for each Cell Ranger
 install as follows:
