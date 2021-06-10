@@ -20,7 +20,7 @@
 install=false
 
 ######UniverSC version#####
-universcversion="1.1.2"
+universcversion="1.1.3"
 ##########
 
 
@@ -241,8 +241,8 @@ Mandatory arguments to long options are mandatory for short options too.
 
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
-  -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', 'SC5P-R1', or 'SC5P-R2'
-                                    5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies
+  -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', 'SC5P-R1', 'SC5P-R2', 'threeprime', or 'fiveprime'
+                                    5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies.
                                     All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics and ICELL8 allow choosing which to use.
 
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
@@ -753,11 +753,11 @@ if [[ "$technology" == "icell8" ]]; then
 fi
 if [[ "$technology" == "smartseq2-umi" ]] || [[ "$technology" == "smartseq3" ]]; then
     echo "***WARNING: ${technology} should only be used for kits that have UMIs***"
-    echo "... UMI reads will be filtered using a tag sequence which will be removed"
-    echo "... barcodes will derived from dual indexes"
+    echo "... UMI reads will be filtered using a tag sequence which will be subsequently removed"
+    echo "... barcodes will be derived from dual indexes"
 fi
 if [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
-    echo "***Note: launch_universc.sh support for barcodes in dual indexes is experimental. Make sure that samples are demultiplexed prior to running launch_universc.sh***"
+    echo "***Note: Make sure that samples are demultiplexed prior to running launch_universc.sh***"
 fi
 ##########
 
@@ -1031,7 +1031,7 @@ if [[ $setup == "false" ]]; then
             exit 1
         else
             if [[ $verbose ]]; then
-                echo " No index files given. Automatically detecting from R1 and R2 file names..."
+                echo " No index files given. Automatically detecting from R1 and R2 file names ..."
             fi
             r1_list=("${read1[@]}")
             r2_list=("${read2[@]}")
@@ -1062,7 +1062,7 @@ if [[ $setup == "false" ]]; then
                     fi
                     if [[ -f $I1_file ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.gz') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fastq') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fq') ]]; then
                         if [[ $verbose ]]; then
-                            echo "  file $I1_file found..."
+                            echo "  file $I1_file found ..."
                         fi
                         i1_read=$I1_file
                         i1_list[$j]=$i1_read
@@ -1096,7 +1096,7 @@ if [[ $setup == "false" ]]; then
                exit 1
             else
                 if [[ $verbose ]]; then
-                    echo " No index files given. Automatically detecting from R1 and R2 file names..."
+                    echo " No index files given. Automatically detecting from R1 and R2 file names ..."
                 fi
                 r1_list=("${read1[@]}")
                 r2_list=("${read2[@]}")
@@ -1117,7 +1117,7 @@ if [[ $setup == "false" ]]; then
                         fi
                         if [[ -f $I2_file ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.gz') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fastq') ]] || [[  -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fq') ]]; then
                             if [[ $verbose ]]; then
-                                echo "  file $I2_file found..."
+                                echo "  file $I2_file found ..."
                             fi
                             i2_read=$I2_file
                             i2_list[$j]=$i2_read
@@ -1462,7 +1462,7 @@ if [[ "$technology" == "indrop-v3" ]]; then
         echo " index I1 found for ${technology}"
     else
         #checking for R2 and R3 index files
-        echo " checking for index I1 in R2 files..."
+        echo " checking for index I1 in R2 files ..."
         for ii in $(seq 1 1 ${#read1[@]}); do
              #iterate over read1 inputs
              indexfile=${read1[$(( $ii -1 ))]}
@@ -1478,7 +1478,7 @@ if [[ "$technology" == "indrop-v3" ]]; then
         echo " index I2 found for ${technology}"
     else
         #checking for R2 and R3 index files
-        echo " checking for index I2 in R3 files..."
+        echo " checking for index I2 in R3 files ..."
         for ii in $(seq 1 1 ${#read1[@]}); do  
              #iterate over read1 inputs
              indexfile=${read1[$(( $ii -1 ))]}
@@ -1491,7 +1491,7 @@ if [[ "$technology" == "indrop-v3" ]]; then
         done
     fi
     #checking for R1 and R4 index files
-    echo " checking for read R4 files..."
+    echo " checking for read R4 files ..."
     for ii in $(seq 1 1 ${#read1[@]}); do
          #iterate over read1 inputs
          indexfile=${read1[$(( $ii -1 ))]}
@@ -1510,7 +1510,7 @@ if [[ "$technology" == "indrop-v3" ]]; then
         echo " indexes ${index1[@]} and ${index2[@]} found for ${technology}"
     else
         if [[ $setup == "false" ]]; then
-            echo "WARNING: note that ${technology} expects dual indexes: I1 and I2 OR R2 and R3"
+            echo "***WARNING: note that ${technology} expects dual indexes: I1 and I2 OR R2 and R3***"
         fi
     fi
 fi
@@ -1662,7 +1662,7 @@ for fq in "${read12[@]}"; do
     lane=`echo ${name} | cut -f$((${fields}-2)) -d'_' | sed 's/L00//'`
     LANE+=($lane)
     if [[ ${fields} -le 4 ]]; then
-        echo "Warning: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)";
+        echo "***WARNING: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)***";
         #exit 1
     elif [[ $fq != *'.fastq'* ]] && [[ $fq != *'.fq'* ]]; then
         echo "Error: $fq does not have a .fq or .fastq extention."
@@ -1735,7 +1735,7 @@ if [[ -n "$barcodefile" ]]; then
                     #removes header (1st line) containing colname "barcode"
 		    tail -n $(($(wc -l $barcodefile | cut -d" " -f1)-1)) $barcodefile | cut -f$col_n -d "$seg" > ${new_barcodefile}
                 else
-                    echo "***WARNING: barcode file has multiple columns and none named 'barcode(s)'"
+                    echo "***WARNING: barcode file has multiple columns and none named 'barcode(s)'***"
                     echo "Note: please check that column 1 of the barcode file contains the barcodes as required"
                     head $barcodefile | cut -f1 -d "${seg}"
                     #assumes no headers
@@ -1751,17 +1751,17 @@ else
     elif [[ "$technology" == "bd-rhapsody" ]]; then
         barcodefile=${whitelistdir}/bd_rhapsody_barcode.txt
         if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
-            echo "  ...generating combination of I1, I2, and RT barcodes..."
+            echo "  generating combination of I1, I2, and RT barcodes ..."
         fi
     elif [[ "$technology" == "bravo" ]]; then
         barcodefile=${whitelistdir}/KAPA_UDI_dual_barcodes.txt
         if [[ ! -f ${whitelistdir}/KAPA_UDI_dual_barcodes.txt ]]; then
-            echo "  ...generating combination of I1, I2, and RT barcodes..."
+            echo "  generating combination of I1, I2, and RT barcodes ..."
         fi
     elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
         barcodefile=${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
         if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]]; then
-            echo "  ...generating combination of I1 and I2 barcodes..."
+            echo "  generating combination of I1 and I2 barcodes ..."
         fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${whitelistdir}/ICELL8_barcode.txt
@@ -1771,14 +1771,14 @@ else
   elif [[ "$technology" == "icell8-full-length" ]]; then
         barcodefile=${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt
         if [[ ! -f ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt ]]; then
-            echo "  ...generating combination of I1 and I2 barcodes..."
+            echo "  generating combination of I1 and I2 barcodes ..."
         fi
     elif [[ "$technology" == "marsseq-v2" ]]; then
         barcodefile=${whitelistdir}/MARS-Seq2_barcode.txt
     elif [[ "$technology" == "microwellseq" ]]; then
         barcodefile=${whitelistdir}/microwellseq_barcode.txt
         if [[ ! -f ${whitelistdir}/microwellseq_barcode.txt ]]; then
-            echo "  ...generating combination of I1, I2, and RT barcodes..."
+            echo "  generating combination of I1, I2, and RT barcodes ..."
         fi
     elif [[ "$technology" == "quartz-seq" ]]; then
         indexlength=$(($(head $index1([0]) -n 2 | tail -n 1 | wc -c) -1))
@@ -1787,9 +1787,8 @@ else
             barcodelength=$(($indexlength + $index2length))
             if [[ -f ${whitelistdir}/Illumina_dual_barcodes.txt ]];then
                 cat ${whitelistdir}/Illumina_TruSeq_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
-                cat ${whitelistdir}/Illumina_TruSeq_Index2_i5_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
+                cat ${whitelistdir}/Illumina_TruSeq_Index2_i5_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index2_i5_barcodes.txt
                 join -j 9999 ${whitelistdir}/Illumina_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Index2_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_dual_barcodes.txt
-
             fi
             barcodefile=${whitelistdir}/Illumina_dual_barcodes.txt
         else
@@ -1806,41 +1805,41 @@ else
     elif [[ "$technology" == "quartz-seq2-1536" ]]; then
         barcodefile=${whitelistdir}/Quartz-Seq2-1536_barcode.txt
     elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
-        echo "***WARNING: whitelist for ${technology} is modified from the original barcodes (https://github.com/indrops/indrops/tree/master/ref/barcode_lists), first 8bp of list1 and list2 are joind to generate a 16bp barcode***"
+        echo "***WARNING: whitelist for ${technology} is modified from the original barcodes (https://github.com/indrops/indrops/tree/master/ref/barcode_lists), first 8 bp of list1 and list2 are joind to generate a 16 bp barcode***"
         barcodelength=${minlength}
         if [[ $verbose ]]; then
-            echo "  barcode adjusted to ${barcodelength}bp to match the length in the default whitelist for ${technology}"
+            echo "  barcode adjusted to ${barcodelength} bp to match the length in the default whitelist for ${technology}"
         fi
         if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
             barcodefile=${whitelistdir}/inDrop-v2_barcodes.txt
         elif [[ "$technology" == "indrop-v3" ]]; then
             barcodefile=${whitelistdir}/inDrop-v3_barcodes.txt
-            echo "***WARNING: ***combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
+            echo "***WARNING: combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
         fi
     elif [[ "$technology" == "sciseq2" ]]; then
              barcodefile=${whitelistdir}/sciseq2_barcode.txt
              if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
-                 echo "  ...generating combination of I1, I2, and RT barcodes..."
+                 echo "  generating combination of I1, I2, and RT barcodes ..."
              fi
     elif [[ "$technology" == "sciseq3" ]]; then
              barcodefile=${whitelistdir}/sciseq3_barcode.txt
              if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
-                 echo "  ...generating combination of I1, I2, and RT barcodes..."
+                 echo "  generating combination of I1, I2, and RT barcodes ..."
              fi
     elif [[ "$technology" == "scifiseq" ]]; then
              barcodefile=${whitelistdir}/scifi-seq_barcode.txt
              if [[ ! -f ${whitelistdir}/scifi-seq_barcode.txt ]]; then
-                 echo "  ...generating combination of I1, I2, and RT barcodes..."
+                 echo "  generating combination of I1, I2, and RT barcodes ..."
              fi
     elif [[ "$technology" == "splitseq" ]]; then
              barcodefile=${whitelistdir}/splitseq_barcode.txt
              if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
-                 echo "  ...generating combination of I1, I2, and RT barcodes..."
+                 echo "  generating combination of I1, I2, and RT barcodes ..."
              fi
     elif [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
         barcodefile=${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
         if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]]; then
-            echo "  ...generating combination of I1 and I2 barcodes..."
+            echo "  generating combination of I1 and I2 barcodes ..."
         fi
     elif [[ "$technology" == "strt-seq" ]]; then
          barcodefile=${whitelistdir}/STRTSeq_barcode.txt
@@ -1849,7 +1848,7 @@ else
      elif [[ "$technology" == "strt-seq-2i" ]]; then
          barcodefile=${whitelistdir}/STRTSeq2i_barcode.txt
     else
-        echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength}bp. valid barcode will be 100% as a result***"
+        echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength} bp. valid barcode will be 100% as a result***"
         barcodelength=${minlength}
 	barcodefile=${whitelistdir}/AllPossibilities_${barcodelength}_barcodes.txt
     fi
@@ -1889,76 +1888,83 @@ else
             echo "  generating a new barcode whitelist for ${technology}"
         fi
         if [[ "$technology" == "bd-rhapsody" ]]; then
-             if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
-                 #generates all combinations of I1-I2-R1 barcodes
-                 join -j 9999 ${whitelistdir}/bd_rhapsody_cell_label_section1.txt ${whitelistdir}/bd_rhapsody_cell_label_section2.txt | sed "s/ //g" | \
-                 join -j 9999 - ${whitelistdir}/bd_rhapsody_cell_label_section3.txt | sed "s/ //g"  > ${whitelistdir}/bd_rhapsody_barcode.txt
-             fi
+            if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
+                #generates all combinations of I1-I2-R1 barcodes
+                join -j 9999 ${whitelistdir}/bd_rhapsody_cell_label_section1.txt ${whitelistdir}/bd_rhapsody_cell_label_section2.txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/bd_rhapsody_cell_label_section3.txt | sed "s/ //g" \
+                > ${whitelistdir}/bd_rhapsody_barcode.txt
+            fi
         elif [[ "$technology" == "bravo" ]]; then
             if [[ ! -f barcodefile=${whitelistdir}/KAPA_UDI_dual_barcodes.txt ]]; then
-                  #generates all combinations of I1-I2-R1 barcodes
-                  join -j 9999 ${whitelistdir}/KAPA_UDI_Index1_i7.txt ${whitelistdir}/KAPA_UDI_Index5_i5.txt | sed "s/ //g" > ${whitelistdir}/KAPA_UDI_dual_barcodes.txt
+                #generates all combinations of I1-I2-R1 barcodes
+                join -j 9999 ${whitelistdir}/KAPA_UDI_Index1_i7.txt ${whitelistdir}/KAPA_UDI_Index5_i5.txt | sed "s/ //g" \
+                > ${whitelistdir}/KAPA_UDI_dual_barcodes.txt
             fi
-        elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] ||  [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
+        elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
             if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]];then
                 #generates all combinations of I1-I2 barcodes
-                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
+                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sed "s/ //g" \
+                > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
             fi
         elif [[ "$technology" == "icell8-full-length" ]]; then
             if [[ ! -f ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt ]]; then
                 #generates all combinations of I1-I2 barcodes
-                join -j 9999 ${whitelistdir}/ICELL8_full_length_Index1_i7_barcodes.txt ${whitelistdir}/ICELL8_full_length_Index2_i5_barcodes.txt |  sed "s/ //g" > ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt
+                join -j 9999 ${whitelistdir}/ICELL8_full_length_Index1_i7_barcodes.txt ${whitelistdir}/ICELL8_full_length_Index2_i5_barcodes.txt | sed "s/ //g" \
+                > ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt
             fi
         elif [[ "$technology" == "indrop-v"* ]]; then
             if [[ "$technology" == "indrop-v1" ]] || [[ $technology"" == "indrop-v2" ]]; then
-                 perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v2 ${whitelistdir}
+                perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v2 ${whitelistdir}
             elif [[ "$technology" == "indrop-v3" ]]; then
                 #allow for barcodes in index (I1) and R1
                 perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
             fi
         elif [[ "$technology" == "microwellseq" ]]; then
             if [[ ! -f ${whitelistdir}/microwellseq_barcode.txt ]]; then
-                 #generates all combinations of R1 barcodes
-                 join -j 9999 ${whitelistdir}/microwell-seq_barcodeA.txt ${whitelistdir}/microwell-seq_barcodeB.txt | sed "s/ //g" | \
-                 join -j 9999 - ${whitelistdir}/microwell-seq_barcodeC.txt > ${whitelistdir}/microwellseq_barcode.txt
+                #generates all combinations of R1 barcodes
+                join -j 9999 ${whitelistdir}/microwell-seq_barcodeA.txt ${whitelistdir}/microwell-seq_barcodeB.txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/microwell-seq_barcodeC.txt \
+                > ${whitelistdir}/microwellseq_barcode.txt
             fi
         elif [[ "$technology" == "sciseq2" ]]; then
-             #generates all combinations of I1-I2-R1 barcodes
-             if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
-                 join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" | \
-                 join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/sciseq2_barcode.txt
-             fi
+            if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
+                #generates all combinations of I1-I2-R2 barcodes
+                join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | awk '!a[$0]++' \
+                > ${whitelistdir}/sciseq2_barcode.txt
+            fi
         elif [[ "$technology" == "sciseq3" ]]; then
-             if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
-                 #generates all combinations of I1-I2-R1 barcodes
-                 join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" | \
-                 join -j 9999 - ${whitelistdir}/sci-seq3_hp_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" \
-                 > ${whitelistdir}/sciseq3_barcode.txt
-                 ## to filter unique lines: awk '!a[$0]++'  > ${whitelistdir}/sciseq3_barcode.txt
-             fi
+            if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
+                #generates all combinations of I1-I2-R1 barcodes
+                join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/sci-seq3_hp_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" \
+                > ${whitelistdir}/sciseq3_barcode.txt
+                ## to filter unique lines: awk '!a[$0]++' > ${whitelistdir}/sciseq3_barcode.txt
+            fi
         elif [[ "$technology" == "scifiseq" ]]; then
-             if [[ ! -f ${whitelistdir}/scifi-seq_barcode.txt ]]; then
-                 #generates all combinations of I1-I2-R1 barcodes
-                 join -j 9999 ${whitelistdir}/10x_atac_barcodes.txt ${whitelistdir}/ scifi-seq_rt_barcode.txt | sed "s/ //g" | \
-                 > ${whitelistdir}/scifi-seq_barcode.txt
-             fi
+            if [[ ! -f ${whitelistdir}/scifi-seq_barcode.txt ]]; then
+                #generates all combinations of I1-I2-R1 barcodes
+                join -j 9999 ${whitelistdir}/10x_atac_barcodes.txt ${whitelistdir}/ scifi-seq_rt_barcode.txt | sed "s/ //g" | \
+                > ${whitelistdir}/scifi-seq_barcode.txt
+            fi
         elif [[ "$technology" == "splitseq" ]]; then
-             #generates all combinations of I1-I2-R1 barcodes
-             if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
-                 join -j 9999 ${whitelistdir}/split-seq_round1_barcode.txt ${whitelistdir}/split-seq_round2_barcode.txt | sed "s/ //g" | \
-                 join -j 9999 - ${whitelistdir}/split-seq_round3_barcode.txt | sed "s/ //g" | awk '!a[$0]++'  > ${whitelistdir}/splitseq_barcode.txt
-             fi
+            if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
+                #generates all combinations of I1-I2-R2 barcodes
+                join -j 9999 ${whitelistdir}/split-seq_round1_barcode.txt ${whitelistdir}/split-seq_round2_barcode.txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/split-seq_round3_barcode.txt | sed "s/ //g" | awk '!a[$0]++' \
+                > ${whitelistdir}/splitseq_barcode.txt
+            fi
         elif [[ "$technology" == "strt-seq-2i" ]]; then
-             if [[ ! -f ${whitelistdir}/STRTSeq2i_barcode.txt ]]; then
-                 #generates all combinations of I1-I2-R1 barcodes
-                 join -j 9999 ${whitelistdir}/AllPossibilities_5_barcodes.txt ${whitelistdir}/STRTSeqC1_barcode.txt | sed "s/ //g" | \
-                 > ${whitelistdir}/STRTSeq2i_barcode_barcode.txt
-             fi
+            if [[ ! -f ${whitelistdir}/STRTSeq2i_barcode.txt ]]; then
+                #generates all combinations of I1-I2-R1 barcodes
+                join -j 9999 ${whitelistdir}/AllPossibilities_5_barcodes.txt ${whitelistdir}/STRTSeqC1_barcode.txt | sed "s/ //g" | \
+                > ${whitelistdir}/STRTSeq2i_barcode_barcode.txt
+            fi
         else
             #generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
             if [[ ${barcodelength} -ge 12 ]]; then
                 echo "  ... generating all permutations of A,T,C,G of length ${barcodelength}"
-                echo "  WARNING: for large barcodes this could take a lot of time and memory"
+                echo "***WARNING: for large barcodes this could take a lot of time and memory***"
                 echo "  Please use a known barcode whitelist if possible"
             fi
             echo $(eval echo $(for ii in $(eval echo {1..${barcodelength}}); do echo "{A,T,C,G}"; done | tr "\n" " " | sed "s/ //g" | xargs -I {} echo {})) | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
@@ -2080,7 +2086,7 @@ crIN=${crIN}_${id}
 #####checking if crIN exists#####
 if [[ ! -d $crIN ]]; then
     convert=true
-    echo "***Warning: conversion was turned on because directory $crIN was not found***"
+    echo "***WARNING: conversion was turned on because directory $crIN was not found***"
 fi
 ##########
 
@@ -2154,15 +2160,15 @@ echo ""
 echo "#####Input information#####"
 echo "SETUP and exit: $setup"
 if [[ $setup == "true" ]]; then
-    echo "***Warning: launch_universc.sh will exit once whitelist is converted***"
+    echo "***WARNING: launch_universc.sh will exit once whitelist is converted***"
 fi
 echo "FORMAT: $technology"
 if [[ $technology == "nadia" ]]; then
-    echo "***Warning: whitelist is converted for compatibility with $technology, valid barcodes cannot be detected accurately with this technology***"
+    echo "***WARNING: whitelist is converted for compatibility with $technology, valid barcodes cannot be detected accurately with this technology***"
 fi
 echo "BARCODES: ${barcodefile}"
 if [[ ${#read1[@]} -eq 0 ]] && [[ ${#read1[@]} -eq 0 ]]; then
-    echo "***Warning: no FASTQ files were selected, launch_universc.sh will exit after setting up the whitelist***"
+    echo "***WARNING: no FASTQ files were selected, launch_universc.sh will exit after setting up the whitelist***"
 fi
 if ! [[ ${#read1[@]} -eq 0 ]]; then
     echo "INPUT(R1):"
@@ -2182,7 +2188,7 @@ echo "ID: $id"
 if [[ -z $description ]]; then
     description=$id
     echo "DESCRIPTION: $description"
-    echo "***Warning: no description given, setting to ID value***"
+    echo "***WARNING: no description given, setting to ID value***"
 else
     echo "DESCRIPTION: $description"
 fi
@@ -2195,11 +2201,11 @@ fi
 echo "CHEMISTRY: $chemistry"
 echo "JOBMODE: $jobmode"
 if [[ "$jobmode" == "local" ]]; then
-    echo "***Warning: --jobmode \"sge\" is recommended if running script with qsub***"
+    echo "***WARNING: --jobmode \"sge\" is recommended if running script with qsub***"
 fi
 echo "CONVERSION: $convert"
 if [[ $convert == "false" ]]; then
-    echo "***Warning: adjustment for barcode and UMI length was skipped***"
+    echo "***WARNING: adjustment for barcode and UMI length was skipped***"
 fi
 echo "##########"
 echo ""
@@ -2212,7 +2218,7 @@ if [[ $verbose ]]; then
     echo "lock $lock"
 fi
 if [[ $lock -eq 0 ]]; then
-    echo "setup begin"
+    echo "whitelist setup begin"
     echo "updating barcodes in $barcodedir for Cell Ranger version ${cellrangerversion} installed in ${cellrangerpath} ..."
     
     cd $barcodedir
@@ -2220,8 +2226,6 @@ if [[ $lock -eq 0 ]]; then
     #restore assert functions if cellranger version is 3 or greater
     echo " restoring Cell Ranger"
     if [[ $verbose ]]; then
-        echo "${cellrangerversion}"
-        echo "${cellrangerversion} 3.0.0" | tr " " "\n" | sort -V | head -n 1
         echo "last call: $lastcall_p"
     fi
     if [[ $(echo "${cellrangerversion} 3.0.0" | tr " " "\n" | sort -V | tail -n 1)  == ${cellrangerversion} ]]; then
@@ -2337,21 +2341,22 @@ if [[ $lock -eq 0 ]]; then
     if [[ $custombarcodes == "true" ]]; then
         #disable detect chemistry check for custom whitelist
         if [[ $verbose ]]; then
-            echo "disable detect chemistry check..."
+            echo "disable detect chemistry check ..."
         fi
         sed -i "s/ raise NoChemistryFoundException/ return best_chem #raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
         sed -i "s/ (100\.0 \* best_frac/ #(100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
         sed -i "s/return msg/return None #msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
         sed -i "s/return msg/return None #msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/check.py
     else
-         if [[ $verbose ]]; then
-             echo "restore detect chemistry check..."
+        if [[ $verbose ]]; then
+            echo "restore detect chemistry check ..."
         fi
+        
         #restore detect chemistry check for custom whitelist
         sed -i "s/ return best_chem \#raise NoChemistryFoundException/ raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
         sed -i "s/ \#(100\.0 \* best_frac/ (100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-         sed -i "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-         sed -i "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/check.py
+        sed -i "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/check.py
     fi
 
     #determine last barcode and UMI
@@ -2366,12 +2371,13 @@ if [[ $lock -eq 0 ]]; then
        old_umi_length=$lastcall_u
     fi
     if [[ $verbose ]]; then
-        echo b ${lastcall_b} u ${lastcall_u} b ${barcodelength} u ${umilength}
-        echo ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        echo "lastcall: b ${lastcall_b} u ${lastcall_u}; current: b ${barcodelength} u ${umilength}"
+        echo "${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py"
     fi
     old_rna_offset=`echo $((${lastcall_b}+${lastcall_u})) || 26`
     new_rna_offset=`echo $((${barcodelength}+${umilength}))`
-    # convert barcodes back if last technology barcode greater than 16 bp
+    
+    #convert barcodes back if last technology barcode greater than 16 bp
     if [[ $old_bc_length -gt 16 ]]; then
         if [[ $verbose ]]; then
            echo "barcode default restored to 16 bp"
@@ -2379,7 +2385,8 @@ if [[ $lock -eq 0 ]]; then
         sed -i "s/'barcode_read_length': ${old_bc_length},/'barcode_read_length': 16,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
         sed -i "s/'umi_read_offset': ${old_bc_length},/'umi_read_offset': 16,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
-    # convert UMI back if last technology UMI greater than 12 bp
+    
+    #convert UMI back if last technology UMI greater than 12 bp
     if [[ $old_umi_length -gt 12 ]]; then
         if [[ $verbose ]]; then
            echo "umi default restored to 10 bp"
@@ -2393,7 +2400,8 @@ if [[ $lock -eq 0 ]]; then
        sed -i "s/'rna_read_offset': ${old_rna_offset},/'rna_read_offset': 26,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
        sed -i "s/'umi_read_length': ${old_umi_length},/'umi_read_length': 10,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
-    # convert barcodes if new technology greater than 16 bp
+    
+    #convert barcodes if new technology greater than 16 bp
     if [[ $minlength -gt 16 ]]; then
         if [[ $verbose ]]; then
             echo "barcode length set to $minlength"
@@ -2401,7 +2409,8 @@ if [[ $lock -eq 0 ]]; then
         sed -i "s/'barcode_read_length': 16,/'barcode_read_length': ${minlength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
         sed -i "s/'umi_read_offset': 16,/'umi_read_offset': ${minlength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
-    # convert UMI back if new technology greater than 12 bp
+    
+    #convert UMI back if new technology greater than 12 bp
     if [[ $umilength -gt 12 ]]; then
         if [[ $verbose ]]; then
             echo "umi length set to $umilength"
@@ -2443,7 +2452,7 @@ if [[ $lock -eq 0 ]]; then
     else
         #for version 2
         cat ${barcodefile} > ${v2}
-        echo "barcode adjust: $barcodeadjust "
+        echo "barcode adjust: $barcodeadjust"
         if [[ $barcodeadjust -gt 0 ]]; then
             sed -i "s/^.{${barcodeadjust}}//" ${v2} #Trim the first n characters from the beginning of the sequence and quality
         elif [[ 0 -gt $barcodeadjust ]]; then
@@ -2461,11 +2470,11 @@ if [[ $lock -eq 0 ]]; then
         fi
         gzip -f ${v3}
     echo " whitelist converted"
-
+    
     echo "verbose $verbose"
     #change last call file
     if [[ $verbose ]]; then
-        echo "Setting last call as..."
+        echo "setting last call as ..."
         echo "${barcodelength} ${umilength} ${barcodefile}"
     fi
     echo "${barcodelength} ${umilength} ${barcodefile}" > $lastcallfile
@@ -2672,14 +2681,14 @@ if [[ $convert == "false" ]]; then
     echo " input file format conversion skipped"
 else
     echo " adjustment parameters:"
-    echo "  barcodes: ${barcodeadjust}bps at its head"
-    echo "  UMIs: ${umiadjust}bps at its tail" 
+    echo "  barcodes: ${barcodeadjust} bp at its head"
+    echo "  UMIs: ${umiadjust} bp at its tail" 
     
     echo " making technology-specific modifications ..."
     #CEL-Seq2: swap barcode and UMI
     ## https://github.com/BUStools/bustools/issues/4
     if [[ "$technology" == "celseq2" ]]; then
-        echo "  ...barcode and UMI swapped for ${technology}"
+        echo "  ... barcode and UMI swapped for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #swap UMI and barcode
             sed -E '2~2s/(.{6})(.{6})/\2\1/' $convFile > ${crIN}/.temp
@@ -2689,7 +2698,7 @@ else
     
     #BD Rhapsody: remove adapters
     if [[ "$technology" == "bd-rhapsody" ]]; then
-        echo "  ...remove adapter and phase blocks for ${technology}"
+        echo "  ... remove adapter and phase blocks for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
             sed -E '
@@ -2704,11 +2713,8 @@ else
     fi
     
     #C1, Quartz-Seq and RamDA-Seq: add mock UMI for non-UMI techniques
-    if [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq" ]]; then
-        echo "  ...processsing for ${technology}"
-        if [[ $verbose ]]; then
-            echo "Note: ${technology} does not contain UMIs"
-        fi
+    if [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq" ]]; then
+        echo "  ... adding mock UMIs for ${technology}"
         for convFile in "${convFiles[@]}"; do
             read=$convFile
             convR1=$read
@@ -2718,20 +2724,20 @@ else
             #detect barcode length from index sequence
             indexlength=$(($(head $index1([0]) -n 2 | tail -n 1 | wc -c) -1))
             barcodelength=$indexlength
+            
             #detect whether index 2 files exist
             if [[ -f $(echo ${index2}([0])) ]]; then
                 #detect barcode length from length of both index sequences
                 index2length=$(($(head $index2([0]) -n 2 | tail -n 1 | wc -c) -1))
                 barcodelength=$(($indexlength + $index2length))
                 convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
-                
-                echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
-                # concatenate barcocdes from index to R1 as (bases 1-16 of the) barcode, moving (read to start at base 17-)
+                echo "  ... concatencate barcodes to R1 from I1 and I2 index files"
+                #concatenate barcocdes from index to R1 as (bases 1-16 of the) barcode, moving (read to start at base 17-)
                 perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir $crIN
             else
                 barcodelength=$indexlength
-                echo "  ...concatencate barcodes to R1 from I1 index files"
-                # concatenate barcocdes from index to R1 as (bases 1-6 of the) barcode, moving (read to start at base 7-)
+                echo "  ... concatencate barcodes to R1 from I1 index files"
+                #concatenate barcocdes from index to R1 as (bases 1-6 of the) barcode, moving (read to start at base 7-)
                 perl ${CONCATENATEBARCODES} --additive ${convI1} --ref_fastq ${convR1} --out_dir $crIN
             fi
             
@@ -2742,42 +2748,37 @@ else
                 if [[ $verbose ]]; then
                     echo "adding mock UMI"
                 fi
-                # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
+                #add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
                 perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir $crIN --head_length $barcodelength --umi_length $umi_default
+                mv $crIN/mock_UMI.fastq ${convR1}
                 umilength=$umi_default
                 umiadjust=0
                 if [[ $chemistry == "SC3Pv3" ]]; then
                     chemistry="SC3Pv2"
                 fi
-                #returns a combined R1 file with barcode and mock UMI
-                ## 6 bp barcode, 10 bp UMI (TSO not handled yet)
-                mv $crIN/mock_UMI.fastq ${convR1}
-                #avoids mock UMI being generated twice
+                
+                #avoid mock UMI being generated twice
                 nonUMI=false
-           fi
-           
+            fi
+            
             if [[ "$technology" == "c1-cage" ]]; then
-                #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
-                echo " handling $convFile ..."
+                #Add 10x TSO characters to the end of the sequence (removes 'NNNNNNNNTATAGGG')
                 tsoS="TTTCTTATATGGG"
                 tsoQ="IIIIIIIIIIIII"
                 chemistry="SC5P-PE"
-                #Add 10x TSO characters to the end of the sequence (removes 'NNNNNNNNTATAGGG')
-                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{8})TATAGGG/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
                 if [[ $verbose ]]; then
-                    echo technology $technology
-                    echo barcode: $barcodelength
-                    echo umi: $umilength
-                    echo $cmd
+                    echo "barcode: $barcodelength"
+                    echo "umi: $umilength"
                 fi
-                # run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/"  $convFile > ${crIN}/.temp
+               
+                #adjusting sequence data (removes 'NNNNNNNNTATAGGG')
+                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{8})TATAGGG/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
                 eval $cmd
                 mv ${crIN}/.temp $convFile
-                #Add n characters to the end of the quality
+		#Adjusting quality data (add n characters to the end of the quality)
                 cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{8})(.{7})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
-                # run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/"  $convFile > ${crIN}/.temp
                 eval $cmd
-                mv ${crIN}/.temp $convFile
+                mv ${crIN}/.temp ${convFile}
             fi
             echo "  ${convFile} adjusted"
         done
@@ -2785,10 +2786,10 @@ else
     
     #ICELL8 version 2 (non-UMI technology)
     if [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell8-5-prime" ]] || [[ "$technology" == "icell8-full-length" ]]; then
-        echo "  ...processsing for ${technology}"
+        echo "  ... filtering tagged reads for ${iechnology}"
         if [[ $verbose ]]; then
             echo "Note: ICELL8 v2 does not contain UMIs"
-            echo "chem: chemistry"
+            echo "chemistry: $chemistry"
             echo "non-UMI: $nonUMI"
         fi
         for convFile in "${convFiles[@]}"; do
@@ -2796,29 +2797,25 @@ else
             convR1=$read
             convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
             
-            if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
-                if [[ "$technology" == "icell8-full-length" ]]; then
-                    ## echo " ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
-                    # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
-                    
-                    #same as SmartSeq2
-                    perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --tag 'AAGCAGTGGTATCAACGCAGAGTAC' --out_dir $crIN
-                    echo "  ...trim tag sequence from R1"
-                    
-                    # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
-                    mv $crIN/parsed_R1.fastq ${convR1}
-                    mv $crIN/parsed_R2.fastq ${convR2}
-                    mv $crIN/parsed_I1.fastq ${convI1}
-                    mv $crIN/parsed_I2.fastq ${convI2}
-                fi
+            if [[ "$technology" == "icell8-full-length" ]]; then
+                echo " ... remove internal reads for ${technology} by matching TSO sequence for UMI reads"
+                #filter R1 reads by matching tag sequence AAGCAGTGGTATCAACGCAGAGTAC (same as SmartSeq2) and remove as an adapter 
+                perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --tag 'AAGCAGTGGTATCAACGCAGAGTAC' --out_dir $crIN
+                echo "  ... trim tag sequence from R1"
+                
+                #returns R1 with tag sequence removed (left trim) starting with 8 bp UMI and corresponding reads for R2
+                mv $crIN/parsed_R1.fastq ${convR1}
+                mv $crIN/parsed_R2.fastq ${convR2}
+                mv $crIN/parsed_I1.fastq ${convI1}
+                mv $crIN/parsed_I2.fastq ${convI2}
             fi
             
             if [[ $nonUMI == "true" ]]; then
                 if [[ $chemistry == "SC3P"* ]] && [[ "$technology" == "icell8" ]]; then
                     if [[ $verbose ]]; then
-                        echo "remove UMI to replace with mock"
+                        echo "remove UMI to replace with mock UMI"
                     fi
-                    #remove inflated umi (to replace with mock and count as reads)
+                    #remove inflated umi (to replace with mock UMI and count as reads)
                     sed -E '
                         /^@/ {
                         n
@@ -2835,15 +2832,15 @@ else
                 fi
                 # add mock UMI (count reads instead of UMI) barcodelength=10 or 11, umi_default=10 <- default for "icell8-5-prime" and "icell8-full-length"
                 perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir $crIN --head_length $barcodelength --umi_length $umi_default
-                umilength=$umi_default
+                mv $crIN/mock_UMI.fastq ${convR1}
+		umilength=$umi_default
                 umiadjust=0
                 if [[ $chemistry == "SC3Pv3" ]]; then
                     chemistry="SC3Pv2"
                 fi
                 
-                #returns a combined R1 file with barcode and mock UMI
-                ## 16 bp barcode, 10 bp UMI, GGG for TSO
-                mv $crIN/mock_UMI.fastq ${convR1}
+                #avoid mock UMI being generated twice
+                nonUMI=false
             fi
             
             #subroutine for icell8-5-prime (5' scRNA with TSO adapters) or icell8-full-length (assumes barcodes and mock UMI added above)
@@ -2932,7 +2929,7 @@ else
             # R2 (i7) carries the first half of the gel barcode (I1). <- which cell
             # R3 (i5) carries the library index (I2). <- which sample/organism
             # R4 the second half of the gel barcode, the UMI and a fraction of the polyA tail (R1).
-            # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
+            # returns R1 with tag sequence removed (left trim) starting with 8 bp UMI and corresponding reads for I1, I2, and R2
             
             echo "  ...concatencate barcodes to R1 from I1 index file"
             # concatenate barcocdes from dual indexes to R1 as (bases 1-8 of the) barcode (bases 1-16), moving UMI to (17-22)
@@ -3386,9 +3383,8 @@ else
     #replace UMI with mock UMI to count reads (for technologies not already containing mock UMI)
     if [[ $technology != "icell8" ]] && [[ $technology != "ramda-seq" ]] && [[ $technology != "quartz-seq" ]] && [[ $technology != "smartseq" ]] && [[ $technology != "smartseq2" ]] && [[ $technology != "strt-seq" ]]; then
         if [[ $nonUMI == "true" ]]; then
-            echo "WARNING: removing true UMI and replacing with Mock UMI"
-            echo "NOTICE: results will result read counts not UMI"
-            echo "## this behaviour is not recommended unless integrating with non-UMI data ##"
+            echo "***WARNING: Removing true UMI and replacing with Mock UMI. This is not recommended unless integrating with non-UMI data***"
+            echo "NOTICE: results will show read counts and not UMI counts"
              
             for convFile in "${convFiles[@]}"; do
                 convR1=$convFile
