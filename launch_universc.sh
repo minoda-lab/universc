@@ -944,7 +944,7 @@ if [[ $umilength -gt 10 ]]; then
     temp_chemistry="SC3Pv3"
 fi
 if [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq"* ]]; then
-    temp_chemistry="SC5P-PE"
+    temp_chemistry="SC5P-R1"
 fi
 if [[ "$technology" == "10x" ]]; then
     temp_chemistry="auto"
@@ -2045,7 +2045,7 @@ if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]] || [[
         echo "  Using $chemistry for $technology"
     fi
     if [[ "$chemistry" == "fiveprime" ]];  then
-       chemistry="SC5P-PE"
+       chemistry="SC5P-R1"
     fi
     if [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
         echo "Error: option --chemistry must be SC5P-PE, SC5P-R1 or SC5P-R2"
