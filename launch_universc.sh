@@ -957,7 +957,6 @@ elif [[ "$chemistry" != "$temp_chemistry" ]]; then
     echo "***WARNING: chemistry is set to ${chemistry} where ${temp_chemistry} would have been chosen automatically. proceed with caution.***"
 fi
 
-
 #set default barcode and umi lengths
 if [[ $minlength -gt 16 ]]; then
      barcode_default=$minlength
@@ -1536,7 +1535,7 @@ if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-lengt
                  echo $I1_file
                  echo $I2_file
              fi
-             # copies index 1 to next line (1st to 2nd) and deletes 3rd line
+             #copies index 1 to next line (1st to 2nd) and deletes 3rd line
              cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | sed "3~5d" > $I1_file
              indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
              qualscores=$(seq 1 $indexlength | xargs -I {} printf I)
@@ -1544,7 +1543,7 @@ if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-lengt
                  echo index of length $indexlength gives quality score $qualscores
              fi
             sed -i "4~4s/^.*$/${qualscores}/g" $I1_file
-            # copies index 2 to next line (1st to 2nd) and deletes 3rd line
+            #copies index 2 to next line (1st to 2nd) and deletes 3rd line
             cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\5/g" | sed "3~5d" >  $I2_file
             index2length=$(($(head $I2_file -n 2 | tail -n 1 | wc -c) -1))
             qualscores2=$(seq 1 $index2length | xargs -I {} printf I)
@@ -1563,7 +1562,6 @@ if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-lengt
         echo " dual indexes found"
     fi
 fi
-
 
 if [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "strt-seq-c1" ]]; then
      echo "dual indexes I1 and I2 required for $technology"
@@ -2055,9 +2053,10 @@ if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]] || [[
     fi
     if [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
         echo "Error: option --chemistry must be SC5P-PE, SC5P-R1 or SC5P-R2"
-        exit
+        exit 1
     fi
 fi
+chemistry="SC3Pv2" #####KAI REMEMBER TO REMOVE THIS#####
 ##########
 
 
@@ -2893,7 +2892,7 @@ else
     ## https://github.com/sdparekh/zUMIs/wiki/Protocol-specific-setup
     #note that adapters do not have to be removed for the dual-indexed inDrops-v3
     if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
-        echo "  ...remove adapter for ${technology}"
+        echo "  ... remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapter if present
             sed -E '
@@ -2904,7 +2903,7 @@ else
                 s/^(.{8}).{22}(.{8})/\1\2/g
                 }' $convFile |
             #remove linker between barcode and UMI
-            echo"  ...barcode and UMI linker removed for ${technology}"
+            echo"  ... barcode and UMI linker removed for ${technology}"
             sed -E '2~2s/^(.{8})(.{8}).{4}(.{6})/\1\2\3/g' > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
@@ -2912,7 +2911,7 @@ else
     # inDrops: migrate dual indexes to barcode
     # https://github.com/BUStools/bustools/issues/4
     if [[ "$technology" == "indrop-v3" ]]; then
-        echo "  ...processsing for ${technology}"
+        echo "  ... processsing for ${technology}"
          if [[ $verbose ]]; then
              echo "Note: inDrops v3 should be demultiplex by sample index I2 (R3 or 4) if multiple samples are sequenced"
         fi
@@ -2931,7 +2930,7 @@ else
             # R4 the second half of the gel barcode, the UMI and a fraction of the polyA tail (R1).
             # returns R1 with tag sequence removed (left trim) starting with 8 bp UMI and corresponding reads for I1, I2, and R2
             
-            echo "  ...concatencate barcodes to R1 from I1 index file"
+            echo "  ... concatencate barcodes to R1 from I1 index file"
             # concatenate barcocdes from dual indexes to R1 as (bases 1-8 of the) barcode (bases 1-16), moving UMI to (17-22)
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
             perl ${CONCATENATEBARCODES} --additive ${convI1} --ref_fastq ${convR1} --out_dir $crIN
@@ -2943,7 +2942,7 @@ else
     
     #Microwell-Seq: remove linkers
     if [[ "$technology" == "microwellseq" ]]; then
-        echo "  ...remove adapter and phase blocks for ${technology}"
+        echo "  ... remove adapter and phase blocks for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
             sed -E '
@@ -2960,7 +2959,7 @@ else
     #Quartz-Seq2: remove adapter
     if [[ "$technology" == "quartz-seq2-384" ]]; then
         for convFile in "${convFiles[@]}"; do
-        echo "  ...remove adapter for ${technology}"
+        echo "  ... remove adapter for ${technology}"
             #remove adapter if detected
             sed -E '
                 /^TATAGAATTCGCGGCCGCTCGCGATAC(.{14})(.{8})/ {
@@ -2973,7 +2972,7 @@ else
         done
     fi
     if [[ "$technology" == "quartz-seq2-1536" ]]; then
-        echo "  ...remove adapter for ${technology}"
+        echo "  ... remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected
             sed -E '
@@ -2989,7 +2988,7 @@ else
     
     #Sci-Seq: remove adapter and swap barcode and UMI
     if [[ "$technology" == "sciseq2" ]]; then
-        echo "  ...remove adapter for ${technology}"
+        echo "  ... remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected (two-level indexing)
              ## TruSeq adapter: ACGACGCTCTTCCGATCT
@@ -3002,7 +3001,7 @@ else
                 }'  $convFile > ${crIN}/.temp
              mv ${crIN}/.temp $convFile
              #swap barcode and UMI
-            echo "  ...barcode and UMI swapped for ${technology}"
+            echo "  ... barcode and UMI swapped for ${technology}"
             sed -E '2~2s/(.{8})(.{10})/\2\1/' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
 
@@ -3012,7 +3011,7 @@ else
             convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
             convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
 
-            echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
+            echo "  ... concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as (bases 1-20 of the) barcode, moving RT barcode (21-30) UMI to (31-38)
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
             perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
@@ -3024,7 +3023,7 @@ else
 
 
     if [[ "$technology" == "sciseq3" ]]; then
-        echo "  ...remove adapter for ${technology}"
+        echo "  ... remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected (and keep hairpin/tn5 barcode)
             ## TruSeq adapter: ACGACGCTCTTCCGATCT
@@ -3054,7 +3053,7 @@ else
                 }'  > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
             #swap barcode and UMI
-            echo "  ...barcode and UMI swapped for ${technology}"
+            echo "  ... barcode and UMI swapped for ${technology}"
             sed -E '2~2s/(.{10})(.{8})(.{10})/\1\3\2/' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile            
             
@@ -3064,7 +3063,7 @@ else
             convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
             convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
             
-            echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
+            echo "  ... concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as (bases 1-20 of the) barcode, moving RT barcode (21-30) UMI to (31-38)
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
             perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
@@ -3075,7 +3074,7 @@ else
     fi
     
     if [[ "$technology" == "scifiseq" ]]; then
-        echo "  ...remove adapter for ${technology}"
+        echo "  ... remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapter if detected (and keep hairpin/tn5 barcode)
             ## TruSeq adapter: ACGACGCTCTTCCGATCT
@@ -3088,7 +3087,7 @@ else
                 }' $convFile > ${crIN}/.temp
            mv ${crIN}/.temp $convFile
            #remove linker and swap RT barcode and UMI (removes one base on either end of barcode): 11 bp barcode not 13 bp
-           echo "  ...barcode and UMI swapped for ${technology}"
+           echo "  ... barcode and UMI swapped for ${technology}"
            sed -E '
                 /^(.{8}).(.{11)./ {
                 s/^(.{8}).(.{11)./\2\1/g
@@ -3104,7 +3103,7 @@ else
             convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
             convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
 
-            echo "  ...concatencate 10x ATAC barcodes to R1 from I2 index files"
+            echo "  ... concatencate 10x ATAC barcodes to R1 from I2 index files"
             # concatenate barcocdes from dual indexes to R1 as (bases 1-16 of the 27 bp) barcode, moving RT barcode (17-27) UMI to (28-35)
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters
             perl ${CONCATENATEBARCODES} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
@@ -3116,7 +3115,7 @@ else
     
     #STRT-Seq
     if [[ "$technology" == "strt-seq" ]] || [[ "$technology" == "strt-seq-c1" ]] || [[ "$technology" == "strt-seq-2i" ]]; then
-        echo "  ...processsing for ${technology}"
+        echo "  ... processsing for ${technology}"
         if [[ $verbose ]]; then
             if [[ "$technology" == "strt-seq" ]]; then
                 echo "Note: STRT-Seq does not contain UMIs"
@@ -3128,7 +3127,7 @@ else
 
             if [[ "$technology" == "strt-seq" ]]; then
                 # add mock UMI (count reads instead of UMI) barcodelength=6, umi_default=10
-                echo "  ...generate mock UMI for compatibility"
+                echo "  ... generate mock UMI for compatibility"
                 perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir ${crIN} --head_length ${barcodelength} --umi_length ${umi_default}
                 umilength=${umi_default}
                 umiadjust=0
@@ -3141,7 +3140,7 @@ else
             if [[ "$technology" == "strt-seq-c1" ]]; then
                 convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
                 chemistry="SC5P-R1"
-                echo "  ...concatencate barcodes to R1 from I1 index files"
+                echo "  ... concatencate barcodes to R1 from I1 index files"
                 # concatenate barcocdes from I1 index to R1 as barcode (bases 1-8)
                 perl ${CONCATENATEBARCODES} --additive ${convI1} --ref_fastq ${convR1} --out_dir ${crIN}
             fi
@@ -3149,7 +3148,7 @@ else
                 convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
                 convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
                 chemistry="SC5P-R1"
-                echo "  ...concatencate barcodes to R1 from I1 and I2index files"
+                echo "  ... concatencate barcodes to R1 from I1 and I2index files"
                 # concatenate barcocdes from I1 index to R1 as barcode (bases 1-8)
                 perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
             fi
@@ -3181,7 +3180,7 @@ else
     #SureCell: remove adapter and correct phase blocks
     ## https://github.com/Hoohm/dropSeqPipe/issues/42
     if [[ "$technology" == "surecell" ]]; then
-        echo "  ...remove adapter and phase blocks for ${technology}"
+        echo "  ... remove adapter and phase blocks for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
             sed -E '
@@ -3199,7 +3198,7 @@ else
     ## https://github.com/hms-dbmi/dropEst/issues/80
     ## https://github.com/sdparekh/zUMIs/wiki/Protocol-specific-setup
     if [[ "$technology" == "splitseq" ]]; then
-        echo "  ...remove adapter and phase blocks for ${technology}"
+        echo "  ... remove adapter and phase blocks for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
             sed -E '
@@ -3225,7 +3224,7 @@ else
     #SCRB-Seq: remove adapter
     ## https://teichlab.github.io/scg_lib_structs/methods_html/SCRB-seq.html
     if [[ "$technology" == "scrbseq" ]]; then
-        echo "  ...remove adapter for ${technology}"
+        echo "  ... remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove adapters
             sed -E '
@@ -3241,7 +3240,7 @@ else
     
     #Smart-Seq2 (or Smart-Seq)
     if [[ "$technology" == "smartseq2" ]];then
-        echo "  ...processsing for ${technology}"
+        echo "  ... processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: SmartSeq-2 does not contain UMIs"
         fi
@@ -3271,10 +3270,10 @@ else
                 }'  $convR2 > ${crIN}/.temp
             mv ${crIN}/.temp $convR2
 
-            echo " ...remove internal reads for ${technology} by matching TSO sequence for UMI reads"
+            echo " ... remove internal reads for ${technology} by matching TSO sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
             perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2}  --tag 'AAGCAGTGGTATCAACGCAGAGTAC' --out_dir ${crIN}
-            echo "  ...trim tag sequence from R1"
+            echo "  ... trim tag sequence from R1"
 
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
             mv $crIN/parsed_R1.fastq ${convR1}
@@ -3282,7 +3281,7 @@ else
             mv $crIN/parsed_I1.fastq ${convI1}
             mv $crIN/parsed_I2.fastq ${convI2}
 
-            echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
+            echo "  ... concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
             perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
 
@@ -3326,7 +3325,7 @@ else
     
     #Smart-Seq3
     if [[ "$technology" == "smartseq3" ]];then
-        echo "  ...processsing for ${technology}"
+        echo "  ... processsing for ${technology}"
         if [[ $verbose ]]; then
             echo "Note: SmartSeq-3 requires additional filtering for UMIs"
         fi
@@ -3337,10 +3336,10 @@ else
             convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
             convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
             
-            echo "  ...remove internal for ${technology} by matching tag sequence for UMI reads"
+            echo "  ... remove internal for ${technology} by matching tag sequence for UMI reads"
             # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as adapters 
             perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'ATTGCGCAATG' --out_dir ${crIN}
-            echo "  ...parsing reads with tag sequence and replacing with 10x TSO for R1"
+            echo "  ... parsing reads with tag sequence and replacing with 10x TSO for R1"
             
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
             mv $crIN/parsed_R1.fastq ${convR1}
@@ -3354,14 +3353,14 @@ else
                 cp  ${convR1}  $crIN/parsed_R1.fastq
             fi
             
-            echo "  ...concatencate barcodes to R1 from I1 and I2 index files"
+            echo "  ... concatencate barcodes to R1 from I1 and I2 index files"
             # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
             perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
             
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
             mv $crIN/Concatenated_File.fastq ${convR1}
             if [[ $verbose ]]; then
-                cp ${convR1}  $crIN/Concatenated_File.fastq
+                cp ${convR1} $crIN/Concatenated_File.fastq
             fi
             
             echo "  ${convFile} adjusted"
