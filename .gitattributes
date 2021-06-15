@@ -39,7 +39,6 @@ test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/chrStart.txt filter=lfs
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/1.2.0/read-I1_si-TTTCATGA_lane-008-chunk-001.fastq.gz filter=lfs diff=lfs merge=lfs -text
-/home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/1.2.0/read-RA_si-TTTCATGA_lane-008-chunk-001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_I1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R2_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
