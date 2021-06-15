@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Wednesday 09 June 2021"
+date: "Tuesday 15 June 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -151,7 +151,7 @@ to the GitHub repository: [minoda-lab/universc](https://github.com/minoda-lab/un
 as described in [Bug Reports](#Issues) below.
 
 Some changes to the Cell Ranger install are required to run other technologies. Therefore we provide settings for 10x Genomics
-which restores settings for the Chromium instrument. We therefore recommend using UnicerSC for processing all data from different
+which restores settings for the Chromium instrument. We therefore recommend using UniverSC for processing all data from different
 technologies as the tool manages these changes. Please note that on a single install of Cell Ranger, multiple technologies or multiple samples 
 of the same technology with different whitelist barcodes cannot be run cannot be run simultaneousely (the tool will also check for this to
 avoid causing problems with existing runs). Multiple samples of the same technology with the same barcode whitelist can be run simultaneously.
