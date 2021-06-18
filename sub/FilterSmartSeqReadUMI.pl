@@ -23,9 +23,9 @@ use Getopt::Long;
 #target tag
 my $tag = "";
 
-#target tso
-my $tso_10x = "TTTCTTATATGGG";
-my $tso_10x_q = "IIIIIIIIIIIII";
+#10x TSO
+my $tso_seq = "TTTCTTATATGGG";
+my $tso_q = "IIIIIIIIIIIII";
 
 #setting the default values.
 my $i1 = "";
@@ -92,18 +92,15 @@ elsif ($tag eq "ATTGCGCAATG") {
 
 #####MAIN#####
 #parse reads to keep
-my $readcount = 0;
-open (I1, "<", $i1) or die "cannot open $i1.\n";
-open (I2, "<", $i2) or die "cannot open $i2.\n";
 open (R1, "<", $r1) or die "cannot open $r1.\n";
 open (R2, "<", $r2) or die "cannot open $r2.\n";
-open (I1OUT, ">", $i1_out) or die "cannot open $i1_out.\n";
-open (I2OUT, ">", $i2_out) or die "cannot open $i2_out.\n";
+open (I1, "<", $i1) or die "cannot open $i1.\n";
+open (I2, "<", $i2) or die "cannot open $i2.\n";
 open (R1OUT, ">", $r1_out) or die "cannot open $r1_out.\n";
 open (R2OUT, ">", $r2_out) or die "cannot open $r2_out.\n";
+open (I1OUT, ">", $i1_out) or die "cannot open $i1_out.\n";
+open (I2OUT, ">", $i2_out) or die "cannot open $i2_out.\n";
 while (my $line = <R1>) {
-	$readcount++;
-	
 	#read in data
 	my $i1_head = <I1>;
 	my $i1_seq = <I1>;
@@ -129,22 +126,21 @@ while (my $line = <R1>) {
 	
 	#trim r1 data by tag
 	my $r1_trim_seq = $r1_seq;
+	chomp $r1_trim_seq;
 	my @trim = split (/$tag/, $r1_trim_seq);
 	shift @trim;
 	$r1_trim_seq = join ("$tag", @trim);
-	$r1_trim_seq = $r1_trim_seq;
 	my $r1_trim_q = $r1_q;
 	chomp $r1_trim_q;
 	$r1_trim_q = reverse $r1_trim_q;
-	$r1_trim_q = substr ($r1_trim_q, 0, length($r1_trim_seq) - 1);
+	$r1_trim_q = substr ($r1_trim_q, 0, length($r1_trim_seq));
 	$r1_trim_q = reverse $r1_trim_q;
-	$r1_trim_q = $r1_trim_q."\n";
 	
 	#remove reads too short after trimming
-	if ($technology eq "SmartSeq2" && length($r1_trim_seq) < 3) {
+	if ($technology eq "SmartSeq2" && length($r1_trim_seq) < 4) {
 		next;
 	}
-	elsif ($technology eq "SmartSeq3" && length($r1_trim_seq) < 11) {
+	elsif ($technology eq "SmartSeq3" && length($r1_trim_seq) < 8) {
 		next;
 	}
 	
@@ -152,23 +148,23 @@ while (my $line = <R1>) {
 	my $r1_trim_swop_seq;
 	my $r1_trim_swop_q;
 	if ($technology eq "SmartSeq2") {
-		$r1_trim_swop_seq = $tso_10x.(substr ($r1_trim_seq, 3));
-		$r1_trim_swop_q = $tso_10x_q.(substr ($r1_trim_q, 3));
+		$r1_trim_swop_seq = substr ($r1_trim_seq, 3);
+		$r1_trim_swop_q = substr ($r1_trim_q, 3);
 	}
 	elsif ($technology eq "SmartSeq3") {
-		$r1_trim_swop_seq = (substr ($r1_trim_seq, 0, 8)).$tso_10x.(substr ($r1_trim_seq, 11));
-		$r1_trim_swop_q = (substr ($r1_trim_q, 0, 8)).$tso_10x_q.(substr ($r1_trim_q, 11));
+		if (length($r1_trim_seq) > 11) {
+			$r1_trim_swop_seq = (substr ($r1_trim_seq, 0, 8)).$tso_seq.(substr ($r1_trim_seq, 11));
+			$r1_trim_swop_q = (substr ($r1_trim_q, 0, 8)).$tso_q.(substr ($r1_trim_q, 11));
+		}
+		else {
+			$r1_trim_swop_seq = (substr ($r1_trim_seq, 0, 8)).$tso_seq."A";
+			$r1_trim_swop_q = (substr ($r1_trim_q, 0, 8)).$tso_q."I";
+		}
 	}
+	$r1_trim_swop_seq = $r1_trim_swop_seq."\n";
+	$r1_trim_swop_q = $r1_trim_swop_q."\n";
 	
 	#print out data
-	print I1OUT "$i1_head";
-	print I1OUT "$i1_seq";
-	print I1OUT "$i1_plus";
-	print I1OUT "$i1_q";
-	print I2OUT "$i2_head";
-	print I2OUT "$i2_seq";
-	print I2OUT "$i2_plus";
-	print I2OUT "$i2_q";
 	print R1OUT "$r1_head";
 	print R1OUT "$r1_trim_swop_seq";
 	print R1OUT "$r1_plus";
@@ -177,13 +173,21 @@ while (my $line = <R1>) {
 	print R2OUT "$r2_seq";
 	print R2OUT "$r2_plus";
 	print R2OUT "$r2_q";
+	print I1OUT "$i1_head";
+	print I1OUT "$i1_seq";
+	print I1OUT "$i1_plus";
+	print I1OUT "$i1_q";
+	print I2OUT "$i2_head";
+	print I2OUT "$i2_seq";
+	print I2OUT "$i2_plus";
+	print I2OUT "$i2_q";
 }
-close (I1);
-close (I2);
 close (R1);
 close (R2);
-close (I1OUT);
-close (I2OUT);
+close (I1);
+close (I2);
 close (R1OUT);
 close (R2OUT);
+close (I1OUT);
+close (I2OUT);
 ##########
