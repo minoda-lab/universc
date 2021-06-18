@@ -3336,11 +3336,10 @@ else
             convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
             convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
             
-            echo "  ... remove internal for ${technology} by matching tag sequence for UMI reads"
-            # filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as adapters 
+            #filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as adapters 
+            echo "  ... parsing R1 reads with tag sequence and inserting 10x TSO"
             perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'ATTGCGCAATG' --out_dir ${crIN}
-            echo "  ... parsing reads with tag sequence and replacing with 10x TSO for R1"
-            
+             
             # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
             mv $crIN/parsed_R1.fastq ${convR1}
             mv $crIN/parsed_R2.fastq ${convR2}
@@ -3353,8 +3352,8 @@ else
                 cp  ${convR1}  $crIN/parsed_R1.fastq
             fi
             
+            #concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
             echo "  ... concatencate barcodes to R1 from I1 and I2 index files"
-            # concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
             perl ${CONCATENATEBARCODES} --additive ${convI1} --additive ${convI2} --ref_fastq ${convR1} --out_dir ${crIN}
             
             #returns a combined R1 file with I1-I2-R1 concatenated (I1 and I2 are R1 barcode)
