@@ -1781,7 +1781,7 @@ else
         indexlength=$(($(head $index1([0]) -n 2 | tail -n 1 | wc -c) -1))
         if [[ -f $(echo ${index2}([0])) ]]; then
             index2length=$(($(head $index2([0]) -n 2 | tail -n 1 | wc -c) -1))
-            barcodelength=$(($indexlength + $index2length))
+            barcodelength=$(($indexlength+$index2length))
             if [[ -f ${whitelistdir}/Illumina_dual_barcodes.txt ]];then
                 cat ${whitelistdir}/Illumina_TruSeq_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
                 cat ${whitelistdir}/Illumina_TruSeq_Index2_i5_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index2_i5_barcodes.txt
@@ -2727,7 +2727,7 @@ else
             if [[ -f $(echo ${index2}([0])) ]]; then
                 #detect barcode length from length of both index sequences
                 index2length=$(($(head $index2([0]) -n 2 | tail -n 1 | wc -c) -1))
-                barcodelength=$(($indexlength + $index2length))
+                barcodelength=$(($indexlength+$index2length))
                 convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
                 echo "  ... concatencate barcodes to R1 from I1 and I2 index files"
                 #concatenate barcocdes from index to R1 as (bases 1-16 of the) barcode, moving (read to start at base 17-)
