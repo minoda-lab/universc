@@ -4,6 +4,10 @@
 
 - bug fixes for subroutines (SmartSeq3 processing)
 
+- bug fixes for arithmetic operations
+
+- updated documentation
+
 ### 1.1.2
 
 - bug fixes for aligent parameters
