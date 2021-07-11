@@ -18,6 +18,9 @@ PYTHON_SITE_PKG:=$(lastword $(wildcard $(PYTHON_LIB_DIR)/python*/site-packages))
 PYTHON_CFLAGS:=$(shell python-config --cflags)
 PYTHON_LDFLAGS:=$(shell python-config --ldflags)
 
+test-data:
+	make -C test/shared/smartseq3-test
+
 reference:
 	make -C  test/cellranger_reference/cellranger-tiny-ref
 

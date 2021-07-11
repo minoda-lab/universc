@@ -1,0 +1,19 @@
+#ln Smartseq3_Fibroblasts_GelCut_small_I1.fastq Smartseq3_Fibroblasts_GelCut_small_hard_I1.fastq
+#ln Smartseq3_Fibroblasts_GelCut_small_I2.fastq Smartseq3_Fibroblasts_GelCut_small_hard_I2.fastq
+#fastx_trimmer -l 65 -i Smartseq3_Fibroblasts_GelCut_small_R1.fastq  -o Smartseq3_Fibroblasts_GelCut_small_hard_R1.fastq
+#fastx_trimmer -l 40 -i Smartseq3_Fibroblasts_GelCut_small_R2.fastq  -o Smartseq3_Fibroblasts_GelCut_small_hard_R2.fastq
+
+ln Smartseq3_Fibroblasts_GelCut_med_I1.fastq Smartseq3_Fibroblasts_GelCut_med_hard_I1.fastq
+ln Smartseq3_Fibroblasts_GelCut_med_I2.fastq Smartseq3_Fibroblasts_GelCut_med_hard_I2.fastq
+fastx_trimmer -l 65 -i Smartseq3_Fibroblasts_GelCut_med_R1.fastq  -o Smartseq3_Fibroblasts_GelCut_med_hard_R1.fastq
+fastx_trimmer -l 40 -i Smartseq3_Fibroblasts_GelCut_med_R2.fastq  -o Smartseq3_Fibroblasts_GelCut_med_hard_R2.fastq
+
+ln Smartseq3_Fibroblasts_GelCut_large_I1.fastq Smartseq3_Fibroblasts_GelCut_large_hard_I1.fastq
+ln Smartseq3_Fibroblasts_GelCut_large_I2.fastq Smartseq3_Fibroblasts_GelCut_large_hard_I2.fastq
+fastx_trimmer -l 65 -i Smartseq3_Fibroblasts_GelCut_large_R1.fastq  -o Smartseq3_Fibroblasts_GelCut_large_hard_R1.fastq
+fastx_trimmer -l 40 -i Smartseq3_Fibroblasts_GelCut_large_R2.fastq  -o Smartseq3_Fibroblasts_GelCut_large_hard_R2.fastq
+
+#ln Smartseq3_Fibroblasts_GelCut_I1.fastq Smartseq3_Fibroblasts_GelCut_hard_I1.fastq
+#ln Smartseq3_Fibroblasts_GelCut_I2.fastq Smartseq3_Fibroblasts_GelCut_hard_I2.fastq
+#fastx_trimmer -l 65 -i Smartseq3_Fibroblasts_GelCut_R1.fastq  -o Smartseq3_Fibroblasts_GelCut_hard_R1.fastq
+#fastx_trimmer -l 40 -i Smartseq3_Fibroblasts_GelCut_R2.fastq  -o Smartseq3_Fibroblasts_GelCut_hard_R2.fastq

@@ -26,7 +26,7 @@ if [[ -f test/shared/smartseq3-test/*fastq ]]; then
 fi
 
 # test manual setup
-bash launch_universc.sh -t "smartseq3" --setup
+bash launch_universc.sh -t "smartseq3" --setup --barcodefile "whitelists/test_bcs_small.txt"
 
 if [[ -d input4cellranger_test-smartseq3 ]]; then
     rm -rf input4cellranger_test-smartseq3
@@ -44,5 +44,5 @@ bash launch_universc.sh --id "test-smartseq3" --technology "smartseq3" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
  --read1 "test/shared/smartseq3-test/Smartseq3_diySpike_R1" \
  --read2 "test/shared/smartseq3-test/Smartseq3_diySpike_R2" \
- --barcodefile "${whitelistdir}/SmartSeq3_test_barcodes.txt" \
+ --barcodefile "${whitelistdir}/test_bcs_small.txt" \
  --jobmode "local" --localcores 1 
