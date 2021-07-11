@@ -5,7 +5,7 @@ export ROOT_DIR=$(shell pwd)
 
 # Targets for development builds.
 #
-all: reference
+all: reference test-data
 
 clean: reference-clean manual-clean
 
