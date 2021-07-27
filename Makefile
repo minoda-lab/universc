@@ -5,7 +5,7 @@ export ROOT_DIR=$(shell pwd)
 
 # Targets for development builds.
 #
-all: reference
+all: reference test-data
 
 clean: reference-clean manual-clean
 
@@ -17,6 +17,9 @@ PYTHON_LIB_DIR:=$(dir $(lastword $(wildcard $(PYTHON_ROOT)/lib*/libpython*.so*))
 PYTHON_SITE_PKG:=$(lastword $(wildcard $(PYTHON_LIB_DIR)/python*/site-packages))
 PYTHON_CFLAGS:=$(shell python-config --cflags)
 PYTHON_LDFLAGS:=$(shell python-config --ldflags)
+
+test-data:
+	make -C test/shared/smartseq3-test
 
 reference:
 	make -C  test/cellranger_reference/cellranger-tiny-ref
