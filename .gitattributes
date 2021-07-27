@@ -15,7 +15,6 @@ test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/genomeParameters.txt fi
 test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/sjdbList.fromGTF.out.tab filter=lfs diff=lfs merge=lfs -text
 test/cellranger_reference/cellranger-tiny-ref/3.0.0/fasta/genome.fa filter=lfs diff=lfs merge=lfs -text
 test/cellranger_reference/cellranger-tiny-ref/3.0.0/fasta/genome.fa.fai filter=lfs diff=lfs merge=lfs -text
-test/cellranger_reference/cellranger-tiny-ref/3.0.0/pickle/genes.pickle filter=lfs diff=lfs merge=lfs -text
 test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/chrNameLength.txt filter=lfs diff=lfs merge=lfs -text
 test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/Genome filter=lfs diff=lfs merge=lfs -text
 test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA filter=lfs diff=lfs merge=lfs -text
