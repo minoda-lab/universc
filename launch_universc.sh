@@ -20,7 +20,7 @@
 install=false
 
 ######UniverSC version#####
-universcversion="1.1.3"
+universcversion="1.1.4"
 ##########
 
 
@@ -981,7 +981,7 @@ if [[ $verbose ]]; then
    echo "barcode default: $barcode_default"
 fi
 barcodeadjust=`echo $((${barcodelength} - ${barcode_default}))`
-umiadjust=`echo $((${umilength}-${umi_default}))`
+umiadjust=`echo $((${umilength} - ${umi_default}))`
 if [[ $verbose ]]; then
    echo "barcode adjust: $barcodeadjust "
 fi

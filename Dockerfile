@@ -80,5 +80,3 @@ RUN wget https://github.com/alexdobin/STAR/archive/2.5.1b.tar.gz \
 #  && tar -xvzf BBMap_38.87.tar.gz
 
 # ENV PATH bbmap:$PATH
-
-cp /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/chemistry.py /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/check.py
