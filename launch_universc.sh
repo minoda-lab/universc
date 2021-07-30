@@ -2037,6 +2037,15 @@ if [[ "$technology" != "10x" ]]; then
         #use SC3Pv2 (umi length 10)
         echo "Using 10x version 2 chemistry to support UMIs"
         chemistry="SC3Pv2"
+        umi_default=10
+    elif [[ "$chemistry" != "auto" ]];then
+        #use automatic chemistry detection
+        echo "Detecting 10x chemistry automatically"
+        chemistry="auto"
+        #do not convert UMI
+        umi_default=12
+        umilength=${umi_default}
+        umiadjust=0
     fi
     if [[ "$chemistry" != "threeprime" ]] && [[ "$chemistry" != "fiveprime" ]] && [[ "$chemistry" != "SC3Pv1" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
        echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE, SC5P-R1, or SC5P-R2"
@@ -2469,7 +2478,7 @@ if [[ $lock -eq 0 ]]; then
         fi
         if [[ -f translation/${v3}.gz ]]; then
             rm translation/${v3}.gz
-            zcat ${v3}.gz | awk -F , -v OFS="\t" '{print $1, "\t", $1}' > translation/${v3}
+            zcat ${v3}.gz | awk -F , -v OFS="\t" '{print $1, "\t\t\t", $1}' > translation/${v3}
             gzip -f translation/${v3}
         fi
     echo " whitelist converted"
