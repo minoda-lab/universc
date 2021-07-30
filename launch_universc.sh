@@ -2461,12 +2461,17 @@ if [[ $lock -eq 0 ]]; then
         #for version 3
         cat ${v2} > ${v3}
     fi
+        if [[ -f ${v3} ]]; then
+             gzip -f ${v3}
+        fi
+        if [[ -f translation/${v3} ]]; then
+            gzip -f  translation/${v3}
+        fi
         if [[ -f translation/${v3}.gz ]]; then
             rm translation/${v3}.gz
             zcat ${v3}.gz | awk -F , -v OFS="\t" '{print $1, "\t", $1}' > translation/${v3}
             gzip -f translation/${v3}
         fi
-        gzip -f ${v3}
     echo " whitelist converted"
     
     echo "verbose $verbose"
