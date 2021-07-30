@@ -2027,15 +2027,7 @@ fi
 #allow "auto" only for 10x
 if [[ "$technology" != "10x" ]]; then
     #use SC3Pv3 (umi length 12)
-     if [[ "$chemistry" != "auto" ]];then
-         #use automatic chemistry detection
-         echo "Detecting 10x chemistry automatically"
-         chemistry="auto"
-         #do not convert UMI
-         umi_default=12
-         umilength=${umi_default}
-         umiadjust=0
-    elif [[ $umilength -ge 11 ]]; then
+    if [[ $umilength -ge 11 ]]; then
         if [[ "$chemistry" == "SC3Pv1" ]] || [[ "$chemistry" == "SC3Pv2" ]]; then
             echo "Using 10x version 3 chemistry to support longer UMIs"
             chemistry="SC3Pv3"
@@ -2050,6 +2042,18 @@ if [[ "$technology" != "10x" ]]; then
     if [[ "$chemistry" != "threeprime" ]] && [[ "$chemistry" != "fiveprime" ]] && [[ "$chemistry" != "SC3Pv1" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
        echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE, SC5P-R1, or SC5P-R2"
        exit 1
+    fi
+fi
+if [[ "$technology" == "10x" ]]; then
+    #use SC3Pv3 (umi length 12)
+    if [[ "$chemistry" != "auto" ]];then
+    #use automatic chemistry detection
+    echo "Detecting 10x chemistry automatically"
+    chemistry="auto"
+    #do not convert UMI
+    umi_default=12
+    umilength=${umi_default}
+    umiadjust=0
     fi
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
