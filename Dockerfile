@@ -1,5 +1,5 @@
 # FROM ubuntu:bionic
-FROM tomkellygenetics/cellranger_clean:latest
+FROM tomkellygenetics/cellranger_clean:3.0.2.9002
 
 RUN apt-get update \
  && apt-get upgrade -y \
@@ -64,17 +64,6 @@ RUN git clone https://github.com/linsalrob/fastq-pair.git \
  && cd build \
  && gcc -std=gnu99   ../main.c ../robstr.c ../fastq_pair.c ../is_gzipped.c  -o fastq_pair \
  && cp fastq_pair /bin/fastq_pair
-
-# Install STAR aligner
-RUN wget https://github.com/alexdobin/STAR/archive/2.5.1b.tar.gz \
- && tar -xf 2.5.1b.tar.gz \
- && rm 2.5.1b.tar.gz \
- && cd STAR-2.5.1b \
- && make \
- && mv bin/Linux_x86_64/STAR* /usr/bin \
- && cd source \
- && make \
- && cd /
 
 # RUN wget https://sourceforge.net/projects/bbmap/files/latest/download ; mv download BBMap_38.87.tar.gz \
 #  && tar -xvzf BBMap_38.87.tar.gz

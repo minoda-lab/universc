@@ -1,6 +1,18 @@
+### 1.1.5
+
+- add subroutine to support custom references
+
+- update Docker build parameters
+
+- supports application with graphical user interface
+
 ### 1.1.4
 
-version in development
+- add test data for Smart-Seq3
+
+- update handing chemistry in set up
+
+- correct STAR in docker container
 
 ### 1.1.3
 
