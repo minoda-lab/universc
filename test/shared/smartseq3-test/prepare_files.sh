@@ -2,7 +2,7 @@ wget https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-8735/Smartseq3.Fibroblasts.
 wget https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-8735/Smartseq3.Fibroblasts.GelCut.R2.fastq.gz
 wget https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-8735/Smartseq3.Fibroblasts.GelCut.I1.fastq.gz
 wget https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-8735/Smartseq3.Fibroblasts.GelCut.I2.fastq.gz
-rename "s/Smartseq3.Fibroblasts.GelCut./Smartseq3_Fibroblasts_GelCut_/g" FSmartseq3.Fibroblasts.GelCut.*fastq.gz
+rename "s/Smartseq3.Fibroblasts.GelCut./Smartseq3_Fibroblasts_GelCut_/g" Smartseq3.Fibroblasts.GelCut.*fastq.gz
 
 #create bowtie index
 bowtie2-build ../../test/cellranger_reference/cellranger-tiny-ref/3.0.0/fasta/genome.fa ../../test/cellranger_reference/cellranger-tiny-ref/3.0.0/fasta/genome

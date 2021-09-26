@@ -1171,9 +1171,10 @@ if [[ $verbose ]]; then
     echo "key: ${keys[@]}"
 fi
 for key in ${keys[@]}; do
-    if [[ $verbose ]]; then
-        readkey=$key
+   if [[ $verbose ]]; then
+        echo "key: $key"
     fi
+    readkey=$key
     list=()
     if [[ $readkey == "R1" ]]; then
         list=("${read1[@]}")
