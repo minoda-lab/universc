@@ -20,7 +20,7 @@
 install=false
 
 ######UniverSC version#####
-universcversion="1.1.4"
+universcversion="1.1.6"
 ##########
 
 
@@ -207,9 +207,9 @@ Mandatory arguments to long options are mandatory for short options too.
                                   C1 RamDA-Seq (16 bp, No UMI): c1-ramda-seq
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
-                                  Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
+                                  Drop-Seq (12 bp barcode, 8 bp UMI): dropseq, nadia
                                   ICELL8 3′ scRNA version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
-                                  ICELL8 3′ scRNA version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
+                                  ICELL8 3′ scRNA version 3 (11 bp barcode, 14 bp UMI): icell8
                                   ICELL8 5′ scRNA with TCR OR kit (10bp barcode, NO bp UMI): icell8-5-prime
                                   ICELL8 full-length scRNA with Smart-Seq (16 bp barcode, No UMI): icell8-full-length
                                   inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
@@ -225,7 +225,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   RamDA-Seq (16 bp barcode, no UMI): ramda-seq
                                   SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
                                   SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
-                                  SCIFI-Seq (27 bp barcode, 8 bp UMI
+				  SCIFI-Seq (27 bp barcode, 8 bp UMI): scifiseq
                                   SCRB-Seq (6 bp barcode, 10 bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12 bp barcode, 8 bp UMI): plexwell, seqwell, seqwells3
                                   Smart-seq (16 bp barcode, No UMI): smartseq
@@ -257,8 +257,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data
   
        --non-umi or --read-only Force counting reads by adding or replacing UMI with a mock sequence.
-                                Available for: ICELL8, Smart-Seq2
-                                Default for: Quartz-Seq, RamDA-Seq, Smart-Seq, Smart-Seq2, STRT-Seq
+                                Default for: Quartz-Seq, RamDA-Seq, Smart-Seq, Smart-Seq2, STRT-Seq, ICELL8 3-prime version2
   
        --setup                  Set up whitelists for compatibility with new technology and exit
        --as-is                  Skips the FASTQ file conversion if the file already exists
@@ -981,7 +980,7 @@ if [[ $verbose ]]; then
    echo "barcode default: $barcode_default"
 fi
 barcodeadjust=`echo $((${barcodelength} - ${barcode_default}))`
-umiadjust=`echo $((${umilength}-${umi_default}))`
+umiadjust=`echo $((${umilength} - ${umi_default}))`
 if [[ $verbose ]]; then
    echo "barcode adjust: $barcodeadjust "
 fi
@@ -1172,8 +1171,9 @@ if [[ $verbose ]]; then
 fi
 for key in ${keys[@]}; do
     if [[ $verbose ]]; then
-        readkey=$key
+        echo "key: $key"
     fi
+    readkey=$key
     list=()
     if [[ $readkey == "R1" ]]; then
         list=("${read1[@]}")
@@ -2037,10 +2037,23 @@ if [[ "$technology" != "10x" ]]; then
         #use SC3Pv2 (umi length 10)
         echo "Using 10x version 2 chemistry to support UMIs"
         chemistry="SC3Pv2"
+        umi_default=10
     fi
     if [[ "$chemistry" != "threeprime" ]] && [[ "$chemistry" != "fiveprime" ]] && [[ "$chemistry" != "SC3Pv1" ]] && [[ "$chemistry" != "SC3Pv2" ]] && [[ "$chemistry" != "SC3Pv3" ]] && [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
        echo "Error: option --chemistry must be SC3Pv3, SC3Pv2, SC5P-PE, SC5P-R1, or SC5P-R2"
        exit 1
+    fi
+fi
+if [[ "$technology" == "10x" ]]; then
+    #use SC3Pv3 (umi length 12)
+    if [[ "$chemistry" != "auto" ]];then
+    #use automatic chemistry detection
+    echo "Detecting 10x chemistry automatically"
+    chemistry="auto"
+    #do not convert UMI
+    umi_default=12
+    umilength=${umi_default}
+    umiadjust=0
     fi
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
@@ -2055,7 +2068,6 @@ if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]] || [[
         exit 1
     fi
 fi
-chemistry="SC3Pv2" #####KAI REMEMBER TO REMOVE THIS#####
 ##########
 
 
@@ -2461,12 +2473,17 @@ if [[ $lock -eq 0 ]]; then
         #for version 3
         cat ${v2} > ${v3}
     fi
+        if [[ -f ${v3} ]]; then
+             gzip -f ${v3}
+        fi
+        if [[ -f translation/${v3} ]]; then
+            gzip -f  translation/${v3}
+        fi
         if [[ -f translation/${v3}.gz ]]; then
             rm translation/${v3}.gz
-            awk -F , -v OFS="\t" '{print $1, "\t", $1}' $v3 > translation/${v3}
+            zcat ${v3}.gz | awk -F , -v OFS="\t" '{print $1, "\t\t\t", $1}' > translation/${v3}
             gzip -f translation/${v3}
         fi
-        gzip -f ${v3}
     echo " whitelist converted"
     
     echo "verbose $verbose"
@@ -3498,7 +3515,7 @@ if [[ $verbose ]]; then
     echo $chemistry
 fi
 
-if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]]; then
+if [[ $chemistry == "SC5P"* ]] || [[ $chemistry == "five"* ]] || [[ $chemistry == "auto" ]]; then
     r=""
 else
     r="--r1-length=$totallength"
