@@ -7,6 +7,7 @@ git add -u
 git commit -m "update documentation for $version"
 git tag $version
 git push --no-verify origin master
+git push tag $version
 echo "building Docker container version $version"
 podman build -t universc:$version .
 podman tag  universc:$version universc:latest
