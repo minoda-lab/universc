@@ -1,3 +1,13 @@
+### 1.1.6
+
+- update building STAR in Docker containers
+
+- updates to syntax in script and subroutines
+
+- bug fixes to allow running without --verbose parameters
+
+- minor updates to documentation for added technologies
+
 ### 1.1.5
 
 - add subroutine to support custom references

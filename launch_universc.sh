@@ -20,7 +20,7 @@
 install=false
 
 ######UniverSC version#####
-universcversion="1.1.5"
+universcversion="1.1.6"
 ##########
 
 
