@@ -207,9 +207,9 @@ Mandatory arguments to long options are mandatory for short options too.
                                   C1 RamDA-Seq (16 bp, No UMI): c1-ramda-seq
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
-                                  Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
+                                  Drop-Seq (12 bp barcode, 8 bp UMI): dropseq, nadia
                                   ICELL8 3′ scRNA version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
-                                  ICELL8 3′ scRNA version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
+                                  ICELL8 3′ scRNA version 3 (11 bp barcode, 14 bp UMI): icell8
                                   ICELL8 5′ scRNA with TCR OR kit (10bp barcode, NO bp UMI): icell8-5-prime
                                   ICELL8 full-length scRNA with Smart-Seq (16 bp barcode, No UMI): icell8-full-length
                                   inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
@@ -225,7 +225,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   RamDA-Seq (16 bp barcode, no UMI): ramda-seq
                                   SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2
                                   SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3
-                                  SCIFI-Seq (27 bp barcode, 8 bp UMI
+				  SCIFI-Seq (27 bp barcode, 8 bp UMI): scifiseq
                                   SCRB-Seq (6 bp barcode, 10 bp UMI): scrbseq, mcscrbseq
                                   SeqWell (12 bp barcode, 8 bp UMI): plexwell, seqwell, seqwells3
                                   Smart-seq (16 bp barcode, No UMI): smartseq
@@ -257,8 +257,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -p,  --per-cell-data          Generates a file with basic run statistics along with per-cell data
   
        --non-umi or --read-only Force counting reads by adding or replacing UMI with a mock sequence.
-                                Available for: ICELL8, Smart-Seq2
-                                Default for: Quartz-Seq, RamDA-Seq, Smart-Seq, Smart-Seq2, STRT-Seq
+                                Default for: Quartz-Seq, RamDA-Seq, Smart-Seq, Smart-Seq2, STRT-Seq, ICELL8 3-prime version2
   
        --setup                  Set up whitelists for compatibility with new technology and exit
        --as-is                  Skips the FASTQ file conversion if the file already exists
@@ -1171,7 +1170,7 @@ if [[ $verbose ]]; then
     echo "key: ${keys[@]}"
 fi
 for key in ${keys[@]}; do
-   if [[ $verbose ]]; then
+    if [[ $verbose ]]; then
         echo "key: $key"
     fi
     readkey=$key
