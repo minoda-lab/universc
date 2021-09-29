@@ -20,7 +20,7 @@ RUN apt-get install -y \
 RUN git clone "https://github.com/TomKellyGenetics/universc.git"
 
 RUN cd universc/test/cellranger_reference/cellranger-tiny-ref/ \
-# && git lfs pull \
+ && git lfs pull \
  && rm -rf 3.0.0 1.2.0 \ 
  && cellranger mkref --genome=3.0.0 --fasta=genome-3.0.0.fa --genes=genes-3.0.0.gtf \
  && cellranger mkref --genome=1.2.0 --fasta=genome-1.2.0.fa --genes=genes-1.2.0.gtf 

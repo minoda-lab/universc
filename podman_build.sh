@@ -1,5 +1,5 @@
-version=1.1.6
-old_version=1.1.5
+version=1.1.6.1
+old_version=1.1.6
 sed -i "s/$old_version/$version/g"  *md *html  launch_universc.sh .version man/*sh inst/*
 R -e "knitr::knit('README.Rmd')"; pandoc -f markdown -t html README.md > README.html
 echo "updating GitHub version $version"
