@@ -195,6 +195,9 @@ Mandatory arguments to long options are mandatory for short options too.
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
+                                Available here the human genome and various model species:
+                                https://genomec.gsc.riken.jp/gerg/UniverSC/Premade_references/
+
   -t,  --technology PLATFORM    Name of technology used to generate data.
                                 Supported technologies:
                                   10x Genomics (version automatically detected): 10x, chromium

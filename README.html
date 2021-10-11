@@ -29,6 +29,10 @@
 <p>If you are a beginner bioinformatician or wish to run this on a local computer (Mac or Windows), no problem! We provide a &quot;docker&quot; image containing everything needed to run it without installing the software needed. All you need to do is install <a href="https://docs.docker.com/desktop/">docker</a> and follow our guide to use the <a href="#Docker">image</a>. This comes bundled with all the compatible versions needed to run it.</p>
 <p>Note that you need to run the shell commands given in a unix-like command-line interface (the &quot;Terminal&quot; application on Mac or Linux systems). Many shells are supported but we recommend the &quot;bash&quot; shell for beginners (this is the default on most systems). Windows 10 includes a <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">subsystem</a> to run <code>bash</code>. If this is too complicated, you can open a Linux environment (Ubuntu) in docker by following our instructions. Then you can enter bash commands into the terminal opened by docker.</p>
 <p>If you run into problems installing or running <code>launch_universc.sh</code> please don't hesistate to contact us via email or GitHub.</p>
+<h3 id="graphical-application-users">Graphical application Users</h3>
+<p>We also provide a graphical user interface (GUI) based application to run the Docker <a href="#Docker">image</a>. Please install Docker as described above and pull our <code>tomkellygenetics/universc:latest</code> image using either the docker command-line interface (CLI) or the docker graphical application.</p>
+<p>Once you have a docker image installed on your system, you can run the applicable binary available here:</p>
+<p><a href="https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_Release/" class="uri">https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_Release/</a></p>
 <h2 id="purpose">Purpose</h2>
 <p>We've developed a bash script that will run Cell Ranger on FASTQ files for these technologies. See below for details on how to use it.</p>
 <p>If you use this tool, please <a href="#Citation">cite</a> to acknowledge the efforts of the authors. You can report problems and request new features to the maintainers with and <a href="#Issues">issue</a> on GitHub. Details on how to <a href="#Install">install</a> and <a href="#Usage">run</a> are provided below. Please see the <a href="#Help">help</a> and <a href="#Examples">examples</a> to try solve your problem before submitting an issue.</p>
@@ -442,6 +446,9 @@ fi</code></pre>
 make clean
 make reference
 cd ../../..</code></pre>
+<h4 id="pre-generated-references">Pre-generated References</h4>
+<p>For convenience we provide pre-generated references for the human genome and various model species available for download:</p>
+<p><a href="https://genomec.gsc.riken.jp/gerg/UniverSC/Premade_references/" class="uri">https://genomec.gsc.riken.jp/gerg/UniverSC/Premade_references/</a></p>
 <h4 id="custom-cell-ranger-references">Custom Cell Ranger references</h4>
 <p>It is also possible to generate a custom reference for any genome provided you have a FASTQ genome reference file and a GTF/GFF3 annotation file. Please ensure that the chromosomes match between the FASTA headers and the chromosome column (1st) of the GTF/GFF3 file.</p>
 <p>The <code>gffread</code> function includes with the <a href="http://cole-trapnell-lab.github.io/cufflinks/file_formats/#the-gffread-utility">cufflinks</a> utility can convert to gtf. For example:</p>

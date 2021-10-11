@@ -189,6 +189,12 @@ Provides a conversion script to run multiple technologies and custom libraries w
             See Cell Ranger documentation on how to generate custom "transcriptomes" or
             download human and mouse references from the 10x Genomics website.
 
+            For convenience we provide pre-generated references for the human genome and
+            various model species available for download:
+
+            https://genomec.gsc.riken.jp/gerg/UniverSC/Premade_references/
+
+
   -t,  --technology PLATFORM
             Name of technology used to generate data.
 

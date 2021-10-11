@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Sunday 26 September 2021"
+date: "Monday 11 October 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -128,6 +128,13 @@ Note that you need to run the shell commands given in a unix-like command-line i
 
 If you run into problems installing or running `launch_universc.sh` please don't hesistate to contact us via email or GitHub.
 
+### Graphical application Users
+
+We also provide a graphical user interface (GUI) based application to run the Docker [image](#Docker). Please install Docker as described above and pull our `tomkellygenetics/universc:latest` image using either the docker command-line interface (CLI) or the docker graphical application.
+
+Once you have a docker image installed on your system, you can run the applicable binary available here:
+
+[https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_Release/](https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_Release/)
 
 ## Purpose
 
@@ -943,6 +950,12 @@ make clean
 make reference
 cd ../../..
 ```
+
+#### Pre-generated References
+
+For convenience we provide pre-generated references for the human genome and various model species available for download:
+
+[https://genomec.gsc.riken.jp/gerg/UniverSC/Premade_references/](https://genomec.gsc.riken.jp/gerg/UniverSC/Premade_references/)
 
 #### Custom Cell Ranger references
 
