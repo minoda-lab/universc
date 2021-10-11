@@ -1,3 +1,13 @@
+### 1.1.6.2
+
+- documents GUI application
+
+- documents pre-generated references
+
+### 1.1.6.1
+
+- updates large files in Docker image
+
 ### 1.1.6
 
 - update building STAR in Docker containers
