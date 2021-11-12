@@ -2915,15 +2915,14 @@ else
         for convFile in "${convFiles[@]}"; do
             #remove adapter if present
             sed -E '
-                /^(.{8})GAGTG............GCCTT(.{8})/ {
-                s/^(.{8})GAGTG............GCCTT(.{8})/\1\2/g
+                /(.{8,8}?).{22}(.{8})(.{6})T{1,}$/ {
+                s/.*?(.{8,8}?).{22}(.{8})(.{6})T{1,}$/\1\2\3/g
                 n
                 n
-                s/^(.{8}).{22}(.{8})/\1\2/g
-                }' $convFile |
+                s/^(.{8}).{22}(.{8})(.{6}).*/\1\2\3/g
+                }' $convFile > ${crIN}/.temp
             #remove linker between barcode and UMI
-            echo"  ... barcode and UMI linker removed for ${technology}"
-            sed -E '2~2s/^(.{8})(.{8}).{4}(.{6})/\1\2\3/g' > ${crIN}/.temp
+            echo "  ... barcode and UMI linker removed for ${technology}"
             mv ${crIN}/.temp $convFile
         done
     fi
