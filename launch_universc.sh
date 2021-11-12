@@ -2915,8 +2915,8 @@ else
         for convFile in "${convFiles[@]}"; do
             #remove adapter if present
             sed -E '
-                /^(.{8})GAGTGATTGCTTGTGACGCCTT(.{8})/ {
-                s/^(.{8})GAGTGATTGCTTGTGACGCCTT(.{8})/\1\2/g
+                /^(.{8})GAGTG............GCCTT(.{8})/ {
+                s/^(.{8})GAGTG............GCCTT(.{8})/\1\2/g
                 n
                 n
                 s/^(.{8}).{22}(.{8})/\1\2/g
