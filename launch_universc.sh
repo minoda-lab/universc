@@ -670,11 +670,11 @@ elif [[ "$technology" == "icell8-full" ]] || [[ "$technology" == "icell8-fl" ]] 
         fi
         chemistry="SC5P-PE"
     fi
-elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
+elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "indrop1" ]] || [[ "$technology" == "indrops1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
     technology="indrop-v1"
-elif [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
+elif [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "indrop2" ]] || [[ "$technology" == "indrops2" ]] ||[[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
     technology="indrop-v2"
-elif [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]] || [[ "$technology" == "1cellbio-v3" ]] || [[ "$technology" == "1cellbiov3" ]]; then
+elif [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]] || [[ "$technology" == "indrop3" ]] || [[ "$technology" == "indrops3" ]] || [[ "$technology" == "1cellbio-v3" ]] || [[ "$technology" == "1cellbiov3" ]]; then
     technology="indrop-v3"
 elif [[ "$technology" == "marsseq" ]] || [[ "$technology" == "mars-seq" ]] || [[ "$technology" == "marsseq-v1" ]] || [[ "$technology" == "mars-seq-v1" ]] || [[ "$technology" == "marsseqv1" ]] || [[ "$technology" == "mars-seqv1" ]]; then
     technology="marsseq-v1"
@@ -2916,8 +2916,8 @@ else
         for convFile in "${convFiles[@]}"; do
             #remove adapter if present
             sed -E '
-                /(.{8,8}?).{22}(.{8})(.{6})T{1,}$/ {
-                s/.*?(.{8,8}?).{22}(.{8})(.{6})T{1,}$/\1\2\3/g
+                /^.*(.{8})GA.................CTT(.{8})(.{6}).*$/ {
+                s/^.*(.{8})GA.................CTT(.{8})(.{6}).*$/\1\2\3/g
                 n
                 n
                 s/^(.{8}).{22}(.{8})(.{6}).*/\1\2\3/g
