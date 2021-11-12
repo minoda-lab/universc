@@ -33,7 +33,14 @@ my $length = scalar (@list1);
 
 
 my @list12;
-if ($version =~ m/v2/) {
+if ($version =~ m/v1/) {
+    for (my $i = 0; $i < $length; $i++) {
+        my $element1 = substr ($list1[$i], 0, 8);
+        my $element12 = $element1.$list2[$i];
+        push (@list12, $element12);
+    }
+}
+elsif ($version =~ m/v2/) {
     for (my $i = 0; $i < $length; $i++) {
         my $element1 = substr ($list1[$i], 0, 8);
         my $element12 = $element1.$list2[$i];

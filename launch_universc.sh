@@ -1811,7 +1811,7 @@ else
             echo "  barcode adjusted to ${barcodelength} bp to match the length in the default whitelist for ${technology}"
         fi
         if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
-            barcodefile=${whitelistdir}/inDrop-v2_barcodes.txt
+            barcodefile=${whitelistdir}/inDrop-v1_barcodes.txt
         elif [[ "$technology" == "indrop-v3" ]]; then
             barcodefile=${whitelistdir}/inDrop-v3_barcodes.txt
             echo "***WARNING: combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
@@ -1914,7 +1914,8 @@ else
             fi
         elif [[ "$technology" == "indrop-v"* ]]; then
             if [[ "$technology" == "indrop-v1" ]] || [[ $technology"" == "indrop-v2" ]]; then
-                perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v2 ${whitelistdir}
+                sed -E 's/.*(.{8})/\1/g' ${whitelistdir}/inDrop_gel_barcode1_list_revcomp.txt > ${whitelistdir}/inDrop_gel_barcode1_list_revcomp_tail.txt
+                perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list_revcomp_tail.txt ${whitelistdir}/inDrop_gel_barcode2_list_revcomp.txt v1 ${whitelistdir}
             elif [[ "$technology" == "indrop-v3" ]]; then
                 #allow for barcodes in index (I1) and R1
                 perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
