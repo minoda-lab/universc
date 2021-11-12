@@ -1,3 +1,11 @@
+### 1.1.7
+
+- uses reverse complement barcode whitelist for inDrops v1 and v2 (automatically generated)
+
+- updated matching to remove adapter sequence between barcodes tested locally
+
+- updates to support legacy versions (v1 and v2) of inDrops protocol
+
 ### 1.1.6.2
 
 - documents GUI application
