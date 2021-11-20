@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Friday 12 November 2021"
+date: "Saturday 20 November 2021"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -839,6 +839,8 @@ You can import it if you have docker installed.
 docker pull tomkellygenetics/universc:latest
 ```
 
+#### Running processes in a docker container
+
 Then you can run UniverSC with:
 
 ```
@@ -856,6 +858,15 @@ docker run -it tomkellygenetics/universc:latest /bin/zsh
 ```
 
 Either of these shells are supported.
+
+Note that Docker containers run with a default of 2 GB of memory.
+It is recommended to use at least 8 GB of memory as this is often
+insufficient for running UniverSC. Ideally, 16 GB of memory should
+be used if it is available on your system.
+
+ ```
+docker run --memory 16g -it tomkellygenetics/universc:latest /bin/bash
+```
 
 ##### Building the Docker image locally
 

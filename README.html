@@ -396,12 +396,15 @@ docker run hello-world    </code></pre>
 <p>We provide a docker image for UniverSC version 1.1.7.</p>
 <p>You can import it if you have docker installed.</p>
 <pre><code>docker pull tomkellygenetics/universc:latest</code></pre>
+<h4 id="running-processes-in-a-docker-container">Running processes in a docker container</h4>
 <p>Then you can run UniverSC with:</p>
 <pre><code>docker run -it tomkellygenetics/universc:latest launch_universc.sh</code></pre>
 <p>You can open a shell in the docker image with:</p>
 <pre><code>docker run -it tomkellygenetics/universc:latest /bin/bash</code></pre>
 <pre><code>docker run -it tomkellygenetics/universc:latest /bin/zsh </code></pre>
 <p>Either of these shells are supported.</p>
+<p>Note that Docker containers run with a default of 2 GB of memory. It is recommended to use at least 8 GB of memory as this is often insufficient for running UniverSC. Ideally, 16 GB of memory should be used if it is available on your system.</p>
+<p><code>docker run --memory 16g -it tomkellygenetics/universc:latest /bin/bash</code></p>
 <h5 id="building-the-docker-image-locally">Building the Docker image locally</h5>
 <p>The Dockerfile is provided in the repository so it can be built from source. This will build a Docker image with the latest version of universc provided that updates to dependencies on GitHub are still compatible.</p>
 <pre><code>git clone https://github.com/minoda-lab/universc.git
