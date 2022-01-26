@@ -623,6 +623,8 @@ if [[ $verbose ]]; then
 fi
 if [[ "$technology" == "10x" ]] || [[ "$technology" == "chromium" ]]; then
     technology="10x"
+elif [[ "$technology" == "10x-v1" ]] || [[ "$technology" == "chromium-v1" ]]; then
+     technology="10x-v1"
 elif [[ "$technology" == "10x-v2" ]] || [[ "$technology" == "chromium-v2" ]]; then
     technology="10x-v2"
 elif [[ "$technology" == "10x-v3" ]] || [[ "$technology" == "chromium-v3" ]]; then
@@ -783,14 +785,24 @@ if [[ "$technology" == "10x" ]]; then
     barcodelength=16
     umilength=10
     minlength=16
+elif [[ "$technology" == "10x-v1" ]]; then
+    barcodelength=14
+    barcode_default=14
+    umilength=10
+    minlength=14
+    chemistry="SC3Pv1"
+    technology="10x"
 elif [[ "$technology" == "10x-v2" ]]; then
     barcodelength=16
     umilength=10
     minlength=16
+    technology="10x"
 elif [[ "$technology" == "10x-v3" ]]; then
     barcodelength=16
     umilength=12
     minlength=16
+    chemistry="SC3Pv3"
+    technology="10x"
 elif [[ "$technology" == "bd-rhapsody" ]]; then
     barcodelength=27
     umilength=8
@@ -963,7 +975,9 @@ fi
 
 #set default barcode and umi lengths
 if [[ $minlength -gt 16 ]]; then
-     barcode_default=$minlength
+    barcode_default=$minlength
+elif [[ "$chemistry" == "SC3Pv1" && ${technology} == "10x" ]]; then
+    barcode_default=14
 else
     barcode_default=16
 fi
