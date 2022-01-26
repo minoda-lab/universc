@@ -1,3 +1,13 @@
+### 1.2.0
+
+- backend to fully functional GUI app
+
+- updates to support 10x 3` scRNA version 1
+
+- updates test jobs and test data for SmartSeq3
+
+- automated file detection for R3 and R4 read files
+
 ### 1.1.7
 
 - uses reverse complement barcode whitelist for inDrops v1 and v2 (automatically generated)
