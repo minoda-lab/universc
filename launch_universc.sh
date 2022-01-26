@@ -1136,8 +1136,8 @@ if [[ $setup == "false" ]]; then
                             if [[ $verbose ]]; then
                                 echo "  file $R3_file found, replacing $I2_file ..." 
                             fi
-                            i2_read=$R3_file
-                            i2_list[$j]=$i1_read
+                            r3_read=$R3_file
+                            i2_list[$j]=$r3_read
                         fi
                         if [[ -f $I2_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fq') ]]; then
                             i2_present="true"
@@ -1184,9 +1184,11 @@ fi
 keys=("R1" "R2")
 if [[ $r3_present == "true" ]]; then
     keys=(${keys[@]} "R3")
+    read3=("${index2[@]}")
 fi
 if [[ $r4_present == "true" ]]; then
     keys=(${keys[@]} "R4")
+    read4=("${index1[@]}")
 fi
 if [[ $i1_present == "true" ]]; then
     keys=(${keys[@]} "I1")
@@ -1201,7 +1203,7 @@ fi
 #####Input file curation 2: Check R1, R2, I1, and I2 files for their extensions#####
 ##allows incomplete file names and processing compressed files
 if [[ $verbose ]]; then
-    echo "key: ${keys[@]}"
+    echo "keys: ${keys[@]}"
 fi
 for key in ${keys[@]}; do
     if [[ $verbose ]]; then
@@ -1497,6 +1499,12 @@ if [[ $verbose ]]; then
     echo " Input files post-curation 3"
     echo "  ${#read1[@]}files - read1s: ${read1[@]}"
     echo "  ${#read2[@]}files - read2s: ${read2[@]}"
+    if [[ ${#read3[@]} -gt 0 ]]; then
+        echo "  ${#read3[@]}files - R3s: ${read3[@]}"
+    fi
+    if [[ ${#read4[@]} -gt 0 ]]; then
+        echo "  ${#read4[@]}files - R4s: ${read4[@]}"
+    fi
     if [[ ${#index1[@]} -gt 0 ]]; then
         echo "  ${#index1[@]}files - I1s: ${index1[@]}"
     fi
@@ -1673,6 +1681,12 @@ if [[ $verbose ]]; then
     echo " Input files post-curation 4"
     echo "  ${#read1[@]}files - read1s: ${read1[@]}"
     echo "  ${#read2[@]}files - read2s: ${read2[@]}"
+    if [[ ${#read3[@]} -gt 0 ]]; then
+        echo "  ${#read3[@]}files - R3s: ${read3[@]}"
+    fi
+    if [[ ${#read4[@]} -gt 0 ]]; then
+        echo "  ${#read4[@]}files - R4s: ${read4[@]}"
+    fi
     if [[ ${#index1[@]} -gt 0 ]]; then
         echo "  ${#index1[@]}files - I1s: ${index1[@]}"
     fi
@@ -1688,8 +1702,12 @@ fi
 #####Input file curation 5: Catpuring sample name#####
 #checking the quality of fastq file names
 read12=("${read1[@]}" "${read2[@]}")
-if [[ ${#index2[@]} -gt 0 ]]; then
-    read12=("${read1[@]}" "${read2[@]}" "${index1[@]}" "${index2[@]}")
+if [[ ${#read3[@]} -gt 0 ]] && [[ ${#read4[@]} -gt 0 ]]; then
+    read12=("${read1[@]}" "${read2[@]}" "${read3[@]}" "${read4[@]}")
+elif [[ ${#index1[@]} -gt 0 ]] && [[ ${#read3[@]} -gt 0 ]]; then
+    read12=("${read1[@]}" "${read2[@]}" "${read3[@]}" "${index1[@]}")
+elif [[ ${#index2[@]} -gt 0 ]]; then
+     read12=("${read1[@]}" "${read2[@]}" "${index1[@]}" "${index2[@]}")
 elif [[ ${#index1[@]} -gt 0 ]]; then
     read12=("${read1[@]}" "${read2[@]}" "${index1[@]}")
 fi
