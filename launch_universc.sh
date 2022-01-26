@@ -1213,6 +1213,10 @@ for key in ${keys[@]}; do
         list=("${read1[@]}")
     elif [[ $readkey == "R2" ]]; then
         list=("${read2[@]}")
+    elif [[ $readkey == "R3" ]]; then
+        list=("${read3[@]}")
+    elif [[ $readkey == "R4" ]]; then
+        list=("${read4[@]}")
     elif [[ $readkey == "I1" ]]; then
         list=("${index1[@]}")
     elif [[ $readkey == "I2" ]]; then
@@ -1276,6 +1280,10 @@ for key in ${keys[@]}; do
         read1=("${list[@]}")
     elif [[ $readkey == "R2" ]]; then
         read2=("${list[@]}")
+    elif [[ $readkey == "R3" ]]; then
+        read3=("${list[@]}")
+    elif [[ $readkey == "R4" ]]; then
+        read4=("${list[@]}")
     elif [[ $readkey == "I1" ]]; then
         index1=("${list[@]}")
      elif [[ $readkey == "I2" ]]; then
@@ -1287,6 +1295,12 @@ if [[ $verbose ]]; then
     echo " Input files post-curation 2"
     echo "  ${#read1[@]}files - read1s: ${read1[@]}"
     echo "  ${#read2[@]}files - read2s: ${read2[@]}"
+    if [[ ${#read3[@]} -gt 0 ]]; then
+        echo "  ${#read3[@]}files - R3s: ${read3[@]}"
+    fi
+    if [[ ${#read4[@]} -gt 0 ]]; then
+        echo "  ${#read4[@]}files -  R4s: ${read4[@]}"
+    fi
     if [[ ${#index1[@]} -gt 0 ]]; then
         echo "  ${#index1[@]}files - I1s: ${index1[@]}"
     fi
@@ -1310,6 +1324,10 @@ for key in ${keys[@]}; do
         list=("${read1[@]}")
     elif [[ $readkey == "R2" ]]; then
         list=("${read2[@]}")
+    elif [[ $readkey == "R3" ]]; then
+        list=("${read3[@]}")
+    elif [[ $readkey == "R4" ]]; then
+        list=("${read4[@]}")
     elif [[ $readkey == "I1" ]]; then
         list=("${index1[@]}")
     elif [[ $readkey == "I2" ]]; then
@@ -1464,9 +1482,13 @@ for key in ${keys[@]}; do
         read1=("${list[@]}")
     elif [[ $readkey == "R2" ]]; then
         read2=("${list[@]}")
-     elif [[ $readkey == "I1" ]]; then
+    elif [[ $readkey == "R3" ]]; then
+        read3=("${list[@]}")
+    elif [[ $readkey == "R4" ]]; then
+        read4=("${list[@]}")
+    elif [[ $readkey == "I1" ]]; then
         index1=("${list[@]}")
-      elif [[ $readkey == "I2" ]]; then
+    elif [[ $readkey == "I2" ]]; then
         index2=("${list[@]}")
     fi
 done
