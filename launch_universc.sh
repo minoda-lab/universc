@@ -1024,6 +1024,8 @@ fi
 
 
 #index 1
+r4_present="false"
+i1_present="false"
 if [[ $setup == "false" ]]; then
     if [[ ${#index1[@]} -ne ${#read1[@]} ]]; then
         if [[ ${#index1[@]} -gt 0 ]]; then
@@ -1045,6 +1047,7 @@ if [[ $setup == "false" ]]; then
                     R4_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R4/' )
                     I1_file=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
                     if [[ -f $R4_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fq') ]]; then
+                        r4_present="true"
                         if [[ $verbose ]]; then
                             echo "  file $R4_file found, replacing $R1_file ..." 
                         fi
@@ -1062,6 +1065,7 @@ if [[ $setup == "false" ]]; then
                         i1_list[$j]=$i1_read
                     fi
                     if [[ -f $I1_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fq') ]]; then
+                        i1_present="true"
                         if [[ $verbose ]]; then
                             echo "  file $I1_file found ..."
                         fi
@@ -1087,9 +1091,11 @@ if [[ $setup == "false" ]]; then
 fi
 
 #index 2
+r3_present="false"
+i2_present="false"
 if [[ $setup == "false" ]]; then
     #only check I2 for dual-indexed techniques
-    if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq"* ]]; then
+    if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq"* ]] || [[  "$chemistry" == "SC3Pv1" && "$technology" == "10x" ]]; then
         if [[ ${#index2[@]} -ne ${#read1[@]} ]]; then
             if [[ ${#index2[@]} -gt 0 ]]; then
                echo " Error: number of index1 files is not matching the number of index2 files"
@@ -1110,6 +1116,7 @@ if [[ $setup == "false" ]]; then
                         R3_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R3/' )
                         I2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
                         if [[ -f $R3_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fq') ]]; then
+                            r3_present="true"
                             if [[ $verbose ]]; then
                                 echo "  file $R3_file found, replacing $I2_file ..." 
                             fi
@@ -1117,6 +1124,7 @@ if [[ $setup == "false" ]]; then
                             i2_list[$j]=$i1_read
                         fi
                         if [[ -f $I2_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fq') ]]; then
+                            i2_present="true"
                             if [[ $verbose ]]; then
                                 echo "  file $I2_file found ..."
                             fi
@@ -1158,10 +1166,17 @@ if [[ $verbose ]]; then
 fi
 
 keys=("R1" "R2")
-if [[ ${#index2[@]} -gt 0 ]]; then
-    keys=("R1" "R2" "I1" "I2")
-elif [[ ${#index1[@]} -gt 0 ]]; then
-    keys=("R1" "R2" "I1")
+if [[ $r3_present == "true" ]]; then
+    keys=(${keys[@]} "R3")
+fi
+if [[ $r4_present == "true" ]]; then
+    keys=(${keys[@]} "R4")
+fi
+if [[ $i1_present == "true" ]]; then
+    keys=(${keys[@]} "I1")
+fi
+if [[ $i2_present == "true" ]]; then
+    keys=(${keys[@]} "I2")
 fi
 ##########
 
