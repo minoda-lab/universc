@@ -1,4 +1,4 @@
-.\" Manpage for UniverSC
+na.\" Manpage for UniverSC
 .\" Contact tom.kelly@riken.jp to correct errors or typos.
 .TH man 1 "08 April 2020" "0.3" "launch_universc.sh man page"
 .SH NAME
@@ -98,7 +98,14 @@ Provides a conversion script to run multiple technologies and custom libraries w
             Index 1 file is required for the following technologies, in addition to those requiring Index 2.
             UniverSC will attempt to extract them from Read 1 headers if not found:
 
-                   inDrops-v3, STRT-Seq-C1
+                   10x-v1, inDrops-v3, STRT-Seq-C1
+
+           Note that 10x v1 chemistry and inDrops-v3 have unusual naming conventions:
+               For 10x v1 the I1 file is the sample index and the R3 file containing
+               the UMI sequences is required.
+               For inDrops-v3 the R3 file is the sample index and the R4 file containing
+               part of the barcode sequence is required.
+           Do not rename these files. UniverSC will detect the correct file based on filenames.
 
   -I2, --index2 FILE
             Index (I2) FASTQ file to pass to Cell Ranger (OPTIONAL). Contains the indexes 
@@ -200,7 +207,8 @@ Provides a conversion script to run multiple technologies and custom libraries w
 
                 Supported technologies:
 
-                                  10x Genomics (version automatically detected): 10x, chromium
+                                  10x Genomics (version 2 or 3 automatically detected): 10x, chromium
+                                  10x Genomics version 1 (14 bp barcode, 10 bp UMI): 10x-v1, chromium-v1
                                   10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
                                   10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
@@ -271,13 +279,15 @@ Provides a conversion script to run multiple technologies and custom libraries w
 
                 SC3Pv2 (default), SC3Pv3, SC5P-PE, SC5P-R1, or SC5P-R2
 
-            Chemistry can only be automatically detected for 10x Genomics Chromium as it relies
-            on matches to a barcode whitelist. For other technologies we do not recommend changing
-            the chemistry input. All samples are converted to contain the barcode and UMI in Read1
-            as used for SC3Pv2. SC3Pv3 is only used for technologies with longer UMI.
+            Chemistry can only be automatically detected for 10x Genomics Chromium v2 or v3 as it
+            relies on matches to a barcode whitelist. Setting 'SC3Pv1' for 10x version 1 chemistry
+            is recommended. For other technologies we do not recommend changing the chemistry input.
+            All samples are converted to contain the barcode and UMI in Read1 as used for 'SC3Pv2'.
+            'SC3Pv3' is only used for technologies with longer UMI.
 
-            5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies
-            All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics and ICELL8 allow choosing which to use.
+            5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and
+            STRT-Seq technologies. All other technologies default to 3′ scRNA-Seq parameters.
+            Only 10x Genomics and ICELL8 allow choosing which chemistry parameter to use.
 
   -n,  --force-cells NUM
             Force pipeline to use this number of cells, bypassing the cell detection algorithm.

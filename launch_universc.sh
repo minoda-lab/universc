@@ -20,7 +20,7 @@
 install=false
 
 ######UniverSC version#####
-universcversion="1.1.7"
+universcversion="1.2.0"
 ##########
 
 
@@ -200,7 +200,8 @@ Mandatory arguments to long options are mandatory for short options too.
 
   -t,  --technology PLATFORM    Name of technology used to generate data.
                                 Supported technologies:
-                                  10x Genomics (version automatically detected): 10x, chromium
+                                  10x Genomics (version 2 or 3 automatically detected): 10x, chromium
+                                  10x Genomics version 1 (14 bp barcode, 10 bp UMI): 10x-v1, chromium-v1
                                   10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
                                   10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
                                   Aligent Bravo B (16 bp barcode, No UMI): aligent, bravo
@@ -246,6 +247,7 @@ Mandatory arguments to long options are mandatory for short options too.
   
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', 'SC5P-R1', 'SC5P-R2', 'threeprime', or 'fiveprime'
                                     5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies.
+                                    Setting 'SC3Pv1' for 10x version 1 chemistry is recommended.
                                     All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics and ICELL8 allow choosing which to use.
   
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
