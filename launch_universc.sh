@@ -2121,14 +2121,18 @@ if [[ "$technology" != "10x" ]]; then
 fi
 if [[ "$technology" == "10x" ]]; then
     #use SC3Pv3 (umi length 12)
-    if [[ "$chemistry" != "auto" ]];then
-    #use automatic chemistry detection
-    echo "Detecting 10x chemistry automatically"
-    chemistry="auto"
-    #do not convert UMI
-    umi_default=12
-    umilength=${umi_default}
-    umiadjust=0
+    if [[ "$chemistry" == "SC3Pv1" ]]; then
+        echo "Accepted chemistry: $chemistry"
+         barcode_default=14
+         umi_default=10
+    elif [[ "$chemistry" != "auto" ]]; then
+        #use automatic chemistry detection
+        echo "Detecting 10x chemistry automatically"
+        chemistry="auto"
+        #do not convert UMI
+        umi_default=12
+        umilength=${umi_default}
+        umiadjust=0
     fi
 fi
 if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
