@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Wednesday 26 January 2022"
+date: "Monday 14 February 2022"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -34,9 +34,9 @@ tags:
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 
-![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.2.0)
-![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest?label="layers@1.2.0")
-![Docker Image Size (v1.2.0)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.2.0?label="image%20size@1.2.0)
+![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.2.1)
+![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest?label="layers@1.2.1")
+![Docker Image Size (v1.2.1)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.2.1?label="image%20size@1.2.1)
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc/latest)
 ![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest)
 ![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest)
@@ -61,8 +61,8 @@ tags:
 
 ![GitHub all releases](https://img.shields.io/github/downloads/minoda-lab/universc/total?label=GitHub%20downloads)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/minoda-lab/universc?label=GitHub%20release)
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.0/total)
-![GitHub release (by tag)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.0/total)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.1/total)
+![GitHub release (by tag)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.1/total)
 
 ![Docker CI](https://github.com/minoda-lab/universc/workflows/CI%20to%20Docker%20hub/badge.svg)
 ![Docker compose](https://github.com/minoda-lab/universc/workflows/Docker%20compose%20build/badge.svg)
@@ -93,7 +93,7 @@ and use this tool to process single-cell RNA-Seq data from FASTQ format.
 
 **Package**
 
-UniverSC version 1.2.0
+UniverSC version 1.2.1
 
 **Maintainers**
 
@@ -353,8 +353,8 @@ as follows:
 
 Kelly, S.T., Battenberg, Hetherington, N.A., K., Hayashi, K., and Minoda, A. (2021)
 UniverSC: a flexible cross-platform single-cell data processing pipeline.
-bioRxiv 2021.01.19.427209; doi: [https://doi.org/10.11.2.0021.01.19.427209](https://doi.org/10.11.2.0021.01.19.427209)
-package version 1.2.0. [https://github.com/minoda-lab/universc](https://github.com/minoda-lab/universc)
+bioRxiv 2021.01.19.427209; doi: [https://doi.org/10.11.2.1021.01.19.427209](https://doi.org/10.11.2.1021.01.19.427209)
+package version 1.2.1. [https://github.com/minoda-lab/universc](https://github.com/minoda-lab/universc)
 
 ```
 @article {Kelly2021.01.19.427209,
@@ -362,12 +362,12 @@ package version 1.2.0. [https://github.com/minoda-lab/universc](https://github.c
         title = {{UniverSC}: a flexible cross-platform single-cell data processing pipeline},
         elocation-id = {2021.01.19.427209},
         year = {2021},
-        doi = {10.11.2.0021.01.19.427209},
+        doi = {10.11.2.1021.01.19.427209},
         publisher = {Cold Spring Harbor Laboratory},
         abstract = {Single-cell RNA-sequencing analysis to quantify RNA molecules in individual cells has become popular owing to the large amount of information one can obtain from each experiment. We have developed UniverSC (https://github.com/minoda-lab/universc), a universal single-cell processing tool that supports any UMI-based platform. Our command-line tool enables consistent and comprehensive integration, comparison, and evaluation across data generated from a wide range of platforms.Competing Interest StatementThe authors have declared no competing interest.},
         eprint = {https://www.biorxiv.org/content/early/2021/01/19/2021.01.19.427209.full.pdf},
         journal = {{bioRxiv}},
-        note = {package version 1.2.0},
+        note = {package version 1.2.1},
         URL = {https://github.com/minoda-lab/universc},
 }
 
@@ -378,7 +378,7 @@ package version 1.2.0. [https://github.com/minoda-lab/universc](https://github.c
     title = {{UniverSC}:  a flexible cross-platform single-cell data processing pipeline},
     author = {S. Thomas Kelly, Kai Battenberg, Nicola A. Hetherington, Makoto Hayashi, and Aki Minoda},
     year = {2021},
-    note = {package version 1.2.0},
+    note = {package version 1.2.1},
     url = {https://github.com/minoda-lab/universc},
   }
 ```
@@ -831,7 +831,7 @@ your systems administrator.
 
 #### Pulling from remote DockerHub repository
 
-We provide a docker image for UniverSC version 1.2.0.
+We provide a docker image for UniverSC version 1.2.1.
 
 You can import it if you have docker installed.
 
@@ -939,14 +939,14 @@ cellrangerpath=`which cellranger`
 if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
     rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA
 fi
-if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
+if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.1/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.1/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.1/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.1/star/SA
 fi
 ```
 
 This creates a reference for Cell Ranger here:
 
-- test/cellranger_reference/cellranger-tiny-ref/1.2.0
+- test/cellranger_reference/cellranger-tiny-ref/1.2.1
 
 - test/cellranger_reference/cellranger-tiny-ref/3.0.0
 
@@ -979,21 +979,21 @@ The `gffread` function includes with the [cufflinks](http://cole-trapnell-lab.gi
 utility can convert to gtf. For example:
 
 ```
-gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gff3 -T -o test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gtf 
+gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.1.gff3 -T -o test/cellranger_reference/cellranger-tiny-ref/genes-1.2.1.gtf 
 ```
 
 To generate new references we first remove the references imported.
 
 ```
-rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0 test/cellranger_reference/cellranger-tiny-ref/3.0.0
+rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.1 test/cellranger_reference/cellranger-tiny-ref/3.0.0
 ```
 
 We then generate references from the FASTA and GTF files as shown in the following examples:
 
 ```
-cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/1.2.0 \
-        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.0.fa \
-        --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.0.gtf
+cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/1.2.1 \
+        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.1.fa \
+        --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.1.gtf
 
 cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/3.0.0 \
          --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-3.0.0.fa \
