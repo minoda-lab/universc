@@ -1055,6 +1055,7 @@ if [[ $setup == "false" ]]; then
             r1_list=("${read1[@]}")
             r2_list=("${read2[@]}")
             i1_list=()
+            r4_list=()
             for j in ${!r1_list[@]}; do
                 read=${r1_list[$j]}
                 R1_file=$read
@@ -1123,6 +1124,7 @@ if [[ $setup == "false" ]]; then
                 fi
                 r1_list=("${read1[@]}")
                 r2_list=("${read2[@]}")
+                r3_list=()
                 i2_list=()
                 for j in ${!r1_list[@]}; do
                     read=${r1_list[$j]}
@@ -1136,8 +1138,13 @@ if [[ $setup == "false" ]]; then
                             if [[ $verbose ]]; then
                                 echo "  file $R3_file found, replacing $I2_file ..." 
                             fi
-                            r3_read=$R3_file
-                            i2_list[$j]=$r3_read
+                            if [[ $technology == "10x" ]]; then
+                                r3_read=$R3_file
+                                r3_list[$j]=$r3_read
+                            else
+                                i2_read=$R3_file
+                                i2_list[$j]=$r3_read
+                            fi
                         fi
                         if [[ -f $I2_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fq') ]]; then
                             i2_present="true"
@@ -1159,6 +1166,12 @@ if [[ $setup == "false" ]]; then
                         echo "  index files found ${#index2[@]} I2s: ${index2[@]}"
                     fi
                 fi
+                if [[ ${#r3_list[@]} -gt 0 ]]; then
+                    read3=("${r3_list[@]}")
+                    if [[ $verbose ]]; then
+                        echo "  index files found ${#read3[@]} R3s: ${read3[@]}"
+                    fi
+                fi
             fi
         fi
     elif [[ ${#index2[@]} -gt 0 ]]; then
@@ -1169,9 +1182,15 @@ if [[ $setup == "false" ]]; then
 fi
 
 if [[ $verbose ]]; then
-    echo " Input files prost-curation 1"
+    echo " Input files post-curation 1"
     echo "  ${#read1[@]}files - read1s: ${read1[@]}"
     echo "  ${#read2[@]}files - read2s: ${read2[@]}"
+    if [[ ${#index1[@]} -gt 0 ]]; then
+        echo "  ${#read3[@]}files - R3s: ${read3[@]}"
+    fi
+    if [[ ${#index2[@]} -gt 0 ]]; then
+        echo "  ${#read4[@]}files - R4s: ${read4[@]}"
+    fi
     if [[ ${#index1[@]} -gt 0 ]]; then
         echo "  ${#index1[@]}files - I1s: ${index1[@]}"
     fi
@@ -1181,10 +1200,16 @@ if [[ $verbose ]]; then
     echo "  number of these files are as expected"
 fi
 
+
+
 keys=("R1" "R2")
 if [[ $r3_present == "true" ]]; then
     keys=(${keys[@]} "R3")
-    read3=("${index2[@]}")
+    if [[ $technology == "10x" ]]; then
+        read3=("${read3[@]}")
+    else
+        read3=("${index2[@]}")
+    fi
 fi
 if [[ $r4_present == "true" ]]; then
     keys=(${keys[@]} "R4")
@@ -2761,6 +2786,36 @@ if [[ ${#index2[@]} -ge 1 ]]; then
             if [[ $verbose ]]; then
                 echo "cp -f $fq $to"
        	    fi
+            cp -f $fq $to
+        fi
+    done
+fi
+
+if [[ ${#read3[@]} -ge 1 ]]; then
+    crR3s=()
+    if [[ $verbose ]]; then
+        echo "Processing Index"
+        echo "Fastqs: ${read3[@]}"
+        echo "${read3[@]}"
+    fi
+    for fq in "${read3[@]}"; do
+        if [[ $verbose ]]; then
+            echo "$fq"
+        fi
+        to=`basename $fq`
+        to="${crIN}/${to}"
+        to=$(echo "$to" | sed 's/\.gz$//')
+        
+        if [[ $verbose ]]; then
+            echo "$to"
+        fi
+        crR3s+=($to)
+        
+        echo "handling $fq ..."
+        if [[ ! -f $to ]] || [[ $convert == true ]]; then
+            if [[ $verbose ]]; then
+                echo "cp -f $fq $to"
+            fi
             cp -f $fq $to
         fi
     done
