@@ -1,3 +1,11 @@
+### 1.2.1
+
+- bug fixes for R3 and R4 ffile inputs
+
+- bug fixes for compressed fastq.gz in I1 and I2
+
+- corrected whitelist for smartseq test job
+
 ### 1.2.0
 
 - backend to fully functional GUI app
