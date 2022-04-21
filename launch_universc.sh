@@ -1063,7 +1063,7 @@ if [[ $setup == "false" ]]; then
                     R2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
                     R4_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R4/' )
                     I1_file=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
-                    if [[ -f $R4_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fq') ]]; then
+                    if [[ -f $R4_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.gz' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fastq' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fq' | head -n 1) ]]; then
                         r4_present="true"
                         if [[ $verbose ]]; then
                             echo "  file $R4_file found, replacing $R1_file ..." 
@@ -1081,7 +1081,7 @@ if [[ $setup == "false" ]]; then
                         i1_read=$R2_file
                         i1_list[$j]=$i1_read
                     fi
-                    if [[ -f $I1_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fq') ]]; then
+                    if [[ -f $I1_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.gz' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fastq' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fq' | head -n 1) ]]; then
                         i1_present="true"
                         if [[ $verbose ]]; then
                             echo "  file $I1_file found ..."
@@ -1133,7 +1133,7 @@ if [[ $setup == "false" ]]; then
                         R2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
                         R3_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R3/' )
                         I2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
-                        if [[ -f $R3_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fq') ]]; then
+                        if [[ -f $R3_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.gz' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fastq' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fq' | head -n 1) ]]; then
                             r3_present="true"
                             if [[ $verbose ]]; then
                                 echo "  file $R3_file found, replacing $I2_file ..." 
@@ -1146,7 +1146,7 @@ if [[ $setup == "false" ]]; then
                                 i2_list[$j]=$r3_read
                             fi
                         fi
-                        if [[ -f $I2_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fq') ]]; then
+                        if [[ -f $I2_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.gz' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fastq' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fq' | head -n 1) ]]; then
                             i2_present="true"
                             if [[ $verbose ]]; then
                                 echo "  file $I2_file found ..."
@@ -2160,7 +2160,7 @@ if [[ "$technology" == "10x" ]]; then
         umiadjust=0
     fi
 fi
-if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
+if [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
     if [[ $verbose ]]; then
         echo "  Using $chemistry for $technology"
     fi
@@ -3419,16 +3419,17 @@ else
                 }' $convR2 > ${crIN}/.temp
             mv ${crIN}/.temp $convR2
             
-            echo " ... remove internal reads for ${technology} by matching TSO sequence for UMI reads"
-            #filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
-            perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'AAGCAGTGGTATCAACGCAGAGTAC' --out_dir ${crIN}
-            echo "  ... trim tag sequence from R1"
+#            echo " ... remove internal reads for ${technology} by matching TSO sequence for UMI reads"
+#            #filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
+#            perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 
+'AAGCAGTGGTATCAACGCAGAGTAC' --out_dir ${crIN}
+#            echo "  ... trim tag sequence from R1"
             
             #returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
-            mv $crIN/parsed_R1.fastq ${convR1}
-            mv $crIN/parsed_R2.fastq ${convR2}
-            mv $crIN/parsed_I1.fastq ${convI1}
-            mv $crIN/parsed_I2.fastq ${convI2}
+#            mv $crIN/parsed_R1.fastq ${convR1}
+#            mv $crIN/parsed_R2.fastq ${convR2}
+#            mv $crIN/parsed_I1.fastq ${convI1}
+#            mv $crIN/parsed_I2.fastq ${convI2}
             
             echo "  ... concatencate barcodes to R1 from I1 and I2 index files"
             #concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
@@ -3442,7 +3443,6 @@ else
             perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir ${crIN} --head_length ${barcodelength} --umi_length ${umi_default}
             umilength=${umi_default}
             umiadjust=0
-            chemistry="SC3Pv2"
             
             #returns a combined R1 file with barcode and mock UMI
             ##16 bp barcode, 10 bp UMI, GGG for TSO
@@ -3453,7 +3453,9 @@ else
             tsoS="TTTCTTATATGGG"
             tsoQ="IIIIIIIIIIIII"
             #Add 10x TSO characters to the end of the sequence
-            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+#            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+
             if [[ $verbose ]]; then
                 echo technology $technology
                 echo barcode: $barcodelength
@@ -3464,7 +3466,8 @@ else
             eval $cmd
             mv ${crIN}/.temp $convFile
             #Add n characters to the end of the quality
-            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+#            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
             #run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/" $convFile > ${crIN}/.temp
             eval $cmd
             mv ${crIN}/.temp $convFile
