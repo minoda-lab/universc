@@ -1,3 +1,11 @@
+### 1.2.2
+
+- bug fixes for detecting I1 and I2 files
+
+- updates smartseq2 parameters for optional full-length or 5' end alignment (non-UMI read counts)
+
+- document full-length chemistry parameters
+
 ### 1.2.1
 
 - bug fixes for R3 and R4 ffile inputs

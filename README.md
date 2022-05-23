@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Monday 14 February 2022"
+date: "Monday 23 May 2022"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -992,8 +992,8 @@ We then generate references from the FASTA and GTF files as shown in the followi
 
 ```
 cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/1.2.0 \
-        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.0.fa \
-        --genes=test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gtf
+        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.1.fa \
+        --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.1.gtf
 
 cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/3.0.0 \
          --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-3.0.0.fa \
