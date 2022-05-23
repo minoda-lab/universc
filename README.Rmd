@@ -979,7 +979,7 @@ The `gffread` function includes with the [cufflinks](http://cole-trapnell-lab.gi
 utility can convert to gtf. For example:
 
 ```
-gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.1.gff3 -T -o test/cellranger_reference/cellranger-tiny-ref/genes-1.2.1.gtf 
+gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gff3 -T -o test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gtf 
 ```
 
 To generate new references we first remove the references imported.
@@ -991,9 +991,9 @@ rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.1 test/cellranger_refer
 We then generate references from the FASTA and GTF files as shown in the following examples:
 
 ```
-cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/1.2.1 \
-        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.1.fa \
-        --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.1.gtf
+cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/1.2.0 \
+        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.0.fa \
+        --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.0.gtf
 
 cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/3.0.0 \
          --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-3.0.0.fa \
