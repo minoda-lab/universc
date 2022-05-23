@@ -1,6 +1,72 @@
+### 1.2.2
+
+- bug fixes for detecting I1 and I2 files
+
+- updates smartseq2 parameters for optional full-length or 5' end alignment (non-UMI read counts)
+
+- document full-length chemistry parameters
+
+### 1.2.1
+
+- bug fixes for R3 and R4 ffile inputs
+
+- bug fixes for compressed fastq.gz in I1 and I2
+
+- corrected whitelist for smartseq test job
+
+### 1.2.0
+
+- backend to fully functional GUI app
+
+- updates to support 10x 3` scRNA version 1
+
+- updates test jobs and test data for SmartSeq3
+
+- automated file detection for R3 and R4 read files
+
+### 1.1.7
+
+- uses reverse complement barcode whitelist for inDrops v1 and v2 (automatically generated)
+
+- updated matching to remove adapter sequence between barcodes tested locally
+
+- updates to support legacy versions (v1 and v2) of inDrops protocol
+
+### 1.1.6.2
+
+- documents GUI application
+
+- documents pre-generated references
+
+### 1.1.6.1
+
+- updates large files in Docker image
+
+### 1.1.6
+
+- update building STAR in Docker containers
+
+- updates to syntax in script and subroutines
+
+- bug fixes to allow running without --verbose parameters
+
+- minor updates to documentation for added technologies
+
+### 1.1.5
+
+- add subroutine to support custom references
+
+- update Docker build parameters
+
+- supports application with graphical user interface
+
 ### 1.1.4
 
-version in development
+- add test data for Smart-Seq3
+
+- update handing chemistry in set up
+
+- correct STAR in docker container
 
 ### 1.1.3
 

@@ -1,5 +1,5 @@
 # FROM ubuntu:bionic
-FROM tomkellygenetics/cellranger_clean:latest
+FROM tomkellygenetics/cellranger_clean:3.0.2.9002
 
 RUN apt-get update \
  && apt-get upgrade -y \
@@ -20,7 +20,7 @@ RUN apt-get install -y \
 RUN git clone "https://github.com/TomKellyGenetics/universc.git"
 
 RUN cd universc/test/cellranger_reference/cellranger-tiny-ref/ \
-# && git lfs pull \
+ && git lfs pull \
  && rm -rf 3.0.0 1.2.0 \ 
  && cellranger mkref --genome=3.0.0 --fasta=genome-3.0.0.fa --genes=genes-3.0.0.gtf \
  && cellranger mkref --genome=1.2.0 --fasta=genome-1.2.0.fa --genes=genes-1.2.0.gtf 
@@ -80,3 +80,7 @@ RUN wget https://github.com/alexdobin/STAR/archive/2.5.1b.tar.gz \
 #  && tar -xvzf BBMap_38.87.tar.gz
 
 # ENV PATH bbmap:$PATH
+# ENV PATH bbmap:$PATH
+
+RUN cp /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/chemistry.py /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/check.py
+ 

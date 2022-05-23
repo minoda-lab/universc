@@ -39,6 +39,7 @@ test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/chrStart.txt filter=lfs
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/1.2.0/read-I1_si-TTTCATGA_lane-008-chunk-001.fastq.gz filter=lfs diff=lfs merge=lfs -text
+/home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/1.2.0/read-RA_si-TTTCATGA_lane-008-chunk-001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_I1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 /home/tom/repos/cellranger_convert/test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L001_R2_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
@@ -59,6 +60,7 @@ test/shared/smartseq3-test/Smartseq3_diySpike_R2.fastq.gz filter=lfs diff=lfs me
 test/shared/sciseq-v3-test/SRR7827205_S1_R1.fastq.gz filter=lfs diff=lfs merge=lfs -text
 test/shared/sciseq-v3-test/SRR7827205_S1_R2.fastq.gz filter=lfs diff=lfs merge=lfs -text
 test/shared/icell8-test/72618_KU812_L002_R2_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
+test/shared/cellranger-tiny-fastq/1.2.0/read-RA_si-TTTCATGA_lane-008-chunk-001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 test/shared/icell8-test/72618_KU812_L001_R1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 test/shared/icell8-test/72618_KU812_L001_R2_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 test/shared/icell8-test/72618_KU812_L002_R1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
@@ -70,3 +72,11 @@ test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R1_001.fastq.gz filter=l
 test/shared/cellranger-tiny-fastq/3.0.0/tinygex_S1_L002_R2_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
 whitelists/KAPA_UDI_Index2_i5.txt filter=lfs diff=lfs merge=lfs -text
 whitelists/KAPA_UDI_Index1_i7.txt filter=lfs diff=lfs merge=lfs -text
+test/shared/smartseq3-test/test-smartseq-hek293t_S2_L001_R1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
+test/shared/smartseq3-test/test-smartseq-hek293t_S2_L001_R2_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
+test/shared/smartseq3-test/test-smartseq-hek293t_S2_L002_I1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
+test/shared/smartseq3-test/test-smartseq-hek293t_S2_L002_I2_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
+test/shared/smartseq3-test/test-smartseq-hek293t_S2_L002_R1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
+test/shared/smartseq3-test/test-smartseq-hek293t_S2_L002_R2_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
+test/shared/smartseq3-test/test-smartseq-hek293t_S2_L001_I1_001.fastq.gz filter=lfs diff=lfs merge=lfs -text
+test/shared/smartseq3-test/test-smartseq-hek293t_S2_L001_I2_001.fastq.gz filter=lfs diff=lfs merge=lfs -text

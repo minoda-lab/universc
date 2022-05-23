@@ -20,7 +20,7 @@
 install=false
 
 ######UniverSC version#####
-universcversion="1.1.6"
+universcversion="1.2.1"
 ##########
 
 
@@ -195,9 +195,13 @@ Mandatory arguments to long options are mandatory for short options too.
   -i,  --id ID                  A unique run id, used to name output folder
   -d,  --description TEXT       Sample description to embed in output files.
   -r,  --reference DIR          Path of directory containing 10x-compatible reference.
+                                Available here the human genome and various model species:
+                                https://genomec.gsc.riken.jp/gerg/UniverSC/Premade_references/
+
   -t,  --technology PLATFORM    Name of technology used to generate data.
                                 Supported technologies:
-                                  10x Genomics (version automatically detected): 10x, chromium
+                                  10x Genomics (version 2 or 3 automatically detected): 10x, chromium
+                                  10x Genomics version 1 (14 bp barcode, 10 bp UMI): 10x-v1, chromium-v1
                                   10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
                                   10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
                                   Aligent Bravo B (16 bp barcode, No UMI): aligent, bravo
@@ -243,7 +247,9 @@ Mandatory arguments to long options are mandatory for short options too.
   
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', 'SC5P-R1', 'SC5P-R2', 'threeprime', or 'fiveprime'
                                     5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies.
-                                    All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics and ICELL8 allow choosing which to use.
+                                    Setting 'SC3Pv1' for 10x version 1 chemistry is recommended.
+                                    All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics, ICELL8, and SmartSeq2 allow choosing which to use.
+                                    For SmartSeq2 this parameter detemines using full-length sequences or 5' ends with internal reads removed.
   
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
@@ -618,6 +624,8 @@ if [[ $verbose ]]; then
 fi
 if [[ "$technology" == "10x" ]] || [[ "$technology" == "chromium" ]]; then
     technology="10x"
+elif [[ "$technology" == "10x-v1" ]] || [[ "$technology" == "chromium-v1" ]]; then
+     technology="10x-v1"
 elif [[ "$technology" == "10x-v2" ]] || [[ "$technology" == "chromium-v2" ]]; then
     technology="10x-v2"
 elif [[ "$technology" == "10x-v3" ]] || [[ "$technology" == "chromium-v3" ]]; then
@@ -667,11 +675,11 @@ elif [[ "$technology" == "icell8-full" ]] || [[ "$technology" == "icell8-fl" ]] 
         fi
         chemistry="SC5P-PE"
     fi
-elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
+elif [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrops-v1" ]] || [[ "$technology" == "indropv1" ]] || [[ "$technology" == "indropsv1" ]] || [[ "$technology" == "indrop1" ]] || [[ "$technology" == "indrops1" ]] || [[ "$technology" == "1cellbio-v1" ]] || [[ "$technology" == "1cellbiov1" ]]; then
     technology="indrop-v1"
-elif [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
+elif [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrops-v2" ]] || [[ "$technology" == "indropv2" ]] || [[ "$technology" == "indropsv2" ]] || [[ "$technology" == "indrop2" ]] || [[ "$technology" == "indrops2" ]] ||[[ "$technology" == "1cellbio-v2" ]] || [[ "$technology" == "1cellbiov2" ]]; then
     technology="indrop-v2"
-elif [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]] || [[ "$technology" == "1cellbio-v3" ]] || [[ "$technology" == "1cellbiov3" ]]; then
+elif [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "indrops-v3" ]] || [[ "$technology" == "indropv3" ]] || [[ "$technology" == "indropsv3" ]] || [[ "$technology" == "indrop3" ]] || [[ "$technology" == "indrops3" ]] || [[ "$technology" == "1cellbio-v3" ]] || [[ "$technology" == "1cellbiov3" ]]; then
     technology="indrop-v3"
 elif [[ "$technology" == "marsseq" ]] || [[ "$technology" == "mars-seq" ]] || [[ "$technology" == "marsseq-v1" ]] || [[ "$technology" == "mars-seq-v1" ]] || [[ "$technology" == "marsseqv1" ]] || [[ "$technology" == "mars-seqv1" ]]; then
     technology="marsseq-v1"
@@ -778,14 +786,24 @@ if [[ "$technology" == "10x" ]]; then
     barcodelength=16
     umilength=10
     minlength=16
+elif [[ "$technology" == "10x-v1" ]]; then
+    barcodelength=14
+    barcode_default=14
+    umilength=10
+    minlength=14
+    chemistry="SC3Pv1"
+    technology="10x"
 elif [[ "$technology" == "10x-v2" ]]; then
     barcodelength=16
     umilength=10
     minlength=16
+    technology="10x"
 elif [[ "$technology" == "10x-v3" ]]; then
     barcodelength=16
     umilength=12
     minlength=16
+    chemistry="SC3Pv3"
+    technology="10x"
 elif [[ "$technology" == "bd-rhapsody" ]]; then
     barcodelength=27
     umilength=8
@@ -958,7 +976,9 @@ fi
 
 #set default barcode and umi lengths
 if [[ $minlength -gt 16 ]]; then
-     barcode_default=$minlength
+    barcode_default=$minlength
+elif [[ "$chemistry" == "SC3Pv1" && ${technology} == "10x" ]]; then
+    barcode_default=14
 else
     barcode_default=16
 fi
@@ -1021,6 +1041,8 @@ fi
 
 
 #index 1
+r4_present="false"
+i1_present="false"
 if [[ $setup == "false" ]]; then
     if [[ ${#index1[@]} -ne ${#read1[@]} ]]; then
         if [[ ${#index1[@]} -gt 0 ]]; then
@@ -1034,6 +1056,7 @@ if [[ $setup == "false" ]]; then
             r1_list=("${read1[@]}")
             r2_list=("${read2[@]}")
             i1_list=()
+            r4_list=()
             for j in ${!r1_list[@]}; do
                 read=${r1_list[$j]}
                 R1_file=$read
@@ -1041,7 +1064,8 @@ if [[ $setup == "false" ]]; then
                     R2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
                     R4_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R4/' )
                     I1_file=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
-                    if [[ -f $R4_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fq') ]]; then
+                    if [[ -f $R4_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.gz' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fastq' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R4_file})'*.fq' | head -n 1) ]]; then
+                        r4_present="true"
                         if [[ $verbose ]]; then
                             echo "  file $R4_file found, replacing $R1_file ..." 
                         fi
@@ -1058,7 +1082,8 @@ if [[ $setup == "false" ]]; then
                         i1_read=$R2_file
                         i1_list[$j]=$i1_read
                     fi
-                    if [[ -f $I1_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fq') ]]; then
+                    if [[ -f $I1_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.gz' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fastq' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I1_file})'*.fq' | head -n 1) ]]; then
+                        i1_present="true"
                         if [[ $verbose ]]; then
                             echo "  file $I1_file found ..."
                         fi
@@ -1084,9 +1109,11 @@ if [[ $setup == "false" ]]; then
 fi
 
 #index 2
+r3_present="false"
+i2_present="false"
 if [[ $setup == "false" ]]; then
     #only check I2 for dual-indexed techniques
-    if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq"* ]]; then
+    if [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq"* ]] || [[  "$chemistry" == "SC3Pv1" && "$technology" == "10x" ]]; then
         if [[ ${#index2[@]} -ne ${#read1[@]} ]]; then
             if [[ ${#index2[@]} -gt 0 ]]; then
                echo " Error: number of index1 files is not matching the number of index2 files"
@@ -1098,6 +1125,7 @@ if [[ $setup == "false" ]]; then
                 fi
                 r1_list=("${read1[@]}")
                 r2_list=("${read2[@]}")
+                r3_list=()
                 i2_list=()
                 for j in ${!r1_list[@]}; do
                     read=${r1_list[$j]}
@@ -1106,14 +1134,21 @@ if [[ $setup == "false" ]]; then
                         R2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
                         R3_file=$(echo $read | perl -pne 's/(.*)_R1/$1_R3/' )
                         I2_file=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
-                        if [[ -f $R3_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fq') ]]; then
+                        if [[ -f $R3_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.gz' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fastq' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${R3_file})'*.fq' | head -n 1) ]]; then
+                            r3_present="true"
                             if [[ $verbose ]]; then
                                 echo "  file $R3_file found, replacing $I2_file ..." 
                             fi
-                            i2_read=$R3_file
-                            i2_list[$j]=$i1_read
+                            if [[ $technology == "10x" ]]; then
+                                r3_read=$R3_file
+                                r3_list[$j]=$r3_read
+                            else
+                                i2_read=$R3_file
+                                i2_list[$j]=$r3_read
+                            fi
                         fi
-                        if [[ -f $I2_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.gz') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fastq') ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fq') ]]; then
+                        if [[ -f $I2_file ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.gz' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fastq' | head -n 1) ]] || [[ -f $(find $(dirname ${read}) -name $(basename ${I2_file})'*.fq' | head -n 1) ]]; then
+                            i2_present="true"
                             if [[ $verbose ]]; then
                                 echo "  file $I2_file found ..."
                             fi
@@ -1132,6 +1167,12 @@ if [[ $setup == "false" ]]; then
                         echo "  index files found ${#index2[@]} I2s: ${index2[@]}"
                     fi
                 fi
+                if [[ ${#r3_list[@]} -gt 0 ]]; then
+                    read3=("${r3_list[@]}")
+                    if [[ $verbose ]]; then
+                        echo "  index files found ${#read3[@]} R3s: ${read3[@]}"
+                    fi
+                fi
             fi
         fi
     elif [[ ${#index2[@]} -gt 0 ]]; then
@@ -1142,9 +1183,15 @@ if [[ $setup == "false" ]]; then
 fi
 
 if [[ $verbose ]]; then
-    echo " Input files prost-curation 1"
+    echo " Input files post-curation 1"
     echo "  ${#read1[@]}files - read1s: ${read1[@]}"
     echo "  ${#read2[@]}files - read2s: ${read2[@]}"
+    if [[ ${#index1[@]} -gt 0 ]]; then
+        echo "  ${#read3[@]}files - R3s: ${read3[@]}"
+    fi
+    if [[ ${#index2[@]} -gt 0 ]]; then
+        echo "  ${#read4[@]}files - R4s: ${read4[@]}"
+    fi
     if [[ ${#index1[@]} -gt 0 ]]; then
         echo "  ${#index1[@]}files - I1s: ${index1[@]}"
     fi
@@ -1154,11 +1201,26 @@ if [[ $verbose ]]; then
     echo "  number of these files are as expected"
 fi
 
+
+
 keys=("R1" "R2")
-if [[ ${#index2[@]} -gt 0 ]]; then
-    keys=("R1" "R2" "I1" "I2")
-elif [[ ${#index1[@]} -gt 0 ]]; then
-    keys=("R1" "R2" "I1")
+if [[ $r3_present == "true" ]]; then
+    keys=(${keys[@]} "R3")
+    if [[ $technology == "10x" ]]; then
+        read3=("${read3[@]}")
+    else
+        read3=("${index2[@]}")
+    fi
+fi
+if [[ $r4_present == "true" ]]; then
+    keys=(${keys[@]} "R4")
+    read4=("${index1[@]}")
+fi
+if [[ $i1_present == "true" ]]; then
+    keys=(${keys[@]} "I1")
+fi
+if [[ $i2_present == "true" ]]; then
+    keys=(${keys[@]} "I2")
 fi
 ##########
 
@@ -1167,7 +1229,7 @@ fi
 #####Input file curation 2: Check R1, R2, I1, and I2 files for their extensions#####
 ##allows incomplete file names and processing compressed files
 if [[ $verbose ]]; then
-    echo "key: ${keys[@]}"
+    echo "keys: ${keys[@]}"
 fi
 for key in ${keys[@]}; do
     if [[ $verbose ]]; then
@@ -1179,6 +1241,10 @@ for key in ${keys[@]}; do
         list=("${read1[@]}")
     elif [[ $readkey == "R2" ]]; then
         list=("${read2[@]}")
+    elif [[ $readkey == "R3" ]]; then
+        list=("${read3[@]}")
+    elif [[ $readkey == "R4" ]]; then
+        list=("${read4[@]}")
     elif [[ $readkey == "I1" ]]; then
         list=("${index1[@]}")
     elif [[ $readkey == "I2" ]]; then
@@ -1242,6 +1308,10 @@ for key in ${keys[@]}; do
         read1=("${list[@]}")
     elif [[ $readkey == "R2" ]]; then
         read2=("${list[@]}")
+    elif [[ $readkey == "R3" ]]; then
+        read3=("${list[@]}")
+    elif [[ $readkey == "R4" ]]; then
+        read4=("${list[@]}")
     elif [[ $readkey == "I1" ]]; then
         index1=("${list[@]}")
      elif [[ $readkey == "I2" ]]; then
@@ -1253,6 +1323,12 @@ if [[ $verbose ]]; then
     echo " Input files post-curation 2"
     echo "  ${#read1[@]}files - read1s: ${read1[@]}"
     echo "  ${#read2[@]}files - read2s: ${read2[@]}"
+    if [[ ${#read3[@]} -gt 0 ]]; then
+        echo "  ${#read3[@]}files - R3s: ${read3[@]}"
+    fi
+    if [[ ${#read4[@]} -gt 0 ]]; then
+        echo "  ${#read4[@]}files -  R4s: ${read4[@]}"
+    fi
     if [[ ${#index1[@]} -gt 0 ]]; then
         echo "  ${#index1[@]}files - I1s: ${index1[@]}"
     fi
@@ -1276,6 +1352,10 @@ for key in ${keys[@]}; do
         list=("${read1[@]}")
     elif [[ $readkey == "R2" ]]; then
         list=("${read2[@]}")
+    elif [[ $readkey == "R3" ]]; then
+        list=("${read3[@]}")
+    elif [[ $readkey == "R4" ]]; then
+        list=("${read4[@]}")
     elif [[ $readkey == "I1" ]]; then
         list=("${index1[@]}")
     elif [[ $readkey == "I2" ]]; then
@@ -1430,9 +1510,13 @@ for key in ${keys[@]}; do
         read1=("${list[@]}")
     elif [[ $readkey == "R2" ]]; then
         read2=("${list[@]}")
-     elif [[ $readkey == "I1" ]]; then
+    elif [[ $readkey == "R3" ]]; then
+        read3=("${list[@]}")
+    elif [[ $readkey == "R4" ]]; then
+        read4=("${list[@]}")
+    elif [[ $readkey == "I1" ]]; then
         index1=("${list[@]}")
-      elif [[ $readkey == "I2" ]]; then
+    elif [[ $readkey == "I2" ]]; then
         index2=("${list[@]}")
     fi
 done
@@ -1441,6 +1525,12 @@ if [[ $verbose ]]; then
     echo " Input files post-curation 3"
     echo "  ${#read1[@]}files - read1s: ${read1[@]}"
     echo "  ${#read2[@]}files - read2s: ${read2[@]}"
+    if [[ ${#read3[@]} -gt 0 ]]; then
+        echo "  ${#read3[@]}files - R3s: ${read3[@]}"
+    fi
+    if [[ ${#read4[@]} -gt 0 ]]; then
+        echo "  ${#read4[@]}files - R4s: ${read4[@]}"
+    fi
     if [[ ${#index1[@]} -gt 0 ]]; then
         echo "  ${#index1[@]}files - I1s: ${index1[@]}"
     fi
@@ -1617,6 +1707,12 @@ if [[ $verbose ]]; then
     echo " Input files post-curation 4"
     echo "  ${#read1[@]}files - read1s: ${read1[@]}"
     echo "  ${#read2[@]}files - read2s: ${read2[@]}"
+    if [[ ${#read3[@]} -gt 0 ]]; then
+        echo "  ${#read3[@]}files - R3s: ${read3[@]}"
+    fi
+    if [[ ${#read4[@]} -gt 0 ]]; then
+        echo "  ${#read4[@]}files - R4s: ${read4[@]}"
+    fi
     if [[ ${#index1[@]} -gt 0 ]]; then
         echo "  ${#index1[@]}files - I1s: ${index1[@]}"
     fi
@@ -1632,8 +1728,12 @@ fi
 #####Input file curation 5: Catpuring sample name#####
 #checking the quality of fastq file names
 read12=("${read1[@]}" "${read2[@]}")
-if [[ ${#index2[@]} -gt 0 ]]; then
-    read12=("${read1[@]}" "${read2[@]}" "${index1[@]}" "${index2[@]}")
+if [[ ${#read3[@]} -gt 0 ]] && [[ ${#read4[@]} -gt 0 ]]; then
+    read12=("${read1[@]}" "${read2[@]}" "${read3[@]}" "${read4[@]}")
+elif [[ ${#index1[@]} -gt 0 ]] && [[ ${#read3[@]} -gt 0 ]]; then
+    read12=("${read1[@]}" "${read2[@]}" "${read3[@]}" "${index1[@]}")
+elif [[ ${#index2[@]} -gt 0 ]]; then
+     read12=("${read1[@]}" "${read2[@]}" "${index1[@]}" "${index2[@]}")
 elif [[ ${#index1[@]} -gt 0 ]]; then
     read12=("${read1[@]}" "${read2[@]}" "${index1[@]}")
 fi
@@ -1808,7 +1908,7 @@ else
             echo "  barcode adjusted to ${barcodelength} bp to match the length in the default whitelist for ${technology}"
         fi
         if [[ "$technology" == "indrop-v1" ]] || [[ "$technology" == "indrop-v2" ]]; then
-            barcodefile=${whitelistdir}/inDrop-v2_barcodes.txt
+            barcodefile=${whitelistdir}/inDrop-v1_barcodes.txt
         elif [[ "$technology" == "indrop-v3" ]]; then
             barcodefile=${whitelistdir}/inDrop-v3_barcodes.txt
             echo "***WARNING: combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
@@ -1911,7 +2011,8 @@ else
             fi
         elif [[ "$technology" == "indrop-v"* ]]; then
             if [[ "$technology" == "indrop-v1" ]] || [[ $technology"" == "indrop-v2" ]]; then
-                perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v2 ${whitelistdir}
+                sed -E 's/.*(.{8})/\1/g' ${whitelistdir}/inDrop_gel_barcode1_list_revcomp.txt > ${whitelistdir}/inDrop_gel_barcode1_list_revcomp_tail.txt
+                perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list_revcomp_tail.txt ${whitelistdir}/inDrop_gel_barcode2_list_revcomp.txt v1 ${whitelistdir}
             elif [[ "$technology" == "indrop-v3" ]]; then
                 #allow for barcodes in index (I1) and R1
                 perl ${MAKEINDROPBARCODES} ${whitelistdir}/inDrop_gel_barcode1_list.txt ${whitelistdir}/inDrop_gel_barcode2_list.txt v3 ${whitelistdir}
@@ -2046,26 +2147,53 @@ if [[ "$technology" != "10x" ]]; then
 fi
 if [[ "$technology" == "10x" ]]; then
     #use SC3Pv3 (umi length 12)
-    if [[ "$chemistry" != "auto" ]];then
-    #use automatic chemistry detection
-    echo "Detecting 10x chemistry automatically"
-    chemistry="auto"
-    #do not convert UMI
-    umi_default=12
-    umilength=${umi_default}
-    umiadjust=0
+    if [[ "$chemistry" == "SC3Pv1" ]]; then
+        echo "Accepted chemistry: $chemistry"
+         barcode_default=14
+         umi_default=10
+    elif [[ "$chemistry" != "auto" ]]; then
+        #use automatic chemistry detection
+        echo "Detecting 10x chemistry automatically"
+        chemistry="auto"
+        #do not convert UMI
+        umi_default=12
+        umilength=${umi_default}
+        umiadjust=0
     fi
 fi
-if [[ "$technology" == "smartseq" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
+if [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
     if [[ $verbose ]]; then
         echo "  Using $chemistry for $technology"
     fi
     if [[ "$chemistry" == "fiveprime" ]]; then
-       chemistry="SC5P-R1"
+       chemistry="SC5P-PE"
     fi
     if [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
-        echo "Error: option --chemistry must be SC5P-PE, SC5P-R1 or SC5P-R2"
-        exit 1
+        if [[ $nonUMI == "false" ]]; then
+            echo "Error: option --chemistry must be SC5P-PE, SC5P-R1 or SC5P-R2 for ${technology} (umi-based)"
+            exit 1
+        fi
+    fi
+fi
+if [[ "$technology" == "smartseq2"  || ( "$technology" == "smartseq3" && $nonUMI == "true" ) ]]; then
+    if [[ $verbose ]]; then
+        echo "  Using $chemistry for $technology"
+    fi
+    if [[ "$chemistry" == "fiveprime" ]]; then
+       chemistry="SC5P-PE"
+    fi
+    if [[ "$chemistry" == "SC5P-R1" ]]; then
+        echo "  accurately mapping 5\' ends (filtering by tag sequence)"
+    else
+        echo "  mapping all reads (tag sequence removed)"
+    fi
+    if [[ "$chemistry" == "SC5P-PE" ]]; then
+        echo "  mapping paired ends..."
+    else
+        echo "  mapping single-ends..."
+    fi
+    if [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+         echo "  using full-length sequences for read counts (default for ${technology})"
     fi
 fi
 ##########
@@ -2686,6 +2814,36 @@ if [[ ${#index2[@]} -ge 1 ]]; then
         fi
     done
 fi
+
+if [[ ${#read3[@]} -ge 1 ]]; then
+    crR3s=()
+    if [[ $verbose ]]; then
+        echo "Processing Index"
+        echo "Fastqs: ${read3[@]}"
+        echo "${read3[@]}"
+    fi
+    for fq in "${read3[@]}"; do
+        if [[ $verbose ]]; then
+            echo "$fq"
+        fi
+        to=`basename $fq`
+        to="${crIN}/${to}"
+        to=$(echo "$to" | sed 's/\.gz$//')
+        
+        if [[ $verbose ]]; then
+            echo "$to"
+        fi
+        crR3s+=($to)
+        
+        echo "handling $fq ..."
+        if [[ ! -f $to ]] || [[ $convert == true ]]; then
+            if [[ $verbose ]]; then
+                echo "cp -f $fq $to"
+            fi
+            cp -f $fq $to
+        fi
+    done
+fi
 ##########
 
 
@@ -2912,15 +3070,14 @@ else
         for convFile in "${convFiles[@]}"; do
             #remove adapter if present
             sed -E '
-                /^(.{8})GAGTGATTGCTTGTGACGCCTT(.{8})/ {
-                s/^(.{8})GAGTGATTGCTTGTGACGCCTT(.{8})/\1\2/g
+                /^.*(.{8})GA.................CTT(.{8})(.{6}).*$/ {
+                s/^.*(.{8})GA.................CTT(.{8})(.{6}).*$/\1\2\3/g
                 n
                 n
-                s/^(.{8}).{22}(.{8})/\1\2/g
-                }' $convFile |
+                s/^(.{8}).{22}(.{8})(.{6}).*/\1\2\3/g
+                }' $convFile > ${crIN}/.temp
             #remove linker between barcode and UMI
-            echo"  ... barcode and UMI linker removed for ${technology}"
-            sed -E '2~2s/^(.{8})(.{8}).{4}(.{6})/\1\2\3/g' > ${crIN}/.temp
+            echo "  ... barcode and UMI linker removed for ${technology}"
             mv ${crIN}/.temp $convFile
         done
     fi
@@ -3286,16 +3443,29 @@ else
                 }' $convR2 > ${crIN}/.temp
             mv ${crIN}/.temp $convR2
             
-            echo " ... remove internal reads for ${technology} by matching TSO sequence for UMI reads"
-            #filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
-            perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'AAGCAGTGGTATCAACGCAGAGTAC' --out_dir ${crIN}
-            echo "  ... trim tag sequence from R1"
-            
-            #returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
-            mv $crIN/parsed_R1.fastq ${convR1}
-            mv $crIN/parsed_R2.fastq ${convR2}
-            mv $crIN/parsed_I1.fastq ${convI1}
-            mv $crIN/parsed_I2.fastq ${convI2}
+            if [[ ${chemistry} == "SC5P-R1" ]]; then
+                echo " ... remove internal reads for ${technology} by matching TSO sequence for UMI reads"
+                #filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
+                perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'AAGCAGTGGTATCAACGCAGAGTACGG' --out_dir ${crIN}
+                echo "  ... trim tag sequence from R1"
+
+                # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
+                mv $crIN/parsed_R1.fastq ${convR1}
+                mv $crIN/parsed_R2.fastq ${convR2}
+                mv $crIN/parsed_I1.fastq ${convI1}
+                mv $crIN/parsed_I2.fastq ${convI2}
+            elif [[ ${chemistry} == "SC3Pv2" ]] || [[ ${chemistry} == "SC5P-PE" ]];
+                # remove tag sequence adapter (first occurence only)
+                sed -E '
+                     /^AAGCAGTGGTATCAACGCAGAGTACGG/ {
+                     s/^AAGCAGTGGTATCAACGCAGAGTACGG//g
+                     n
+                     n
+                     s/^.{27}//g
+                     }' $convFile > ${crIN}/.temp
+                # returns R1 with tag sequence removed  
+                mv ${crIN}/.temp $convFile
+            fi
             
             echo "  ... concatencate barcodes to R1 from I1 and I2 index files"
             #concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
@@ -3305,36 +3475,43 @@ else
             ##16 bp barcode, GGG for TSO, no UMI
             mv $crIN/Concatenated_File.fastq ${convR1}
             
-            #add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
-            perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir ${crIN} --head_length ${barcodelength} --umi_length ${umi_default}
-            umilength=${umi_default}
-            umiadjust=0
-            chemistry="SC3Pv2"
+            if [[ $nonUMI == "true" ]]; then
+                #add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
+                perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir ${crIN} --head_length ${barcodelength} --umi_length ${umi_default}
+                umilength=${umi_default}
+                umiadjust=0
             
-            #returns a combined R1 file with barcode and mock UMI
-            ##16 bp barcode, 10 bp UMI, GGG for TSO
-            mv $crIN/mock_UMI.fastq ${convR1}
-            
-            #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
-            echo " handling $convFile ..."
-            tsoS="TTTCTTATATGGG"
-            tsoQ="IIIIIIIIIIIII"
-            #Add 10x TSO characters to the end of the sequence
-            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
-            if [[ $verbose ]]; then
-                echo technology $technology
-                echo barcode: $barcodelength
-                echo umi: $umilength
-                echo $cmd
+                # returns a combined R1 file with barcode and mock UMI
+                ##16 bp barcode, 10 bp UMI, GGG for TSO
+                mv $crIN/mock_UMI.fastq ${convR1}
             fi
-            #run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/" $convFile > ${crIN}/.temp
-            eval $cmd
-            mv ${crIN}/.temp $convFile
-            #Add n characters to the end of the quality
-            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
-            #run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/" $convFile > ${crIN}/.temp
-            eval $cmd
-            mv ${crIN}/.temp $convFile
+
+            # skip adding TSO for 3' chemistry
+            if [[ ${chemistry} != "SC3Pv2" ]] && [[ ${chemistry} != "SC3Pv3" ]] && [[ ${chemistry} != "auto" ]]; then
+                #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
+                echo " handling $convFile ..."
+                tsoS="TTTCTTATATGGG"
+                tsoQ="IIIIIIIIIIIII"
+
+                #Add 10x TSO characters to the end of the sequence
+                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+
+                if [[ $verbose ]]; then
+                    echo technology $technology
+                    echo barcode: $barcodelength
+                    echo umi: $umilength
+                    echo $cmd
+                fi
+
+                #run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.*)/\1\2$tsoS\4/" $convFile > ${crIN}/.temp
+                eval $cmd
+                mv ${crIN}/.temp $convFile
+                #Add n characters to the end of the quality
+                cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+                #run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.*)/\1\2$tsoQ\4/" $convFile > ${crIN}/.temp
+                eval $cmd
+                mv ${crIN}/.temp $convFile
+            fi
             echo "  ${convFile} adjusted"
        done
     fi

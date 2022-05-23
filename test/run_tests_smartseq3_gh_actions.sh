@@ -42,7 +42,7 @@ fi
 # call on smartseq3 with files
 bash launch_universc.sh --id "test-smartseq3" --technology "smartseq3" \
  --reference "test/cellranger_reference/cellranger-tiny-ref/3.0.0" \
- --read1 "test/shared/smartseq3-test/Smartseq3_diySpike_R1" \
- --read2 "test/shared/smartseq3-test/Smartseq3_diySpike_R2" \
+ --read1 "test/shared/smartseq3-test/test-smartseq-hek293t_S2_L001_R1" \
+ --read2 "test/shared/smartseq3-test/test-smartseq-hek293t_S2_L001_R2" \
  --barcodefile "${whitelistdir}/test_bcs_small.txt" \
  --jobmode "local" --localcores 1 
