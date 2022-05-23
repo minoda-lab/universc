@@ -249,7 +249,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                     5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies.
                                     Setting 'SC3Pv1' for 10x version 1 chemistry is recommended.
                                     All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics, ICELL8, and SmartSeq2 allow choosing which to use.
-                                    For SmartSeq2 this parameter detemines using full-length sequences or 5' ends with internal reads removed.
+                                    For SmartSeq2 this parameter detemines using full-length sequences or 5′ ends with internal reads removed.
   
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
@@ -2201,7 +2201,7 @@ fi
 
 
 #####checking if jobmode matches expected input#####
-if [[ "$jobmode" != "local" ]] && [[ "$jobmode" != "sge" ]] && [[ "$jobmode" != "lsf" ]] && [[ "$jobmode" != *"template" ]]; then
+if [[ "$jobmode" != "local" ]] && [[ "$jobmode" != "sge" ]] && [[ "$jobmode" != "lsf" ]] && [[ "$jobmode" != "slurm" ]] && [[ "$jobmode" != *"template" ]]; then
     echo "Error: option --jobmode must be local, sge, lsf, or a .template file"
     exit 1
 fi
@@ -3454,7 +3454,8 @@ else
                 mv $crIN/parsed_R2.fastq ${convR2}
                 mv $crIN/parsed_I1.fastq ${convI1}
                 mv $crIN/parsed_I2.fastq ${convI2}
-            elif [[ ${chemistry} == "SC3Pv2" ]] || [[ ${chemistry} == "SC5P-PE" ]];
+            else
+                #if [[ ${chemistry} == "SC3Pv2" ]] || [[ ${chemistry} == "SC5P-PE" ]];
                 # remove tag sequence adapter (first occurence only)
                 sed -E '
                      /^AAGCAGTGGTATCAACGCAGAGTACGG/ {
