@@ -248,7 +248,8 @@ Mandatory arguments to long options are mandatory for short options too.
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', 'SC5P-R1', 'SC5P-R2', 'threeprime', or 'fiveprime'
                                     5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies.
                                     Setting 'SC3Pv1' for 10x version 1 chemistry is recommended.
-                                    All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics and ICELL8 allow choosing which to use.
+                                    All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics, ICELL8, and SmartSeq2 allow choosing which to use.
+                                    For SmartSeq2 this parameter detemines using full-length sequences or 5' ends with internal reads removed.
   
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
@@ -2160,16 +2161,39 @@ if [[ "$technology" == "10x" ]]; then
         umiadjust=0
     fi
 fi
-if [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
+if [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
     if [[ $verbose ]]; then
         echo "  Using $chemistry for $technology"
     fi
     if [[ "$chemistry" == "fiveprime" ]]; then
-       chemistry="SC5P-R1"
+       chemistry="SC5P-PE"
     fi
     if [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
-        echo "Error: option --chemistry must be SC5P-PE, SC5P-R1 or SC5P-R2"
-        exit 1
+        if [[ $nonUMI == "false" ]]; then
+            echo "Error: option --chemistry must be SC5P-PE, SC5P-R1 or SC5P-R2 for ${technology} (umi-based)"
+            exit 1
+        fi
+    fi
+fi
+if [[ "$technology" == "smartseq2"  || ( "$technology" == "smartseq3" && $nonUMI == "true" ) ]]; then
+    if [[ $verbose ]]; then
+        echo "  Using $chemistry for $technology"
+    fi
+    if [[ "$chemistry" == "fiveprime" ]]; then
+       chemistry="SC5P-PE"
+    fi
+    if [[ "$chemistry" == "SC5P-R1" ]]; then
+        echo "  accurately mapping 5\' ends (filtering by tag sequence)"
+    else
+        echo "  mapping all reads (tag sequence removed)"
+    fi
+    if [[ "$chemistry" == "SC5P-PE" ]]; then
+        echo "  mapping paired ends..."
+    else
+        echo "  mapping single-ends..."
+    fi
+    if [[ "$chemistry" != "SC5P-PE" ]] && [[ "$chemistry" != "SC5P-R1" ]] && [[ "$chemistry" != "SC5P-R2" ]]; then
+         echo "  using full-length sequences for read counts (default for ${technology})"
     fi
 fi
 ##########
@@ -3419,17 +3443,29 @@ else
                 }' $convR2 > ${crIN}/.temp
             mv ${crIN}/.temp $convR2
             
-#            echo " ... remove internal reads for ${technology} by matching TSO sequence for UMI reads"
-#            #filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
-#            perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 
-'AAGCAGTGGTATCAACGCAGAGTAC' --out_dir ${crIN}
-#            echo "  ... trim tag sequence from R1"
-            
-            #returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
-#            mv $crIN/parsed_R1.fastq ${convR1}
-#            mv $crIN/parsed_R2.fastq ${convR2}
-#            mv $crIN/parsed_I1.fastq ${convI1}
-#            mv $crIN/parsed_I2.fastq ${convI2}
+            if [[ ${chemistry} == "SC5P-R1" ]]; then
+                echo " ... remove internal reads for ${technology} by matching TSO sequence for UMI reads"
+                #filter UMI reads by matching tag sequence ATTGCGCAATG (bases 1-11 of R1) and remove as an adapters 
+                perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'AAGCAGTGGTATCAACGCAGAGTACGG' --out_dir ${crIN}
+                echo "  ... trim tag sequence from R1"
+
+                # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
+                mv $crIN/parsed_R1.fastq ${convR1}
+                mv $crIN/parsed_R2.fastq ${convR2}
+                mv $crIN/parsed_I1.fastq ${convI1}
+                mv $crIN/parsed_I2.fastq ${convI2}
+            elif [[ ${chemistry} == "SC3Pv2" ]] || [[ ${chemistry} == "SC5P-PE" ]];
+                # remove tag sequence adapter (first occurence only)
+                sed -E '
+                     /^AAGCAGTGGTATCAACGCAGAGTACGG/ {
+                     s/^AAGCAGTGGTATCAACGCAGAGTACGG//g
+                     n
+                     n
+                     s/^.{27}//g
+                     }' $convFile > ${crIN}/.temp
+                # returns R1 with tag sequence removed  
+                mv ${crIN}/.temp $convFile
+            fi
             
             echo "  ... concatencate barcodes to R1 from I1 and I2 index files"
             #concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)
@@ -3439,38 +3475,43 @@ else
             ##16 bp barcode, GGG for TSO, no UMI
             mv $crIN/Concatenated_File.fastq ${convR1}
             
-            #add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
-            perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir ${crIN} --head_length ${barcodelength} --umi_length ${umi_default}
-            umilength=${umi_default}
-            umiadjust=0
+            if [[ $nonUMI == "true" ]]; then
+                #add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
+                perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir ${crIN} --head_length ${barcodelength} --umi_length ${umi_default}
+                umilength=${umi_default}
+                umiadjust=0
             
-            #returns a combined R1 file with barcode and mock UMI
-            ##16 bp barcode, 10 bp UMI, GGG for TSO
-            mv $crIN/mock_UMI.fastq ${convR1}
-            
-            #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
-            echo " handling $convFile ..."
-            tsoS="TTTCTTATATGGG"
-            tsoQ="IIIIIIIIIIIII"
-            #Add 10x TSO characters to the end of the sequence
-#            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
-            cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
-
-            if [[ $verbose ]]; then
-                echo technology $technology
-                echo barcode: $barcodelength
-                echo umi: $umilength
-                echo $cmd
+                # returns a combined R1 file with barcode and mock UMI
+                ##16 bp barcode, 10 bp UMI, GGG for TSO
+                mv $crIN/mock_UMI.fastq ${convR1}
             fi
-            #run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoS\4/" $convFile > ${crIN}/.temp
-            eval $cmd
-            mv ${crIN}/.temp $convFile
-            #Add n characters to the end of the quality
-#            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})(.{3})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
-            cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
-            #run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.{3})(.*)/\1\2$tsoQ\4/" $convFile > ${crIN}/.temp
-            eval $cmd
-            mv ${crIN}/.temp $convFile
+
+            # skip adding TSO for 3' chemistry
+            if [[ ${chemistry} != "SC3Pv2" ]] && [[ ${chemistry} != "SC3Pv3" ]] && [[ ${chemistry} != "auto" ]]; then
+                #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
+                echo " handling $convFile ..."
+                tsoS="TTTCTTATATGGG"
+                tsoQ="IIIIIIIIIIIII"
+
+                #Add 10x TSO characters to the end of the sequence
+                cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
+
+                if [[ $verbose ]]; then
+                    echo technology $technology
+                    echo barcode: $barcodelength
+                    echo umi: $umilength
+                    echo $cmd
+                fi
+
+                #run command with barcode and umi length, e.g.,: sed -E "2~4s/(.{16})(.{8})(.*)/\1\2$tsoS\4/" $convFile > ${crIN}/.temp
+                eval $cmd
+                mv ${crIN}/.temp $convFile
+                #Add n characters to the end of the quality
+                cmd=$(echo 'sed -E "4~4s/(.{'$barcodelength'})(.{'${umilength}'})/\1\2'$tsoQ'/" '$convFile' > '${crIN}'/.temp')
+                #run command with barcode and umi length, e.g.,: sed -E "4~4s/(.{16})(.{8})(.*)/\1\2$tsoQ\4/" $convFile > ${crIN}/.temp
+                eval $cmd
+                mv ${crIN}/.temp $convFile
+            fi
             echo "  ${convFile} adjusted"
        done
     fi

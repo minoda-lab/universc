@@ -269,6 +269,10 @@ Provides a conversion script to run multiple technologies and custom libraries w
                   Fluidigm C1, ICELL8 full-length, inDrops-v3, Quartz-Seq, RamDA-Seq,
                   SCI-RNA-Seq, SCI-RNA-Seq3, scifi-seq, Smart-Seq2, Smart-Seq3, STRT-Seq-2i, STRT-Seq-C1
 
+            For the following full-length technologies the --chemistry argument can be used to refine parameters:
+
+                  SmartSeq, SmartSeq2
+
 
   -b,  --barcodefile FILE
             Custom barcode list in plain text (with each line containing a barcode). Please provide
@@ -285,9 +289,16 @@ Provides a conversion script to run multiple technologies and custom libraries w
             All samples are converted to contain the barcode and UMI in Read1 as used for 'SC3Pv2'.
             'SC3Pv3' is only used for technologies with longer UMI.
 
-            5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and
+            5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq3, and
             STRT-Seq technologies. All other technologies default to 3′ scRNA-Seq parameters.
             Only 10x Genomics and ICELL8 allow choosing which chemistry parameter to use.
+
+           For full-length single-cell technologies (SmartSeq and SmartSeq2) the chemistry input
+           configures the following settings:
+
+              auto or SC3Pv2 (default): 5' tag sequences are removed and all reads are mapped in 3' chemistry
+              SC5P-PE: 5' tag sequences are replaced by the 10x TSO sequence and all reads are mapped in 5' chemistry (paired-ends)
+              SC5P-R1: reads not containing a 5' tag are filtered out and 5' ends are mapped using read 1 only
 
   -n,  --force-cells NUM
             Force pipeline to use this number of cells, bypassing the cell detection algorithm.
