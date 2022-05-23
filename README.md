@@ -939,14 +939,14 @@ cellrangerpath=`which cellranger`
 if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
     rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA
 fi
-if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
+if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.1/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.1/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.1/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.1/star/SA
 fi
 ```
 
 This creates a reference for Cell Ranger here:
 
-- test/cellranger_reference/cellranger-tiny-ref/1.2.0
+- test/cellranger_reference/cellranger-tiny-ref/1.2.1
 
 - test/cellranger_reference/cellranger-tiny-ref/3.0.0
 
@@ -985,13 +985,13 @@ gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.1.gff3 -T -o tes
 To generate new references we first remove the references imported.
 
 ```
-rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0 test/cellranger_reference/cellranger-tiny-ref/3.0.0
+rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.1 test/cellranger_reference/cellranger-tiny-ref/3.0.0
 ```
 
 We then generate references from the FASTA and GTF files as shown in the following examples:
 
 ```
-cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/1.2.0 \
+cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/1.2.1 \
         --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.1.fa \
         --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.1.gtf
 
