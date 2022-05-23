@@ -435,12 +435,12 @@ cellrangerpath=`which cellranger`
 if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
     rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA
 fi
-if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
+if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.1/star/SA ]] &amp;&amp; [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.1/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.1/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.1/star/SA
 fi</code></pre>
 <p>This creates a reference for Cell Ranger here:</p>
 <ul>
-<li><p>test/cellranger_reference/cellranger-tiny-ref/1.2.0</p></li>
+<li><p>test/cellranger_reference/cellranger-tiny-ref/1.2.1</p></li>
 <li><p>test/cellranger_reference/cellranger-tiny-ref/3.0.0</p></li>
 </ul>
 <h4 id="automated-references">Automated references</h4>
@@ -455,13 +455,13 @@ cd ../../..</code></pre>
 <h4 id="custom-cell-ranger-references">Custom Cell Ranger references</h4>
 <p>It is also possible to generate a custom reference for any genome provided you have a FASTQ genome reference file and a GTF/GFF3 annotation file. Please ensure that the chromosomes match between the FASTA headers and the chromosome column (1st) of the GTF/GFF3 file.</p>
 <p>The <code>gffread</code> function includes with the <a href="http://cole-trapnell-lab.github.io/cufflinks/file_formats/#the-gffread-utility">cufflinks</a> utility can convert to gtf. For example:</p>
-<pre><code>gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.1.gff3 -T -o test/cellranger_reference/cellranger-tiny-ref/genes-1.2.1.gtf </code></pre>
+<pre><code>gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gff3 -T -o test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gtf </code></pre>
 <p>To generate new references we first remove the references imported.</p>
 <pre><code>rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0 test/cellranger_reference/cellranger-tiny-ref/3.0.0</code></pre>
 <p>We then generate references from the FASTA and GTF files as shown in the following examples:</p>
 <pre><code>cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/1.2.0 \
-        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.1.fa \
-        --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.1.gtf
+        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.0.fa \
+        --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.0.gtf
 
 cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/3.0.0 \
          --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-3.0.0.fa \

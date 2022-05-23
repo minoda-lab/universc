@@ -939,14 +939,14 @@ cellrangerpath=`which cellranger`
 if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
     rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA
 fi
-if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
+if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.1/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.1/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.1/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.1/star/SA
 fi
 ```
 
 This creates a reference for Cell Ranger here:
 
-- test/cellranger_reference/cellranger-tiny-ref/1.2.0
+- test/cellranger_reference/cellranger-tiny-ref/1.2.1
 
 - test/cellranger_reference/cellranger-tiny-ref/3.0.0
 
@@ -979,7 +979,7 @@ The `gffread` function includes with the [cufflinks](http://cole-trapnell-lab.gi
 utility can convert to gtf. For example:
 
 ```
-gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.1.gff3 -T -o test/cellranger_reference/cellranger-tiny-ref/genes-1.2.1.gtf 
+gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gff3 -T -o test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gtf 
 ```
 
 To generate new references we first remove the references imported.
@@ -992,8 +992,8 @@ We then generate references from the FASTA and GTF files as shown in the followi
 
 ```
 cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/1.2.0 \
-        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.1.fa \
-        --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.1.gtf
+        --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-1.2.0.fa \
+        --genes=test/cellranger_reference/cellranger-tiny-ref/ genes-1.2.0.gtf
 
 cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/3.0.0 \
          --fasta=test/cellranger_reference/cellranger-tiny-ref/genome-3.0.0.fa \
