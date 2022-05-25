@@ -1,4 +1,5 @@
 cff-version: 1.2.0
+preferred-citation: unpublished
 message: "If you use this software, please cite it as below."
 title: UniverSC: a flexible cross-platform single-cell data processing pipeline
 year: 2021
