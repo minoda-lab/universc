@@ -11,12 +11,11 @@ authors:
     email: kai.battenberg@riken.jp
     affiliation: Center for Sustainable Resource Science, RIKEN, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Japan
     orcid: "https://orcid.org/http://orcid.org/0000-0001-7517-2657"
-title: "universc"
 version: 1.2.1
 date-released: 2021-02-14
 url: "https://github.com/minoda-lab/universc"
 preferred-citation:
-  type: unpublished
+  type: article
   title: UniverSC: a flexible cross-platform single-cell data processing pipeline
   authors:
     - given-names: S. Thomas
