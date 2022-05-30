@@ -353,7 +353,7 @@ as follows:
 
 Kelly, S.T., Battenberg, Hetherington, N.A., K., Hayashi, K., and Minoda, A. (2021)
 UniverSC: a flexible cross-platform single-cell data processing pipeline.
-bioRxiv 2021.01.19.427209; doi: [https://doi.org/10.11.2.3021.01.19.427209](https://doi.org/10.11.2.3021.01.19.427209)
+bioRxiv 2021.01.19.427209; doi: [https://doi.org/10.1101/2021.01.19.427209](https://doi.org/10.1101/2021.01.19.427209)
 package version 1.2.3. [https://github.com/minoda-lab/universc](https://github.com/minoda-lab/universc)
 
 ```
@@ -362,7 +362,7 @@ package version 1.2.3. [https://github.com/minoda-lab/universc](https://github.c
         title = {{UniverSC}: a flexible cross-platform single-cell data processing pipeline},
         elocation-id = {2021.01.19.427209},
         year = {2021},
-        doi = {10.11.2.3021.01.19.427209},
+        doi = {10.1101/2021.01.19.427209},
         publisher = {Cold Spring Harbor Laboratory},
         abstract = {Single-cell RNA-sequencing analysis to quantify RNA molecules in individual cells has become popular owing to the large amount of information one can obtain from each experiment. We have developed UniverSC (https://github.com/minoda-lab/universc), a universal single-cell processing tool that supports any UMI-based platform. Our command-line tool enables consistent and comprehensive integration, comparison, and evaluation across data generated from a wide range of platforms.Competing Interest StatementThe authors have declared no competing interest.},
         eprint = {https://www.biorxiv.org/content/early/2021/01/19/2021.01.19.427209.full.pdf},
@@ -1241,8 +1241,8 @@ bash /universc/launch_universc.sh --id "test-10x-v3" --technology "10x" \
 Obtain DropSeq data from public database:
 
 ```
-wget https://www.ncbi.nlm.nih.gov/geo/download/\?acc\=GSM1.2.392\&format\=file\&file\=GSM1.2.392%5FPure%5FHumanMouse%2Ebam
-mv index.html\?acc=GSM1.2.392\&format=file\&file=GSM1.2.392%5FPure%5FHumanMouse%2Ebam GSM1.2.39.bam
+wget https://www.ncbi.nlm.nih.gov/geo/download/\?acc\=GSM1629193\&format\=file\&file\=GSM1629193%5FPure%5FHumanMouse%2Ebam
+mv index.html\?acc=GSM1629193\&format=file\&file=GSM1629193%5FPure%5FHumanMouse%2Ebam GSM1.2.39.bam
 samtools sort -n GSM1.2.39.bam > GSM1.2.39.qsort
 samtools view  GSM1.2.39.qsort  HUMAN_21:9825832-48085036 > GSM1.2.39.qsort2
 samtools sort -O BAM GSM1.2.39.bam > GSM1.2.39.sort.bam
@@ -1250,17 +1250,17 @@ samtools index GSM1.2.39.sort.bam
 samtools view  GSM1.2.39.sort.bam  HUMAN_21:9825832-48085036 > GSM1.2.39.chr21.bam
 samtools view -O BAM  GSM1.2.39.sort.bam  HUMAN_21:9825832-48085036 > GSM1.2.39.chr21.sort.bam
 samtools sort -n GSM1.2.39.chr21.sort.bam -o GSM1.2.39.chr21.qsort.bam
-bedtools bamtofastq -i GSM1.2.39.chr21.qsort.bam -fq GSM1.2.392_chr21_R1.fastq
-mv GSM1.2.392_chr21_R1.fastq GSM1.2.392_chr21_R2.fastq
+bedtools bamtofastq -i GSM1.2.39.chr21.qsort.bam -fq GSM1629193_chr21_R1.fastq
+mv GSM1629193_chr21_R1.fastq GSM1629193_chr21_R2.fastq
 fastq-dump -F --split-files SRR1873277
-fastq_pair GSM1.2.392_chr21_R2.fastq SRR1873277_1.fastq
+fastq_pair GSM1629193_chr21_R2.fastq SRR1873277_1.fastq
 head -n 117060 SRR1873277_1.fastq.paired.fq 117060 > SRR1873277_1.fastq.paired.fq
-head -n 117060 GSM1.2.392_chr21_R2.fastq.paired.fq > GSM1.2.392_chr21_R2.fastq.paired.fq
-cp SRR1873277_1.fastq.paired.fq  GSM1.2.392_chr21_R2.fastq.paired.fq ~/repos/universc/test/shared/dropseq-test
-cp SRR1873277_1.fastq.paired.fq  GSM1.2.392_chr21_R2.fastq.paired.fq ~/repos/universc/test/shared/dropseq-test
+head -n 117060 GSM1629193_chr21_R2.fastq.paired.fq > GSM1629193_chr21_R2.fastq.paired.fq
+cp SRR1873277_1.fastq.paired.fq  GSM1629193_chr21_R2.fastq.paired.fq ~/repos/universc/test/shared/dropseq-test
+cp SRR1873277_1.fastq.paired.fq  GSM1629193_chr21_R2.fastq.paired.fq ~/repos/universc/test/shared/dropseq-test
 mv SRR1873277_1.fastq.paired.fq SRR1873277_R1.fastq
-mv GSM1.2.392_chr21_R2.fastq.paired.fq  universc/test/shared/dropseq-test/SRR1873277_R2.fastq
-mv GSM1.2.392_chr21_R2.fastq.paired.fq  universc/test/shared/dropseq-test/SRR1873277_R2.fastq
+mv GSM1629193_chr21_R2.fastq.paired.fq  universc/test/shared/dropseq-test/SRR1873277_R2.fastq
+mv GSM1629193_chr21_R2.fastq.paired.fq  universc/test/shared/dropseq-test/SRR1873277_R2.fastq
 ```
 
 Run UniverSC:
