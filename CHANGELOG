@@ -1,3 +1,15 @@
+### 1.2.3
+
+- enables GitHub citation widget
+
+- updates SmartSeq2 and SmartSeq3 default barcodes 
+
+- updates SmartSeq2 adapter sequences and documents chemistry configurations
+
+- enables running Slurm scheduler with automatic template configuration
+
+- correctly sets the source directory to call subroutines and whitelists on Slurm (https://stackoverflow.com/questions/56962129/how-to-get-original-location-of-script-used-for-slurm-job)
+
 ### 1.2.2
 
 - bug fixes for detecting I1 and I2 files
