@@ -40,7 +40,15 @@ fi
 
 
 #####locate launch_universc.sh, barcode sources, and other tools######
-SOURCE="${BASH_SOURCE[0]}"
+echo "script running in $(realpath $0)..."
+SOURCE=${BASH_SOURCE[0]}
+# check if script is started via SLURM or bash (job ID defined in Slurm job)
+if [[ -n $SLURM_JOB_ID ]];  then
+    if [[ $(echo $SLURM_JOB_ID | wc -w) -ge 1 ]]; then
+        # check the original location through scontrol and $SLURM_JOB_ID
+        SOURCE=$(scontrol show job $SLURM_JOBID | awk -F= '/Command=/{print $2}')
+    fi
+fi
 SDIR=""
 RDIR=""
 
@@ -56,6 +64,7 @@ while [[ -h "$SOURCE" ]]; do #resolve $SOURCE until the file is no longer a syml
     fi
 done
 SDIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+echo "... script called from ${SDIR}"
 RDIR="$( dirname "$SOURCE" )"
 
 if [[ $RDIR != $SDIR ]]; then
@@ -1937,7 +1946,6 @@ else
          barcodefile=${whitelistdir}/SmartSeq2_full_barcodes.txt
     elif [[ "$technology" == "smartseq3" ]]; then
         barcodefile=${whitelistdir}/SmartSeq3_full_barcodes.txt
-        fi
     elif [[ "$technology" == "strt-seq" ]]; then
          barcodefile=${whitelistdir}/STRTSeq_barcode.txt
     elif [[ "$technology" == "strt-seq-c1" ]]; then
@@ -2627,6 +2635,49 @@ if [[ $lock -eq 0 ]]; then
     echo "setup complete"
 fi
 #########
+
+
+
+#####checking job scheduler####
+# check if cluster mode enabled
+if [[ ${jobmode} != "local" ]]; then
+    echo "running in cluster mode ${jobmode}"
+    if [[ -d  $(dirname ${cellrangerpath})/martian-cs/*/jobmanagers ]]; then
+        cd $(dirname ${cellrangerpath})/martian-cs/*/jobmanagers
+        if [[ -f ${jobmode}.template ]]; then
+            echo "cluster mode configured for ${jobmode}:" $(realpath ${jobmode}.template)
+        else
+            echo "attempting to use default template for cluster mode ${jobmode}"
+            # copies default job template for SGE, Slurm, etc.
+            if [[ -f ${jobmode}.template.example ]]; then
+                cp -v ${jobmode}.template.example ${jobmode}.template
+            fi
+            echo "WARNING: if this does not work as expected, configure the scheduler by editing:"
+            echo $(realpath ${jobmode}.template)
+        fi
+        #return to previus directory
+        cd -
+    fi
+    if [[ -d  $(dirname ${cellrangerpath})/external/martian/jobmanagers ]]; then
+        cd $(dirname ${cellrangerpath})/external/martian/jobmanagers
+        if [[ -f ${jobmode}.template ]]; then
+            echo "cluster mode configured for ${jobmode}:" $(realpath ${jobmode}.template)
+        else
+            echo "attempting to use default template for cluster mode ${jobmode}"
+            # copies default job template for SGE, Slurm, etc.
+            if [[ -f ${jobmode}.template.example ]]; then
+                cp -v ${jobmode}.template.example ${jobmode}.template
+            fi
+            echo "WARNING: if this does not work as expected, configure the scheduler by editing:"
+            echo $(realpath ${jobmode}.template)
+        fi
+        #return to previus directory
+        cd -
+    fi
+else
+    echo "running in local mode (no cluster configuration needed)"
+fi
+########
 
 
 
