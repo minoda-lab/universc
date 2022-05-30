@@ -11,8 +11,8 @@ git push tag $version
 echo "building Docker container version $version"
 docker build -t universc:$version .
 docker tag  universc:$version universc:latest
-docker tag universc:$version tomkellygenetics/universc:latest
-docker tag universc:$version tomkellygenetics/universc:$version
+docker tag universc:$version docker.io/tomkellygenetics/universc:latest
+docker tag universc:$version docker.io/tomkellygenetics/universc:$version
 docker push tomkellygenetics/universc:latest
 docker push tomkellygenetics/universc:$version
 tag universc:$version docker.pkg.github.com/minoda-lab/universc/universc:$version
