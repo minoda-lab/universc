@@ -212,9 +212,9 @@ Mandatory arguments to long options are mandatory for short options too.
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq, nadia
-                                  ICELL8 3′ scRNA version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
-                                  ICELL8 3′ scRNA version 3 (11 bp barcode, 14 bp UMI): icell8
-                                  ICELL8 5′ scRNA with TCR OR kit (10bp barcode, NO bp UMI): icell8-5-prime
+                                  ICELL8 3\′ scRNA version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
+                                  ICELL8 3\′ scRNA version 3 (11 bp barcode, 14 bp UMI): icell8
+                                  ICELL8 5\′ scRNA with TCR OR kit (10bp barcode, NO bp UMI): icell8-5-prime
                                   ICELL8 full-length scRNA with Smart-Seq (16 bp barcode, No UMI): icell8-full-length
                                   inDrops version 1 (19 bp barcode, 6 bp UMI): indrops-v1, 1cellbio-v1
                                   inDrops version 2 (19 bp barcode, 6 bp UMI): indrops-v2, 1cellbio-v2
@@ -246,10 +246,10 @@ Mandatory arguments to long options are mandatory for short options too.
   -b,  --barcodefile FILE       Custom barcode list in plain text (with each line containing a barcode)
   
   -c,  --chemistry CHEM         Assay configuration, autodetection is not possible for converted files: 'SC3Pv2' (default), 'SC5P-PE', 'SC5P-R1', 'SC5P-R2', 'threeprime', or 'fiveprime'
-                                    5′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies.
+                                    5\′ scRNA-Seq ('SC5P-PE') is available only for 10x Genomics, ICELL8, SmartSeq, and STRT-Seq technologies.
                                     Setting 'SC3Pv1' for 10x version 1 chemistry is recommended.
-                                    All other technologies default to 3′ scRNA-Seq parameters. Only 10x Genomics, ICELL8, and SmartSeq2 allow choosing which to use.
-                                    For SmartSeq2 this parameter detemines using full-length sequences or 5′ ends with internal reads removed.
+                                    All other technologies default to 3\′ scRNA-Seq parameters. Only 10x Genomics, ICELL8, and SmartSeq2 allow choosing which to use.
+                                    For SmartSeq2 this parameter detemines using full-length sequences or 5\′ ends with internal reads removed.
   
   -n,  --force-cells NUM        Force pipeline to use this number of cells, bypassing the cell detection algorithm.
   -j,  --jobmode MODE           Job manager to use. Valid options: 'local' (default), 'sge', 'lsf', or a .template file
@@ -1933,10 +1933,10 @@ else
              if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
                  echo "  generating combination of I1, I2, and RT barcodes ..."
              fi
-    elif [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
-        barcodefile=${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
-        if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]]; then
-            echo "  generating combination of I1 and I2 barcodes ..."
+     elif [[ "$technology" == "smartseq2" ]]; then
+         barcodefile=${whitelistdir}/SmartSeq2_full_barcodes.txt
+    elif [[ "$technology" == "smartseq3" ]]; then
+        barcodefile=${whitelistdir}/SmartSeq3_full_barcodes.txt
         fi
     elif [[ "$technology" == "strt-seq" ]]; then
          barcodefile=${whitelistdir}/STRTSeq_barcode.txt
@@ -3347,7 +3347,7 @@ else
             eval $cmd
             mv ${crIN}/.temp $convFile
             echo "  ${convFile} adjusted"
-       done
+        done
     fi
 
     #SureCell: remove adapter and correct phase blocks
@@ -3449,11 +3449,17 @@ else
                 perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'AAGCAGTGGTATCAACGCAGAGTACGG' --out_dir ${crIN}
                 echo "  ... trim tag sequence from R1"
 
-                # returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
+                # returns R1 with tag sequence removed (left trim) starting with a 13 bp TSO and corresponding reads for I1, I2, and R2
                 mv $crIN/parsed_R1.fastq ${convR1}
                 mv $crIN/parsed_R2.fastq ${convR2}
                 mv $crIN/parsed_I1.fastq ${convI1}
                 mv $crIN/parsed_I2.fastq ${convI2}
+                if [[ $verbose ]]; then
+                    cp ${convR1} $crIN/parsed_R1.fastq
+                    cp ${convR2} $crIN/parsed_R2.fastq
+                    cp ${convI1} $crIN/parsed_I1.fastq
+                    cp ${convI2} $crIN/parsed_I2.fastq
+                fi
             else
                 #if [[ ${chemistry} == "SC3Pv2" ]] || [[ ${chemistry} == "SC5P-PE" ]];
                 # remove tag sequence adapter (first occurence only)
@@ -3477,6 +3483,7 @@ else
             mv $crIN/Concatenated_File.fastq ${convR1}
             
             if [[ $nonUMI == "true" ]]; then
+                echo "  ... add mock UMI to count reads for to R1 files"
                 #add mock UMI (count reads instead of UMI) barcodelength=16, umi_default=10
                 perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir ${crIN} --head_length ${barcodelength} --umi_length ${umi_default}
                 umilength=${umi_default}
@@ -3487,13 +3494,12 @@ else
                 mv $crIN/mock_UMI.fastq ${convR1}
             fi
 
-            # skip adding TSO for 3' chemistry
-            if [[ ${chemistry} != "SC3Pv2" ]] && [[ ${chemistry} != "SC3Pv3" ]] && [[ ${chemistry} != "auto" ]]; then
+            # skip adding TSO for 3' chemistry (and 5' R1 which includes this in tag filtering)
+            if [[ ${chemistry} != "SC3Pv2" ]] && [[ ${chemistry} != "SC3Pv3" ]] && [[ ${chemistry} != "SC5P-R1" ]] && [[ ${chemistry} != "auto" ]]; then
                 #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
                 echo " handling $convFile ..."
                 tsoS="TTTCTTATATGGG"
                 tsoQ="IIIIIIIIIIIII"
-
                 #Add 10x TSO characters to the end of the sequence
                 cmd=$(echo 'sed -E "2~4s/(.{'$barcodelength'})(.{'${umilength}'})/\1\2'$tsoS'/" '$convFile' > '${crIN}'/.temp')
 
@@ -3514,7 +3520,7 @@ else
                 mv ${crIN}/.temp $convFile
             fi
             echo "  ${convFile} adjusted"
-       done
+        done
     fi
     
     #Smart-Seq3
@@ -3534,16 +3540,16 @@ else
             echo "  ... parsing R1 reads with tag sequence and inserting 10x TSO"
             perl ${FILTERSMARTSEQREADUMI} --r1 ${convR1} --r2 ${convR2} --i1 ${convI1} --i2 ${convI2} --tag 'ATTGCGCAATG' --out_dir ${crIN}
              
-            #returns R1 with tag sequence removed (left trim) starting with 8pbp UMI and corresponding reads for I1, I2, and R2
+            #returns R1 with tag sequence removed (left trim) starting with 8bp UMI and 13 bp TSO and corresponding reads for I1, I2, and R2
             mv $crIN/parsed_R1.fastq ${convR1}
             mv $crIN/parsed_R2.fastq ${convR2}
             mv $crIN/parsed_I1.fastq ${convI1}
             mv $crIN/parsed_I2.fastq ${convI2}
             if [[ $verbose ]]; then
                 cp ${convR1} $crIN/parsed_R1.fastq
-                cp ${convR1} $crIN/parsed_R1.fastq
-                cp ${convR1} $crIN/parsed_R1.fastq
-                cp ${convR1} $crIN/parsed_R1.fastq
+                cp ${convR2} $crIN/parsed_R2.fastq
+                cp ${convI1} $crIN/parsed_I1.fastq
+                cp ${convI2} $crIN/parsed_I2.fastq
             fi
             
             #concatenate barcocdes from dual indexes to R1 as barcode (bases 1-16)

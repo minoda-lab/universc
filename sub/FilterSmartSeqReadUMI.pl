@@ -80,7 +80,7 @@ $r2_out =~ s/\/\//\//;
 
 #set technology
 my $technology = "";
-if ($tag eq "AAGCAGTGGTATCAACGCAGAGTAC") {
+if ($tag eq "AAGCAGTGGTATCAACGCAGAGTACGG") {
 	$technology = "SmartSeq2";
 }
 elsif ($tag eq "ATTGCGCAATG") {
@@ -127,9 +127,7 @@ while (my $line = <R1>) {
 	#trim r1 data by tag
 	my $r1_trim_seq = $r1_seq;
 	chomp $r1_trim_seq;
-	my @trim = split (/$tag/, $r1_trim_seq);
-	shift @trim;
-	$r1_trim_seq = join ("$tag", @trim);
+	$r1_trim_seq = substr ($r1_trim_seq, length($tag) + 1);
 	my $r1_trim_q = $r1_q;
 	chomp $r1_trim_q;
 	$r1_trim_q = reverse $r1_trim_q;
@@ -148,8 +146,8 @@ while (my $line = <R1>) {
 	my $r1_trim_swop_seq;
 	my $r1_trim_swop_q;
 	if ($technology eq "SmartSeq2") {
-		$r1_trim_swop_seq = substr ($r1_trim_seq, 3);
-		$r1_trim_swop_q = substr ($r1_trim_q, 3);
+		$r1_trim_swop_seq = ($tso_seq.$r1_trim_seq);
+		$r1_trim_swop_q = ($tso_q.$r1_trim_q);
 	}
 	elsif ($technology eq "SmartSeq3") {
 		if (length($r1_trim_seq) > 11) {
