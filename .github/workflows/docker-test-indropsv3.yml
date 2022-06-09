@@ -1,5 +1,5 @@
 name: Test inDrops v3
-on: push
+on: manual_dispach
 jobs:
   test:
     runs-on: ubuntu-20.04

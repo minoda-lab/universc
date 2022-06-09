@@ -1,5 +1,5 @@
 name: Test 10x Genomics
-on: push
+on: manual_dispach
 jobs:
   login:
     runs-on: ubuntu-20.04

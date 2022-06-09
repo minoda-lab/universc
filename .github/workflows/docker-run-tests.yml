@@ -1,7 +1,7 @@
 
 
 name: Run all tests in Docker
-on: push
+on: manual_dispach
 jobs:
   test:
     runs-on: ubuntu-20.04
