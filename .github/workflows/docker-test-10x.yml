@@ -1,5 +1,5 @@
 name: Test 10x Genomics
-on: manual_dispach
+on: workflow_dispach
 jobs:
   login:
     runs-on: ubuntu-20.04

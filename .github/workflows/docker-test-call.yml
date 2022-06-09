@@ -1,5 +1,5 @@
 name: Docker container tests
-on: manual_dispach
+on: workflow_dispach
 jobs:
   test:
     runs-on: ubuntu-20.04
