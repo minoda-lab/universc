@@ -136,6 +136,18 @@ Once you have a docker image installed on your system, you can run the applicabl
 
 [https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_app_release/](https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_app_release/)
 
+### Nextflow users
+
+A [nextflow](https://www.nextflow.io/) custom [module](https://nf-co.re/modules) is being developed for the [nf-core](https://nf-co.re) community. It will be available to use in nf-core [pipelines](https://nf-co.re/pipelines).
+
+See the issue and pull request for details:
+
+https://github.com/nf-core/modules/issues/1644
+
+https://github.com/nf-core/modules/pull/1706
+
+We plan to make this available in the near future. If you are interested in using it or contributing to development, please contact the maintainers. Thank you!
+
 ## Purpose
 
 We've developed a bash script that will run Cell Ranger on FASTQ files for these technologies. See below for details on how to use it.
