@@ -134,7 +134,7 @@ We also provide a graphical user interface (GUI) based application to run the Do
 
 Once you have a docker image installed on your system, you can run the applicable binary available here:
 
-[https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_Release/](https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_Release/)
+[https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_app_release/](https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_app_release/)
 
 ## Purpose
 
