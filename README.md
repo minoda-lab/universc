@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Monday 23 May 2022"
+date: "Wednesday 28 September 2022"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -58,6 +58,7 @@ tags:
 ![GitHub repo size](https://img.shields.io/github/repo-size/minoda-lab/universc)
 ![GitHub top language](https://img.shields.io/github/languages/top/minoda-lab/universc)
 ![GitHub language count](https://img.shields.io/github/languages/count/minoda-lab/universc)
+[![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7116956.svg)](https://doi.org/10.5281/zenodo.7116956)
 
 ![GitHub all releases](https://img.shields.io/github/downloads/minoda-lab/universc/total?label=GitHub%20downloads)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/minoda-lab/universc?label=GitHub%20release)
@@ -142,9 +143,9 @@ A [nextflow](https://www.nextflow.io/) custom [module](https://nf-co.re/modules)
 
 See the issue and pull request for details:
 
-https://github.com/nf-core/modules/issues/1644
+[https://github.com/nf-core/modules/issues/1644](https://github.com/nf-core/modules/issues/1644)
 
-https://github.com/nf-core/modules/pull/1706
+[https://github.com/nf-core/modules/pull/1706](https://github.com/nf-core/modules/pull/1706)
 
 We plan to make this available in the near future. If you are interested in using it or contributing to development, please contact the maintainers. Thank you!
 

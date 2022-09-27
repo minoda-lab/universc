@@ -58,6 +58,7 @@ tags:
 ![GitHub repo size](https://img.shields.io/github/repo-size/minoda-lab/universc)
 ![GitHub top language](https://img.shields.io/github/languages/top/minoda-lab/universc)
 ![GitHub language count](https://img.shields.io/github/languages/count/minoda-lab/universc)
+[![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7116956.svg)](https://doi.org/10.5281/zenodo.7116956)
 
 ![GitHub all releases](https://img.shields.io/github/downloads/minoda-lab/universc/total?label=GitHub%20downloads)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/minoda-lab/universc?label=GitHub%20release)
@@ -135,6 +136,18 @@ We also provide a graphical user interface (GUI) based application to run the Do
 Once you have a docker image installed on your system, you can run the applicable binary available here:
 
 [https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_app_release/](https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_app_release/)
+
+### Nextflow users
+
+A [nextflow](https://www.nextflow.io/) custom [module](https://nf-co.re/modules) is being developed for the [nf-core](https://nf-co.re) community. It will be available to use in nf-core [pipelines](https://nf-co.re/pipelines).
+
+See the issue and pull request for details:
+
+[https://github.com/nf-core/modules/issues/1644](https://github.com/nf-core/modules/issues/1644)
+
+[https://github.com/nf-core/modules/pull/1706](https://github.com/nf-core/modules/pull/1706)
+
+We plan to make this available in the near future. If you are interested in using it or contributing to development, please contact the maintainers. Thank you!
 
 ## Purpose
 
