@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Wednesday 28 September 2022"
+date: "Monday 17 October 2022"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -390,7 +390,7 @@ package version 1.2.4. [https://github.com/minoda-lab/universc](https://github.c
 @Manual{,
     title = {{UniverSC}:  a flexible cross-platform single-cell data processing pipeline},
     author = {S. Thomas Kelly, Kai Battenberg, Nicola A. Hetherington, Makoto Hayashi, and Aki Minoda},
-    year = {2021},
+    year = {2022},
     note = {package version 1.2.4},
     url = {https://github.com/minoda-lab/universc},
   }
