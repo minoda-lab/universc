@@ -84,6 +84,16 @@ PERCELLSTATS=${TOOLS}/ExtractBasicStats.pl
 
 
 #####define set options#####
+# set defaults to 10x if missing (enables unit testing without warnings)
+if [[ -z ${lastcall_b} ]]; then
+    lastcall_b=16
+fi
+if [[ -z ${lastcall_u} ]]; then
+    lastcall_u=10
+fi
+if [[ -z ${lastcall_p} ]]; then
+    lastcall_p="default:10x"
+fi
 lockfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock #path for .lock file
 lastcallfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.last_called #path for .last_called
 lastcall=`[[ -e $lastcallfile ]] && cat $lastcallfile || echo ""`
@@ -2157,17 +2167,28 @@ if [[ "$technology" == "10x" ]]; then
     #use SC3Pv3 (umi length 12)
     if [[ "$chemistry" == "SC3Pv1" ]]; then
         echo "Accepted chemistry: $chemistry"
-         barcode_default=14
-         umi_default=10
+        barcode_default=14
+        umi_default=10
+    elif [[ "$chemistry" == "SC3Pv2" ]]; then
+        echo "Accepted chemistry: $chemistry"
+        barcode_default=16
+        umi_default=10
+    elif [[ "$chemistry" == "SC3Pv3" ]]; then
+        echo "Accepted chemistry: $chemistry"
+        barcode_default=16
+        umi_default=12
     elif [[ "$chemistry" != "auto" ]]; then
         #use automatic chemistry detection
         echo "Detecting 10x chemistry automatically"
         chemistry="auto"
         #do not convert UMI
         umi_default=12
-        umilength=${umi_default}
-        umiadjust=0
     fi
+    # disable conversion for 10x
+    barcodelength=${barcode_default}
+    barrcodeadjust=0
+    umilength=${umi_default}
+    umiadjust=0
 fi
 if [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "icell8-5-prime" ]]; then
     if [[ $verbose ]]; then
@@ -2520,7 +2541,11 @@ if [[ $lock -eq 0 ]]; then
         echo "lastcall: b ${lastcall_b} u ${lastcall_u}; current: b ${barcodelength} u ${umilength}"
         echo "${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py"
     fi
-    old_rna_offset=`echo $((${lastcall_b} + ${lastcall_u})) || 26`
+    if [[ -z ${lastcall_b} ]]  || [[ -z ${lastcall_u} ]]; then 
+        old_rna_offset=26
+    else
+        old_rna_offset=`echo $((${lastcall_b} + ${lastcall_u}))` 2>%1 1> /dev/null
+    fi
     new_rna_offset=`echo $((${barcodelength} + ${umilength}))`
     
     #convert barcodes back if last technology barcode greater than 16 bp

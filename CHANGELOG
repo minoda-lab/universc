@@ -1,3 +1,13 @@
+### 1.2.4
+
+- enables unit testing via nextflow for nf-core module
+
+- removes forced "auto" chemistry for 10x technology (allows setting for test fies too small for automated detection)
+
+- sets default values for last call parameters to 10x technology if not found (allows runs without errors on 1st call)
+
+- enables computing RNA offset parameters without warning messages (supports containerised workflows)  
+
 ### 1.2.3
 
 - enables GitHub citation widget
