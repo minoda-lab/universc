@@ -15,7 +15,7 @@ podman tag  universc:$version universc:latest
 podman tag universc:$version docker.io/tomkellygenetics/universc:latest
 podman tag universc:$version docker/io/tomkellygenetics/universc:$version
 podman push docker.io/ tomkellygenetics/universc:latest
-podman push docker/io/tomkellygenetics/universc:$version
+podman push docker.io/tomkellygenetics/universc:$version
 podman tag universc:$version docker.pkg.github.com/minoda-lab/universc/universc:$version
 podman tag universc:$version docker.pkg.github.com/minoda-lab/universc/universc:latest
 podman push docker.pkg.github.com/minoda-lab/universc/universc:latest
