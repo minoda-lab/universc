@@ -1,3 +1,9 @@
+### 1.2.5-dev
+
+- enables double or triple digit lane numbers (suppports 16 lane NovaSeq X series
+scheduled for launch in Q1 2023, expected to be compatible with older models and
+BGI or Ultima high throughput sequencing platforms)
+
 ### 1.2.4
 
 - enables unit testing via nextflow for nf-core module
