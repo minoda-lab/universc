@@ -1,3 +1,7 @@
+### 1.2.5-dev
+
+- updates PATH environment variable to call /universc/launch_universc.sh from any working directory
+
 ### 1.2.4
 
 - enables unit testing via nextflow for nf-core module

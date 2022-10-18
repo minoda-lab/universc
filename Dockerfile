@@ -46,7 +46,7 @@ RUN mkdir -p /cellranger-3.0.2.9001/cellranger-tiny-ref \
  && ln -s /universc/test/cellranger_reference/cellranger-tiny-ref/1.2.0 /cellranger-3.0.2.9001/cellranger-tiny-ref \ 
  && ln -s /universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0 /cellranger-3.0.2.9001/cellranger-tiny-ref
 
-ENV PATH universc:$PATH
+ENV PATH /universc:$PATH
 
 RUN ln -s /universc/launch_universc.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/universc
 
