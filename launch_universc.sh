@@ -1414,7 +1414,7 @@ for key in ${keys[@]}; do
         
         case $read in
             #check if contains lane before read
-            *_L0[0123456789][0123456789]_$readkey*)
+            *_L[0-9][0-9][0-9]_$readkey*)
                 if [[ $verbose ]]; then
                     echo "  $read compatible with lane"
                 fi
@@ -1433,7 +1433,7 @@ for key in ${keys[@]}; do
         esac
         case $read in
             #check if contains sample before lane
-            *_S[0123456789]_L0*)
+            *_S[0123456789]_L[0-9][0-9][0-9]*)
                 if [[ $verbose ]]; then
                     echo "  $read compatible with sample"
                 fi
@@ -1445,9 +1445,9 @@ for key in ${keys[@]}; do
                     echo "  renaming $read ..."
                 fi
                 k=$((${j} + 1))
-                rename -f "s/_L0/_S${k}_L0/" ${read}*
+                rename -f "s/_L([0-9][0123456789][0123456789])/_S${k}_L\$1/" ${read}*
                 #update file variable
-                read=`echo $read | sed -e "s/_L0/_S${k}_L0/g"`
+                read=`echo $read | sed -e "s/_L([0-9][0123456789][0123456789])/_S${k}_L\$1/g"`
                 list[$j]=$read
             ;;
         esac
@@ -1775,7 +1775,12 @@ for fq in "${read12[@]}"; do
         name_fields=$fields
     fi
     sn=`echo ${name} | cut -f 1-$((${name_fields} - 4)) -d'_'`
-    lane=`echo ${name} | cut -f $((${fields} - 2)) -d'_' | sed 's/L00//'`
+    # removes leading zeroes from lane number
+    lane=`echo ${name} | cut -f $((${fields} - 2)) -d'_' | sed 's/L0([123456789][0123456789])/\$1/' | sed 's/L00([0123456789])/\$1/'`
+    # sets lane to 0 if none found
+    if [[ -z ${lane} ]]; then
+        lane=0
+    fi
     LANE+=($lane)
     if [[ ${fields} -le 4 ]]; then
         echo "***WARNING: filename $fq is not following the naming convention. (e.g. EXAMPLE_S1_L001_R1_001.fastq)***";
