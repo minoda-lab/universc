@@ -3,7 +3,7 @@
 Please cite our publication when you use our software as follows:
 
 Battenberg, K., Kelly, S.T., Ras, R.A., Hetherington, N.A., Hayashi, K., and Minoda, A. (2022)
-A flexible cross-platform single-cell data processing pipeline. Nat Commun 13, 6847 (2022). https://doi.org/10.1038/s41467-022-34681-z
+A flexible cross-platform single-cell data processing pipeline. _Nat Commun_ **13**(1): 1-7. https://doi.org/10.1038/s41467-022-34681-z
 
 ```
 @Article{pmid36369450,
@@ -13,7 +13,7 @@ A flexible cross-platform single-cell data processing pipeline. Nat Commun 13, 6
         year="2022",
         volume="13",
         number="1",
-        pages="6847",
+        pages="1-7",
         month="Nov",
         note = {https://github.com/minoda-lab/universc package version 1.2.4},
         URL = {https://doi.org/10.1038/s41467-022-34681-z}
