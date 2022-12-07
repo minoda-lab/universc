@@ -6,6 +6,11 @@
 scheduled for launch in Q1 2023, expected to be compatible with older models and
 BGI or Ultima high throughput sequencing platforms)
 
+- migrates sed calls to perl for better memory-efficiency on large input files
+
+- set default user as "root" in docker containers and ensure that cellranger is writeable
+  to allow running in nextflow or singularity
+
 ### 1.2.4
 
 - enables unit testing via nextflow for nf-core module
