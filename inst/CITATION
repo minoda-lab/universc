@@ -1,8 +1,26 @@
 ### Citation <span id="Citation"><span>
 
-A submission to a journal and biorXiv is in progress. Please cite these when
-they are available. Currently, the package can be cited
-as follows:
+Please cite our publication when you use our software as follows:
+
+Battenberg, K., Kelly, S.T., Ras, R.A., Hetherington, N.A., Hayashi, K., and Minoda, A. (2022)
+A flexible cross-platform single-cell data processing pipeline. _Nat Commun_ **13**(1): 1-7. https://doi.org/10.1038/s41467-022-34681-z
+
+```
+@Article{pmid36369450,
+        author="Battenberg, K.  and Kelly, S. T.  and Ras, R. A.  and Hetherington, N. A.  and Hayashi, M.  and Minoda, A. ",
+        title="{{A} flexible cross-platform single-cell data processing pipeline}",
+        journal="Nat Commun",
+        year="2022",
+        volume="13",
+        number="1",
+        pages="1-7",
+        month="Nov",
+        note = {https://github.com/minoda-lab/universc package version 1.2.4},
+        URL = {https://doi.org/10.1038/s41467-022-34681-z}
+}
+```
+
+The preprint can also be found here:
 
 Kelly, S.T., Battenberg, Hetherington, N.A., K., Hayashi, K., and Minoda, A. (2021)
 UniverSC: a flexible cross-platform single-cell data processing pipeline.
@@ -25,6 +43,8 @@ package version 1.2.5-dev. [https://github.com/minoda-lab/universc](https://gith
 }
 
 ```
+
+The software can also be cited directly as a manual:
 
 ```
 @Manual{,
