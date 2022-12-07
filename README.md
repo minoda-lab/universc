@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Tuesday 18 October 2022"
+date: "Wednesday 07 December 2022"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -382,7 +382,7 @@ A flexible cross-platform single-cell data processing pipeline. _Nat Commun_ **1
 
 The preprint can also be found here:
 
-Kelly, S.T., Battenberg, Hetherington, N.A., K., Hayashi, K., and Minoda, A. (2021)
+Kelly, S.T., Battenberg K., Hetherington, N.A., Hayashi, K., and Minoda, A. (2021)
 UniverSC: a flexible cross-platform single-cell data processing pipeline.
 bioRxiv 2021.01.19.427209; doi: [https://doi.org/10.1101/2021.01.19.427209](https://doi.org/10.1101/2021.01.19.427209)
 package version 1.2.5-dev. [https://github.com/minoda-lab/universc](https://github.com/minoda-lab/universc)
