@@ -17,6 +17,29 @@ RUN apt-get install -y \
   nano \
   && sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended"
 
+RUN apt-get install -y \
+ python3-pip \
+ && python3 -m pip install --upgrade pip setuptools wheel \
+ && pip3 install multiqc
+
+RUN git clone https://github.com/linsalrob/fastq-pair.git \
+ && cd fastq-pair \
+ && mkdir build \
+ && cd build \
+ && gcc -std=gnu99   ../main.c ../robstr.c ../fastq_pair.c ../is_gzipped.c  -o fastq_pair \
+ && cp fastq_pair /bin/fastq_pair
+
+# Install STAR aligner
+RUN wget https://github.com/alexdobin/STAR/archive/2.5.1b.tar.gz \
+ && tar -xf 2.5.1b.tar.gz \
+ && rm 2.5.1b.tar.gz \
+ && cd STAR-2.5.1b \
+ && make \
+ && mv bin/Linux_x86_64/STAR* /usr/bin \
+ && cd source \
+ && make \
+ && cd /
+
 RUN git clone "https://github.com/TomKellyGenetics/universc.git"
 
 RUN cd universc/test/cellranger_reference/cellranger-tiny-ref/ \
@@ -52,35 +75,6 @@ RUN ln -s /universc/launch_universc.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
-
-RUN apt-get install -y \
- python3-pip \
- && python3 -m pip install --upgrade pip setuptools wheel \
- && pip3 install multiqc
-
-RUN git clone https://github.com/linsalrob/fastq-pair.git \
- && cd fastq-pair \
- && mkdir build \
- && cd build \
- && gcc -std=gnu99   ../main.c ../robstr.c ../fastq_pair.c ../is_gzipped.c  -o fastq_pair \
- && cp fastq_pair /bin/fastq_pair
-
-# Install STAR aligner
-RUN wget https://github.com/alexdobin/STAR/archive/2.5.1b.tar.gz \
- && tar -xf 2.5.1b.tar.gz \
- && rm 2.5.1b.tar.gz \
- && cd STAR-2.5.1b \
- && make \
- && mv bin/Linux_x86_64/STAR* /usr/bin \
- && cd source \
- && make \
- && cd /
-
-# RUN wget https://sourceforge.net/projects/bbmap/files/latest/download ; mv download BBMap_38.87.tar.gz \
-#  && tar -xvzf BBMap_38.87.tar.gz
-
-# ENV PATH bbmap:$PATH
-# ENV PATH bbmap:$PATH
 
 RUN cp /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/chemistry.py /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/check.py
 
