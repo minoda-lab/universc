@@ -3653,7 +3653,7 @@ else
         if [[ $barcodeadjust -gt 0 ]]; then
             for convFile in "${convFiles[@]}"; do
                 echo " handling $convFile ..."
-                sed -i "2~2s/^.{${barcodeadjust}}//" $convFile #Trim the first n characters from the beginning of the sequence and quality
+                perl -pni -e "2~2s/^.{${barcodeadjust}}//" $convFile #Trim the first n characters from the beginning of the sequence and quality
                 echo "  ${convFile} adjusted"
             done
         elif [[ 0 -gt $barcodeadjust ]]; then
@@ -3661,8 +3661,8 @@ else
                 echo " handling $convFile ..."
                 toS=`printf '%0.sA' $(seq 1 $(($barcodeadjust * - 1)))`
                 toQ=`printf '%0.sI' $(seq 1 $(($barcodeadjust * - 1)))`
-                sed -i "2~4s/^/$toS/" $convFile #Trim the first n characters from the beginning of the sequence
-                sed -i "4~4s/^/$toQ/" $convFile #Trim the first n characters from the beginning of the quality
+                perl -pni -e "2~4s/^/$toS/" $convFile #Trim the first n characters from the beginning of the sequence
+                perl -pni -e "4~4s/^/$toQ/" $convFile #Trim the first n characters from the beginning of the quality
                 echo "  ${convFile} adjusted"
             done
         fi
