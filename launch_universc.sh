@@ -1776,7 +1776,7 @@ for fq in "${read12[@]}"; do
     fi
     sn=`echo ${name} | cut -f 1-$((${name_fields} - 4)) -d'_'`
     # removes leading zeroes from lane number
-    lane=`echo ${name} | cut -f $((${fields} - 2)) -d'_' | sed 's/L0([123456789][0123456789])/\$1/' | sed 's/L00([0123456789])/\$1/'`
+    lane=`echo ${name} | cut -f $((${fields} - 2)) -d'_' | sed -E 's/L([123456789][0123456789][0123456789])/\1/' | sed -E 's/L0([123456789][0123456789])/\1/' | sed -E 's/L00([0123456789])/\1/'`
     # sets lane to 0 if none found
     if [[ -z ${lane} ]]; then
         lane=0
