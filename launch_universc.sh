@@ -2547,7 +2547,7 @@ if [[ $lock -eq 0 ]]; then
         echo "lastcall: b ${lastcall_b} u ${lastcall_u}; current: b ${barcodelength} u ${umilength}"
         echo "${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py"
     fi
-    if [[ -z ${lastcall_b} ]]  || [[ -z ${lastcall_u} ]]; then 
+    if [[ -z ${lastcall_b} ]]  || [[ -z ${lastcall_u} ]]; then
         old_rna_offset=26
     else
         old_rna_offset=`echo $((${lastcall_b} + ${lastcall_u}))` 2>%1 1> /dev/null
@@ -2958,10 +2958,10 @@ else
             #remove phase blocks and linkers
             sed -E '
                 /.*(.{9})ACTGGCCTGCGA(.{9})GGTAGCGGTGACA(.{9})(.{8})/ {
-                s/.*(.{9})ACTGGCCTGCGA(.{9})GGTAGCGGTGACA(.{9})(.{8})/\1.2.5-dev\4/g
+                s/.*(.{9})ACTGGCCTGCGA(.{9})GGTAGCGGTGACA(.{9})(.{8})/\1\2\3\4/g
                 n
                 n
-                s/.*(.{6}).{12}(.{6}).{13}(.{6})(.{8})/\1.2.5-dev\4/g
+                s/.*(.{6}).{12}(.{6}).{13}(.{6})(.{8})/\1\2\3\4/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
@@ -3106,7 +3106,7 @@ else
                     s/^(.{10})(.{10})GCGTCGTGTAGGG/\1\2GGG/g
                     n
                     n
-                    s/^(.{10})(.{10})(.{10})(.{3})/\1.2.5-dev//g
+                    s/^(.{10})(.{10})(.{10})(.{3})/\1\2\4/g
                 }'  $convFile > ${crIN}/.temp
                 mv ${crIN}/.temp $convFile
                 sed -E '
@@ -3114,7 +3114,7 @@ else
                     s/^(.{10})(.{10})TGTGAGAAAGGG/\1\2GGG/g
                     n
                     n
-                    s/(.{10})(.{10})(.{9})(.{3})/\1.2.5-dev//g
+                    s/(.{10})(.{10})(.{9})(.{3})/\1\2\4/g
                 }'  $convFile > ${crIN}/.temp
                 mv ${crIN}/.temp $convFile
                 #convert TSO to expected length for 10x 5' (TSS in R1 from base 39)
@@ -3153,10 +3153,10 @@ else
             #remove adapter if present
             sed -E '
                 /^.*(.{8})GA.................CTT(.{8})(.{6}).*$/ {
-                s/^.*(.{8})GA.................CTT(.{8})(.{6}).*$/\1.2.5-dev/g
+                s/^.*(.{8})GA.................CTT(.{8})(.{6}).*$/\1\2\3/g
                 n
                 n
-                s/^(.{8}).{22}(.{8})(.{6}).*/\1.2.5-dev/g
+                s/^(.{8}).{22}(.{8})(.{6}).*/\1\2\3/g
                 }' $convFile > ${crIN}/.temp
             #remove linker between barcode and UMI
             echo "  ... barcode and UMI linker removed for ${technology}"
@@ -3202,10 +3202,10 @@ else
             #remove phase blocks and linkers
             sed -E '
                 /.*(.{6})CGACTCACTACAGGG(.{6})TCGGTGACACGATCG(.{6})(.{6})/ {
-                s/.*(.{6})CGACTCACTACAGGG(.{6})TCGGTGACACGATCG(.{6})(.{6})/\1.2.5-dev\4/g
+                s/.*(.{6})CGACTCACTACAGGG(.{6})TCGGTGACACGATCG(.{6})(.{6})/\1\2\3\4/g
                 n
                 n
-                s/.*(.{6}).{15}(.{6}).{15}(.{6})(.{6})$/\1.2.5-dev\4/g
+                s/.*(.{6}).{15}(.{6}).{15}(.{6})(.{6})$/\1\2\3\4/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
@@ -3296,7 +3296,7 @@ else
                 s/^(.{9})CAGAGC(.{18})/T\1CAGAGC\2/g
                 n
                 n
-                s/^(.{9})(.{6})(.{18})/F\1.2.5-dev/g
+                s/^(.{9})(.{6})(.{18})/F\1\2\3/g
                 }' |
            #remove linker (9 bp barcodes)
            sed -E '
@@ -3440,10 +3440,10 @@ else
             #remove phase blocks and linkers
             sed -E '
                 /.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC/ {
-                s/.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC/\1.2.5-dev\4/g
+                s/.*(.{6})TAGCCATCGCATTGC(.{6})TACCTCTGAGCTGAA(.{6})ACG(.{8})GAC/\1\2\3\4/g
                 n
                 n
-                s/.*(.{6}).{15}(.{6}).{15}(.{6}).{3}(.{8}).{3}/\1.2.5-dev\4/g
+                s/.*(.{6}).{15}(.{6}).{15}(.{6}).{3}(.{8}).{3}/\1\2\3\4/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
@@ -3458,10 +3458,10 @@ else
             #remove phase blocks and linkers
             sed -E '
                 /.*CGAATGCTCTGGCCTTCGGACGATCATGGG(.{8})CAAGTATGCAGCGCGCTCAAGCACGTGGAT(.{8})AGTCGTACGCCGATGCGAAACATCGGCCAC(.{8})(.{10})$/ {
-                s/.*CGAATGCTCTGGCCTTCGGACGATCATGGG(.{8})CAAGTATGCAGCGCGCTCAAGCACGTGGAT(.{8})AGTCGTACGCCGATGCGAAACATCGGCCAC(.{8})(.{10})$/\1.2.5-dev\4/g
+                s/.*CGAATGCTCTGGCCTTCGGACGATCATGGG(.{8})CAAGTATGCAGCGCGCTCAAGCACGTGGAT(.{8})AGTCGTACGCCGATGCGAAACATCGGCCAC(.{8})(.{10})$/\1\2\3\4/g
                 n
                 n
-                s/.*.{30}(.{8}).{30}(.{8}).{30}(.{8})(.{10})$/\1.2.5-dev\4/g
+                s/.*.{30}(.{8}).{30}(.{8}).{30}(.{8})(.{10})$/\1\2\3\4/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
             #remove phase blocks and linkers (reverse complement if R2 matched)
