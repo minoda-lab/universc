@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Monday 17 October 2022"
+date: "Saturday 24 December 2022"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -382,7 +382,7 @@ A flexible cross-platform single-cell data processing pipeline. _Nat Commun_ **1
 
 The preprint can also be found here:
 
-Kelly, S.T., Battenberg, Hetherington, N.A., K., Hayashi, K., and Minoda, A. (2021)
+Kelly, S.T., Battenberg K., Hetherington, N.A., Hayashi, K., and Minoda, A. (2021)
 UniverSC: a flexible cross-platform single-cell data processing pipeline.
 bioRxiv 2021.01.19.427209; doi: [https://doi.org/10.1101/2021.01.19.427209](https://doi.org/10.1101/2021.01.19.427209)
 package version 1.2.4. [https://github.com/minoda-lab/universc](https://github.com/minoda-lab/universc)
@@ -1276,15 +1276,15 @@ Obtain DropSeq data from public database:
 
 ```
 wget https://www.ncbi.nlm.nih.gov/geo/download/\?acc\=GSM1629193\&format\=file\&file\=GSM1629193%5FPure%5FHumanMouse%2Ebam
-mv index.html\?acc=GSM1629193\&format=file\&file=GSM1629193%5FPure%5FHumanMouse%2Ebam GSM1.2.49.bam
-samtools sort -n GSM1.2.49.bam > GSM1.2.49.qsort
-samtools view  GSM1.2.49.qsort  HUMAN_21:9825832-48085036 > GSM1.2.49.qsort2
-samtools sort -O BAM GSM1.2.49.bam > GSM1.2.49.sort.bam
-samtools index GSM1.2.49.sort.bam
-samtools view  GSM1.2.49.sort.bam  HUMAN_21:9825832-48085036 > GSM1.2.49.chr21.bam
-samtools view -O BAM  GSM1.2.49.sort.bam  HUMAN_21:9825832-48085036 > GSM1.2.49.chr21.sort.bam
-samtools sort -n GSM1.2.49.chr21.sort.bam -o GSM1.2.49.chr21.qsort.bam
-bedtools bamtofastq -i GSM1.2.49.chr21.qsort.bam -fq GSM1629193_chr21_R1.fastq
+mv index.html\?acc=GSM1629193\&format=file\&file=GSM1629193%5FPure%5FHumanMouse%2Ebam GSM1629192.bam
+samtools sort -n GSM1629192.bam > GSM1629192.qsort
+samtools view  GSM1629192.qsort  HUMAN_21:9825832-48085036 > GSM1629192.qsort2
+samtools sort -O BAM GSM1629192.bam > GSM1629192.sort.bam
+samtools index GSM1629192.sort.bam
+samtools view  GSM1629192.sort.bam  HUMAN_21:9825832-48085036 > GSM1629192.chr21.bam
+samtools view -O BAM  GSM1629192.sort.bam  HUMAN_21:9825832-48085036 > GSM1629192.chr21.sort.bam
+samtools sort -n GSM1629192.chr21.sort.bam -o GSM1629192.chr21.qsort.bam
+bedtools bamtofastq -i GSM1629192.chr21.qsort.bam -fq GSM1629193_chr21_R1.fastq
 mv GSM1629193_chr21_R1.fastq GSM1629193_chr21_R2.fastq
 fastq-dump -F --split-files SRR1873277
 fastq_pair GSM1629193_chr21_R2.fastq SRR1873277_1.fastq
