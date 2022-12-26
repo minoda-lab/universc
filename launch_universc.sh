@@ -1626,32 +1626,32 @@ fi
 
 #generate missing indexes if required (generating I1 and I2)
 if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "bravo" ]]; then
-     echo "dual indexes I1 and I2 required for $technology"
-     if [[ ${#index2[@]} -le 0 ]]; then
-         echo " automatically generating I1 and I2 index files from file headers"
-         index1=("${read1[@]}")
-         index2=("${read1[@]}")
-         for ii in ${!read1[@]}; do
-             #iterate over read1 inputs
-             R1_file=${read1[$(( $ii - 1 ))]}
-             R2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_R2/' )
-             I1_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I1/' )
-             I2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I2/' )
-             
-             if [[ $verbose ]]; then
-                 echo $R1_file
-                 echo $R2_file
-                 echo $I1_file
-                 echo $I2_file
-             fi
-             #copies index 1 to next line (1st to 2nd) and deletes 3rd line
-             cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | sed "3~5d" > $I1_file
-             indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
-             qualscores=$(seq 1 $indexlength | xargs -I {} printf I)
-             if [[ $verbose ]]; then
+    echo "dual indexes I1 and I2 required for $technology"
+    if [[ ${#index2[@]} -le 0 ]]; then
+        echo " automatically generating I1 and I2 index files from file headers"
+        index1=("${read1[@]}")
+        index2=("${read1[@]}")
+        for ii in ${!read1[@]}; do
+            #iterate over read1 inputs
+            R1_file=${read1[$(( $ii - 1 ))]}
+            R2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_R2/' )
+            I1_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I1/' )
+            I2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I2/' )
+            
+            if [[ $verbose ]]; then
+                echo $R1_file
+                echo $R2_file
+                echo $I1_file
+                echo $I2_file
+            fi
+            #copies index 1 to next line (1st to 2nd) and deletes 3rd line
+            cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | sed "3~5d" > $I1_file
+            indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
+            qualscores=$(seq 1 $indexlength | xargs -I {} printf I)
+            if [[ $verbose ]]; then
                  echo index of length $indexlength gives quality score $qualscores
-             fi
-            sed -i "4~4s/^.*$/${qualscores}/g" $I1_file
+            fi
+            perl -pni -e "s/^.*$/${qualscores}/g if ($. % 4 == 0)" $I1_file
             #copies index 2 to next line (1st to 2nd) and deletes 3rd line
             cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\5/g" | sed "3~5d" >  $I2_file
             index2length=$(($(head $I2_file -n 2 | tail -n 1 | wc -c) - 1))
@@ -1659,7 +1659,7 @@ if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-lengt
             if [[ $verbose ]]; then
                 echo index2 of length $index2length gives quality score $qualscores2
             fi
-            sed -i "4~4s/^.*$/${qualscores2}/g" $I2_file
+            perl -pni -e "s/^.*$/${qualscores2}/g if ($. % 4 == 0)" $I2_file
             index1+=("$I1_file")
             index2+=("$I2_file")
         done
@@ -1701,7 +1701,7 @@ if [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || 
             if [[ $verbose ]]; then
                 echo index of length $indexlength gives quality score $qualscores
             fi
-            sed -i "4~4s/^.*$/${qualscores}/g" $I1_file
+            perl -pni -e "s/^.*$/${qualscores}/g if ($. % 4 == 0)" $I1_file
             index1+=("$I1_file")
         done
         if [[ $verbose ]]; then
@@ -2945,7 +2945,7 @@ else
         echo "  ... barcode and UMI swapped for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #swap UMI and barcode
-            sed -E '2~2s/(.{6})(.{6})/\2\1/' $convFile > ${crIN}/.temp
+            perl -pni -e "s/(.{6})(.{6})/\1\2/' if ($. % 2 == 0)" $convFile
             mv ${crIN}/.temp $convFile
         done
     fi
@@ -3256,8 +3256,7 @@ else
              mv ${crIN}/.temp $convFile
              #swap barcode and UMI
             echo "  ... barcode and UMI swapped for ${technology}"
-            sed -E '2~2s/(.{8})(.{10})/\2\1/' $convFile > ${crIN}/.temp
-            mv ${crIN}/.temp $convFile
+            perl -pni -e "s/(.{8})(.{10})/\1\2/' if ($. % 2 == 0)" $convFile
             
             read=$convFile
             convR1=$read
@@ -3308,8 +3307,7 @@ else
             mv ${crIN}/.temp $convFile
             #swap barcode and UMI
             echo "  ... barcode and UMI swapped for ${technology}"
-            sed -E '2~2s/(.{10})(.{8})(.{10})/\1\3\2/' $convFile > ${crIN}/.temp
-            mv ${crIN}/.temp $convFile
+            perl -pni -e "s/(.{10})(.{8})(.{10})/\1\3\2/' if ($. % 2 == 0)" $convFile
             
             read=$convFile
             convR1=$read
@@ -3715,11 +3713,9 @@ else
             #compute length of adjusted barcode + original UMI
             keeplength=`echo $((${barcode_default} + ${umi_default} - ($umiadjust * - 1)))`
             #Add n characters to the end of the sequence
-            sed -E "2~4s/(.{$keeplength})(.*)/\1$toS\2/" $convFile > ${crIN}/.temp
-            mv ${crIN}/.temp $convFile
+            perl -pni -e "s/(.{$keeplength})(.*)/\1$toS\2/ if ($. % 4 == 2)" $convFile
             #Add n characters to the end of the quality
-            sed -E "4~4s/(.{$keeplength})(.*)/\1$toQ\2/" $convFile > ${crIN}/.temp
-            mv ${crIN}/.temp $convFile
+            perl -pni -e "s/(.{$keeplength})(.*)/\1$toQ\2/ if ($. % 4 == 0)" $convFile
             echo "  ${convFile} adjusted"
         done
     fi
@@ -3731,7 +3727,7 @@ else
             #compute length of adjusted barcode + original UMI
             targetlength=`echo $((${barcode_default} + ${umi_default}))`
             #Remove n characters to the end of the sequence and quality score
-            sed -E "2~2s/(.{$targetlength})(.{$umiadjust})(.*)/\1\3/" $convFile > ${crIN}/.temp
+            perl -pni -e "s/(.{$targetlength})(.{$umiadjust})(.*)/\1\3/ if ($. % 2 == 0)" $convFile
             mv ${crIN}/.temp $convFile
             echo "  ${convFile} adjusted"
         done
