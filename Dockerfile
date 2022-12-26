@@ -40,6 +40,8 @@ RUN wget https://github.com/alexdobin/STAR/archive/2.5.1b.tar.gz \
  && make \
  && cd /
 
+RUN chmod -R 777 /cellranger-3.0.2.9001/*
+
 RUN git clone "https://github.com/TomKellyGenetics/universc.git"
 
 RUN cd universc/test/cellranger_reference/cellranger-tiny-ref/ \
