@@ -1,5 +1,5 @@
 <p><img src="https://img.shields.io/docker/automated/tomkellygenetics/universc?label=docker%20local%20build" alt="Docker Manual build" /> <img src="https://img.shields.io/docker/cloud/automated/tomkellygenetics/universc?label=docker%20cloud%20build" alt="Docker Cloud Build" /> <img src="https://img.shields.io/docker/cloud/build/tomkellygenetics/universc?label=cloud%20build" alt="Docker Cloud Status" /> <img src="https://img.shields.io/docker/stars/tomkellygenetics/universc" alt="Docker Stars" /> <img src="https://img.shields.io/docker/pulls/tomkellygenetics/universc" alt="Docker Pulls" /></p>
-<p><img src="https://img.shields.io/docker/v/tomkellygenetics/universc/1.2.5-dev" alt="Docker Image Version (tag latest semver)" /> <img src="https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest?label=%22layers@1.2.5-dev%22" alt="MicroBadger Layers (latest)" /> <img src="https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.2.5-dev?label=%22image%20size@1.2.5-dev" alt="Docker Image Size (v1.2.5-dev)" /> <img src="https://img.shields.io/docker/v/tomkellygenetics/universc/latest" alt="Docker Image Version (latest by date)" /> <img src="https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest" alt="MicroBadger Layers (latest)" /> <img src="https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest" alt="Docker Image Size (latest)" /></p>
+<p><embed src="https://img.shields.io/docker/v/tomkellygenetics/universc/1.2.5-dev" /> <img src="https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest?label=%22layers@1.2.5-dev%22" alt="MicroBadger Layers (latest)" /> <embed src="https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.2.5-dev?label=%22image%20size@1.2.5-dev" /> <img src="https://img.shields.io/docker/v/tomkellygenetics/universc/latest" alt="Docker Image Version (latest by date)" /> <img src="https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest" alt="MicroBadger Layers (latest)" /> <img src="https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest" alt="Docker Image Size (latest)" /></p>
 <p><img src="https://img.shields.io/github/checks-status/minoda-lab/universc/master?label=GitHub%20checks" alt="GitHub branch checks state" /> <img src="https://img.shields.io/github/release-date/minoda-lab/universc" alt="GitHub Release Date" /> <img src="https://img.shields.io/github/last-commit/minoda-lab/universc/master" alt="GitHub last commit (branch)" /> <img src="https://img.shields.io/github/issues/minoda-lab/universc" alt="GitHub issues" /> <img src="https://img.shields.io/github/issues-pr/minoda-lab/universc" alt="GitHub pull requests" /></p>
 <p><a href="http://hits.dwyl.com/minoda-lab/universc"><img src="http://hits.dwyl.com/minoda-lab/universc.svg" alt="GitHub Views" /></a> <a href="http://hits.dwyl.com/tomkellygenetics/universc"><img src="http://hits.dwyl.com/tomkellygenetics/universc.svg" alt="GitHub Views" /></a> <img src="https://img.shields.io/github/search/minoda-lab/universc/master" alt="GitHub search hit counter" /> <img src="https://img.shields.io/github/forks/minoda-lab/universc?style=social" alt="GitHub forks" /> <img src="https://img.shields.io/github/stars/minoda-lab/universc?style=social" alt="GitHub Repo stars" /> <img src="https://img.shields.io/github/watchers/minoda-lab/universc?style=social" alt="GitHub watchers" /></p>
 <p><img src="https://img.shields.io/github/languages/code-size/minoda-lab/universc" alt="GitHub code size in bytes" /> <img src="https://img.shields.io/github/repo-size/minoda-lab/universc" alt="GitHub repo size" /> <img src="https://img.shields.io/github/languages/top/minoda-lab/universc" alt="GitHub top language" /> <img src="https://img.shields.io/github/languages/count/minoda-lab/universc" alt="GitHub language count" /> <a href="https://doi.org/10.5281/zenodo.7116956"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.7116956.svg" alt="Zenodo DOI" /></a></p>
@@ -23,24 +23,24 @@
 <h2 id="getting-started">Getting Started</h2>
 <h3 id="advanced-users">Advanced users</h3>
 <p>If you have <code>cellranger</code> already installed, then all you need to do is clone or download this git repository. You can then run the script in this directory or add it your <code>PATH</code>. See the <a href="#quick-start">Quick Start</a> guide below.</p>
-<p>If you wish to install <code>cellranger</code> and configure this script to run on a Linux environment, we provide details on <a href="#installation">installation</a> below. Note that <code>launch_universc.sh</code> requires write-access a Cell Ranger installation so it needs to be installed in a user’s “home” directory on a server. No admin powers needed!</p>
+<p>If you wish to install <code>cellranger</code> and configure this script to run on a Linux environment, we provide details on <a href="#installation">installation</a> below. Note that <code>launch_universc.sh</code> requires write-access a Cell Ranger installation so it needs to be installed in a user's &quot;home&quot; directory on a server. No admin powers needed!</p>
 <p>Note that <code>cellranger</code> installations that are pre-compiled on Linux will not run on Mac or Windows. Note that Mac OS and some Linux distributions also have different version of sed and rename. It is possible to compile an open-source version of Cell Ranger but it is tricky to install the dependencies so we recommend using our docker <a href="#Docker">image</a> if you wish to do this.</p>
 <h3 id="command-line-beginners">Command-line Beginners</h3>
-<p>If you are a beginner bioinformatician or wish to run this on a local computer (Mac or Windows), no problem! We provide a “docker” image containing everything needed to run it without installing the software needed. All you need to do is install <a href="https://docs.docker.com/desktop/">docker</a> and follow our guide to use the <a href="#Docker">image</a>. This comes bundled with all the compatible versions needed to run it.</p>
-<p>Note that you need to run the shell commands given in a unix-like command-line interface (the “Terminal” application on Mac or Linux systems). Many shells are supported but we recommend the “bash” shell for beginners (this is the default on most systems). Windows 10 includes a <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">subsystem</a> to run <code>bash</code>. If this is too complicated, you can open a Linux environment (Ubuntu) in docker by following our instructions. Then you can enter bash commands into the terminal opened by docker.</p>
-<p>If you run into problems installing or running <code>launch_universc.sh</code> please don’t hesistate to contact us via email or GitHub.</p>
+<p>If you are a beginner bioinformatician or wish to run this on a local computer (Mac or Windows), no problem! We provide a &quot;docker&quot; image containing everything needed to run it without installing the software needed. All you need to do is install <a href="https://docs.docker.com/desktop/">docker</a> and follow our guide to use the <a href="#Docker">image</a>. This comes bundled with all the compatible versions needed to run it.</p>
+<p>Note that you need to run the shell commands given in a unix-like command-line interface (the &quot;Terminal&quot; application on Mac or Linux systems). Many shells are supported but we recommend the &quot;bash&quot; shell for beginners (this is the default on most systems). Windows 10 includes a <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">subsystem</a> to run <code>bash</code>. If this is too complicated, you can open a Linux environment (Ubuntu) in docker by following our instructions. Then you can enter bash commands into the terminal opened by docker.</p>
+<p>If you run into problems installing or running <code>launch_universc.sh</code> please don't hesistate to contact us via email or GitHub.</p>
 <h3 id="graphical-application-users">Graphical application Users</h3>
 <p>We also provide a graphical user interface (GUI) based application to run the Docker <a href="#Docker">image</a>. Please install Docker as described above and pull our <code>tomkellygenetics/universc:latest</code> image using either the docker command-line interface (CLI) or the docker graphical application.</p>
 <p>Once you have a docker image installed on your system, you can run the applicable binary available here:</p>
-<p><a href="https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_app_release/">https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_app_release/</a></p>
+<p><a href="https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_app_release/" class="uri">https://genomec.gsc.riken.jp/gerg/UniverSC/UniverSC_app_release/</a></p>
 <h3 id="nextflow-users">Nextflow users</h3>
 <p>A <a href="https://www.nextflow.io/">nextflow</a> custom <a href="https://nf-co.re/modules">module</a> is being developed for the <a href="https://nf-co.re">nf-core</a> community. It will be available to use in nf-core <a href="https://nf-co.re/pipelines">pipelines</a>.</p>
 <p>See the issue and pull request for details:</p>
-<p><a href="https://github.com/nf-core/modules/issues/1644">https://github.com/nf-core/modules/issues/1644</a></p>
-<p><a href="https://github.com/nf-core/modules/pull/1706">https://github.com/nf-core/modules/pull/1706</a></p>
+<p><a href="https://github.com/nf-core/modules/issues/1644" class="uri">https://github.com/nf-core/modules/issues/1644</a></p>
+<p><a href="https://github.com/nf-core/modules/pull/1706" class="uri">https://github.com/nf-core/modules/pull/1706</a></p>
 <p>We plan to make this available in the near future. If you are interested in using it or contributing to development, please contact the maintainers. Thank you!</p>
 <h2 id="purpose">Purpose</h2>
-<p>We’ve developed a bash script that will run Cell Ranger on FASTQ files for these technologies. See below for details on how to use it.</p>
+<p>We've developed a bash script that will run Cell Ranger on FASTQ files for these technologies. See below for details on how to use it.</p>
 <p>If you use this tool, please <a href="#Citation">cite</a> to acknowledge the efforts of the authors. You can report problems and request new features to the maintainers with and <a href="#Issues">issue</a> on GitHub. Details on how to <a href="#Install">install</a> and <a href="#Usage">run</a> are provided below. Please see the <a href="#Help">help</a> and <a href="#Examples">examples</a> to try solve your problem before submitting an issue.</p>
 <p>Details on the <a href="#Docker">Docker image</a> are given below. We recommend using Docker unless you have a server environment with Cell Ranger installed already.</p>
 <h3 id="supported-technologies">Supported Technologies</h3>
@@ -98,20 +98,16 @@
 <li>Quartz-Seq2 (15 bp barcode, 8 bp UMI): quartzseq2-1536</li>
 </ul></li>
 <li>RamDA-Seq (6 bp index, no UMI): ramda-seq</li>
-<li>Single-cell combinatorial indexing (SCI-RNA-Seq)
-<ul>
+<li>Single-cell combinatorial indexing (SCI-RNA-Seq)</li>
 <li>SCI-Seq 2-level indexing (30 bp barcode, 8 bp UMI): sciseq2</li>
 <li>SCI-Seq 3-level indexing (40 bp barcode, 8 bp UMI): sciseq3</li>
 <li>SCIFI-Seq (27 bp barcode, 8 bp UMI): scifiseq</li>
-</ul></li>
 <li>SCRB-Seq (6 bp barcode, 10 bp UMI): scrbseq, mcscrbseq</li>
 <li>SeqWell (12 bp barcode, 8 bp UMI): plexwell, seqwell, seqwells3</li>
-<li>Smart-seq
-<ul>
+<li>Smart-seq</li>
 <li>Smart-Seq (16 bp barcode, No UMI): smartseq</li>
 <li>Smart-Seq2 (16 bp barcode, No UMI): smartseq2</li>
 <li>Smart-Seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3</li>
-</ul></li>
 <li>SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq</li>
 <li>STRT-Seq
 <ul>
@@ -129,12 +125,12 @@
 <h4 id="single-and-dual-indexed-technologies">Single and dual indexed technologies</h4>
 <p>Where needed the cell barcode can be detected in the index I1 or I2 file. Single indexes are supported for STRT-Seq and Quartz-Seq. Dual indexes are supported for Fluidigm C1, ICELL8 full-length, inDrops-v3, RamDA-Seq, SCI-RNA-Seq, scifi-seq, and Smart-Seq. Combinatorial indexing technologies have linkers between barcodes removed automatically to match the barcode whitelist.</p>
 <h4 id="demultiplexing-for-dual-indexing">Demultiplexing for dual-indexing</h4>
-<p>For dual-indexed technologies such as Fluidigm C1, inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use “bcl2fastq” before calling UniverSC:</p>
+<p>For dual-indexed technologies such as Fluidigm C1, inDrops-v3, Sci-Seq, SmartSeq3 it is advised to use &quot;bcl2fastq&quot; before calling UniverSC:</p>
 <pre><code>   /usr/local/bin/bcl2fastq  -v --runfolder-dir &quot;/path/to/illumina/bcls&quot;  --output-dir &quot;./Data/Intensities/BaseCalls&quot;\
                                 --sample-sheet &quot;/path/to/SampleSheet.csv&quot; --create-fastq-for-index-reads\
                                 --use-bases-mask Y26n,I8n,I8n,Y50n  --mask-short-adapter-reads 0\
                                 --minimum-trimmed-read-length 0</code></pre>
-<p>Please adjust the lengths for <code>--use-bases-mask</code> accordingly for read 1, index 1 (i7), index 2 (i5), and read 2. Ensure that <code>--create-fastq-for-index-read</code> is used where possible. Using <code>--no-lane-splitting</code> is optional as UniverSC can process an arbirtary number of lanes. There is no need to specify index sequences in the same sheet for cell barcodes, using “NNNNNNNN” will match all samples and the cell barcodes will be distinguished by the single-cell processing pipeline. Index sequences should only be used to demultiplex samples and replicates (not cells).</p>
+<p>Please adjust the lengths for <code>--use-bases-mask</code> accordingly for read 1, index 1 (i7), index 2 (i5), and read 2. Ensure that <code>--create-fastq-for-index-read</code> is used where possible. Using <code>--no-lane-splitting</code> is optional as UniverSC can process an arbirtary number of lanes. There is no need to specify index sequences in the same sheet for cell barcodes, using &quot;NNNNNNNN&quot; will match all samples and the cell barcodes will be distinguished by the single-cell processing pipeline. Index sequences should only be used to demultiplex samples and replicates (not cells).</p>
 <h4 id="missing-index-sequences">Missing index sequences</h4>
 <p>If a sequencing facility has demultiplexed the samples for you without this, UniverSC will attempt to extract index sequences from FASTQ headers in read 1. If index sequences are not stored in the file headers and samples have already been demultiplexed, a dummy index file of the same number of reads as R1 and R2 will be required. As a workaroudn, you can generate this by copying the R1 and R2 files and replacing the sequences with the first barcode in the relevant whitelist. For example:</p>
 <pre><code>index1=&quot;TAAGGCGA&quot;
@@ -150,7 +146,7 @@ sed -i &quot;2~4s/^.*$/${index2}/g&quot; I2_file.fastq
 
 # replace quality scores
 sed -i &quot;4~4s/^.*$/IIIIIIII/g&quot; I1_file.fastq I2_file.fastq</code></pre>
-<p>This results in a new “sample index” for each demultiplexed sample. To combine demultiplexed sampls for dual indexed techniques use the following:</p>
+<p>This results in a new &quot;sample index&quot; for each demultiplexed sample. To combine demultiplexed sampls for dual indexed techniques use the following:</p>
 <pre><code># for fastq files
 cat Sample1_R1_file.fastq Sample2_R1_file.fastq Sample3_R1_file.fastq &gt; Combined_R1_file.fastq
 cat Sample1_R2_file.fastq Sample2_R2_file.fastq Sample3_R2_file.fastq &gt; Combined_R2_file.fastq
@@ -164,7 +160,7 @@ cat Sample1_I1_file.fastq.gz Sample2_I1_file.fastq.gz Sample3_I1_file.fastq.gz &
 cat Sample1_I2_file.fastq.gz Sample2_I2_file.fastq.gz Sample3_I2_file.fastq.gz &gt; Combined_I2_file.fastq.gz</code></pre>
 <p>As this needs to done on a case-by-case basis it has not been implemented by the UniverSC core functions. We provide this workaround for using published data and data already processed by sequencing facilities. Please contact the maintainers or file an issue on GitHub if you are having problems with this case.</p>
 <h4 id="custom-inputs">Custom inputs</h4>
-<p>Custom inputs are also supported by giving the name “custom” and length of barcode and UMI separated by a "_" character.</p>
+<p>Custom inputs are also supported by giving the name &quot;custom&quot; and length of barcode and UMI separated by a &quot;_&quot; character.</p>
 <p>e.g., Custom (16bp barcode, 10bp UMI): <code>custom_16_10</code></p>
 <p>Custom barcode files are also supported for preset technologies. These are particularly useful for well-based technologies to demutliplex based on the wells.</p>
 <p>Note that custom inputs do not remove linker or adapter sequences for combinatorial indexng technologies. These must be removed from the Read 1 file before running UniverSC. To request a preset technology setting instead, please submit a feature request on GitHub as described below.</p>
@@ -187,7 +183,7 @@ cat Sample1_I2_file.fastq.gz Sample2_I2_file.fastq.gz Sample3_I2_file.fastq.gz &
         URL = {https://doi.org/10.1038/s41467-022-34681-z}
 }</code></pre>
 <p>The preprint can also be found here:</p>
-<p>Kelly, S.T., Battenberg K., Hetherington, N.A., Hayashi, K., and Minoda, A. (2021) UniverSC: a flexible cross-platform single-cell data processing pipeline. bioRxiv 2021.01.19.427209; doi: <a href="https://doi.org/10.1101/2021.01.19.427209">https://doi.org/10.1101/2021.01.19.427209</a> package version 1.2.5-dev. <a href="https://github.com/minoda-lab/universc">https://github.com/minoda-lab/universc</a></p>
+<p>Kelly, S.T., Battenberg K., Hetherington, N.A., Hayashi, K., and Minoda, A. (2021) UniverSC: a flexible cross-platform single-cell data processing pipeline. bioRxiv 2021.01.19.427209; doi: <a href="https://doi.org/10.1101/2021.01.19.427209" class="uri">https://doi.org/10.1101/2021.01.19.427209</a> package version 1.2.5-dev. <a href="https://github.com/minoda-lab/universc" class="uri">https://github.com/minoda-lab/universc</a></p>
 <pre><code>@article {Kelly2021.01.19.427209,
         author = {Kelly, S. Thomas and Battenberg, Kai and Hetherington, Nicola A. and Hayashi, Makoto and Minoda, Aki},
         title = {{UniverSC}: a flexible cross-platform single-cell data processing pipeline},
@@ -220,7 +216,7 @@ cat Sample1_I2_file.fastq.gz Sample2_I2_file.fastq.gz Sample3_I2_file.fastq.gz &
 <ul>
 <li>length of barcode</li>
 <li>length of UMI</li>
-<li>which reads they’re on</li>
+<li>which reads they're on</li>
 <li>whether there is a known barcode whitelist available</li>
 <li>whether adapters or linkers are required</li>
 <li>whether a preprint, publication, or company specifications are available</li>
@@ -270,10 +266,10 @@ cellranger count --version</code></pre>
 <p>However, we recommend to use the open-source release of Cell Ranger on GitHub. This is release on an MIT License and is not subject to the 10x Genomics End User License Agreement.</p>
 <p>We provide open-source repositories with minor updates for compatibility with current versions of dependencies.</p>
 <p>The code is available here:</p>
-<p><a href="https://github.com/minoda-lab/cellranger/releases">https://github.com/minoda-lab/cellranger/releases</a></p>
+<p><a href="https://github.com/minoda-lab/cellranger/releases" class="uri">https://github.com/minoda-lab/cellranger/releases</a></p>
 <p>We also provide Docker images for Cell Ranger versions 2.0.2, 2.1.0, 2.1.1, and 3.0.2:</p>
-<p><a href="https://github.com/minoda-lab/cellranger_clean/packages">https://github.com/minoda-lab/cellranger_clean/packages</a></p>
-<p><a href="https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags">https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags</a></p>
+<p><a href="https://github.com/minoda-lab/cellranger_clean/packages" class="uri">https://github.com/minoda-lab/cellranger_clean/packages</a></p>
+<p><a href="https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags" class="uri">https://hub.docker.com/r/tomkellygenetics/cellranger_clean/tags</a></p>
 <h4 id="cluster-mode-configuration">Cluster Mode configuration</h4>
 <h4 id="software-requirements">Software Requirements</h4>
 <p>These have been pre-installed in the Docker image described above.</p>
@@ -358,7 +354,7 @@ cd universc
 bash launch_universc.sh</code></pre>
 <h5 id="automated-configuration">Automated configuration</h5>
 <p>We provide a Makefile with all necessary configurations to automatically check whether launch_universc.sh is installed correctly.</p>
-<p>You can specify any directory to install as a “prefix”. This will create a directory “$HOME/local/universc-0.3” where the files needed will be stored.</p>
+<p>You can specify any directory to install as a &quot;prefix&quot;. This will create a directory &quot;$HOME/local/universc-0.3&quot; where the files needed will be stored.</p>
 <pre><code>cd $HOME/Downloads
 git clone https://github.com/minoda-lab/universc.git
 make
@@ -410,7 +406,7 @@ launch_universc.sh</code></pre>
 <p>To update, similarly run the <code>inst/UPGRADE</code> script with your chosen shell.</p>
 <h3 id="docker-image">Docker image <span id="Docker"><span></h3>
 <p>We provide a docker image with all software needed to run UniverSC.</p>
-<p>This requires “docker” to be installed and a valid DockerHub account.</p>
+<p>This requires &quot;docker&quot; to be installed and a valid DockerHub account.</p>
 <p>You can check whether docker is available by running:</p>
 <pre><code>which docker
 docker run hello-world    </code></pre>
@@ -429,7 +425,7 @@ docker run hello-world    </code></pre>
 <pre><code>docker run -it tomkellygenetics/universc:latest /bin/zsh </code></pre>
 <p>Either of these shells are supported.</p>
 <p>Note that Docker containers run with a default of 2 GB of memory. It is recommended to use at least 8 GB of memory as this is often insufficient for running UniverSC. Ideally, 16 GB of memory should be used if it is available on your system.</p>
-<pre><code>docker run --memory 16g -it tomkellygenetics/universc:latest /bin/bash</code></pre>
+<p><code>docker run --memory 16g -it tomkellygenetics/universc:latest /bin/bash</code></p>
 <h5 id="building-the-docker-image-locally">Building the Docker image locally</h5>
 <p>The Dockerfile is provided in the repository so it can be built from source. This will build a Docker image with the latest version of universc provided that updates to dependencies on GitHub are still compatible.</p>
 <pre><code>git clone https://github.com/minoda-lab/universc.git
@@ -450,7 +446,7 @@ launch_universc.sh</code></pre>
 <pre><code>curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
 sudo apt-get install git-lfs
 git lfs install</code></pre>
-<p>To import large files from Github change to the “universc” directory and run:</p>
+<p>To import large files from Github change to the &quot;universc&quot; directory and run:</p>
 <pre><code>git lfs pull origin</code></pre>
 <p>This provides almost all files required. The STAR index and reference need to be generated or imported from an existing reference. The following code detects whether the references are available in an existing cellranger installation.</p>
 <pre><code>cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d&#39;(&#39; | cut -f1 -d&#39;)&#39;`
@@ -476,7 +472,7 @@ make reference
 cd ../../..</code></pre>
 <h4 id="pre-generated-references">Pre-generated References</h4>
 <p>For convenience we provide pre-generated references for the human genome and various model species available for download:</p>
-<p><a href="https://genomec.gsc.riken.jp/gerg/UniverSC/Premade_references/">https://genomec.gsc.riken.jp/gerg/UniverSC/Premade_references/</a></p>
+<p><a href="https://genomec.gsc.riken.jp/gerg/UniverSC/Premade_references/" class="uri">https://genomec.gsc.riken.jp/gerg/UniverSC/Premade_references/</a></p>
 <h4 id="custom-cell-ranger-references">Custom Cell Ranger references</h4>
 <p>It is also possible to generate a custom reference for any genome provided you have a FASTQ genome reference file and a GTF/GFF3 annotation file. Please ensure that the chromosomes match between the FASTA headers and the chromosome column (1st) of the GTF/GFF3 file.</p>
 <p>The <code>gffread</code> function includes with the <a href="http://cole-trapnell-lab.github.io/cufflinks/file_formats/#the-gffread-utility">cufflinks</a> utility can convert to gtf. For example:</p>
@@ -499,13 +495,13 @@ cellranger mkref --genome=test/cellranger_reference/cellranger-tiny-ref/3.0.0 \
 </ul>
 <p><code>bash launch_universc.sh -h</code></p>
 <ul>
-<li><p>convert R1 files so that barcodes and UMIs are where they’re expected to be for 10x (this can take some time for larger files)</p></li>
+<li><p>convert R1 files so that barcodes and UMIs are where they're expected to be for 10x (this can take some time for larger files)</p></li>
 <li><p>runs Cell Ranger with the same parameters as for 10x and treats samples exactly the same</p></li>
 <li><p>the barcode whitelists are changed and some checks on barcodes disabled (requires a writeable install of Cell Ranger in your user directory)</p></li>
-<li><p>it can run Cell Ranger in parallel in SGE mode on the server if you use <code>--jobmode "sge"</code> and set up an <code>sge.template</code> file</p></li>
+<li><p>it can run Cell Ranger in parallel in SGE mode on the server if you use <code>--jobmode &quot;sge&quot;</code> and set up an <code>sge.template</code> file</p></li>
 <li><p>it can also restore the original Cell Ranger settings for running 10x samples</p></li>
 </ul>
-<p><code>bash launch_universc.sh --setup --technology "10x"</code></p>
+<p><code>bash launch_universc.sh --setup --technology &quot;10x&quot;</code></p>
 <h3 id="valid-barcodes">Valid barcodes</h3>
 <p>Please note that this script alters the barcode whitelist. Known ICELL8 barcodes are supported but this is not possible with Nadia or DropSeq chemistry so 100% valid barcodes will be returned.</p>
 <h3 id="manual">Manual <span id="Help"><span></h3>
@@ -675,15 +671,15 @@ bash /universc/launch_universc.sh --id &quot;test-10x-v3&quot; --technology &quo
 <h4 id="running-launch_universc.sh-on-dropseq-data">Running launch_universc.sh on DropSeq data</h4>
 <p>Obtain DropSeq data from public database:</p>
 <pre><code>wget https://www.ncbi.nlm.nih.gov/geo/download/\?acc\=GSM1629193\&amp;format\=file\&amp;file\=GSM1629193%5FPure%5FHumanMouse%2Ebam
-mv index.html\?acc=GSM1629193\&amp;format=file\&amp;file=GSM1629193%5FPure%5FHumanMouse%2Ebam GSM1.2.5-dev9.bam
-samtools sort -n GSM1.2.5-dev9.bam &gt; GSM1.2.5-dev9.qsort
-samtools view  GSM1.2.5-dev9.qsort  HUMAN_21:9825832-48085036 &gt; GSM1.2.5-dev9.qsort2
-samtools sort -O BAM GSM1.2.5-dev9.bam &gt; GSM1.2.5-dev9.sort.bam
-samtools index GSM1.2.5-dev9.sort.bam
-samtools view  GSM1.2.5-dev9.sort.bam  HUMAN_21:9825832-48085036 &gt; GSM1.2.5-dev9.chr21.bam
-samtools view -O BAM  GSM1.2.5-dev9.sort.bam  HUMAN_21:9825832-48085036 &gt; GSM1.2.5-dev9.chr21.sort.bam
-samtools sort -n GSM1.2.5-dev9.chr21.sort.bam -o GSM1.2.5-dev9.chr21.qsort.bam
-bedtools bamtofastq -i GSM1.2.5-dev9.chr21.qsort.bam -fq GSM1629193_chr21_R1.fastq
+mv index.html\?acc=GSM1629193\&amp;format=file\&amp;file=GSM1629193%5FPure%5FHumanMouse%2Ebam GSM1629192.bam
+samtools sort -n GSM1629192.bam &gt; GSM1629192.qsort
+samtools view  GSM1629192.qsort  HUMAN_21:9825832-48085036 &gt; GSM1629192.qsort2
+samtools sort -O BAM GSM1629192.bam &gt; GSM1629192.sort.bam
+samtools index GSM1629192.sort.bam
+samtools view  GSM1629192.sort.bam  HUMAN_21:9825832-48085036 &gt; GSM1629192.chr21.bam
+samtools view -O BAM  GSM1629192.sort.bam  HUMAN_21:9825832-48085036 &gt; GSM1629192.chr21.sort.bam
+samtools sort -n GSM1629192.chr21.sort.bam -o GSM1629192.chr21.qsort.bam
+bedtools bamtofastq -i GSM1629192.chr21.qsort.bam -fq GSM1629193_chr21_R1.fastq
 mv GSM1629193_chr21_R1.fastq GSM1629193_chr21_R2.fastq
 fastq-dump -F --split-files SRR1873277
 fastq_pair GSM1629193_chr21_R2.fastq SRR1873277_1.fastq
@@ -711,13 +707,13 @@ bash launch_universc.sh --id &quot;test-icell8-custom&quot; --technology &quot;i
  --barcodefile &quot;test/shared/icell8-test/BarcodeList.txt&quot; \
  --jobmode &quot;sge&quot;</code></pre>
 <h3 id="debugging">Debugging</h3>
-<p>We’ve made considerable efforts to ensure you don’t run into problems. However, it may be necessary from time to time to troubleshoot issues calling UniverSC. For other technologies, various changes to Cell Ranger are made in a reversible fashion. If you run into problems you can restore Cell Ranger to default parameters:</p>
+<p>We've made considerable efforts to ensure you don't run into problems. However, it may be necessary from time to time to troubleshoot issues calling UniverSC. For other technologies, various changes to Cell Ranger are made in a reversible fashion. If you run into problems you can restore Cell Ranger to default parameters:</p>
 <pre><code>bash launch_universc.sh -t &quot;10x&quot; --setup</code></pre>
 <p>Then you can call <code>launch_universc.sh</code> as above or configure Cell Ranger for your technology of choice such as :</p>
 <pre><code>bash launch_universc.sh --setup -t &quot;icell8&quot;  --barcodefile &quot;test/shared/icell8-test/BarcodeList.txt&quot;</code></pre>
 <p>Set up calls are particularly useful to set up the whitelist in advance of running multiple samples simultaneously, provided they are the same technology.</p>
-<p>It is also possible that your Cell Ranger installation will be “locked” by UniverSC. This is intentional to prevent different technologies running simultaneously. When running Cell Ranger, we need to ensure that the barcode whitelist corresponds to the technology that is running and cannot be changed until existing runs will finish.</p>
-<p>However, this means that in the case of an error or if a job is “killed”, then the lock file will not be cleared. You can do this manually as follows:</p>
+<p>It is also possible that your Cell Ranger installation will be &quot;locked&quot; by UniverSC. This is intentional to prevent different technologies running simultaneously. When running Cell Ranger, we need to ensure that the barcode whitelist corresponds to the technology that is running and cannot be changed until existing runs will finish.</p>
+<p>However, this means that in the case of an error or if a job is &quot;killed&quot;, then the lock file will not be cleared. You can do this manually as follows:</p>
 <pre><code>cellrangerversion=`cellranger count --version | head -n 2 | tail -n 1 | cut -f2 -d&#39;(&#39; | cut -f1 -d&#39;)&#39;`
 cellrangerpath=`which cellranger`
 rm ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock</code></pre>
@@ -730,5 +726,5 @@ cat ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.la
 <h2 id="licensing">Licensing <span id="Licensing"><span></h2>
 <p>This package is provided open-source on a GPL-3 license. This means that you are free to use and modify this code provided that they also contain this license.</p>
 <p>Please note that we are third-party developers releasing it for use by users like ourselves. We are not affiliated with 10x Genomics, Dolomite Bio, Takara Bio, or any other vendor of single-cell technologies. This software is not supported by 10x Genomics and only changes data formats so that other technologies can be used with the Cell Ranger pipeline.</p>
-<p>Cell Ranger (version 2.0.2, 2.1.0, 2.1.0, and 3.0.2) has been released open source on and MIT license on GitHub. We use this version of Cell Ranger for testing and running our tools. Note that the code that generates the ‘cloupe’ files is not included in this release. The Cloupe browser uses files generated by proprietary closed-source software and is subject to the 10x Genomics End-User License Agreement which does not allow use with data generated from other platforms.</p>
-<p>Therefore ‘launch_universc.sh’ does not support Cloupe files and you should not use them with technologies other than 10x Genomics.</p>
+<p>Cell Ranger (version 2.0.2, 2.1.0, 2.1.0, and 3.0.2) has been released open source on and MIT license on GitHub. We use this version of Cell Ranger for testing and running our tools. Note that the code that generates the 'cloupe' files is not included in this release. The Cloupe browser uses files generated by proprietary closed-source software and is subject to the 10x Genomics End-User License Agreement which does not allow use with data generated from other platforms.</p>
+<p>Therefore 'launch_universc.sh' does not support Cloupe files and you should not use them with technologies other than 10x Genomics.</p>
