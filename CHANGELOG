@@ -1,3 +1,7 @@
+### 1.2.5.1
+
+- minor patch to revert potentially breaking changes in v1.2.5 when running perl instead of sed 
+
 ### 1.2.5
 
 - updates PATH environment variable to call /universc/launch_universc.sh from any working directory
