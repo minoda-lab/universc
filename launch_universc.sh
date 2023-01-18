@@ -1637,7 +1637,7 @@ if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-lengt
             R2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_R2/' )
             I1_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I1/' )
             I2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I2/' )
-            
+             
             if [[ $verbose ]]; then
                 echo $R1_file
                 echo $R2_file
@@ -1645,15 +1645,15 @@ if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-lengt
                 echo $I2_file
             fi
             #copies index 1 to next line (1st to 2nd) and deletes 3rd line
-            cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | sed "3~5d" > $I1_file
+            cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | perl -n -e "print unless ($. % 5 == 3)" > $I1_file
             indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
             qualscores=$(seq 1 $indexlength | xargs -I {} printf I)
             if [[ $verbose ]]; then
-                 echo index of length $indexlength gives quality score $qualscores
+                echo index of length $indexlength gives quality score $qualscores
             fi
             perl -pni -e "s/^.*$/${qualscores}/g if ($. % 4 == 0)" $I1_file
             #copies index 2 to next line (1st to 2nd) and deletes 3rd line
-            cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\5/g" | sed "3~5d" >  $I2_file
+            cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\5/g" | perl -n -e "print unless ($. % 5 == 3)" >  $I2_file
             index2length=$(($(head $I2_file -n 2 | tail -n 1 | wc -c) - 1))
             qualscores2=$(seq 1 $index2length | xargs -I {} printf I)
             if [[ $verbose ]]; then
@@ -1692,9 +1692,9 @@ if [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || 
             linediff=$(grep -n "^+" $I1_file | head -n 2 | cut -d":" -f 1 | awk 'NR==1{p=$1;next} END{print $1-p}')
             if [[ $linediff -eq 5 ]];then
                 #remove lines if matched only
-                sed "3~5d" > $I1_file
+                perl -n -e "print unless ($. % 5 == 3)" > $I1_file
             else
-                cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | sed "3~5d" > $I1_file
+                cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | perl -n -e "print unless ($. % 5 == 3)" > $I1_file
             fi
             indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) - 1))
             qualscores=$(seq 1 $indexlength | xargs -I {} printf I)
