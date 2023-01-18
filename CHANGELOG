@@ -1,4 +1,4 @@
-### 1.2.5-dev
+### 1.2.5
 
 - updates PATH environment variable to call /universc/launch_universc.sh from any working directory
 
@@ -9,7 +9,7 @@ BGI or Ultima high throughput sequencing platforms)
 - migrates sed calls to perl for better memory-efficiency on large input files
 
 - set default user as "root" in docker containers and ensure that cellranger is writeable
-  to allow running in nextflow or singularity
+  to allow running in nextflow or singularity (https://github.com/nf-core/modules/pull/1706)
 
 ### 1.2.4
 

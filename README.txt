@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Tuesday 18 October 2022"
+date: "Wednesday 18 January 2023"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -34,9 +34,9 @@ tags:
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 
-![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.2.5-dev)
-![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest?label="layers@1.2.5-dev")
-![Docker Image Size (v1.2.5-dev)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.2.5-dev?label="image%20size@1.2.5-dev)
+![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.2.5)
+![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest?label="layers@1.2.5")
+![Docker Image Size (v1.2.5)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.2.5?label="image%20size@1.2.5)
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc/latest)
 ![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest)
 ![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest)
@@ -62,8 +62,8 @@ tags:
 
 ![GitHub all releases](https://img.shields.io/github/downloads/minoda-lab/universc/total?label=GitHub%20downloads)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/minoda-lab/universc?label=GitHub%20release)
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.5-dev/total)
-![GitHub release (by tag)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.5-dev/total)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.5/total)
+![GitHub release (by tag)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.5/total)
 
 ![Docker CI](https://github.com/minoda-lab/universc/workflows/CI%20to%20Docker%20hub/badge.svg)
 ![Docker compose](https://github.com/minoda-lab/universc/workflows/Docker%20compose%20build/badge.svg)
@@ -94,7 +94,7 @@ and use this tool to process single-cell RNA-Seq data from FASTQ format.
 
 **Package**
 
-UniverSC version 1.2.5-dev
+UniverSC version 1.2.5
 
 **Maintainers**
 
@@ -375,17 +375,17 @@ A flexible cross-platform single-cell data processing pipeline. _Nat Commun_ **1
         number="1",
         pages="1-7",
         month="Nov",
-        note = {https://github.com/minoda-lab/universc package version 1.2.4},
+        note = {https://github.com/minoda-lab/universc package version 1.2.5},
         URL = {https://doi.org/10.1038/s41467-022-34681-z}
 }
 ```
 
 The preprint can also be found here:
 
-Kelly, S.T., Battenberg, Hetherington, N.A., K., Hayashi, K., and Minoda, A. (2021)
+Kelly, S.T., Battenberg K., Hetherington, N.A., Hayashi, K., and Minoda, A. (2021)
 UniverSC: a flexible cross-platform single-cell data processing pipeline.
 bioRxiv 2021.01.19.427209; doi: [https://doi.org/10.1101/2021.01.19.427209](https://doi.org/10.1101/2021.01.19.427209)
-package version 1.2.5-dev. [https://github.com/minoda-lab/universc](https://github.com/minoda-lab/universc)
+package version 1.2.5. [https://github.com/minoda-lab/universc](https://github.com/minoda-lab/universc)
 
 ```
 @article {Kelly2021.01.19.427209,
@@ -398,7 +398,7 @@ package version 1.2.5-dev. [https://github.com/minoda-lab/universc](https://gith
         abstract = {Single-cell RNA-sequencing analysis to quantify RNA molecules in individual cells has become popular owing to the large amount of information one can obtain from each experiment. We have developed UniverSC (https://github.com/minoda-lab/universc), a universal single-cell processing tool that supports any UMI-based platform. Our command-line tool enables consistent and comprehensive integration, comparison, and evaluation across data generated from a wide range of platforms.Competing Interest StatementThe authors have declared no competing interest.},
         eprint = {https://www.biorxiv.org/content/early/2021/01/19/2021.01.19.427209.full.pdf},
         journal = {{bioRxiv}},
-        note = {package version 1.2.5-dev},
+        note = {package version 1.2.5},
         URL = {https://github.com/minoda-lab/universc},
 }
 
@@ -412,7 +412,7 @@ The software can also be cited directly as a manual:
     title = {{UniverSC}:  a flexible cross-platform single-cell data processing pipeline},
     author = {S. Thomas Kelly, Kai Battenberg, Nicola A. Hetherington, Makoto Hayashi, and Aki Minoda},
     year = {2022},
-    note = {package version 1.2.5-dev},
+    note = {package version 1.2.5},
     url = {https://github.com/minoda-lab/universc},
   }
 ```
@@ -865,7 +865,7 @@ your systems administrator.
 
 #### Pulling from remote DockerHub repository
 
-We provide a docker image for UniverSC version 1.2.5-dev.
+We provide a docker image for UniverSC version 1.2.5.
 
 You can import it if you have docker installed.
 
@@ -973,14 +973,14 @@ cellrangerpath=`which cellranger`
 if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA ]]; then
     rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/3.0.0/star/SA test/cellranger_reference/cellranger-tiny-ref/3.0.0/star/SA
 fi
-if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.5-dev/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.5-dev/star/SA ]]; then
-    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.5-dev/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.5-dev/star/SA
+if [[ ! -f test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA ]] && [[ -f $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA ]]; then
+    rsync $(dirname $cellrangerpath)/cellranger-tiny-ref/1.2.0/star/SA test/cellranger_reference/cellranger-tiny-ref/1.2.0/star/SA
 fi
 ```
 
 This creates a reference for Cell Ranger here:
 
-- test/cellranger_reference/cellranger-tiny-ref/1.2.5-dev
+- test/cellranger_reference/cellranger-tiny-ref/1.2.0
 
 - test/cellranger_reference/cellranger-tiny-ref/3.0.0
 
@@ -1019,7 +1019,7 @@ gffread test/cellranger_reference/cellranger-tiny-ref/genes-1.2.0.gff3 -T -o tes
 To generate new references we first remove the references imported.
 
 ```
-rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.5-dev test/cellranger_reference/cellranger-tiny-ref/3.0.0
+rm -rf test/cellranger_reference/cellranger-tiny-ref/1.2.0 test/cellranger_reference/cellranger-tiny-ref/3.0.0
 ```
 
 We then generate references from the FASTA and GTF files as shown in the following examples:
@@ -1276,15 +1276,15 @@ Obtain DropSeq data from public database:
 
 ```
 wget https://www.ncbi.nlm.nih.gov/geo/download/\?acc\=GSM1629193\&format\=file\&file\=GSM1629193%5FPure%5FHumanMouse%2Ebam
-mv index.html\?acc=GSM1629193\&format=file\&file=GSM1629193%5FPure%5FHumanMouse%2Ebam GSM1.2.5-dev9.bam
-samtools sort -n GSM1.2.5-dev9.bam > GSM1.2.5-dev9.qsort
-samtools view  GSM1.2.5-dev9.qsort  HUMAN_21:9825832-48085036 > GSM1.2.5-dev9.qsort2
-samtools sort -O BAM GSM1.2.5-dev9.bam > GSM1.2.5-dev9.sort.bam
-samtools index GSM1.2.5-dev9.sort.bam
-samtools view  GSM1.2.5-dev9.sort.bam  HUMAN_21:9825832-48085036 > GSM1.2.5-dev9.chr21.bam
-samtools view -O BAM  GSM1.2.5-dev9.sort.bam  HUMAN_21:9825832-48085036 > GSM1.2.5-dev9.chr21.sort.bam
-samtools sort -n GSM1.2.5-dev9.chr21.sort.bam -o GSM1.2.5-dev9.chr21.qsort.bam
-bedtools bamtofastq -i GSM1.2.5-dev9.chr21.qsort.bam -fq GSM1629193_chr21_R1.fastq
+mv index.html\?acc=GSM1629193\&format=file\&file=GSM1629193%5FPure%5FHumanMouse%2Ebam GSM1629192.bam
+samtools sort -n GSM1629192.bam > GSM1629192.qsort
+samtools view  GSM1629192.qsort  HUMAN_21:9825832-48085036 > GSM1629192.qsort2
+samtools sort -O BAM GSM1629192.bam > GSM1629192.sort.bam
+samtools index GSM1629192.sort.bam
+samtools view  GSM1629192.sort.bam  HUMAN_21:9825832-48085036 > GSM1629192.chr21.bam
+samtools view -O BAM  GSM1629192.sort.bam  HUMAN_21:9825832-48085036 > GSM1629192.chr21.sort.bam
+samtools sort -n GSM1629192.chr21.sort.bam -o GSM1629192.chr21.qsort.bam
+bedtools bamtofastq -i GSM1629192.chr21.qsort.bam -fq GSM1629193_chr21_R1.fastq
 mv GSM1629193_chr21_R1.fastq GSM1629193_chr21_R2.fastq
 fastq-dump -F --split-files SRR1873277
 fastq_pair GSM1629193_chr21_R2.fastq SRR1873277_1.fastq
