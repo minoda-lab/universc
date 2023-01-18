@@ -1447,7 +1447,7 @@ for key in ${keys[@]}; do
                 k=$((${j} + 1))
                 rename -f "s/_L\([0123456789][0123456789][0123456789]\)/_S${k}_L\1/" ${read}*
                 #update file variable
-                read=`echo $read | perl -pn -e "s/_L\([0123456789][0123456789][0123456789]\)/_S${k}_L\1/g"`
+                read=`echo $read | sed -e "s/_L\([0123456789][0123456789][0123456789]\)/_S${k}_L\1/g"`
                 list[$j]=$read
             ;;
         esac
