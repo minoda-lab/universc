@@ -1280,7 +1280,7 @@ for key in ${keys[@]}; do
                 echo "  found compressed file ..."
                 gunzip -f -k $read
                 #update file variable
-                read=`echo $read | perl -pn -e "s/\.gz//g"`
+                read=`echo $read | sed -e "s/\.gz//g"`
             fi
             if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
                 echo "Error: file $read needs a .fq or .fastq extention."
@@ -1290,7 +1290,7 @@ for key in ${keys[@]}; do
             if [[ $read == *"gz" ]]; then
                 gunzip -f -k $read
                 #update file variable
-                read=`echo $read | perl -pn -e "s/\.gz//g"`
+                read=`echo $read | sed -e "s/\.gz//g"`
             fi
             if [[ $read != *"fastq" ]] && [[ $read != *"fq" ]]; then
                 echo "Error: file $read needs a .fq or .fastq extention."
@@ -1310,7 +1310,7 @@ for key in ${keys[@]}; do
         elif [[ -f ${read}.gz ]] || [[ -h ${read}.gz ]]; then
             read=${read}.gz
             gunzip -f -k ${read}
-            read=`echo $read | perl -pn -e "s/\.gz//g"`
+            read=`echo $read | sed -e "s/\.gz//g"`
         else
             echo "Error: $read not found"
             exit 1
@@ -1406,7 +1406,7 @@ for key in ${keys[@]}; do
             fi
             readsuffix="${readkey: -1}"
             rename -f "s/_${readsuffix}\./_R${readsuffix}_001./" $read
-            read=`echo $read | perl -pn -e "s/_${readsuffix}\./_R${readsuffix}_001./g"`
+            read=`echo $read | sed -e "s/_${readsuffix}\./_R${readsuffix}_001./g"`
             if [[ $verbose ]]; then
                 echo " (file) $read contains $readkey"
             fi
@@ -1427,7 +1427,7 @@ for key in ${keys[@]}; do
                 fi
                 rename -f "s/_$readkey/_L001_$readkey/" ${read}*
                 #update file variable
-                read=`echo $read | perl -pn -e "s/_${readkey}/_L001_${readkey}/g"`
+                read=`echo $read | sed -e "s/_${readkey}/_L001_${readkey}/g"`
                 list[$j]=$read
             ;;
         esac
@@ -1445,7 +1445,7 @@ for key in ${keys[@]}; do
                     echo "  renaming $read ..."
                 fi
                 k=$((${j} + 1))
-                rename -f "s/_L\([0123456789][0123456789][0123456789]\)/_S${k}_L\1/" ${read}*
+                rename -f "s/_L([0123456789][0123456789][0123456789])/_S${k}_L\1/" ${read}*
                 #update file variable
                 read=`echo $read | sed -e "s/_L\([0123456789][0123456789][0123456789]\)/_S${k}_L\1/g"`
                 list[$j]=$read
@@ -1483,23 +1483,23 @@ for key in ${keys[@]}; do
               #update file variable
               if [[ ${read} == *.gz ]] || [[ ${read} == *.fastq ]] || [[ ${read} == *.fq ]] || [[ -f ${read} ]]; then
                   #assumes read name already contains . in file extension
-                  read=`echo $read | perl -pn -e "s/_${readkey}*\./_${readkey}_001\./g"`
+                  read=`echo $read | sed -e "s/_${readkey}*\./_${readkey}_001\./g"`
               else
                   #replace everything after read key (R1, R2, I1, I2) with 001 suffix (detects file later)
                   rename -f "s/_${readkey}.*/_${readkey}_001/g" ${read}
-                  read=`echo $read | perl -pn -e "s/_${readkey}*/_${readkey}_001/g"`
+                  read=`echo $read | sed -e "s/_${readkey}*/_${readkey}_001/g"`
               fi
               #remove characters after read key (R1, R2, I1, I2) required as above
               if [[ ${read} != *_${readkey}_001.* ]] && [[ ${read} != *.* ]]; then
                   rename -f "s/_${readkey}_*\./_${readkey}_001\./" ${read}
-                  read=`echo $read | perl -pn -e "s/_${readkey}*\./_${readkey}_001\./g"`
+                  read=`echo $read | sed -e "s/_${readkey}*\./_${readkey}_001\./g"`
               elif [[ ${read} != *_${readkey}_001 ]] || [[ ${read} != *_${readkey}*00#1 ]]; then
                   rename -f "s/_${readkey}*_001/_${readkey}_001/" ${read#}
-                  read=`echo $read | perl -pn -e "s/_${readkey}*_001/_${readkey}_001/g"`
+                  read=`echo $read | sed -e "s/_${readkey}*_001/_${readkey}_001/g"`
               fi
               if [[ ${read} == *_${readkey}_*_001.* ]]; then
                    rename -f "s/_${readkey}*_001\./_${readkey}_001\./" ${read}
-                   read=`echo $read | perl -pn -e "s/_${readkey}*_001\./_${readkey}_001\./g"`
+                   read=`echo $read | sed -e "s/_${readkey}*_001\./_${readkey}_001\./g"`
               fi
               
               list[$j]=$read
@@ -1626,42 +1626,42 @@ fi
 
 #generate missing indexes if required (generating I1 and I2)
 if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "bravo" ]]; then
-     echo "dual indexes I1 and I2 required for $technology"
-     if [[ ${#index2[@]} -le 0 ]]; then
-         echo " automatically generating I1 and I2 index files from file headers"
-         index1=("${read1[@]}")
-         index2=("${read1[@]}")
-         for ii in ${!read1[@]}; do
-             #iterate over read1 inputs
-             R1_file=${read1[$(( $ii - 1 ))]}
-             R2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_R2/' )
-             I1_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I1/' )
-             I2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I2/' )
-             
-             if [[ $verbose ]]; then
-                 echo $R1_file
-                 echo $R2_file
-                 echo $I1_file
-                 echo $I2_file
-             fi
-             #copies index 1 to next line (1st to 2nd) and deletes 3rd line
-             cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | perl -n -e "print unless ($. % 5 == 3)" > $I1_file
-             indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
-             qualscores=$(seq 1 $indexlength | xargs -I {} printf I)
-             if [[ $verbose ]]; then
-                 echo index of length $indexlength gives quality score $qualscores
-             fi
-            perl -pni -e "s/^.*$/${qualscores}/g if ($. % 4 == 0)" $I1_file
-            #copies index 2 to next line (1st to 2nd) and deletes 3rd line
-            cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\5/g" | perl -n -e "print unless ($. % 5 == 3)" >  $I2_file
-            index2length=$(($(head $I2_file -n 2 | tail -n 1 | wc -c) - 1))
-            qualscores2=$(seq 1 $index2length | xargs -I {} printf I)
-            if [[ $verbose ]]; then
-                echo index2 of length $index2length gives quality score $qualscores2
-            fi
-            perl -pni -e "s/^.*$/${qualscores2}/g if ($. % 4 == 0)" $I2_file
-            index1+=("$I1_file")
-            index2+=("$I2_file")
+   echo "dual indexes I1 and I2 required for $technology"
+   if [[ ${#index2[@]} -le 0 ]]; then
+       echo " automatically generating I1 and I2 index files from file headers"
+       index1=("${read1[@]}")
+       index2=("${read1[@]}")
+       for ii in ${!read1[@]}; do
+           #iterate over read1 inputs
+           R1_file=${read1[$(( $ii - 1 ))]}
+           R2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_R2/' )
+           I1_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I1/' )
+           I2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I2/' )
+           
+           if [[ $verbose ]]; then
+               echo $R1_file
+               echo $R2_file
+               echo $I1_file
+               echo $I2_file
+           fi
+           #copies index 1 to next line (1st to 2nd) and deletes 3rd line
+           cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | perl -n -e "print unless ($. % 5 == 3)" > $I1_file
+           indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
+           qualscores=$(seq 1 $indexlength | xargs -I {} printf I)
+           if [[ $verbose ]]; then
+               echo index of length $indexlength gives quality score $qualscores
+           fi
+           perl -pni -e "s/^.*$/${qualscores}/g if ($. % 4 == 0)" $I1_file
+           #copies index 2 to next line (1st to 2nd) and deletes 3rd line
+           cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\5/g" | perl -n -e "print unless ($. % 5 == 3)" >  $I2_file
+           index2length=$(($(head $I2_file -n 2 | tail -n 1 | wc -c) - 1))
+           qualscores2=$(seq 1 $index2length | xargs -I {} printf I)
+           if [[ $verbose ]]; then
+               echo index2 of length $index2length gives quality score $qualscores2
+           fi
+           perl -pni -e "s/^.*$/${qualscores2}/g if ($. % 4 == 0)" $I2_file
+           index1+=("$I1_file")
+           index2+=("$I2_file")
         done
         if [[ $verbose ]]; then
             echo index1: $index1
@@ -1776,8 +1776,7 @@ for fq in "${read12[@]}"; do
     fi
     sn=`echo ${name} | cut -f 1-$((${name_fields} - 4)) -d'_'`
     # removes leading zeroes from lane number
-    lane=`echo ${name} | cut -f $((${fields} - 2)) -d'_' | perl -pn -e 's/L0([123456789][0123456789])/\1/' | perl -pn -e 's/L00([0123456789])/\1/'`
-echo "lane:" $lane
+    lane=`echo ${name} | cut -f $((${fields} - 2)) -d'_' | sed -E 's/L([123456789][0123456789][0123456789])/\1/' | sed -E 's/L0([123456789][0123456789])/\1/' | sed -E 's/L00([0123456789])/\1/'`
     # sets lane to 0 if none found
     if [[ -z ${lane} ]]; then
         lane=0
@@ -1816,7 +1815,7 @@ if [[ $verbose ]]; then
      echo "read1, read2, index1, and index2 file curation complete"
 fi
 
-LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | perl -pn -e 's/,$//')
+LANE=$(echo "${LANE[@]}" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 ##########
 
 
@@ -1910,7 +1909,7 @@ else
             if [[ -f ${whitelistdir}/Illumina_dual_barcodes.txt ]];then
                 cat ${whitelistdir}/Illumina_TruSeq_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
                 cat ${whitelistdir}/Illumina_TruSeq_Index2_i5_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index2_i5_barcodes.txt
-                join -j 9999 ${whitelistdir}/Illumina_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Index2_i5_barcodes.txt | perl -pn -e "s/ //g" > ${whitelistdir}/Illumina_dual_barcodes.txt
+                join -j 9999 ${whitelistdir}/Illumina_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Index2_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_dual_barcodes.txt
             fi
             barcodefile=${whitelistdir}/Illumina_dual_barcodes.txt
         else
@@ -1994,7 +1993,7 @@ if [[ -f ${barcodefile} ]]; then
         if [[ $verbose ]]; then
             echo "  ensuring all barcode within selected whitelist are in upper case"
         fi
-        perl -pni -e 's/.*/\U&/g' $barcodefile
+        sed -i 's/.*/\U&/g' $barcodefile
     fi
 else
     if [[ ${barcodefile} == "default:10x" ]]; then
@@ -2011,26 +2010,26 @@ else
         if [[ "$technology" == "bd-rhapsody" ]]; then
             if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R1 barcodes
-                join -j 9999 ${whitelistdir}/bd_rhapsody_cell_label_section1.txt ${whitelistdir}/bd_rhapsody_cell_label_section2.txt | perl -pn -e "s/ //g" | \
-                join -j 9999 - ${whitelistdir}/bd_rhapsody_cell_label_section3.txt | perl -pn -e "s/ //g" \
+                join -j 9999 ${whitelistdir}/bd_rhapsody_cell_label_section1.txt ${whitelistdir}/bd_rhapsody_cell_label_section2.txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/bd_rhapsody_cell_label_section3.txt | sed "s/ //g" \
                 > ${whitelistdir}/bd_rhapsody_barcode.txt
             fi
         elif [[ "$technology" == "bravo" ]]; then
             if [[ ! -f barcodefile=${whitelistdir}/KAPA_UDI_dual_barcodes.txt ]]; then
                 #generates all combinations of I1-I2-R1 barcodes
-                join -j 9999 ${whitelistdir}/KAPA_UDI_Index1_i7.txt ${whitelistdir}/KAPA_UDI_Index5_i5.txt | perl -pn -e "s/ //g" \
+                join -j 9999 ${whitelistdir}/KAPA_UDI_Index1_i7.txt ${whitelistdir}/KAPA_UDI_Index5_i5.txt | sed "s/ //g" \
                 > ${whitelistdir}/KAPA_UDI_dual_barcodes.txt
             fi
         elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
             if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]];then
                 #generates all combinations of I1-I2 barcodes
-                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | perl -pn -e "s/ //g" \
+                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sed "s/ //g" \
                 > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
             fi
         elif [[ "$technology" == "icell8-full-length" ]]; then
             if [[ ! -f ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt ]]; then
                 #generates all combinations of I1-I2 barcodes
-                join -j 9999 ${whitelistdir}/ICELL8_full_length_Index1_i7_barcodes.txt ${whitelistdir}/ICELL8_full_length_Index2_i5_barcodes.txt | perl -pn -e "s/ //g" \
+                join -j 9999 ${whitelistdir}/ICELL8_full_length_Index1_i7_barcodes.txt ${whitelistdir}/ICELL8_full_length_Index2_i5_barcodes.txt | sed "s/ //g" \
                 > ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt
             fi
         elif [[ "$technology" == "indrop-v"* ]]; then
@@ -2044,42 +2043,42 @@ else
         elif [[ "$technology" == "microwellseq" ]]; then
             if [[ ! -f ${whitelistdir}/microwellseq_barcode.txt ]]; then
                 #generates all combinations of R1 barcodes
-                join -j 9999 ${whitelistdir}/microwell-seq_barcodeA.txt ${whitelistdir}/microwell-seq_barcodeB.txt | perl -pn -e "s/ //g" | \
+                join -j 9999 ${whitelistdir}/microwell-seq_barcodeA.txt ${whitelistdir}/microwell-seq_barcodeB.txt | sed "s/ //g" | \
                 join -j 9999 - ${whitelistdir}/microwell-seq_barcodeC.txt \
                 > ${whitelistdir}/microwellseq_barcode.txt
             fi
         elif [[ "$technology" == "sciseq2" ]]; then
             if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R2 barcodes
-                join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | perl -pn -e "s/ //g" | \
-                join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | perl -pn -e "s/ //g" | awk '!a[$0]++' \
+                join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | awk '!a[$0]++' \
                 > ${whitelistdir}/sciseq2_barcode.txt
             fi
         elif [[ "$technology" == "sciseq3" ]]; then
             if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R1 barcodes
-                join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | perl -pn -e "s/ //g" | \
-                join -j 9999 - ${whitelistdir}/sci-seq3_hp_barcodes.txt | perl -pn -e "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | perl -pn -e "s/ //g" \
+                join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/sci-seq3_hp_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" \
                 > ${whitelistdir}/sciseq3_barcode.txt
                 ## to filter unique lines: awk '!a[$0]++' > ${whitelistdir}/sciseq3_barcode.txt
             fi
         elif [[ "$technology" == "scifiseq" ]]; then
             if [[ ! -f ${whitelistdir}/scifi-seq_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R1 barcodes
-                join -j 9999 ${whitelistdir}/10x_atac_barcodes.txt ${whitelistdir}/ scifi-seq_rt_barcode.txt | perl -pn -e "s/ //g" | \
+                join -j 9999 ${whitelistdir}/10x_atac_barcodes.txt ${whitelistdir}/ scifi-seq_rt_barcode.txt | sed "s/ //g" | \
                 > ${whitelistdir}/scifi-seq_barcode.txt
             fi
         elif [[ "$technology" == "splitseq" ]]; then
             if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R2 barcodes
-                join -j 9999 ${whitelistdir}/split-seq_round1_barcode.txt ${whitelistdir}/split-seq_round2_barcode.txt | perl -pn -e "s/ //g" | \
-                join -j 9999 - ${whitelistdir}/split-seq_round3_barcode.txt | perl -pn -e "s/ //g" | awk '!a[$0]++' \
+                join -j 9999 ${whitelistdir}/split-seq_round1_barcode.txt ${whitelistdir}/split-seq_round2_barcode.txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/split-seq_round3_barcode.txt | sed "s/ //g" | awk '!a[$0]++' \
                 > ${whitelistdir}/splitseq_barcode.txt
             fi
         elif [[ "$technology" == "strt-seq-2i" ]]; then
             if [[ ! -f ${whitelistdir}/STRTSeq2i_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R1 barcodes
-                join -j 9999 ${whitelistdir}/AllPossibilities_5_barcodes.txt ${whitelistdir}/STRTSeqC1_barcode.txt | perl -pn -e "s/ //g" | \
+                join -j 9999 ${whitelistdir}/AllPossibilities_5_barcodes.txt ${whitelistdir}/STRTSeqC1_barcode.txt | sed "s/ //g" | \
                 > ${whitelistdir}/STRTSeq2i_barcode_barcode.txt
             fi
         else
@@ -2089,7 +2088,7 @@ else
                 echo "***WARNING: for large barcodes this could take a lot of time and memory***"
                 echo "  Please use a known barcode whitelist if possible"
             fi
-            echo $(eval echo $(for ii in $(eval echo {1..${barcodelength}}); do echo "{A,T,C,G}"; done | tr "\n" " " | perl -pn -e "s/ //g" | xargs -I {} echo {})) | perl -pn -e 's/ /\n/g' | sort | uniq > ${barcodefile}
+            echo $(eval echo $(for ii in $(eval echo {1..${barcodelength}}); do echo "{A,T,C,G}"; done | tr "\n" " " | sed "s/ //g" | xargs -I {} echo {})) | sed 's/ /\n/g' | sort | uniq > ${barcodefile}
         fi
     fi
 fi
@@ -2413,17 +2412,17 @@ if [[ $lock -eq 0 ]]; then
             if [[ $verbose ]]; then
                 echo "restore barcode checks"
             fi
-            perl -pni -e "s/#*#if gem_group == prev_gem_group/if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
-            perl -pni -e "s/#*#assert barcode_idx >= prev_barcode_idx/assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
-            perl -pni -e "s/#*#assert np.array_equal(in_mc.get_barcodes(), barcodes)/assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
+            sed -i "s/#*#if gem_group == prev_gem_group/if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
+            sed -i "s/#*#assert barcode_idx >= prev_barcode_idx/assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
+            sed -i "s/#*#assert np.array_equal(in_mc.get_barcodes(), barcodes)/assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
         elif [[ $lastcall_p == "default:10x" ]] || [[ ! -f $lastcallfile ]]; then
             #disable checking barcodes
             if [[ $verbose ]]; then
                  echo "disable barcode checks"
             fi
-            perl -pni -e "s/if gem_group == prev_gem_group/#if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
-            perl -pni -e "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
-            perl -pni -e "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
+            sed -i "s/if gem_group == prev_gem_group/#if gem_group == prev_gem_group/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
+            sed -i "s/assert barcode_idx >= prev_barcode_idx/#assert barcode_idx >= prev_barcode_idx/g" ${cellrangerpath}-cs/${cellrangerversion}/mro/stages/counter/report_molecules/__init__.py
+            sed -i "s/assert np.array_equal(in_mc.get_barcodes(), barcodes)/#assert np.array_equal(in_mc.get_barcodes(), barcodes)/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/molecule_counter.py
         fi
     fi
     
@@ -2447,23 +2446,23 @@ if [[ $lock -eq 0 ]]; then
         fi
         ##list cloupe output as (not null)
         if [[ $verbose ]]; then
-            echo "perl -pni -e '/cloupe/s/null/CLOUPE_PREPROCESS\.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro"
+            echo "sed -i '/cloupe/s/null/CLOUPE_PREPROCESS\.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro"
         fi
-        perl -pni -e '/cloupe/s/null/CLOUPE_PREPROCESS\.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+        sed -i '/cloupe/s/null/CLOUPE_PREPROCESS\.output_for_cloupe/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
         ##add cloupe to outputs
         if [[ $verbose ]]; then
-            echo "perl -pni -e '/out cloupe *cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro"
+            echo "sed -i '/out cloupe *cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro"
         fi
-        perl -pni -e '/out cloupe *cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        sed -i '/out cloupe *cloupe/ {s/^#*#//g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         
         #restore 11 lines for cloupe preprocess call (all following steps are needed to be called together or the call will break)
         ##restore defining CLOUPE_PREPROCESS
         if [[ $verbose ]]; then
-            echo "perl -pni -e 's/^#*#@include "_cloupe_stages.mro"/@include "_cloupe_stages.mro"/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro"
+            echo "sed -i 's/^#*#@include "_cloupe_stages.mro"/@include "_cloupe_stages.mro"/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro"
         fi
-        perl -pni -e 's/^#*#@include "_cloupe_stages.mro"/@include "_cloupe_stages.mro"/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        sed -i 's/^#*#@include "_cloupe_stages.mro"/@include "_cloupe_stages.mro"/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         ##remove listing CLOUPE in output
-        perl -pni -e '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+        sed -i '/output_for_cloupe/s/^#*#//g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
         ##remove calling CLOUPE_PREPROCESS
         ### iterate over all files calling CLOUPE_PREPROCESS
         for file in $(grep -l "call CLOUPE_PREPROCESS" ${cellrangerpath}-cs/${cellrangerversion}/mro/*.mro ); do
@@ -2474,13 +2473,13 @@ if [[ $lock -eq 0 ]]; then
             if [[ $verbose ]]; then
                echo "lines ${num}-${num2} restored in $file"
             fi
-            eval "perl -pni -e '$(echo "${num},${num2}s/^#*#//g")' $file"
+            eval "sed -i '$(echo "${num},${num2}s/^#*#//g")' $file"
         done
     elif [[ $lastcall_p == "default:10x" ]] || [[ ! -f $lastcallfile ]]; then
         #remove logo from HTML template
         if [[ -f ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.backup.html ]];then
             #line of HTML in header is removed
-            perl -pn -e '/class="logo"/d' ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.backup.html > ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.html
+            sed '/class="logo"/d' ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.backup.html > ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/webshim/template/navbar.html
         fi
         
         #disable cloupe generation
@@ -2488,14 +2487,14 @@ if [[ $lock -eq 0 ]]; then
             echo "disable cloupe"
         fi
         ## remove cloupe from outputs
-        perl -pni -e '/out cloupe *cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        sed -i '/out cloupe *cloupe/ {s/^/#/g}' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         #remove 11 lines for cloupe preprocess call (all following steps are needed to be suppressed together or call will break)
         ## remove defining CLOUPE_PREPROCESS
-        perl -pni -e 's/@include "_cloupe_stages.mro"/#@include "_cloupe_stages.mro"/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        sed -i 's/@include "_cloupe_stages.mro"/#@include "_cloupe_stages.mro"/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         ## remove listing CLOUPE in output
-        perl -pni -e '/output_for_cloupe/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
+        sed -i '/output_for_cloupe/s/^/#/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro 
         ## list cloupe output as null
-        perl -pni -e '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/null/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
+        sed -i '/output_for_cloupe/s/CLOUPE_PREPROCESS\.output_for_cloupe/null/g' ${cellrangerpath}-cs/${cellrangerversion}/mro/*mro
         ## remove calling CLOUPE_PREPROCESS
         ### iterate over all files calling CLOUPE_PREPROCESS
         for file in $(grep -l "call CLOUPE_PREPROCESS" ${cellrangerpath}-cs/${cellrangerversion}/mro/*.mro ); do
@@ -2506,7 +2505,7 @@ if [[ $lock -eq 0 ]]; then
             if [[ $verbose ]]; then
                 echo "lines ${num}-${num2} commented out of $file"
             fi
-            eval "perl -pni -e '$(echo "${num},${num2}s/^/#/g")' $file"
+            eval "sed -i '$(echo "${num},${num2}s/^/#/g")' $file"
         done
     fi
     
@@ -2516,20 +2515,20 @@ if [[ $lock -eq 0 ]]; then
         if [[ $verbose ]]; then
             echo "disable detect chemistry check ..."
         fi
-        perl -pni -e "s/ raise NoChemistryFoundException/ return best_chem #raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-        perl -pni -e "s/ (100\.0 \* best_frac/ #(100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-        perl -pni -e "s/return msg/return None #msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-        perl -pni -e "s/return msg/return None #msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/check.py
+        sed -i "s/ raise NoChemistryFoundException/ return best_chem #raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/ (100\.0 \* best_frac/ #(100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/return msg/return None #msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/return msg/return None #msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/check.py
     else
         if [[ $verbose ]]; then
             echo "restore detect chemistry check ..."
         fi
         
         #restore detect chemistry check for custom whitelist
-        perl -pni -e "s/ return best_chem \#raise NoChemistryFoundException/ raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-        perl -pni -e "s/ \#(100\.0 \* best_frac/ (100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-        perl -pni -e "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-        perl -pni -e "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/check.py
+        sed -i "s/ return best_chem \#raise NoChemistryFoundException/ raise NoChemistryFoundException/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/ \#(100\.0 \* best_frac/ (100.0 * best_frac/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/return None #msg/return msg/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/check.py
     fi
     
     #determine last barcode and UMI
@@ -2559,8 +2558,8 @@ if [[ $lock -eq 0 ]]; then
         if [[ $verbose ]]; then
            echo "barcode default restored to 16 bp"
         fi
-        perl -pni -e "s/'barcode_read_length': ${old_bc_length},/'barcode_read_length': 16,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-        perl -pni -e "s/'umi_read_offset': ${old_bc_length},/'umi_read_offset': 16,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/'barcode_read_length': ${old_bc_length},/'barcode_read_length': 16,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/'umi_read_offset': ${old_bc_length},/'umi_read_offset': 16,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
     
     #convert UMI back if last technology UMI greater than 12 bp
@@ -2568,14 +2567,14 @@ if [[ $lock -eq 0 ]]; then
         if [[ $verbose ]]; then
            echo "umi default restored to 10 bp"
         fi
-        perl -pni -e "s/'umi_read_length': ${old_umi_length},/'umi_read_length': 10,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/'umi_read_length': ${old_umi_length},/'umi_read_length': 10,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
     if [[ $old_rna_offset -gt 26 ]]; then
        if [[ $verbose ]]; then
            echo "RNA offset restored to 30 bp"
        fi
-       perl -pni -e "s/'rna_read_offset': ${old_rna_offset},/'rna_read_offset': 26,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-       perl -pni -e "s/'umi_read_length': ${old_umi_length},/'umi_read_length': 10,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+       sed -i "s/'rna_read_offset': ${old_rna_offset},/'rna_read_offset': 26,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+       sed -i "s/'umi_read_length': ${old_umi_length},/'umi_read_length': 10,/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
     
     #convert barcodes if new technology greater than 16 bp
@@ -2583,8 +2582,8 @@ if [[ $lock -eq 0 ]]; then
         if [[ $verbose ]]; then
             echo "barcode length set to $minlength"
         fi
-        perl -pni -e "s/'barcode_read_length': 16,/'barcode_read_length': ${minlength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-        perl -pni -e "s/'umi_read_offset': 16,/'umi_read_offset': ${minlength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/'barcode_read_length': 16,/'barcode_read_length': ${minlength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/'umi_read_offset': 16,/'umi_read_offset': ${minlength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
     
     #convert UMI back if new technology greater than 12 bp
@@ -2592,14 +2591,14 @@ if [[ $lock -eq 0 ]]; then
         if [[ $verbose ]]; then
             echo "umi length set to $umilength"
         fi
-        perl -pni -e "s/'umi_read_length': 10,/'umi_read_length': ${umilength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+        sed -i "s/'umi_read_length': 10,/'umi_read_length': ${umilength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
     if [[ $new_rna_offset -gt 26 ]]; then
        if [[ $verbose ]]; then
            echo "RNA offset set to $new_rna_offset"
        fi
-       perl -pni -e "s/'rna_read_offset': 26,/'rna_read_offset': ${new_rna_offset},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
-       perl -pni -e "s/'umi_read_length': 10,/'umi_read_length': ${umilength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+       sed -i "s/'rna_read_offset': 26,/'rna_read_offset': ${new_rna_offset},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
+       sed -i "s/'umi_read_length': 10,/'umi_read_length': ${umilength},/g" ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/chemistry.py
     fi
     
     echo " ${cellrangerpath} set for $technology"
@@ -2631,11 +2630,11 @@ if [[ $lock -eq 0 ]]; then
         cat ${barcodefile} > ${v2}
         echo "barcode adjust: $barcodeadjust"
         if [[ $barcodeadjust -gt 0 ]]; then
-            perl -pni -e "s/^.{${barcodeadjust}}//" ${v2} #Trim the first n characters from the beginning of the sequence and quality
+            sed -i "s/^.{${barcodeadjust}}//" ${v2} #Trim the first n characters from the beginning of the sequence and quality
         elif [[ 0 -gt $barcodeadjust ]]; then
             As=`printf '%0.sA' $(seq 1 $(($barcodeadjust * -1)))`
             echo As: $As
-            perl -pni -e "s/^/$As/" ${v2} #Trim the first n characters from the beginning of the quality
+            sed -i "s/^/$As/" ${v2} #Trim the first n characters from the beginning of the quality
         fi
         #for version 3
         cat ${v2} > ${v3}
@@ -2764,7 +2763,7 @@ for fq in "${read1[@]}"; do
     if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
         #where converted "read1" is R2 in source files (corrected names for Cell Ranger)
         echo "using transcripts in Read 2 for ${technology}"
-        to=`echo $to | perl -pn -e "s/_R2_/_R1_/g"`
+        to=`echo $to | sed -e "s/_R2_/_R1_/g"`
     fi
     
     if [[ $verbose ]]; then
@@ -2796,16 +2795,16 @@ for fq in "${read2[@]}"; do
     fi
     to=`basename $fq`
     to="${crIN}/${to}"
-    to=$(echo "$to" | perl -pn -e 's/\.gz$//')
+    to=$(echo "$to" | sed 's/\.gz$//')
     
     #invert read1 and read2
     if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
         #where converted "read2" is R1 in source files
         echo "using transcripts in Read 1 for ${technology}"
-        to=`echo $to | perl -pn -e "s/_R1_/_R2_/g"`
+        to=`echo $to | sed -e "s/_R1_/_R2_/g"`
         #where converted "read2" is R4 in source files
         if [[ "$technology" == "indrop-v3" ]]; then
-            to=`echo $to | perl -pn -e "s/_R4_/_R2_/g"`
+            to=`echo $to | sed -e "s/_R4_/_R2_/g"`
         fi
     fi
     
@@ -2836,13 +2835,13 @@ if [[ ${#index1[@]} -ge 1 ]]; then
         fi
         to=`basename $fq`
         to="${crIN}/${to}"
-        to=$(echo "$to" | perl -pn -e 's/\.gz$//')
+        to=$(echo "$to" | sed 's/\.gz$//')
         
         #convert index for R2 and R3
         if [[ "$technology" == "indrop-v3" ]]; then
             #where converted "index1" is R2 in source files (corrected names for Cell Ranger)
             echo "using transcripts in Read 2 for ${technology}"
-            to=`echo $to | perl -pn -e "s/_R2_/_I1_/g"`
+            to=`echo $to | sed -e "s/_R2_/_I1_/g"`
         fi
         
         if [[ $verbose ]]; then
@@ -2873,13 +2872,13 @@ if [[ ${#index2[@]} -ge 1 ]]; then
         fi
         to=`basename $fq`
         to="${crIN}/${to}"
-        to=$(echo "$to" | perl -pn -e 's/\.gz$//')
+        to=$(echo "$to" | sed 's/\.gz$//')
         
         #convert index for R2 and R3
         if [[ "$technology" == "indrop-v3" ]]; then
             #where converted "index2" is R3 in source files (corrected names for Cell Ranger)
             echo "using transcripts in Read 2 for ${technology}"
-            to=`echo $to | perl -pn -e "s/_R3_/_I2_/g"`
+            to=`echo $to | sed -e "s/_R3_/_I2_/g"`
         fi
         
         if [[ $verbose ]]; then
@@ -2910,7 +2909,7 @@ if [[ ${#read3[@]} -ge 1 ]]; then
         fi
         to=`basename $fq`
         to="${crIN}/${to}"
-        to=$(echo "$to" | perl -pn -e 's/\.gz$//')
+        to=$(echo "$to" | sed 's/\.gz$//')
         
         if [[ $verbose ]]; then
             echo "$to"
