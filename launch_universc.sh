@@ -117,11 +117,15 @@ percellfile="outs/basic_stats.txt" #name of the file with the basic statistics o
 
 
 #####checking if Universc and Cell Ranger are writable#####
+# user configuration
+host=$(hostname) # returns host for local run and container ID for docker container
+user=$(whoami 2> /dev/null || id -ur) # returns username if defined and user ID if not
+
 #Cell Ranger
 if ! [[ -w "$barcodedir" ]]; then
     echo "Error: Trying to run Cell Ranger installed at ${cellrangerpath}"
     echo "launch_universc.sh can only run with Cell Ranger installed locally"
-    echo "Install Cell Ranger in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
+    echo "Install Cell Ranger in a directory with write permissions such as /home/${user}/local and export to the PATH"
     echo "The following versions of Cell Ranger are found:"
     echo " `whereis cellranger`"
     exit 1
@@ -131,7 +135,7 @@ fi
 if ! [[ -w "$SDIR" ]]; then
     echo "Error: Trying to run launch_universc.sh installed at $SDIR"
     echo "$SDIR must be writable to run launch_universc.sh"
-    echo "Install launch_universc.sh in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
+    echo "Install launch_universc.sh in a directory with write permissions such as /home/${user}/local and export to the PATH"
     exit 1
 fi
 ##########
