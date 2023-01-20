@@ -84,5 +84,7 @@ ENV LANG C.UTF-8
 
 RUN cp /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/chemistry.py /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/check.py
 
-RUN chmod -R 777 /cellranger-3.0.2.9001/* /universc/*
-RUN chmod a+w /cellranger-3.0.2.9001 /universc
+RUN chmod -R 777 /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/*py  /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/webshim/template/*html
+RUN chmod -R 777 /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/mro /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/mro/stages/counter/report_molecules/*.py /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/mro/*mro
+RUN chmod -R 777 /universc/launch_universc.sh /universc/universc
+RUN chmod a+w /cellranger-3.0.2.9001 /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/barcodes /universc
