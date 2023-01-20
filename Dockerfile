@@ -75,16 +75,23 @@ RUN ln -s /universc/launch_universc.sh /universc/universc
 ENV PATH /universc:$PATH
 
 COPY ./launch_universc.sh /universc/launch_universc.sh
-RUN ln /universc/launch_universc.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/universc
-RUN ln -s /universc/sub /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/sub
-RUN ln -s /universc/whitelists /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/whitelists
+RUN ln /universc/launch_universc.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/universc \
+ && ln -s /universc/sub /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/sub \
+ && ln -s /universc/whitelists /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/whitelists
+
+RUN ln -s /universc /var/tmp/universc \
+ && ln -s /cellranger-3.0.2.9001 /var/tmp/cellranger-3.0.2.9001 \
+ && export PATH=/var/tmp/universc:/cellranger-3.0.2.9001:$PATH
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 
 RUN cp /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/chemistry.py /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/check.py
 
-RUN chmod -R 777 /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/*py  /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/webshim/template/*html
-RUN chmod -R 777 /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/mro /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/mro/stages/counter/report_molecules/*.py /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/mro/*mro
-RUN chmod -R 777 /universc/launch_universc.sh /universc/universc
-RUN chmod a+w /cellranger-3.0.2.9001 /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/barcodes /universc
+RUN chmod -R 777 /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/*py  /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/webshim/template/*html \
+ && chmod -R 777 /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/mro /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/mro/stages/counter/report_molecules/*.py /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/mro/*mro \
+ && chmod -R 777 /universc/launch_universc.sh /universc/universc \
+ && chmod a+w /cellranger-3.0.2.9001 /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/barcodes /universc
+
+RUN mkdir /work \
+ && chmod 777 /work
