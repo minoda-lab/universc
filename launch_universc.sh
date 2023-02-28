@@ -259,6 +259,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Smart-seq2 (16 bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
                                   SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
+                                  SPLiT-Seq v2.1 (10 bp UMI, 24 bp barcode): splitseq2
                                   STRT-Seq (6 bp barcode, no UMI): strt-seq
                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
@@ -747,7 +748,7 @@ elif [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; 
 elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "split-seq" ]]; then
     technology="splitseq"
 elif [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "split-seq2" ]] || [[ "$technology" == "splitseq-v2" ]] || [[ "$technology" == "split-seq-v2" ]]; then
-    technology="splitseq"
+    technology="splitseq2"
 elif [[ "$technology" == "strt-seq" ]] || [[ "$technology" == "strt" ]] || [[ "$technology" == "strtseq" ]]; then
      technology="strt-seq"
      nonUMI=true
@@ -3453,7 +3454,7 @@ else
     #SPLiT-Seq: correct phase blocks and swap barcode and UMI (if a whitelist and 24 bp barcode can be supported)
     ##https://github.com/hms-dbmi/dropEst/issues/80
     ##https://github.com/sdparekh/zUMIs/wiki/Protocol-specific-setup
-    if [[ "$technology" == "splitseq" ]]; then
+    if [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]]; then
         echo "  ... remove adapter and phase blocks for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers

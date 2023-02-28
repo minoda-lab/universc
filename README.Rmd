@@ -225,7 +225,9 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
    -  Smart-Seq (16 bp barcode, No UMI): smartseq
    -  Smart-Seq2 (16 bp barcode, No UMI): smartseq2
    -  Smart-Seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
--  SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
+-  SPLiT-Seq
+   -  SPLiT-Seq v1.0 (10 bp UMI, 24 bp barcode): splitseq
+   -  SPLiT-Seq v2.1 (10 bp UMI, 24 bp barcode): splitseq2
 -  STRT-Seq
     -  STRT-Seq (6 bp barcode, no UMI): strt-seq
     -  STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
@@ -1199,6 +1201,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Smart-seq2 (16 bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
                                   SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
+                                  SPLiT-Seq v2.1 (10 bp UMI, 24 bp barcode): splitseq2
                                   STRT-Seq (6 bp barcode, no UMI): strt-seq
                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
