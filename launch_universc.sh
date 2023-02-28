@@ -20,7 +20,7 @@
 install=false
 
 ######UniverSC version#####
-universcversion="1.2.5-dev"
+universcversion="1.2.5.1"
 ##########
 
 
@@ -117,11 +117,15 @@ percellfile="outs/basic_stats.txt" #name of the file with the basic statistics o
 
 
 #####checking if Universc and Cell Ranger are writable#####
+# user configuration
+host=$(hostname) # returns host for local run and container ID for docker container
+user=$(whoami 2> /dev/null || id -ur) # returns username if defined and user ID if not
+
 #Cell Ranger
 if ! [[ -w "$barcodedir" ]]; then
     echo "Error: Trying to run Cell Ranger installed at ${cellrangerpath}"
     echo "launch_universc.sh can only run with Cell Ranger installed locally"
-    echo "Install Cell Ranger in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
+    echo "Install Cell Ranger in a directory with write permissions such as /home/${user}/local and export to the PATH"
     echo "The following versions of Cell Ranger are found:"
     echo " `whereis cellranger`"
     exit 1
@@ -131,7 +135,7 @@ fi
 if ! [[ -w "$SDIR" ]]; then
     echo "Error: Trying to run launch_universc.sh installed at $SDIR"
     echo "$SDIR must be writable to run launch_universc.sh"
-    echo "Install launch_universc.sh in a directory with write permissions such as /home/`whoami`/local and export to the PATH"
+    echo "Install launch_universc.sh in a directory with write permissions such as /home/${user}/local and export to the PATH"
     exit 1
 fi
 ##########
@@ -1626,42 +1630,42 @@ fi
 
 #generate missing indexes if required (generating I1 and I2)
 if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "bravo" ]]; then
-    echo "dual indexes I1 and I2 required for $technology"
-    if [[ ${#index2[@]} -le 0 ]]; then
-        echo " automatically generating I1 and I2 index files from file headers"
-        index1=("${read1[@]}")
-        index2=("${read1[@]}")
-        for ii in ${!read1[@]}; do
-            #iterate over read1 inputs
-            R1_file=${read1[$(( $ii - 1 ))]}
-            R2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_R2/' )
-            I1_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I1/' )
-            I2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I2/' )
-             
-            if [[ $verbose ]]; then
-                echo $R1_file
-                echo $R2_file
-                echo $I1_file
-                echo $I2_file
-            fi
-            #copies index 1 to next line (1st to 2nd) and deletes 3rd line
-            cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | perl -n -e "print unless ($. % 5 == 3)" > $I1_file
-            indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
-            qualscores=$(seq 1 $indexlength | xargs -I {} printf I)
-            if [[ $verbose ]]; then
-                echo index of length $indexlength gives quality score $qualscores
-            fi
-            perl -pni -e "s/^.*$/${qualscores}/g if ($. % 4 == 0)" $I1_file
-            #copies index 2 to next line (1st to 2nd) and deletes 3rd line
-            cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\5/g" | perl -n -e "print unless ($. % 5 == 3)" >  $I2_file
-            index2length=$(($(head $I2_file -n 2 | tail -n 1 | wc -c) - 1))
-            qualscores2=$(seq 1 $index2length | xargs -I {} printf I)
-            if [[ $verbose ]]; then
-                echo index2 of length $index2length gives quality score $qualscores2
-            fi
-            perl -pni -e "s/^.*$/${qualscores2}/g if ($. % 4 == 0)" $I2_file
-            index1+=("$I1_file")
-            index2+=("$I2_file")
+   echo "dual indexes I1 and I2 required for $technology"
+   if [[ ${#index2[@]} -le 0 ]]; then
+       echo " automatically generating I1 and I2 index files from file headers"
+       index1=("${read1[@]}")
+       index2=("${read1[@]}")
+       for ii in ${!read1[@]}; do
+           #iterate over read1 inputs
+           R1_file=${read1[$(( $ii - 1 ))]}
+           R2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_R2/' )
+           I1_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I1/' )
+           I2_file=$(echo $R1_file | perl -pne 's/(.*)_R1/$1_I2/' )
+           
+           if [[ $verbose ]]; then
+               echo $R1_file
+               echo $R2_file
+               echo $I1_file
+               echo $I2_file
+           fi
+           #copies index 1 to next line (1st to 2nd) and deletes 3rd line
+           cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\4/g" | perl -n -e "print unless ($. % 5 == 3)" > $I1_file
+           indexlength=$(($(head $I1_file -n 2 | tail -n 1 | wc -c) -1))
+           qualscores=$(seq 1 $indexlength | xargs -I {} printf I)
+           if [[ $verbose ]]; then
+               echo index of length $indexlength gives quality score $qualscores
+           fi
+           perl -pni -e "s/^.*$/${qualscores}/g if ($. % 4 == 0)" $I1_file
+           #copies index 2 to next line (1st to 2nd) and deletes 3rd line
+           cat $R1_file | sed -E "s/ (.):(.):(.):(.*)\+(.*)$/ \1:\2:\3:\4+\5\n\5/g" | perl -n -e "print unless ($. % 5 == 3)" >  $I2_file
+           index2length=$(($(head $I2_file -n 2 | tail -n 1 | wc -c) - 1))
+           qualscores2=$(seq 1 $index2length | xargs -I {} printf I)
+           if [[ $verbose ]]; then
+               echo index2 of length $index2length gives quality score $qualscores2
+           fi
+           perl -pni -e "s/^.*$/${qualscores2}/g if ($. % 4 == 0)" $I2_file
+           index1+=("$I1_file")
+           index2+=("$I2_file")
         done
         if [[ $verbose ]]; then
             echo index1: $index1

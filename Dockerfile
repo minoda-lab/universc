@@ -71,9 +71,13 @@ RUN mkdir -p /cellranger-3.0.2.9001/cellranger-tiny-ref \
  && ln -s /universc/test/cellranger_reference/cellranger-tiny-ref/1.2.0 /cellranger-3.0.2.9001/cellranger-tiny-ref \ 
  && ln -s /universc/test/cellranger_reference/cellranger-tiny-ref/3.0.0 /cellranger-3.0.2.9001/cellranger-tiny-ref
 
+RUN ln -s /universc/launch_universc.sh /universc/universc
 ENV PATH /universc:$PATH
 
+COPY ./launch_universc.sh /universc/launch_universc.sh
 RUN ln /universc/launch_universc.sh /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/universc
+RUN ln -s /universc/sub /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/sub
+RUN ln -s /universc/whitelists /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/bin/whitelists
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
@@ -81,3 +85,4 @@ ENV LANG C.UTF-8
 RUN cp /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/chemistry.py /cellranger-3.0.2.9001/cellranger-cs/3.0.2.9001/lib/python/cellranger/check.py
 
 RUN chmod -R 777 /cellranger-3.0.2.9001/* /universc/*
+RUN chmod a+w /cellranger-3.0.2.9001 /universc
