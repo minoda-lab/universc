@@ -1,3 +1,8 @@
+### 1.2.5.2-dev
+
+- updates to SLiPT-Seq subroutine to correct removing quality scores from adapter sequence
+- allow mismatches to remove linker sequences for SLiPT-Seq v1 or v2.1 and allow reverse complement in R2 (for NextSeq, NovaSeq v1.5, etc)
+
 ### 1.2.5.1
 
 - minor patch to revert potentially breaking changes in v1.2.5 when running perl instead of sed 
