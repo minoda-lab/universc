@@ -2,6 +2,7 @@
 
 - updates to SLiPT-Seq subroutine to correct removing quality scores from adapter sequence
 - allow mismatches to remove linker sequences for SLiPT-Seq v1 or v2.1 and allow reverse complement in R2 (for NextSeq, NovaSeq v1.5, etc)
+- pass command-line arguments to configure cell ranger
 
 ### 1.2.5.1
 
