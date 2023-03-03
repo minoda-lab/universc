@@ -341,6 +341,12 @@ chemistry=""
 jobmode="local"
 ncores=""
 mem=""
+bam=""
+secondary=""
+library=""
+introns=""
+noexit=""
+nopreflight=""
 nonUMI=false
 percelldata=false
 
@@ -571,6 +577,36 @@ for op in "$@"; do
             ;;
         --as-is)
             convert=false
+            next=false
+            shift
+            ;;
+        --include-introns)
+            introns="include-introns"
+            next=false
+            shift
+            ;;
+        --no-bam)
+            bam="--no-bam"
+            next=false
+            shift
+            ;;
+        --nosecondary)
+            secondary="--nosecondary"
+            next=false
+            shift
+            ;;
+        --nolibraries)
+            library="--nolibraries"
+            next=false
+            shift
+            ;;
+        --noexit)
+            noexit="--noexit"
+            next=false
+            shift
+            ;;
+        --nopreflight)
+            nopreflight="--nopreflight"
             next=false
             shift
             ;;
@@ -3828,7 +3864,13 @@ echo "cellranger count --id=$id\\
         $n\\
         $j\\
         $l\\
-        $m
+        $m\\
+        $bam\\
+        $secondary\\
+        $library\\
+        $introns\\
+        $noexit\\
+        $nopreflight
 "
 echo "##########"
 ##########
@@ -3847,9 +3889,13 @@ cellranger count --id=$id \
         $n \
         $j \
         $l \
-        $m
-#        --noexit
-#        --nopreflight
+        $m \
+        $bam \
+        $secondary \
+        $library \
+        $introns \
+        $noexit \
+        $nopreflight
 end=`date +%s`
 runtime=$((end-start))
 echo "cellranger run complete"
