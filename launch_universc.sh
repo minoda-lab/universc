@@ -2052,25 +2052,29 @@ else
             if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R1 barcodes
                 join -j 9999 ${whitelistdir}/bd_rhapsody_cell_label_section1.txt ${whitelistdir}/bd_rhapsody_cell_label_section2.txt | sed "s/ //g" | \
-                join -j 9999 - ${whitelistdir}/bd_rhapsody_cell_label_section3.txt | sed "s/ //g" \
+                join -j 9999 - ${whitelistdir}/bd_rhapsody_cell_label_section3.txt | sed "s/ //g" | \
+                sort | uniq \
                 > ${whitelistdir}/bd_rhapsody_barcode.txt
             fi
         elif [[ "$technology" == "bravo" ]]; then
             if [[ ! -f barcodefile=${whitelistdir}/KAPA_UDI_dual_barcodes.txt ]]; then
                 #generates all combinations of I1-I2-R1 barcodes
-                join -j 9999 ${whitelistdir}/KAPA_UDI_Index1_i7.txt ${whitelistdir}/KAPA_UDI_Index5_i5.txt | sed "s/ //g" \
+                join -j 9999 ${whitelistdir}/KAPA_UDI_Index1_i7.txt ${whitelistdir}/KAPA_UDI_Index5_i5.txt | sed "s/ //g" | \
+                sort | uniq \
                 > ${whitelistdir}/KAPA_UDI_dual_barcodes.txt
             fi
         elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]]; then
             if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]];then
                 #generates all combinations of I1-I2 barcodes
-                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sed "s/ //g" \
+                join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sed "s/ //g" | \
+                sort | uniq \
                 > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
             fi
         elif [[ "$technology" == "icell8-full-length" ]]; then
             if [[ ! -f ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt ]]; then
                 #generates all combinations of I1-I2 barcodes
                 join -j 9999 ${whitelistdir}/ICELL8_full_length_Index1_i7_barcodes.txt ${whitelistdir}/ICELL8_full_length_Index2_i5_barcodes.txt | sed "s/ //g" \
+                sort | uniq \
                 > ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt
             fi
         elif [[ "$technology" == "indrop-v"* ]]; then
@@ -2085,21 +2089,24 @@ else
             if [[ ! -f ${whitelistdir}/microwellseq_barcode.txt ]]; then
                 #generates all combinations of R1 barcodes
                 join -j 9999 ${whitelistdir}/microwell-seq_barcodeA.txt ${whitelistdir}/microwell-seq_barcodeB.txt | sed "s/ //g" | \
-                join -j 9999 - ${whitelistdir}/microwell-seq_barcodeC.txt \
+                join -j 9999 - ${whitelistdir}/microwell-seq_barcodeC.txt | sed "s/ //g" | \
+                sort | uniq \
                 > ${whitelistdir}/microwellseq_barcode.txt
             fi
         elif [[ "$technology" == "sciseq2" ]]; then
             if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R2 barcodes
                 join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" | \
-                join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | awk '!a[$0]++' \
+                join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | awk '!a[$0]++' | \
+                sort | uniq \
                 > ${whitelistdir}/sciseq2_barcode.txt
             fi
         elif [[ "$technology" == "sciseq3" ]]; then
             if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R1 barcodes
                 join -j 9999 ${whitelistdir}/sci-seq3_i7_barcodes.txt ${whitelistdir}/sci-seq3_i5_barcodes.txt | sed "s/ //g" | \
-                join -j 9999 - ${whitelistdir}/sci-seq3_hp_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" \
+                join -j 9999 - ${whitelistdir}/sci-seq3_hp_barcodes.txt | sed "s/ //g" | join -j 9999 - ${whitelistdir}/sci-seq3_rt_barcodes.txt | sed "s/ //g" | \
+                sort | uniq \
                 > ${whitelistdir}/sciseq3_barcode.txt
                 ## to filter unique lines: awk '!a[$0]++' > ${whitelistdir}/sciseq3_barcode.txt
             fi
@@ -2107,19 +2114,22 @@ else
             if [[ ! -f ${whitelistdir}/scifi-seq_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R1 barcodes
                 join -j 9999 ${whitelistdir}/10x_atac_barcodes.txt ${whitelistdir}/ scifi-seq_rt_barcode.txt | sed "s/ //g" | \
+                sort | uniq \
                 > ${whitelistdir}/scifi-seq_barcode.txt
             fi
         elif [[ "$technology" == "splitseq" ]]; then
             if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R2 barcodes
-                join -j 9999 ${whitelistdir}/split-seq_round1_barcode.txt ${whitelistdir}/split-seq_round2_barcode.txt | sed "s/ //g" | \
-                join -j 9999 - ${whitelistdir}/split-seq_round3_barcode.txt | sed "s/ //g" | awk '!a[$0]++' \
+                join -j 9999 ${whitelistdir}/split-seq_round1_barcodes.txt ${whitelistdir}/split-seq_round2_barcodes.txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/split-seq_round3_barcodes.txt | sed "s/ //g" | awk '!a[$0]++' | \
+                sort | uniq \
                 > ${whitelistdir}/splitseq_barcode.txt
             fi
         elif [[ "$technology" == "strt-seq-2i" ]]; then
             if [[ ! -f ${whitelistdir}/STRTSeq2i_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R1 barcodes
                 join -j 9999 ${whitelistdir}/AllPossibilities_5_barcodes.txt ${whitelistdir}/STRTSeqC1_barcode.txt | sed "s/ //g" | \
+                sort | uniq \
                 > ${whitelistdir}/STRTSeq2i_barcode_barcode.txt
             fi
         else
