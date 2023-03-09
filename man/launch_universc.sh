@@ -241,7 +241,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   Smart-seq (16 bp barcode, No UMI): smartseq
                                   Smart-seq2 (16 bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
-                                  SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
+                                  SPLiT-Seq (8 bp UMI, 24 bp barcode): splitseq
                                   SPLiT-Seq v2.1 (10 bp UMI, 24 bp barcode): splitseq2
                                   STRT-Seq (6 bp barcode, no UMI)
                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI)

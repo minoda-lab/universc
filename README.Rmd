@@ -226,7 +226,7 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
    -  Smart-Seq2 (16 bp barcode, No UMI): smartseq2
    -  Smart-Seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
 -  SPLiT-Seq
-   -  SPLiT-Seq v1.0 (10 bp UMI, 24 bp barcode): splitseq
+   -  SPLiT-Seq v1.0 (8 bp UMI, 24 bp barcode): splitseq
    -  SPLiT-Seq v2.1 (10 bp UMI, 24 bp barcode): splitseq2
 -  STRT-Seq
     -  STRT-Seq (6 bp barcode, no UMI): strt-seq
@@ -296,7 +296,7 @@ If a sequencing facility has demultiplexed the samples for you without this,
 UniverSC will attempt to extract index sequences from FASTQ headers in read 1.
 If index sequences are not stored in the file headers and samples have already
 been demultiplexed, a dummy index file of the same number of reads as R1 and R2
-will be required. As a workaroudn, you can generate this by copying the R1 and R2
+will be required. As a workaround, you can generate this by copying the R1 and R2
 files and replacing the sequences with the first barcode in the relevant whitelist.
 For example:
 
