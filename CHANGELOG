@@ -1,8 +1,10 @@
 ### 1.2.5.2-dev
 
 - updates to SLiPT-Seq subroutine to correct removing quality scores from adapter sequence
+- updates SLiPT-Seq barcode whitelist to allow reverse-complement in R2 and trims UMI from 8 to 10 bp
 - allow mismatches to remove linker sequences for SLiPT-Seq v1 or v2.1 and allow reverse complement in R2 (for NextSeq, NovaSeq v1.5, etc)
 - pass command-line arguments to configure cell ranger
+- correct generating combinatorial whitelists for well-based techniques
 
 ### 1.2.5.1
 

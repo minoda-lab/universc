@@ -258,7 +258,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Smart-seq (16 bp barcode, No UMI): smartseq
                                   Smart-seq2 (16 bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
-                                  SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
+                                  SPLiT-Seq (8 bp UMI, 24 bp barcode): splitseq
                                   SPLiT-Seq v2.1 (10 bp UMI, 24 bp barcode): splitseq2
                                   STRT-Seq (6 bp barcode, no UMI): strt-seq
                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
@@ -961,6 +961,10 @@ elif [[ "$technology" == "smartseq2" ]] || [[ "$technology" == "smartseq3" ]] ||
     fi
     minlength=16
 elif [[ "$technology" == "splitseq" ]]; then
+     barcodelength=24
+     umilength=8
+     minlength=24
+elif [[ "$technology" == "splitseq2" ]]; then
      barcodelength=24
      umilength=10
      minlength=24
@@ -1993,9 +1997,9 @@ else
              if [[ ! -f ${whitelistdir}/scifi-seq_barcode.txt ]]; then
                  echo "  generating combination of I1, I2, and RT barcodes ..."
              fi
-    elif [[ "$technology" == "splitseq" ]]; then
-             barcodefile=${whitelistdir}/splitseq_barcode.txt
-             if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
+    elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]]; then
+             barcodefile=${whitelistdir}/splitseq_3_barcodes.txt
+             if [[ ! -f ${whitelistdir}/splitseq_3_barcodes.txt ]]; then
                  echo "  generating combination of I1, I2, and RT barcodes ..."
              fi
      elif [[ "$technology" == "smartseq2" ]]; then
@@ -2118,12 +2122,12 @@ else
                 > ${whitelistdir}/scifi-seq_barcode.txt
             fi
         elif [[ "$technology" == "splitseq" ]]; then
-            if [[ ! -f ${whitelistdir}/splitseq_barcode.txt ]]; then
+            if [[ ! -f ${whitelistdir}/splitseq_3_barcodes.txt ]]; then
                 #generates all combinations of I1-I2-R2 barcodes
                 join -j 9999 ${whitelistdir}/split-seq_round1_barcodes.txt ${whitelistdir}/split-seq_round2_barcodes.txt | sed "s/ //g" | \
                 join -j 9999 - ${whitelistdir}/split-seq_round3_barcodes.txt | sed "s/ //g" | awk '!a[$0]++' | \
                 sort | uniq \
-                > ${whitelistdir}/splitseq_barcode.txt
+                > ${whitelistdir}/splitseq_3_barcodes.txt
             fi
         elif [[ "$technology" == "strt-seq-2i" ]]; then
             if [[ ! -f ${whitelistdir}/STRTSeq2i_barcode.txt ]]; then
@@ -3505,20 +3509,20 @@ else
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
             sed -E '
-                /^(.{8})CGAATGC........CTCAAGCACGTG[AG]AT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C..(.{8})(.{10}).*/ {
-                s/^(.{8})CGAATGC........CTCAAGCACGTG[AG]AT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C..(.{8})(.{10}).*/\1\2\3\4/g
+                /^(.{8})CGAATGC........CTCAAGCACGTG[AG]AT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C..(.{8})(.{8}).*/ {
+                s/^(.{8})CGAATGC........CTCAAGCACGTG[AG]AT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C..(.{8})(.{8}).*/\1\2\3\4/g
                 n
                 n
-                s/^(.{8}).{30}(.{8}).{30}(.{8})(.{10}).*/\1\2\3\4/g
+                s/^(.{8}).{30}(.{8}).{30}(.{8})(.{8}).*/\1\2\3\4/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
             #remove phase blocks and linkers (reverse complement if R2 matched)
             sed -E '
-                /^(.{10})(.{8})..G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG........GCATTCG(.{8}).*/ {
-                s/^(.{10})(.{8})..G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG........GCATTCG(.{8}).*/\4\3\2\1/g
+                /.*?(.{8})(.{8})..G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG........GCATTCG(.{8}).*/ {
+                s/.*?(.{8})(.{8})..G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG........GCATTCG(.{8}).*/\4\3\2\1/g
                 n
                 n
-                s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8}).*/\4\3\2\1/g
+                s/..(.{8})(.{8}).{30}(.{8}).{30}(.{8}).*/\4\3\2\1/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
