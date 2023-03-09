@@ -3505,20 +3505,20 @@ else
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
             sed -E '
-                /^(.{8})CGAATGC........CTCAAGCACGTG[AG]AT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C(.{8})(.{10}).*/ {
-                s/^(.{8})CGAATGC........CTCAAGCACGTG[AG]AT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C(.{8})(.{10}).*/\1\2\3\4/g
+                /^(.{8})CGAATGC........CTCAAGCACGTG[AG]AT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C..(.{8})(.{10}).*/ {
+                s/^(.{8})CGAATGC........CTCAAGCACGTG[AG]AT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C..(.{8})(.{10}).*/\1\2\3\4/g
                 n
                 n
-                s/.*.{30}(.{8}).{30}(.{8}).{28}(.{8})(.{10})$/\1\2\3\4/g
+                s/^(.{8}).{30}(.{8}).{30}(.{8})(.{10}).*/\1\2\3\4/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
             #remove phase blocks and linkers (reverse complement if R2 matched)
             sed -E '
-                /.*?(.{10})(.{8})G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG........GCATTCG(.{8})$/ {
-                s/.*?(.{10})(.{8})G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG........GCATTCG(.{8})$/\4\3\2\1/g
+                /^(.{10})(.{8})..G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG........GCATTCG(.{8}).*/ {
+                s/^(.{10})(.{8})..G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG........GCATTCG(.{8}).*/\4\3\2\1/g
                 n
                 n
-                s/.*?(.{10})(.{8}).{28}(.{8}).{30}(.{8})$/\4\3\2\1/g
+                s/^(.{10})(.{8}).{30}(.{8}).{30}(.{8}).*/\4\3\2\1/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
@@ -3529,20 +3529,20 @@ else
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
             sed -E '
-                /^(.{8})C[GC]CC...CTCCCGCCCGTG[CG]CT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C(.{8})(.{10}).*/ {
-                s/^(.{8})C[GC]CC...CTCCCGCCCGTG[CG]CT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C(.{8})(.{10}).*/\1\2\3\4/g
+                /^(.{8})C[GC]CC...CTCCCGCCCGTG[CG]CT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C..(.{8})(.{10}).*/ {
+                s/^(.{8})C[GC]CC...CTCCCGCCCGTG[CG]CT(.{8})AGTC[GT]T[AC]..........[AC]C.CA[GT]C..[AC]C..(.{8})(.{10}).*/\1\2\3\4/g
                 n
                 n
-                s/.*.{30}(.{8}).{24}(.{8}).{28}(.{8})(.{10})$/\1\2\3\4/g
+                s/^(.{8}).{24}(.{8}).{30}(.{8})(.{10}.*$/\1\2\3\4/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
             #remove phase blocks and linkers (reverse complement if R2 matched)
             sed -E '
-                /.*?(.{10})(.{8})G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG...GT[GC]G(.{8})$/ {
-                s/.*?(.{10})(.{8})G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG...GT[GC]G(.{8})$/\4\3\2\1/g
+                /^(.{10})(.{8})..G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG...GT[GC]G(.{8}).*/ {
+                s/^(.{10})(.{8})..G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG...GT[GC]G(.{8}).*/\4\3\2\1/g
                 n
                 n
-                s/.*?(.{10})(.{8}).{28}(.{8}).{24}(.{8})$/\4\3\2\1/g
+                s/^(.{10})(.{8}).{30}(.{8}).{24}(.{8}).*/\4\3\2\1/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
