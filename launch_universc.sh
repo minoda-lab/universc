@@ -3518,8 +3518,8 @@ else
             mv ${crIN}/.temp $convFile
             #remove phase blocks and linkers (reverse complement if R2 matched)
             sed -E '
-                /.*?(.{8})(.{8})..G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG........GCATTCG(.{8}).*/ {
-                s/.*?(.{8})(.{8})..G[GT]..G[AC]TG.G[GT]..........[GT]A[AC]GACT(.{8})AT[CT]CACGTGCTTGAG........GCATTCG(.{8}).*/\4\3\2\1/g
+                /[ATCGN][ATGCGN](.{8})(.{8}).{30}(.{8}).{30}(.{8}).*/ {
+                s/..(.{8})(.{8}).{30}(.{8}).{30.(.{8}).*/\4\3\2\1/g
                 n
                 n
                 s/..(.{8})(.{8}).{30}(.{8}).{30}(.{8}).*/\4\3\2\1/g
