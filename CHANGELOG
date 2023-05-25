@@ -1,4 +1,9 @@
-### 1.2.5.2-dev
+# 1.2.6
+
+- updates BD Rhapsody to support v2 enhanced beads released in 2022
+- resolves minor bugs in BD Rhapsody v1 
+
+### 1.2.5.2
 
 - updates to SLiPT-Seq subroutine to correct removing quality scores from adapter sequence
 - updates SLiPT-Seq barcode whitelist to allow reverse-complement in R2 and trims UMI from 8 to 10 bp

@@ -262,7 +262,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   SPLiT-Seq (8 bp UMI, 24 bp barcode): splitseq
                                   SPLiT-Seq v2.1 (10 bp UMI, 24 bp barcode): splitseq2
                                   STRT-Seq (6 bp barcode, no UMI): strt-seq
-                                  STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
+                                  STRT-Seq-C1 (8 bp barcode, 5 bp UMI): strt-seq-c1
                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
                                   SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
