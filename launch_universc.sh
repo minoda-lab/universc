@@ -228,7 +228,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                   10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
                                   10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
                                   Aligent Bravo B (16 bp barcode, No UMI): aligent, bravo
-                                  BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
+                                  BD Rhapsody v1 (27 bp barcode, 8 bp UMI): bd-rhapsody
+                                  BD Rhapsody v2 enhanced beads (27 bp barcode, 8 bp UMI): bd-rhapsody-v2
                                   C1 Fluidigm (16 bp barcode, No UMI): c1, fluidgm-c1
                                   C1 CAGE (16 bp, No UMI): c1-cage
                                   C1 RamDA-Seq (16 bp, No UMI): c1-ramda-seq
@@ -692,6 +693,8 @@ elif [[ "$technology" == "10x-v3" ]] || [[ "$technology" == "chromium-v3" ]]; th
     technology="10x-v3"
 elif [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd" ]] || [[ "$technology" == "rhapsody" ]] || [[ "$technology" == "bdrhapsody" ]]; then
     technology="bd-rhapsody"
+elif [[ "$technology" == "bd-rhapsody-v2" ]] || [[ "$technology" == "bd-v2" ]] || [[ "$technology" == "rhapsody-v2" ]] || [[ "$technology" == "bdrhapsody-v2" ]] || [[ "$technology" == "bd-rhapsodyv2" ]] || [[ "$technology" == "bdv2" ]] || [[ "$technology" == "rhapsodyv2" ]] || [[ "$technology" == "bdrhapsodyv2" ]] || [[ "$technology" == "bd-rhapsody-2022" ]] || [[ "$technology" == "bd-2022" ]] || [[ "$technology" == "rhapsody-2022" ]] || [[ "$technology" == "bdrhapsody-2022" ]] || [[ "$technology" == "bd-rhapsody2022" ]] || [[ "$technology" == "bd2022" ]] || [[ "$technology" == "rhapsody2022" ]] || [[ "$technology" == "bdrhapsody2022" ]]; then
+    technology="bd-rhapsody-v2"
 elif [[ "$technology" == "aligent" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "aligent-bravo" ]] || [[ "$technology" == "bravo-b" ]] || [[ "$technology" == "aligent-bravo-b" ]]; then
     techology="bravo"
     nonUMI=false
@@ -864,7 +867,7 @@ elif [[ "$technology" == "10x-v3" ]]; then
     minlength=16
     chemistry="SC3Pv3"
     technology="10x"
-elif [[ "$technology" == "bd-rhapsody" ]]; then
+elif [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd-rhapsody-v2" ]]; then
     barcodelength=27
     umilength=8
     minlength=27
@@ -1880,7 +1883,7 @@ if [[ -n "$barcodefile" ]]; then
         barcodefile=$(readlink -f $barcodefile)
         custombarcodes=true
         #allowing WellList from ICELL8 and other well-based techniques
-        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
+        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd-rhapsody-v2" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
             n_col=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             if [[ $n_col -eq 1 ]]; then
@@ -1914,7 +1917,7 @@ if [[ -n "$barcodefile" ]]; then
 else
     if [[ "$technology" == "10x"* ]]; then
         barcodefile="default:10x"
-    elif [[ "$technology" == "bd-rhapsody" ]]; then
+    elif [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd-rhapsody-v2" ]]; then
         barcodefile=${whitelistdir}/bd_rhapsody_barcode.txt
         if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
             echo "  generating combination of I1, I2, and RT barcodes ..."
@@ -2052,7 +2055,7 @@ else
         if [[ $verbose ]]; then
             echo "  generating a new barcode whitelist for ${technology}"
         fi
-        if [[ "$technology" == "bd-rhapsody" ]]; then
+        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd-rhapsody-v2" ]]; then
             if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
                 #generates all combinations of I1-I2-R1 barcodes
                 join -j 9999 ${whitelistdir}/bd_rhapsody_cell_label_section1.txt ${whitelistdir}/bd_rhapsody_cell_label_section2.txt | sed "s/ //g" | \
@@ -3015,7 +3018,22 @@ else
                 s/.*(.{9})ACTGGCCTGCGA(.{9})GGTAGCGGTGACA(.{9})(.{8})/\1\2\3\4/g
                 n
                 n
-                s/.*(.{6}).{12}(.{6}).{13}(.{6})(.{8})/\1\2\3\4/g
+                s/.*(.{9}).{12}(.{9}).{13}(.{9})(.{8})/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    #BD Rhapsody v2: remove adapters for enhanced beads (released in 2022)
+    if [[ "$technology" == "bd-rhapsody" ]]; then
+        echo "  ... remove adapter and phase blocks for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*[ACG][CGT](.{9})GTGA(.{9})GACA(.{9})(.{8})/ {
+                s/.*(.{9})GTGA(.{9})GACA(.{9})(.{8})/\1\2\3\4/g
+                n
+                n
+                s/.*(.{9}).{4}(.{9}).{4}(.{9})(.{8})/\1\2\3\4/g
                 }' $convFile > ${crIN}/.temp
             mv ${crIN}/.temp $convFile
         done
