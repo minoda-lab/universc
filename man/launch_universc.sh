@@ -212,6 +212,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
                                   10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
                                   BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
+                                  BD Rhapsody v2 enhanced beads (27 bp barcode, 8 bp UMI): bd-rhapsody-v2
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
                                   C1 Fluidigm (16 bp barcode, No UMI): c1, fluidgm-c1

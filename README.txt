@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Wednesday 18 January 2023"
+date: "Thursday 25 May 2023"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -34,9 +34,9 @@ tags:
 ![Docker Stars](https://img.shields.io/docker/stars/tomkellygenetics/universc)
 ![Docker Pulls](https://img.shields.io/docker/pulls/tomkellygenetics/universc)
 
-![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.2.5)
-![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest?label="layers@1.2.5")
-![Docker Image Size (v1.2.5)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.2.5?label="image%20size@1.2.5)
+![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/tomkellygenetics/universc/1.2.6)
+![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest?label="layers@1.2.6")
+![Docker Image Size (v1.2.6)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/1.2.6?label="image%20size@1.2.6)
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tomkellygenetics/universc/latest)
 ![MicroBadger Layers (latest)](https://img.shields.io/microbadger/layers/tomkellygenetics/universc/latest)
 ![Docker Image Size (latest)](https://img.shields.io/docker/image-size/tomkellygenetics/universc/latest)
@@ -62,8 +62,8 @@ tags:
 
 ![GitHub all releases](https://img.shields.io/github/downloads/minoda-lab/universc/total?label=GitHub%20downloads)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/minoda-lab/universc?label=GitHub%20release)
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.5/total)
-![GitHub release (by tag)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.5/total)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.6/total)
+![GitHub release (by tag)](https://img.shields.io/github/downloads/minoda-lab/universc/1.2.6/total)
 
 ![Docker CI](https://github.com/minoda-lab/universc/workflows/CI%20to%20Docker%20hub/badge.svg)
 ![Docker compose](https://github.com/minoda-lab/universc/workflows/Docker%20compose%20build/badge.svg)
@@ -94,7 +94,7 @@ and use this tool to process single-cell RNA-Seq data from FASTQ format.
 
 **Package**
 
-UniverSC version 1.2.5
+UniverSC version 1.2.6
 
 **Maintainers**
 
@@ -139,15 +139,17 @@ Once you have a docker image installed on your system, you can run the applicabl
 
 ### Nextflow users
 
-A [nextflow](https://www.nextflow.io/) custom [module](https://nf-co.re/modules) is being developed for the [nf-core](https://nf-co.re) community. It will be available to use in nf-core [pipelines](https://nf-co.re/pipelines).
+A [nextflow](https://www.nextflow.io/) custom [module](https://nf-co.re/modules) is has been developed for the [nf-core](https://nf-co.re) community.
+It will be release open-source to use in nf-core [pipelines](https://nf-co.re/pipelines).
 
-See the issue and pull request for details:
+See the issue and pull request for more details:
 
 [https://github.com/nf-core/modules/issues/1644](https://github.com/nf-core/modules/issues/1644)
 
 [https://github.com/nf-core/modules/pull/1706](https://github.com/nf-core/modules/pull/1706)
 
-We plan to make this available in the near future. If you are interested in using it or contributing to development, please contact the maintainers. Thank you!
+We welcome feedback on these tools. If you are interested in using it or contributing to
+development of nextflow pipelines, please contact the maintainers. Thank you!
 
 ## Purpose
 
@@ -185,7 +187,9 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
     -  10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
     -  10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
 -  Aligent Bravo B (16 bp barcode, No UMI): aligent, bravo 
--  BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
+-  BD Rhapsody
+    - BD Rhapsody v1 (27 bp barcode, 8 bp UMI): bd-rhapsody
+    - BD Rhapsody v2 enhanced beads (27 bp barcode, 8 bp UMI): bd-rhapsody-v2
 -  C1
     -  C1 Fluidigm (16 bp barcode, No UMI): c1, fluidgm-c1
     -  C1 CAGE (16 bp, No UMI): c1-cage
@@ -223,7 +227,9 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
    -  Smart-Seq (16 bp barcode, No UMI): smartseq
    -  Smart-Seq2 (16 bp barcode, No UMI): smartseq2
    -  Smart-Seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
--  SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
+-  SPLiT-Seq
+   -  SPLiT-Seq v1.0 (8 bp UMI, 24 bp barcode): splitseq
+   -  SPLiT-Seq v2.1 (10 bp UMI, 24 bp barcode): splitseq2
 -  STRT-Seq
     -  STRT-Seq (6 bp barcode, no UMI): strt-seq
     -  STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
@@ -292,7 +298,7 @@ If a sequencing facility has demultiplexed the samples for you without this,
 UniverSC will attempt to extract index sequences from FASTQ headers in read 1.
 If index sequences are not stored in the file headers and samples have already
 been demultiplexed, a dummy index file of the same number of reads as R1 and R2
-will be required. As a workaroudn, you can generate this by copying the R1 and R2
+will be required. As a workaround, you can generate this by copying the R1 and R2
 files and replacing the sequences with the first barcode in the relevant whitelist.
 For example:
 
@@ -375,7 +381,7 @@ A flexible cross-platform single-cell data processing pipeline. _Nat Commun_ **1
         number="1",
         pages="1-7",
         month="Nov",
-        note = {https://github.com/minoda-lab/universc package version 1.2.5},
+        note = {https://github.com/minoda-lab/universc package version 1.2.6},
         URL = {https://doi.org/10.1038/s41467-022-34681-z}
 }
 ```
@@ -385,7 +391,7 @@ The preprint can also be found here:
 Kelly, S.T., Battenberg K., Hetherington, N.A., Hayashi, K., and Minoda, A. (2021)
 UniverSC: a flexible cross-platform single-cell data processing pipeline.
 bioRxiv 2021.01.19.427209; doi: [https://doi.org/10.1101/2021.01.19.427209](https://doi.org/10.1101/2021.01.19.427209)
-package version 1.2.5. [https://github.com/minoda-lab/universc](https://github.com/minoda-lab/universc)
+package version 1.2.6. [https://github.com/minoda-lab/universc](https://github.com/minoda-lab/universc)
 
 ```
 @article {Kelly2021.01.19.427209,
@@ -398,7 +404,7 @@ package version 1.2.5. [https://github.com/minoda-lab/universc](https://github.c
         abstract = {Single-cell RNA-sequencing analysis to quantify RNA molecules in individual cells has become popular owing to the large amount of information one can obtain from each experiment. We have developed UniverSC (https://github.com/minoda-lab/universc), a universal single-cell processing tool that supports any UMI-based platform. Our command-line tool enables consistent and comprehensive integration, comparison, and evaluation across data generated from a wide range of platforms.Competing Interest StatementThe authors have declared no competing interest.},
         eprint = {https://www.biorxiv.org/content/early/2021/01/19/2021.01.19.427209.full.pdf},
         journal = {{bioRxiv}},
-        note = {package version 1.2.5},
+        note = {package version 1.2.6},
         URL = {https://github.com/minoda-lab/universc},
 }
 
@@ -411,8 +417,8 @@ The software can also be cited directly as a manual:
 @Manual{,
     title = {{UniverSC}:  a flexible cross-platform single-cell data processing pipeline},
     author = {S. Thomas Kelly, Kai Battenberg, Nicola A. Hetherington, Makoto Hayashi, and Aki Minoda},
-    year = {2022},
-    note = {package version 1.2.5},
+    year = {2023},
+    note = {package version 1.2.6},
     url = {https://github.com/minoda-lab/universc},
   }
 ```
@@ -865,7 +871,7 @@ your systems administrator.
 
 #### Pulling from remote DockerHub repository
 
-We provide a docker image for UniverSC version 1.2.5.
+We provide a docker image for UniverSC version 1.2.6.
 
 You can import it if you have docker installed.
 
@@ -1166,7 +1172,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                   10x Genomics version 2 (16 bp barcode, 10 bp UMI): 10x-v2, chromium-v2
                                   10x Genomics version 3 (16 bp barcode, 12 bp UMI): 10x-v3, chromium-v3
                                   Aligent Bravo B (16 bp barcode, No UMI): aligent, bravo
-                                  BD Rhapsody (27 bp barcode, 8 bp UMI): bd-rhapsody
+                                  BD Rhapsody v1 (27 bp barcode, 8 bp UMI): bd-rhapsody
+                                  BD Rhapsody v2 (27 bp barcode, 8 bp UMI): bd-rhapsody-v2
                                   C1 Fluidigm (16 bp barcode, No UMI): c1, fluidgm-c1
                                   C1 CAGE (16 bp, No UMI): c1-cage
                                   C1 RamDA-Seq (16 bp, No UMI): c1-ramda-seq
@@ -1197,6 +1204,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Smart-seq2 (16 bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
                                   SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
+                                  SPLiT-Seq v2.1 (10 bp UMI, 24 bp barcode): splitseq2
                                   STRT-Seq (6 bp barcode, no UMI): strt-seq
                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
