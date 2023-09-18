@@ -789,8 +789,14 @@ elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "split-seq" ]]; th
 elif [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "split-seq2" ]] || [[ "$technology" == "splitseq-v2" ]] || [[ "$technology" == "split-seq-v2" ]]; then
     technology="splitseq2"
 elif [[ "$technology" == "strt-seq" ]] || [[ "$technology" == "strt" ]] || [[ "$technology" == "strtseq" ]]; then
-     technology="strt-seq"
-     nonUMI=true
+    technology="strt-seq"
+    nonUMI=true
+    if [[ -z ${chemistry} ]] || [[ ${chemistry} == "SC3Pv"* ]]; then
+        if [[ $verbose ]]; then
+            echo "setting chemistry for 5' scRNA"
+        fi
+        chemistry="SC5P-R1"
+    fi
 elif [[ "$technology" == "strt-seq-c1" ]] || [[ "$technology" == "strt-seqc1" ]] || [[ "$technology" == "strtseqc1" ]] || [[ "$technology" == "strtseq-c1" ]]; then
      technology="strt-seq-c1"
 elif [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "strt-seq2i" ]] || [[ "$technology" == "strtseq2i" ]] || [[ "$technology" == "strtseq-2i" ]]; then
@@ -1095,7 +1101,7 @@ if [[ $setup == "false" ]]; then
     if [[ ${#read1[@]} -eq 0 ]]; then
         echo "Error: option --read1 or --file is required"
         exit 1
-    elif [[ ${#read2[@]} -eq 0 ]]; then
+    elif [[ ${#read2[@]} -eq 0 ]] && [[ "$chemistry" != "SC5P-R1" ]]; then
         echo "Error: option --read2 or --file is required"
         exit 1
     fi
@@ -3456,7 +3462,7 @@ else
                 perl ${ADDMOCKUMI} --fastq ${convR1} --out_dir ${crIN} --head_length ${barcodelength} --umi_length ${umi_default}
                 umilength=${umi_default}
                 umiadjust=0
-                chemistry="SC5P-PE"
+                chemistry="SC5P-R1"
                 
                 #returns a combined R1 file with barcode and mock UMI
                 ##6 bp barcode, 10 bp UMI, GGG for TSO
