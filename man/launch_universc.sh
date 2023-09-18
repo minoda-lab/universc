@@ -59,6 +59,10 @@ Provides a conversion script to run multiple technologies and custom libraries w
 
                  --read2 Sample_S1_L001_R2_001.fastq Sample_S1_L002_R2_001.fastq
 
+            UniverSC will automatically switch R1 and R2 to pass barcodes in R1 to Cell Ranger for:
+
+                   inDrops-v2, SLiPT-Seq, SLiPT-Seq2, STRT-Seq-2018
+
   -I1, --index1 FILE
             Index (I1) FASTQ file to pass to Cell Ranger (OPTIONAL). Contains the indexes 
             for each sample. (In the case of Illumina paired-ends these are the i7 indexes).
@@ -247,6 +251,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   STRT-Seq (6 bp barcode, no UMI)
                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI)
                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI)
+                                  STRT-Seq-2018 (8 bp barcode, 8 bp UMI)
                                   SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10

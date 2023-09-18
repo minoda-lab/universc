@@ -786,7 +786,7 @@ elif [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; 
     nonUMI=false
 elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "split-seq" ]]; then
     technology="splitseq"
-elif [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "split-seq2" ]] || [[ "$technology" == "splitseq-v2" ]] || [[ "$technology" == "split-seq-v2" ]]; then
+elif [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "split-seq2" ]] || [[ "$technology" == "splitseq-v2" ]] || [[ "$technology" == "split-seq-v2" ]] || [[ "$technology" == "parse" ]] || [[ "$technology" == "parsebio" ]]|| [[ "$technology" == "parse-bio" ]] || [[ "$technology" == "evercode" ]]; then
     technology="splitseq2"
 elif [[ "$technology" == "strt-seq" ]] || [[ "$technology" == "strt" ]] || [[ "$technology" == "strtseq" ]]; then
     technology="strt-seq"
@@ -801,6 +801,14 @@ elif [[ "$technology" == "strt-seq-c1" ]] || [[ "$technology" == "strt-seqc1" ]]
      technology="strt-seq-c1"
 elif [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "strt-seq2i" ]] || [[ "$technology" == "strtseq2i" ]] || [[ "$technology" == "strtseq-2i" ]]; then
      technology="strt-seq-2i"
+elif [[ "$technology" == "strt-seq-2018" ]] || [[ "$technology" == "strt-seqc2018" ]] || [[ "$technology" == "strtseq2018" ]] || [[ "$technology" == "strtseq-2018" ]] || [[ "$technology" == "strt-seq-v3" ]]; then
+    technology="strt-seq-2018"
+    if [[ -z ${chemistry} ]] || [[ ${chemistry} == "SC5P"* ]]; then
+        if [[ $verbose ]]; then
+            echo "setting chemistry for 3' scRNA PE"
+        fi
+        chemistry="SC3Pv2"
+     fi
 elif [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]] || [[ "$technology" == "ddseq" ]] || [[ "$technology" == "dd-seq" ]] || [[ "$technology" == "bioraad" ]]; then
     technology="surecell"
 elif [[ "$technology" == "custom"* ]]; then
@@ -989,6 +997,10 @@ elif [[ "$technology" == "strt-seq-2i" ]]; then
     barcodelength=13
     umilength=6
     minlength=13
+if [[ "$technology" == "strt-seq-2018" ]]; then
+    barcodelength=8
+    umilength=8
+    minlength=8
 elif [[ "$technology" == "surecell" ]]; then
     barcodelength=18
     umilength=8
@@ -1679,7 +1691,7 @@ fi
 
 
 #generate missing indexes if required (generating I1 and I2)
-if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "bravo" ]]; then
+if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "strt-seq-2018" ]] || [[ "$technology" == "bravo" ]]; then
    echo "dual indexes I1 and I2 required for $technology"
    if [[ ${#index2[@]} -le 0 ]]; then
        echo " automatically generating I1 and I2 index files from file headers"
@@ -1767,7 +1779,7 @@ if [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || 
 fi
 
 #inverting R1 and R2 for specific technologies
-if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]]; then
+if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "strt-seq-2018" ]]; then
     #invert read1 and read2
     echo "***WARNING: technology is set to ${technology}. barcodes on Read 2 will be used***"
     tmp=$read1
@@ -2019,8 +2031,10 @@ else
          barcodefile=${whitelistdir}/STRTSeq_barcode.txt
     elif [[ "$technology" == "strt-seq-c1" ]]; then
          barcodefile=${whitelistdir}/STRTSeqC1_barcode.txt
-     elif [[ "$technology" == "strt-seq-2i" ]]; then
+    elif [[ "$technology" == "strt-seq-2i" ]]; then
          barcodefile=${whitelistdir}/STRTSeq2i_barcode.txt
+    elif  [[ "$technology" == "strt-seq-2018" ]];
+         barcodefile=${whitelistdir}/strt_fan2018_barcode_96_8bp.txt
     else
         echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength} bp. valid barcode will be 100% as a result***"
         barcodelength=${minlength}
@@ -2144,7 +2158,7 @@ else
                 join -j 9999 ${whitelistdir}/AllPossibilities_5_barcodes.txt ${whitelistdir}/STRTSeqC1_barcode.txt | sed "s/ //g" | \
                 sort | uniq \
                 > ${whitelistdir}/STRTSeq2i_barcode_barcode.txt
-            fi
+           fi
         else
             #generating permutations of ATCG of barcode length (non-standard evaluation required to run in script)
             if [[ ${barcodelength} -ge 12 ]]; then

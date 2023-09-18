@@ -234,6 +234,7 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
     -  STRT-Seq (6 bp barcode, no UMI): strt-seq
     -  STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
     -  STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
+    -  STRT-Seq-2018 (8 bp barcode, 8 bp UMI): strt-seq-2018
 -  SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
 
 #### Chemistry settings available
@@ -1208,6 +1209,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   STRT-Seq (6 bp barcode, no UMI): strt-seq
                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
+                                  STRT-Seq-2018 (8 bp barcode, 8 bp UMI): strt-seq-2018
                                   SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10

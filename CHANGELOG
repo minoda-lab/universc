@@ -2,6 +2,7 @@
 
 - updates STRT-Seq to default to passing (undocumented) SC5P-R1 chemistry inputs to Cell Ranger
 - enables SC5P-R1 chemistry to run without read2 arguments
+- adds custom parameters (STRT-Seq-2018 technology) for Fan et al., (2018) https://doi.org/10.1038/s41422-018-0053-3 
 
 # 1.2.6
 
