@@ -277,6 +277,13 @@ icell8-full-length</li>
 </ul></li>
 <li>Microwell-Seq (18 bp barcode, 6 bp UMI): microwell</li>
 <li>Nadia (12 bp barcode, 8 bp UMI): nadia, dropseq</li>
+<li>PIP-Seq
+<ul>
+<li>PIP-Seq version 1 (16 bp barcode, 6 bp UMI): pip-seq-v1</li>
+<li>PIP-Seq version 2 (24 bp barcode, 12 bp UMI): pip-seq-v2</li>
+<li>PIP-Seq version 3 (28 bp barcode, 12 bp UMI): pip-seq-v3</li>
+<li>PIP-Seq version 4 (28 bp barcode, 12 bp UMI): pip-seq-v4</li>
+</ul></li>
 <li>Quartz-Seq
 <ul>
 <li>QuartzSeq (6 bp index, no UMI): quartz-seq</li>
@@ -308,9 +315,15 @@ icell8-full-length</li>
 <li>STRT-Seq (6 bp barcode, no UMI): strt-seq</li>
 <li>STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1</li>
 <li>STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i</li>
+<li>STRT-Seq-2018 (8 bp barcode, 8 bp UMI): strt-seq-2018</li>
 </ul></li>
 <li>SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad</li>
-</ul>
+</ul></li>
+<li>VASA-Seq
+<ul>
+<li>VASA-plate (6 bp UMI, 6 bp barcode): vasa-plate</li>
+<li>VASA-drop (6 bp UMI, 16 bp barcode): vasa-drop</li>
+</ul></li>
 <h4 id="chemistry-settings-available">Chemistry settings available</h4>
 <p>All technologies support 3′ single-cell RNA-Seq. Barcode adjustments
 and whitelists are changed automatically. For 5′ single-cell RNA-Seq,
@@ -1006,6 +1019,10 @@ Mandatory arguments to long options are mandatory for short options too.
                                   MARS-Seq (6 bp barcode, 10 bp UMI): marsseq, marsseq-v1
                                   MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2   
                                   Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+                                  PIP-Seq version 1 (16 bp barcode, 6 bp UMI): pip-seq-v1
+                                  PIP-Seq version 2 (24 bp barcode, 12 bp UMI): pip-seq-v2
+                                  PIP-Seq version 3 (28 bp barcode, 12 bp UMI): pip-seq-v3
+                                  PIP-Seq version 4 (28 bp barcode, 12 bp UMI): pip-seq-v4
                                   QuartzSeq (6 bp index, no UMI): quartz-seq
                                   Quartz-Seq2 (14 bp barcode, 8 bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15 bp barcode, 8 bp UMI): quartzseq2-1536
@@ -1025,6 +1042,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
                                   STRT-Seq-2018 (8 bp barcode, 8 bp UMI): strt-seq-2018
                                   SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
+                                  VASA-plate (6 bp UMI, 6 bp barcode): vasa-plate
+                                  VASA-drop (6 bp UMI, 16 bp barcode): vasa-drop
                                 Custom inputs are also supported by giving the name &quot;custom&quot; and length of barcode and UMI separated by &quot;_&quot;
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
 

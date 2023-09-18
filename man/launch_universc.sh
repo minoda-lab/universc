@@ -234,6 +234,10 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   MARS-Seq (6 bp barcode, 10 bp UMI): marsseq, marsseq-v1
                                   MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2
                                   Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+                                  PIP-Seq version 1 (16 bp barcode, 6 bp UMI): pip-seq-v1
+                                  PIP-Seq version 2 (24 bp barcode, 12 bp UMI): pip-seq-v2
+                                  PIP-Seq version 3 (28 bp barcode, 12 bp UMI): pip-seq-v3, fluent-bio-v3
+                                  PIP-Seq version 4 (28 bp barcode, 12 bp UMI): pip-seq-v4, fluent-bio-v4
                                   QuartzSeq (6 bp index, no UMI): quartz-seq
                                   Quartz-Seq2 (14 bp barcode, 8bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15 bp barcode, 8bp UMI): quartzseq2-1536
@@ -248,11 +252,13 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
                                   SPLiT-Seq (8 bp UMI, 24 bp barcode): splitseq
                                   SPLiT-Seq v2.1 (10 bp UMI, 24 bp barcode): splitseq2
-                                  STRT-Seq (6 bp barcode, no UMI)
-                                  STRT-Seq-C1 (8 bp barode, 5 bp UMI)
-                                  STRT-Seq-2i (13 bp barcode, 6 bp UMI)
-                                  STRT-Seq-2018 (8 bp barcode, 8 bp UMI)
+                                  STRT-Seq (6 bp barcode, no UMI): strt-seq
+                                  STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1
+                                  STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
+                                  STRT-Seq-2018 (8 bp barcode, 8 bp UMI): strt-seq-2019
                                   SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
+                                  VASA-plate (6 bp UMI, 6 bp barcode): vasa-plate
+                                  VASA-drop (6 bp UMI, 16 bp barcode): vasa-drop
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
 
