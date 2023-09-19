@@ -247,6 +247,10 @@ Mandatory arguments to long options are mandatory for short options too.
                                   MARS-Seq (6 bp barcode, 10 bp UMI): marsseq, marsseq-v1
                                   MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2
                                   Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+                                  PIP-Seq version 1 (16 bp barcode, 6 bp UMI): pip-seq-v1
+                                  PIP-Seq version 2 (24 bp barcode, 12 bp UMI): pip-seq-v2
+                                  PIP-Seq version 3 (28 bp barcode, 12 bp UMI): pip-seq-v3, fluent-bio-v3
+                                  PIP-Seq version 4 (28 bp barcode, 12 bp UMI): pip-seq-v4, fluent-bio-v4
                                   QuartzSeq (6 bp index, no UMI): quartz-seq
                                   Quartz-Seq2 (14 bp barcode, 8 bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15 bp barcode, 8 bp UMI): quartzseq2-1536
@@ -265,6 +269,8 @@ Mandatory arguments to long options are mandatory for short options too.
                                   STRT-Seq-C1 (8 bp barcode, 5 bp UMI): strt-seq-c1
                                   STRT-Seq-2i (13 bp barcode, 6 bp UMI): strt-seq-2i
                                   SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad
+                                  VASA-plate (6 bp UMI, 6 bp barcode): vasa-plate
+                                  VASA-drop (6 bp UMI, 16 bp barcode): vasa-drop
                                 Custom inputs are also supported by giving the name "custom" and length of barcode and UMI separated by "_"
                                   e.g. Custom (16 bp barcode, 10 bp UMI): custom_16_10
   
@@ -750,6 +756,14 @@ elif [[ "$technology" == "marsseq2" ]] || [[ "$technology" == "mars-seq2" ]] || 
     technology="marsseq-v2"
 elif [[ "$technology" == "microwell-seq" ]] || [[ "$technology" == "micro-well" ]] || [[ "$technology" == "microwell" ]] || [[ "$technology" == "microwellseq" ]]; then
      technology="microwellseq"
+elif [[ "$technology" == "pip-seq" ]] || [[ "$technology" == "pip-seq-v1" ]] || [[ "$technology" == "pip-seq" ]] || [[ "$technology" == "pip-seq-v1" ]] || [[ "$technology" == "pipseq" ]] || [[ "$technology" == "pipseq-v1" ]] || [[ "$technology" == "pip-seqv1" ]] || [[ "$technology" == "pipseqv1" ]]; then
+     technology="pip-seq-v1"
+elif [[ "$technology" == "pip-seq-v2" ]] || [[ "$technology" == "pip-seq-V2" ]] || [[ "$technology" == "pipseq-v2" ]] || [[ "$technology" == "pip-seqv2" ]] || [[ "$technology" == "pipseqv2" ]]; then
+     technology="pip-seq-v2"
+elif [[ "$technology" == "pip-seq-v3" ]] || [[ "$technology" == "pip-seq-V3" ]] || [[ "$technology" == "pipseq-v3" ]] || [[ "$technology" == "pip-seqv3" ]] || [[ "$technology" == "pipseqv3" ]] || [[ "$technology" == "fluent-bio-v3" ]] || [[ "$technology" == "fluentbio-v3" ]] || [[ "$technology" == "fluent-biov3" ]] || [[ "$technology" == "fluentbiov3" ]]; then
+     technology="pip-seq-v3"
+elif [[ "$technology" == "pip-seq-v4" ]] || [[ "$technology" == "pip-seq-V4" ]] || [[ "$technology" == "pipseq-v4" ]] || [[ "$technology" == "pip-seqv4" ]] || [[ "$technology" == "pipseqv4" ]] || [[ "$technology" == "fluent-bio-v4" ]] || [[ "$technology" == "fluentbio-v4" ]] || [[ "$technology" == "fluent-biov4" ]] || [[ "$technology" == "fluentbiov4" ]]; then
+     technology="pip-seq-v4"
 elif [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "quartzseq" ]] || [[ "$technology" == "quartz-seq1" ]]; then
      technology="quartz-seq"
      nonUMI=true
@@ -811,6 +825,10 @@ elif [[ "$technology" == "strt-seq-2018" ]] || [[ "$technology" == "strt-seqc201
      fi
 elif [[ "$technology" == "surecell" ]] || [[ "$technology" == "surecellseq" ]] || [[ "$technology" == "surecell-seq" ]] || [[ "$technology" == "ddseq" ]] || [[ "$technology" == "dd-seq" ]] || [[ "$technology" == "bioraad" ]]; then
     technology="surecell"
+elif [[ "$technology" == "vasa-seq-plate" ]] || [[ "$technology" == "vasa-seq" ]] || [[ "$technology" == "vasa-plate" ]] || [[ "$technology" == "vasaplate" ]] || [[ "$technology" == "vasa" ]]; then
+    technology="vasa-plate"
+elif [[ "$technology" == "vasa-seq-drop" ]] || [[ "$technology" == "vasa-drop-seq" ]] || [[ "$technology" == "vasa-drop" ]] || [[ "$technology" == "vasadrop" ]] || [[ "$technology" == "vasa-droplet" ]]; then
+    technology="vasa-drop"
 elif [[ "$technology" == "custom"* ]]; then
     fields=$((`echo $technology | grep -o "_" | wc -l` + 1))
     if [[ $fields -ne 3 ]]; then
@@ -941,6 +959,18 @@ elif [[ "$technology" == "marsseq-v2" ]]; then
     barcodelength=7
     umilength=8
     minlength=7
+elif [[ "$technology" == "pip-seq-v1" ]]; then
+    barcodelength=16
+    umilength=6
+    minlength=6
+elif [[ "$technology" == "pip-seq-v2" ]]; then
+    barcodelength=24
+    umilength=12
+    minlength=12
+elif [[ "$technology" == "pip-seq-v3" ]] || [[ "$technology" == "pip-seq-v4" ]]; then
+    barcodelength=28
+    umilength=12
+    minlength=12
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
@@ -1005,6 +1035,14 @@ elif [[ "$technology" == "surecell" ]]; then
     barcodelength=18
     umilength=8
     minlength=18
+elif [[ "$technology" == "vasa-plate" ]]; then
+    barcodelength=6
+    umilength=6
+    minlength=6
+elif [[ "$technology" == "vasa-drop" ]]; then
+    barcodelength=16
+    umilength=6
+    minlength=6
 elif [[ "$technology" == "custom"* ]]; then
     barcodelength=`echo $technology | cut -f 2 -d'_'`
     umilength=`echo $technology | cut -f 3 -d'_'`
