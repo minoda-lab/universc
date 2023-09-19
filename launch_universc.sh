@@ -800,14 +800,14 @@ elif [[ "$technology" == "smartseq3" ]] || [[ "$technology" == "smart-seq3" ]]; 
     nonUMI=false
 elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "split-seq" ]]; then
     technology="splitseq"
-elif [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "split-seq2" ]] || [[ "$technology" == "splitseq-v2" ]] || [[ "$technology" == "split-seq-v2" ]] || [[ "$technology" == "parse" ]] || [[ "$technology" == "parsebio" ]]|| [[ "$technology" == "parse-bio" ]] || [[ "$technology" == "evercode" ]]; then
+elif [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "split-seq2" ]] || [[ "$technology" == "splitseq-v2" ]] || [[ "$technology" == "split-seq-v2" ]] || [[ "$technology" == "parse" ]] || [[ "$technology" == "parsebio" ]] || [[ "$technology" == "parse-bio" ]] || [[ "$technology" == "evercode" ]]; then
     technology="splitseq2"
 elif [[ "$technology" == "strt-seq" ]] || [[ "$technology" == "strt" ]] || [[ "$technology" == "strtseq" ]]; then
     technology="strt-seq"
     nonUMI=true
     if [[ -z ${chemistry} ]] || [[ ${chemistry} == "SC3Pv"* ]]; then
         if [[ $verbose ]]; then
-            echo "setting chemistry for 5' scRNA"
+            echo "setting chemistry for 5\' scRNA"
         fi
         chemistry="SC5P-R1"
     fi
@@ -819,7 +819,7 @@ elif [[ "$technology" == "strt-seq-2018" ]] || [[ "$technology" == "strt-seqc201
     technology="strt-seq-2018"
     if [[ -z ${chemistry} ]] || [[ ${chemistry} == "SC5P"* ]]; then
         if [[ $verbose ]]; then
-            echo "setting chemistry for 3' scRNA PE"
+            echo "setting chemistry for 3\' scRNA PE"
         fi
         chemistry="SC3Pv2"
      fi
@@ -1027,7 +1027,7 @@ elif [[ "$technology" == "strt-seq-2i" ]]; then
     barcodelength=13
     umilength=6
     minlength=13
-if [[ "$technology" == "strt-seq-2018" ]]; then
+elif [[ "$technology" == "strt-seq-2018" ]]; then
     barcodelength=8
     umilength=8
     minlength=8
@@ -1048,7 +1048,6 @@ elif [[ "$technology" == "custom"* ]]; then
     umilength=`echo $technology | cut -f 3 -d'_'`
     minlength=${barcodelength}
 fi
-
 if [[ $verbose ]]; then
     echo " barcode and UMI lengths set as ${barcodelength} and ${umilength} respectively"
 fi
@@ -2010,7 +2009,7 @@ else
         if [[ -f $(echo ${index2}([0])) ]]; then
             index2length=$(($(head $index2([0]) -n 2 | tail -n 1 | wc -c) -1))
             barcodelength=$(($indexlength+$index2length))
-            if [[ -f ${whitelistdir}/Illumina_dual_barcodes.txt ]];then
+            if [[ -f ${whitelistdir}/Illumina_dual_barcodes.txt ]]; then
                 cat ${whitelistdir}/Illumina_TruSeq_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index1_i7_barcodes.txt
                 cat ${whitelistdir}/Illumina_TruSeq_Index2_i5_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sort | uniq > ${whitelistdir}/Illumina_Index2_i5_barcodes.txt
                 join -j 9999 ${whitelistdir}/Illumina_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Index2_i5_barcodes.txt | sed "s/ //g" > ${whitelistdir}/Illumina_dual_barcodes.txt
@@ -2071,7 +2070,7 @@ else
          barcodefile=${whitelistdir}/STRTSeqC1_barcode.txt
     elif [[ "$technology" == "strt-seq-2i" ]]; then
          barcodefile=${whitelistdir}/STRTSeq2i_barcode.txt
-    elif  [[ "$technology" == "strt-seq-2018" ]];
+    elif  [[ "$technology" == "strt-seq-2018" ]]; then
          barcodefile=${whitelistdir}/strt_fan2018_barcode_96_8bp.txt
     else
         echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength} bp. valid barcode will be 100% as a result***"
