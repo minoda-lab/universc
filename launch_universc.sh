@@ -757,6 +757,8 @@ elif [[ "$technology" == "marsseq2" ]] || [[ "$technology" == "mars-seq2" ]] || 
     technology="marsseq-v2"
 elif [[ "$technology" == "microwell-seq" ]] || [[ "$technology" == "micro-well" ]] || [[ "$technology" == "microwell" ]] || [[ "$technology" == "microwellseq" ]]; then
      technology="microwellseq"
+elif [[ "$technology" == "pip-seq-v0" ]] || [[ "$technology" == "pip-seq-V0" ]] || [[ "$technology" == "pipseq-v0" ]] || [[ "$technology" == "pip-seqv0" ]] || [[ "$technology" == "pipseqv0" ]] || [[ "$technology" == "delley" ]] || [[ "$technology" == "delley2021" ]] || [[ "$technology" == "delley-2021" ]]; then
+     technology="pip-seq-v0"
 elif [[ "$technology" == "pip-seq" ]] || [[ "$technology" == "pip-seq-v1" ]] || [[ "$technology" == "pip-seq" ]] || [[ "$technology" == "pip-seq-v1" ]] || [[ "$technology" == "pipseq" ]] || [[ "$technology" == "pipseq-v1" ]] || [[ "$technology" == "pip-seqv1" ]] || [[ "$technology" == "pipseqv1" ]]; then
      technology="pip-seq-v1"
 elif [[ "$technology" == "pip-seq-v2" ]] || [[ "$technology" == "pip-seq-V2" ]] || [[ "$technology" == "pipseq-v2" ]] || [[ "$technology" == "pip-seqv2" ]] || [[ "$technology" == "pipseqv2" ]]; then
@@ -961,17 +963,21 @@ elif [[ "$technology" == "marsseq-v2" ]]; then
     umilength=8
     minlength=7
 elif [[ "$technology" == "pip-seq-v1" ]]; then
+    barcodelength=24
+    umilength=8
+    minlength=24
+elif [[ "$technology" == "pip-seq-v1" ]]; then
     barcodelength=16
     umilength=6
-    minlength=6
+    minlength=16
 elif [[ "$technology" == "pip-seq-v2" ]]; then
     barcodelength=24
     umilength=12
-    minlength=12
+    minlength=24
 elif [[ "$technology" == "pip-seq-v3" ]] || [[ "$technology" == "pip-seq-v4" ]]; then
     barcodelength=28
     umilength=12
-    minlength=12
+    minlength=28
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
     barcodelength=14
     umilength=8
@@ -1043,7 +1049,7 @@ elif [[ "$technology" == "vasa-plate" ]]; then
 elif [[ "$technology" == "vasa-drop" ]]; then
     barcodelength=16
     umilength=6
-    minlength=6
+    minlength=16
 elif [[ "$technology" == "custom"* ]]; then
     barcodelength=`echo $technology | cut -f 2 -d'_'`
     umilength=`echo $technology | cut -f 3 -d'_'`
