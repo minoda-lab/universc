@@ -1977,6 +1977,11 @@ else
         if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
             echo "  generating combination of I1, I2, and RT barcodes ..."
         fi
+    elif [[ "$technology" == "bravo" ]]; then
+        barcodefile=${whitelistdir}/KAPA_UDI_dual_barcodes.txt
+        if [[ ! -f ${whitelistdir}/KAPA_UDI_dual_barcodes.txt ]]; then
+            echo "  generating combination of I1, I2, and RT barcodes ..."
+        fi
     elif [[ "$technology" == "celseq" ]]; then
         barcodefile=${whitelistdir}/bc_celseq1.txt
         if [[ ! -f ${whitelistdir}/bc_celseq1.txt ]]; then
@@ -1985,11 +1990,6 @@ else
     elif [[ "$technology" == "celseq2" ]] || [[ "$technology" == "vasa-plate" ]]; then
         barcodefile=${whitelistdir}/bc_celseq2.txt
         if [[ ! -f ${whitelistdir}/bc_celseq2.txt ]]; then
-            echo "  generating combination of I1, I2, and RT barcodes ..."
-        fi
-    elif [[ "$technology" == "bravo" ]]; then
-        barcodefile=${whitelistdir}/KAPA_UDI_dual_barcodes.txt
-        if [[ ! -f ${whitelistdir}/KAPA_UDI_dual_barcodes.txt ]]; then
             echo "  generating combination of I1, I2, and RT barcodes ..."
         fi
     elif [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]]; then
@@ -2051,37 +2051,55 @@ else
             echo "***WARNING: combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
         fi
     elif [[ "$technology" == "sciseq2" ]]; then
-             barcodefile=${whitelistdir}/sciseq2_barcode.txt
-             if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
-                 echo "  generating combination of I1, I2, and RT barcodes ..."
-             fi
+            barcodefile=${whitelistdir}/sciseq2_barcode.txt
+            if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
+                echo "  generating combination of I1, I2, and RT barcodes ..."
+            fi
     elif [[ "$technology" == "sciseq3" ]]; then
-             barcodefile=${whitelistdir}/sciseq3_barcode.txt
-             if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
-                 echo "  generating combination of I1, I2, and RT barcodes ..."
-             fi
+            barcodefile=${whitelistdir}/sciseq3_barcode.txt
+            if [[ ! -f ${whitelistdir}/sciseq3_barcode.txt ]]; then
+                echo "  generating combination of I1, I2, and RT barcodes ..."
+            fi
     elif [[ "$technology" == "scifiseq" ]]; then
-             barcodefile=${whitelistdir}/scifi-seq_barcode.txt
-             if [[ ! -f ${whitelistdir}/scifi-seq_barcode.txt ]]; then
-                 echo "  generating combination of I1, I2, and RT barcodes ..."
-             fi
+            barcodefile=${whitelistdir}/scifi-seq_barcode.txt
+            if [[ ! -f ${whitelistdir}/scifi-seq_barcode.txt ]]; then
+                echo "  generating combination of I1, I2, and RT barcodes ..."
+            fi
     elif [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]]; then
-             barcodefile=${whitelistdir}/splitseq_3_barcodes.txt
-             if [[ ! -f ${whitelistdir}/splitseq_3_barcodes.txt ]]; then
-                 echo "  generating combination of I1, I2, and RT barcodes ..."
-             fi
-     elif [[ "$technology" == "smartseq2" ]]; then
-         barcodefile=${whitelistdir}/SmartSeq2_full_barcodes.txt
+            barcodefile=${whitelistdir}/splitseq_3_barcodes.txt
+            if [[ ! -f ${whitelistdir}/splitseq_3_barcodes.txt ]]; then
+                echo "  generating combination of I1, I2, and RT barcodes ..."
+            fi
+    elif [[ "$technology" == "smartseq2" ]]; then
+        barcodefile=${whitelistdir}/SmartSeq2_full_barcodes.txt
     elif [[ "$technology" == "smartseq3" ]]; then
         barcodefile=${whitelistdir}/SmartSeq3_full_barcodes.txt
     elif [[ "$technology" == "strt-seq" ]]; then
-         barcodefile=${whitelistdir}/STRTSeq_barcode.txt
+        barcodefile=${whitelistdir}/STRTSeq_barcode.txt
     elif [[ "$technology" == "strt-seq-c1" ]]; then
-         barcodefile=${whitelistdir}/STRTSeqC1_barcode.txt
+        barcodefile=${whitelistdir}/STRTSeqC1_barcode.txt
     elif [[ "$technology" == "strt-seq-2i" ]]; then
-         barcodefile=${whitelistdir}/STRTSeq2i_barcode.txt
+        barcodefile=${whitelistdir}/STRTSeq2i_barcode.txt
     elif  [[ "$technology" == "strt-seq-2018" ]]; then
-         barcodefile=${whitelistdir}/strt_fan2018_barcode_96_8bp.txt
+        barcodefile=${whitelistdir}/strt_fan2018_barcode_96_8bp.txt
+    elif [[ "$technology" == "vasa-plate" ]]; then
+        barcodefile=${whitelistdir}/bc_vasa_plate.txt
+        if [[ ! -f ${whitelistdir}/bc_vasa_plate.txt ]]; then
+            echo "  generating combination of I1, I2, and RT barcodes ..."
+        fi
+    elif [[ "$technology" == "vasa-drop" ]]; then
+        if [[ $custombarcodes == false ]]; then
+            echo "WARNING: For VASA-drop, you are recommended produce the barcode file for each library with --barcodefile as input parameter."
+            barcodefile=${whitelistdir}/bc_vasa_drop.txt
+            if [[ ! -f ${whitelistdir}/bc_vasa_drop.txt ]]; then
+                echo "  generating combination of I1, I2, and RT barcodes ..."
+            fi
+        else
+            if [[ ! -f $barcodefile ]]; then
+                echo "Error: File selected for option --barcodefile does not exist"
+                exit 1
+            fi
+        fi
     else
         echo "***WARNING: whitelist for ${technology} will be all possible combinations of ${minlength} bp. valid barcode will be 100% as a result***"
         barcodelength=${minlength}
