@@ -1,5 +1,5 @@
-version=1.2.5.2-dev
-old_version=1.2.5.1
+version=1.2.7
+old_version=1.2.6
 sed -i "s/$old_version/$version/g"  *md *html .version man/*sh inst/* *.cff
 sed -i 's/universcversion="$old_version"/universcversion="$version"/g' launch_universc.sh
 R -e "knitr::knit('README.Rmd')"; pandoc -f markdown -t html README.md > README.html
