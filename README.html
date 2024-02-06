@@ -236,7 +236,8 @@ chromium-v3</li>
 <li>BD Rhapsody
 <ul>
 <li>BD Rhapsody v1 (27 bp barcode, 8 bp UMI): bd-rhapsody</li>
-<li>BD Rhapsody v2 enhanced beads (27 bp barcode, 8 bp UMI): bd-rhapsody-v2</li>
+<li>BD Rhapsody v2 enhanced beads (27 bp barcode, 8 bp UMI):
+bd-rhapsody-v2</li>
 </ul></li>
 <li>C1
 <ul>
@@ -279,6 +280,7 @@ icell8-full-length</li>
 <li>Nadia (12 bp barcode, 8 bp UMI): nadia, dropseq</li>
 <li>PIP-Seq
 <ul>
+<li>PIP-Seq version 0 (24 bp barcode, 8 bp UMI): pip-seq-v0</li>
 <li>PIP-Seq version 1 (16 bp barcode, 6 bp UMI): pip-seq-v1</li>
 <li>PIP-Seq version 2 (24 bp barcode, 12 bp UMI): pip-seq-v2</li>
 <li>PIP-Seq version 3 (28 bp barcode, 12 bp UMI): pip-seq-v3</li>
@@ -318,12 +320,12 @@ icell8-full-length</li>
 <li>STRT-Seq-2018 (8 bp barcode, 8 bp UMI): strt-seq-2018</li>
 </ul></li>
 <li>SureCell (18 bp barcode, 8 bp UMI): surecell, ddseq, biorad</li>
-</ul></li>
 <li>VASA-Seq
 <ul>
 <li>VASA-plate (6 bp UMI, 6 bp barcode): vasa-plate</li>
 <li>VASA-drop (6 bp UMI, 16 bp barcode): vasa-drop</li>
 </ul></li>
+</ul>
 <h4 id="chemistry-settings-available">Chemistry settings available</h4>
 <p>All technologies support 3′ single-cell RNA-Seq. Barcode adjustments
 and whitelists are changed automatically. For 5′ single-cell RNA-Seq,
@@ -380,7 +382,7 @@ without this, UniverSC will attempt to extract index sequences from
 FASTQ headers in read 1. If index sequences are not stored in the file
 headers and samples have already been demultiplexed, a dummy index file
 of the same number of reads as R1 and R2 will be required. As a
-workaroudn, you can generate this by copying the R1 and R2 files and
+workaround, you can generate this by copying the R1 and R2 files and
 replacing the sequences with the first barcode in the relevant
 whitelist. For example:</p>
 <pre><code>index1=&quot;TAAGGCGA&quot;
@@ -1019,10 +1021,11 @@ Mandatory arguments to long options are mandatory for short options too.
                                   MARS-Seq (6 bp barcode, 10 bp UMI): marsseq, marsseq-v1
                                   MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2   
                                   Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+                                  PIP-Seq version 0 (24 bp barcode, 8 bp UMI): pip-seq-v0
                                   PIP-Seq version 1 (16 bp barcode, 6 bp UMI): pip-seq-v1
                                   PIP-Seq version 2 (24 bp barcode, 12 bp UMI): pip-seq-v2
-                                  PIP-Seq version 3 (28 bp barcode, 12 bp UMI): pip-seq-v3
-                                  PIP-Seq version 4 (28 bp barcode, 12 bp UMI): pip-seq-v4
+                                  PIP-Seq version 3 (28 bp barcode, 12 bp UMI): pip-seq-v3, fluent-bio-v3
+                                  PIP-Seq version 4 (28 bp barcode, 12 bp UMI): pip-seq-v4, fluent-bio-v4
                                   QuartzSeq (6 bp index, no UMI): quartz-seq
                                   Quartz-Seq2 (14 bp barcode, 8 bp UMI): quartzseq2-384
                                   Quartz-Seq2 (15 bp barcode, 8 bp UMI): quartzseq2-1536
@@ -1035,7 +1038,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Smart-seq (16 bp barcode, No UMI): smartseq
                                   Smart-seq2 (16 bp barcode, No UMI): smartseq2
                                   Smart-seq2-UMI, Smart-seq3 (16 bp barcode, 8 bp UMI): smartseq3
-                                  SPLiT-Seq (8 bp UMI, 24 bp barcode): splitseq
+                                  SPLiT-Seq (10 bp UMI, 24 bp barcode): splitseq
                                   SPLiT-Seq v2.1 (10 bp UMI, 24 bp barcode): splitseq2
                                   STRT-Seq (6 bp barcode, no UMI): strt-seq
                                   STRT-Seq-C1 (8 bp barode, 5 bp UMI): strt-seq-c1

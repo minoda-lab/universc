@@ -247,6 +247,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   MARS-Seq (6 bp barcode, 10 bp UMI): marsseq, marsseq-v1
                                   MARS-Seq2 (7 bp barcode, 8 bp UMI): marsseq2, marsseq-v2
                                   Microwell-Seq (18 bp barcode, 6 bp UMI): microwell
+                                  PIP-Seq version 0 (24 bp barcode, 8 bp UMI): pip-seq-v0
                                   PIP-Seq version 1 (16 bp barcode, 6 bp UMI): pip-seq-v1
                                   PIP-Seq version 2 (24 bp barcode, 12 bp UMI): pip-seq-v2
                                   PIP-Seq version 3 (28 bp barcode, 12 bp UMI): pip-seq-v3, fluent-bio-v3
