@@ -962,20 +962,24 @@ elif [[ "$technology" == "marsseq-v2" ]]; then
     barcodelength=7
     umilength=8
     minlength=7
-elif [[ "$technology" == "pip-seq-v1" ]]; then
-    barcodelength=24
+elif [[ "$technology" == "pip-seq-v0" ]]; then
+    barcodelength=27
     umilength=8
     minlength=24
 elif [[ "$technology" == "pip-seq-v1" ]]; then
-    barcodelength=16
+    barcodelength=19
     umilength=6
     minlength=16
 elif [[ "$technology" == "pip-seq-v2" ]]; then
     barcodelength=24
     umilength=12
     minlength=24
-elif [[ "$technology" == "pip-seq-v3" ]] || [[ "$technology" == "pip-seq-v4" ]]; then
+elif [[ "$technology" == "pip-seq-v3" ]]; then
     barcodelength=28
+    umilength=12
+    minlength=28
+elif [[ "$technology" == "pip-seq-v4" ]]; then
+    barcodelength=31
     umilength=12
     minlength=28
 elif [[ "$technology" == "quartz-seq2-384" ]]; then
@@ -3427,6 +3431,79 @@ else
         done
     fi
     
+    #PIP-Seq: remove adapter and correct phase blocks
+    if [[ "$technology" == "pip-seq-v0" ]]; then
+        echo "  ... remove adapter and phase blocks for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{8})AACC(.{8})ACAG(.{8})CCTATTCGAG(.{8})/ {
+                s/.*(.{8})AACC(.{8})ACAG(.{8})ACG(.{8})CCTATTCGAG(.{8})/\1\2\3\4/g
+                n
+                n
+                s/.*(.{8}).{4}(.{8}).{4}(.{8}).{10}(.{8})/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    if [[ "$technology" == "pip-seq-v1" ]]; then
+        echo "  ... remove adapter and phase blocks for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{8})GAGTGATTGCTTGTGACGCCTT(.{8})(.{6})/ {
+                s/.*(.{8})GAGTGATTGCTTGTGACGCCTT(.{8})(.{6})/\1\2\3/g
+                n
+                n
+                s/.*(.{8}).{22}(.{8})(.{6})/\1\2\3/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    if [[ "$technology" == "pip-seq-v2" ]]; then
+        echo "  ... remove adapters for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /^(.{8})ATGCATC(.{8})CCTCGAG(.{8})(.{12})/ {
+                s/^(.{8})ATGCATC(.{8})CCTCGAG(.{8})(.{12})/\1\2\3\4/g
+                n
+                n
+                s/^(.{8}).{7}(.{8}).{7}(.{8})(.{12})/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    if [[ "$technology" == "pip-seq-v3" ]]; then
+        echo "  ... remove adapters for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /^(.{8})ATG(.{8})GAG(.{8})TCGAG(.{8})(.{12})/ {
+                s/^(.{8})ATG(.{8})GAG(.{8})TCGAG(.{8})(.{12})/\1\2\3\4\5/g
+                n
+                n
+                s/^(.{8}).{3}(.{8}).{3}(.{8}).{5}(.{8})(.{12})/\1\2\3\4\5/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    if [[ "$technology" == "pip-seq-v4" ]]; then
+        echo "  ... remove adapter and phase blocks for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{8})ATG(.{8})GAG(.{8})TCGAG(.{8})(.{12})/ {
+                s/.*(.{8})ATG(.{8})GAG(.{8})TCGAG(.{8})(.{12})/\1\2\3\4\5/g
+                n
+                n
+                s/.*(.{8}).{3}(.{8}).{3}(.{8}).{5}(.{8})(.{12})/\1\2\3\4\5/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+
+
     #Quartz-Seq2: remove adapter
     if [[ "$technology" == "quartz-seq2-384" ]]; then
         for convFile in "${convFiles[@]}"; do
