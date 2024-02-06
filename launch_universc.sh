@@ -1735,7 +1735,7 @@ fi
 
 
 #generate missing indexes if required (generating I1 and I2)
-if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "strt-seq-2018" ]] || [[ "$technology" == "bravo" ]]; then
+if [[ "$technology" == "indrop-v3" ]] ||  [[ "$technology" == "icell8-full-length" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "smartseq2" ]] ||[[ "$technology" == "smartseq3" ]] || [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "strt-seq-2018" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "vasa-drop" ]]; then
    echo "dual indexes I1 and I2 required for $technology"
    if [[ ${#index2[@]} -le 0 ]]; then
        echo " automatically generating I1 and I2 index files from file headers"
@@ -1945,7 +1945,7 @@ if [[ -n "$barcodefile" ]]; then
         barcodefile=$(readlink -f $barcodefile)
         custombarcodes=true
         #allowing WellList from ICELL8 and other well-based techniques
-        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd-rhapsody-v2" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "custom" ]]; then
+        if [[ "$technology" == "bd-rhapsody" ]] || [[ "$technology" == "bd-rhapsody-v2" ]] || [[ "$technology" == "bravo" ]] || [[ "$technology" == "celseq" ]] || [[ "$technology" == "celseq2" ]] || [[ "$technology" == "fluidigm-c1" ]] || [[ "$technology" == "c1-cage" ]] || [[ "$technology" == "icell8" ]] || [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || [[ "$technology" == "c1-ramda-seq" ]] || [[ "$technology" == "quartz-seq2*" ]] || [[ "$technology" == "microwellseq" ]] || [[ "$technology" == "smartseq*" ]] || [[ "$technology" == "seqwell" ]] || [[ "$technology" == "sciseq2" ]] || [[ "$technology" == "sciseq3" ]] || [[ "$technology" == "scifiseq" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "pip-seq-v0" ]] || [[ "$technology" == "pip-seq-v1" ]] || [[ "$technology" == "pip-seq-v2" ]]  || [[ "$technology" == "pip-seq-v3" ]]  || [[ "$technology" == "pip-seq-v4" ]] || [[ "$technology" == "vasa-plate" ]] || [[ "$technology" == "custom" ]]; then
             seg=$'\t'
             n_col=$(awk -F'\t' '{print NF}' $barcodefile | sort -nu | tail -n 1)
             if [[ $n_col -eq 1 ]]; then
@@ -1994,7 +1994,7 @@ else
         if [[ ! -f ${whitelistdir}/bc_celseq1.txt ]]; then
             echo "  generating combination of I1, I2, and RT barcodes ..."
         fi
-    elif [[ "$technology" == "celseq2" ]] || [[ "$technology" == "vasa-plate" ]]; then
+    elif [[ "$technology" == "celseq2" ]]; then
         barcodefile=${whitelistdir}/bc_celseq2.txt
         if [[ ! -f ${whitelistdir}/bc_celseq2.txt ]]; then
             echo "  generating combination of I1, I2, and RT barcodes ..."
@@ -2056,6 +2056,26 @@ else
         elif [[ "$technology" == "indrop-v3" ]]; then
             barcodefile=${whitelistdir}/inDrop-v3_barcodes.txt
             echo "***WARNING: combination of list1 and list2 from indrop-v2 (https://github.com/indrops/indrops/issues/32)***"  
+        fi
+    elif [[ "$technology" == "pip-seq-v0" ]]; then
+        barcodefile=${whitelistdir}/pip-seq-v0_barcodes.txt
+        if [[ ! -f ${whitelistdir}/pip-seq-v0_barcodes.txt ]]; then
+            echo "  generating combination of barcodes ..."
+        fi
+    elif [[ "$technology" == "pip-seq-v1" ]]; then
+        barcodefile=${whitelistdir}/pip-seq-v1_barcodes.txt
+        if [[ ! -f ${whitelistdir}/pip-seq-v1_barcodes.txt ]]; then
+            echo "  generating combination of barcodes ..."
+        fi
+    elif [[ "$technology" == "pip-seq-v2" ]]; then
+        barcodefile=${whitelistdir}/pip-seq-v2_barcodes.txt
+        if [[ ! -f ${whitelistdir}/pip-seq-v2_barcodes.txt ]]; then
+            echo "  generating combination of barcodes ..."
+        fi
+    elif [[ "$technology" == "pip-seq-v3" ]] || [[ "$technology" == "pip-seq-v4" ]]; then
+        barcodefile=${whitelistdir}/pip-seq-v3_barcodes.txt
+        if [[ ! -f ${whitelistdir}/pip-seq-v3_barcodes.txt ]]; then
+            echo "  generating combination of barcodes ..."
         fi
     elif [[ "$technology" == "sciseq2" ]]; then
             barcodefile=${whitelistdir}/sciseq2_barcode.txt
@@ -2191,6 +2211,38 @@ else
                 join -j 9999 - ${whitelistdir}/microwell-seq_barcodeC.txt | sed "s/ //g" | \
                 sort | uniq \
                 > ${whitelistdir}/microwellseq_barcode.txt
+            fi
+        elif [[ "$technology" == "pip-seq-v0" ]]; then
+            if [[ ! -f ${whitelistdir}/pip-seq-v0_barcodes.txt ]]; then
+                #generates all combinations of R1 barcodes
+                join -j 9999 ${whitelistdir}/pip-seq_v0_bc1.tsv ${whitelistdir}/pip-seq_v0_bc2.tsv | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/pip-seq_v0_bc3.tsv | sed "s/ //g" | \
+                sort | uniq \
+                > ${whitelistdir}/pip-seq-v0_barcodes.txt
+            fi
+        elif [[ "$technology" == "pip-seq-v1" ]]; then
+            if [[ ! -f ${whitelistdir}/pip-seq-v1_barcodes.txt ]]; then
+                #generates all combinations of R1 barcodes
+                join -j 9999 ${whitelistdir}/pip-seq_v1_bc1.tsv ${whitelistdir}/pip-seq_v1_bc1.tsv | sed "s/ //g" | \
+                sort | uniq \
+                > ${whitelistdir}/pip-seq-v1_barcodes.txt
+            fi
+        elif [[ "$technology" == "pip-seq-v2" ]]; then
+            if [[ ! -f ${whitelistdir}/pip-seq-v2_barcodes.txt ]]; then
+                #generates all combinations of R1 barcodes
+                join -j 9999 ${whitelistdir}/pip-seq_v2_bc1.tsv ${whitelistdir}/pip-seq_v2_bc2.tsv | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/pip-seq_v2_bc3.tsv | sed "s/ //g" | \
+                sort | uniq \
+                > ${whitelistdir}/pip-seq-v2_barcodes.txt
+            fi
+        elif [[ "$technology" == "pip-seq-v3" ]] | [[ "$technology" == "pip-seq-v4" ]]; then
+            if [[ ! -f ${whitelistdir}/pip-seq-v4_barcodes.txt ]]; then
+                #generates all combinations of R1 barcodes
+                join -j 9999 ${whitelistdir}/pip-seq_v3_bc1.tsv ${whitelistdir}/pip-seq_v2_bc3.tsv | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/pip-seq_v3_bc3.tsv | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/pip-seq_v3_bc4.tsv | sed "s/ //g" |
+                sort | uniq \
+                > ${whitelistdir}/pip-seq-v3_barcodes.txt
             fi
         elif [[ "$technology" == "sciseq2" ]]; then
             if [[ ! -f ${whitelistdir}/sciseq2_barcode.txt ]]; then
