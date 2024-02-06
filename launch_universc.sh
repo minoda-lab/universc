@@ -1977,6 +1977,16 @@ else
         if [[ ! -f ${whitelistdir}/bd_rhapsody_barcode.txt ]]; then
             echo "  generating combination of I1, I2, and RT barcodes ..."
         fi
+    elif [[ "$technology" == "celseq" ]]; then
+        barcodefile=${whitelistdir}/bc_celseq1.txt
+        if [[ ! -f ${whitelistdir}/bc_celseq1.txt ]]; then
+            echo "  generating combination of I1, I2, and RT barcodes ..."
+        fi
+    elif [[ "$technology" == "celseq2" ]] || [[ "$technology" == "vasa-plate" ]]; then
+        barcodefile=${whitelistdir}/bc_celseq2.txt
+        if [[ ! -f ${whitelistdir}/bc_celseq2.txt ]]; then
+            echo "  generating combination of I1, I2, and RT barcodes ..."
+        fi
     elif [[ "$technology" == "bravo" ]]; then
         barcodefile=${whitelistdir}/KAPA_UDI_dual_barcodes.txt
         if [[ ! -f ${whitelistdir}/KAPA_UDI_dual_barcodes.txt ]]; then
@@ -3054,9 +3064,9 @@ else
     echo "  UMIs: ${umiadjust} bp at its tail" 
     
     echo " making technology-specific modifications ..."
-    #CEL-Seq2: swap barcode and UMI
+    #CEL-Seq2 or VASA-plate: swap barcode and UMI
     ##https://github.com/BUStools/bustools/issues/4
-    if [[ "$technology" == "celseq2" ]]; then
+    if [[ "$technology" == "celseq2" ]] || [[ "$technology" == "vasa-plate" ]]; then
         echo "  ... barcode and UMI swapped for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #swap UMI and barcode
