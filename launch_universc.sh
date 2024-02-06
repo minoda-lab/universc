@@ -1816,7 +1816,7 @@ if [[ "$technology" == "quartz-seq" ]] || [[ "$technology" == "ramda-seq" ]] || 
 fi
 
 #inverting R1 and R2 for specific technologies
-if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "strt-seq-2018" ]]; then
+if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "splitseq" ]] || [[ "$technology" == "splitseq2" ]] || [[ "$technology" == "strt-seq-2018" ]] || [[ "$technology" == "vasa-drop" ]]; then
     #invert read1 and read2
     echo "***WARNING: technology is set to ${technology}. barcodes on Read 2 will be used***"
     tmp=$read1
@@ -2903,7 +2903,7 @@ for fq in "${read1[@]}"; do
     to="${crIN}/${to}"
     
     #invert read1 and read2
-    if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+    if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]] || [[ "$technology" == "vasa-drop" ]]; then
         #where converted "read1" is R2 in source files (corrected names for Cell Ranger)
         echo "using transcripts in Read 2 for ${technology}"
         to=`echo $to | sed -e "s/_R2_/_R1_/g"`
@@ -2941,7 +2941,7 @@ for fq in "${read2[@]}"; do
     to=$(echo "$to" | sed 's/\.gz$//')
     
     #invert read1 and read2
-    if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]]; then
+    if [[ "$technology" == "indrop-v2" ]] || [[ "$technology" == "indrop-v3" ]] || [["$technology" == "vasa-drop" ]]; then
         #where converted "read2" is R1 in source files
         echo "using transcripts in Read 1 for ${technology}"
         to=`echo $to | sed -e "s/_R1_/_R2_/g"`
@@ -3822,7 +3822,38 @@ else
             if [[ $verbose ]]; then
                 cp ${convR1} $crIN/Concatenated_File.fastq
             fi
-            
+            echo "  ${convFile} adjusted"
+        done
+    fi
+
+    #VASA-drop
+    if [[ "$technology" == "vasa-drop" ]];then
+        echo "  ... processsing for ${technology}"
+        if [[ $verbose ]]; then
+            echo "Note: VASA-drop contains reads barcodes in I1 and R2 (switched to R1 already)"
+        fi
+        for convFile in "${convFiles[@]}"; do
+            read=$convFile
+            convR1=$read
+            convR2=$(echo $read | perl -pne 's/(.*)_R1/$1_R2/' )
+            convI1=$(echo $read | perl -pne 's/(.*)_R1/$1_I1/' )
+            convI2=$(echo $read | perl -pne 's/(.*)_R1/$1_I2/' )
+            convI1bcs=$(echo $read | perl -pne 's/(.*)_R1/$1_I1_bcs/' )
+
+            #create a temporary files with I1 barcodes extracted
+            cut -c 1-8 ${convI1} > $crIN/parsed_I1.fastq ${convI1bcs}
+
+            #concatenate barcocdes from index I1 to R1 as barcode (bases 1-8 from I2; bases 9-16 from R2)
+            echo "  ... concatencate barcodes to R1 from I1 index files"
+            perl ${CONCATENATEBARCODES} --additive ${convI1bcs} --ref_fastq ${convR1} --out_dir ${crIN}
+
+            #returns a combined R1 file with I1-R1 concatenated (I1 are R1 barcode)
+            mv $crIN/Concatenated_File.fastq ${convR1}
+            if [[ $verbose ]]; then
+                cp ${convR1} $crIN/Concatenated_File.fastq
+                cp ${convI1bcs} $crIN/I1_barcodes.fastq
+            fi
+            rm -rf ${convI1bcs}
             echo "  ${convFile} adjusted"
         done
     fi
