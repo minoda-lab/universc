@@ -20,23 +20,10 @@
 install=false
 
 ######UniverSC version#####
-universcversion="1.2.7"
+universcversion=$(cat $(dirname ${BASH_SOURCE[0]})/.version)
 ##########
 
 
-
-#####locate cellranger and get cellranger version#####
-cellrangerpath=$(which cellranger) #location of Cell Ranger
-if [[ -z $cellrangerpath ]]; then
-    echo "cellranger command is not found."
-    exit 1
-fi
-## detects version by attempting to parse "cellranger --version" (older versions do not support this by print the help header if invalid args given)
-cellrangerversion=$(cellranger --version 2>/dev/null | head -n 2 | tail -n 1 | rev | cut -f 1 -d" " | rev | cut -f 2 -d'(' | cut -f 1 -d')')
-if [[ $verbose ]]; then
-    echo $cellrangerversion
-fi
-##########
 
 
 #####locate launch_universc.sh, barcode sources, and other tools######
@@ -116,32 +103,6 @@ percellfile="outs/basic_stats.txt" #name of the file with the basic statistics o
 
 
 
-#####checking if Universc and Cell Ranger are writable#####
-# user configuration
-host=$(hostname) # returns host for local run and container ID for docker container
-user=$(whoami 2> /dev/null || id -ur) # returns username if defined and user ID if not
-
-#Cell Ranger
-if ! [[ -w "$barcodedir" ]]; then
-    echo "Error: Trying to run Cell Ranger installed at ${cellrangerpath}"
-    echo "launch_universc.sh can only run with Cell Ranger installed locally"
-    echo "Install Cell Ranger in a directory with write permissions such as /home/${user}/local and export to the PATH"
-    echo "The following versions of Cell Ranger are found:"
-    echo " `whereis cellranger`"
-    exit 1
-fi
-
-#convert
-if ! [[ -w "$SDIR" ]]; then
-    echo "Error: Trying to run launch_universc.sh installed at $SDIR"
-    echo "$SDIR must be writable to run launch_universc.sh"
-    echo "Install launch_universc.sh in a directory with write permissions such as /home/${user}/local and export to the PATH"
-    exit 1
-fi
-##########
-
-
-
 #####usage statement#####
 ## detect shell across different OS
 if [[ -z $VENDOR ]]; then
@@ -157,7 +118,7 @@ else
     SHELL=$(ps -p $$ | awk '$1 == PP {print $4}' PP=$$)
 fi
 ## detect how called (e.g., bash converrt.sh or ./launch_universc.sh)
-if [[ $(which launch_universc.sh) == *"/"* ]] || [[ $0 == *"/"* ]]; then
+if [[ $(which launch_universc.sh 2>1 | grep -v "no launch_universc.sh") == *"/"* ]] || [[ $0 == *"/"* ]]; then
     SHELL=''
     invocation=$0
 else
@@ -624,6 +585,13 @@ for op in "$@"; do
             ;;
         -v|--version)
             echo "launch_universc.sh version ${universcversion}"
+            cellrangerpath=$(which cellranger 2>1 | grep -v "no cellranger") #location of Cell Ranger
+            if [[ -z $cellrangerpath ]]; then
+                echo "cellranger command is not found."
+                exit 1
+            fi
+            ## detects version by attempting to parse "cellranger --version" (older versions do not support this by print the help header if invalid arg>
+            cellrangerversion=$(cellranger --version 2>/dev/null | head -n 2 | tail -n 1 | rev | cut -f 1 -d" " | rev | cut -f 2 -d'(' | cut -f 1 -d')')
             echo "cellranger version ${cellrangerversion}"
             exit 0
             ;;
@@ -640,6 +608,49 @@ for op in "$@"; do
     esac
 done
 ##########
+
+
+
+#####locate cellranger and get cellranger version#####
+cellrangerpath=$(which cellranger 2>1 | grep -v "no cellranger") #location of Cell Ranger
+if [[ -z $cellrangerpath ]]; then
+    echo "cellranger command is not found."
+    exit 1
+fi
+## detects version by attempting to parse "cellranger --version" (older versions do not support this by print the help header if invalid arg>
+cellrangerversion=$(cellranger --version 2>/dev/null | head -n 2 | tail -n 1 | rev | cut -f 1 -d" " | rev | cut -f 2 -d'(' | cut -f 1 -d')')
+if [[ $verbose ]]; then
+    echo $cellrangerversion
+fi
+##########
+
+
+
+
+#####checking if Universc and Cell Ranger are writable#####
+# user configuration
+host=$(hostname) # returns host for local run and container ID for docker container
+user=$(whoami 2> /dev/null || id -ur) # returns username if defined and user ID if not
+
+#Cell Ranger
+if ! [[ -w "$barcodedir" ]]; then
+    echo "Error: Trying to run Cell Ranger installed at ${cellrangerpath}"
+    echo "launch_universc.sh can only run with Cell Ranger installed locally"
+    echo "Install Cell Ranger in a directory with write permissions such as /home/${user}/local and export to the PATH"
+    echo "The following versions of Cell Ranger are found:"
+    echo " `whereis cellranger`"
+    exit 1
+fi
+
+#convert
+if ! [[ -w "$SDIR" ]]; then
+    echo "Error: Trying to run launch_universc.sh installed at $SDIR"
+    echo "$SDIR must be writable to run launch_universc.sh"
+    echo "Install launch_universc.sh in a directory with write permissions such as /home/${user}/local and export to the PATH"
+    exit 1
+fi
+##########
+
 
 
 
