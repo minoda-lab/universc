@@ -223,6 +223,12 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   C1 CAGE (16 bp, No UMI): c1-cage
                                   C1 RamDA-Seq (16 bp, No UMI): c1-ramda-seq
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
+                                  GEXSCOPE version 2.0.0 (24 bp barcode, 8 bp UMI): gexscope-v2.0.0
+                                  GEXSCOPE version 2.0.1 (24 bp barcode, 12 bp UMI): gexscope-v2.0.1
+                                  GEXSCOPE version 2.1.0 (24 bp barcode, 12 bp UMI): gexscope-v2.0.0
+                                  GEXSCOPE version 2.1.1 (24 bp barcode, 12 bp UMI): gexscope-v2.1.1
+                                  GEXSCOPE version 2.2.1 (24 bp barcode, 12 bp UMI): gexscope-v2.2.1
+                                  GEXSCOPE version 3.0.1 (27 bp barcode, 12 bp UMI): gexscope-v3.0.1
                                   ICELL8 version 2 (11 bp barcode, No UMI): icell8-non-umi, icell8-v2
                                   ICELL8 version 3 (11 bp barcode, 14 bp UMI): icell8 or custom
                                   ICELL8 5′ scRNA with TCR OR kit (10bp barcode, NO bp UMI): icell8-5-prime
