@@ -2056,6 +2056,16 @@ else
         if [[ ! -f ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt ]]; then
             echo "  generating combination of I1 and I2 barcodes ..."
         fi
+    elif [[ "$technology" == "gexscope-v2.0.0" ]] || [[ "$technology" == "gexscope-v2.0.1" ]] || [[ "$technology" == "gexscope-v2.1.0" ]] || [[ "$technology" == "gexscope-v2.1.1" ]] || [[ "$technology" == "gexscope-v2.2.0" ]] || [[ "$technology" == "gexscope-v2.2.1" ]]; then
+        barcodefile=${whitelistdir}/GEXSCOPE-v2_barcodes.txt
+        if [[ ! -f ${whitelistdir}/GEXSCOPE-v2_barcodes.txt ]]; then
+            echo "  generating combination of 3 barcodes ..."
+        fi
+    elif [[ "$technology" == "gexscope-v3.0.0" ]] || [[ "$technology" == "gexscope-v3.0.1" ]]; then
+        barcodefile=${whitelistdir}/GEXSCOPE-v3_barcodes.txt
+        if [[ ! -f ${whitelistdir}/GEXSCOPE-v3_barcodes.txt ]]; then
+            echo "  generating combination of 3 barcodes ..."
+        fi
     elif [[ "$technology" == "icell8" ]]; then
         barcodefile=${whitelistdir}/ICELL8_barcode.txt
         echo "***WARNING: selected barcode file (${barcodefile}) contains barcodes for all wells in ICELL8. valid barcode will be an overestimate***"
@@ -2240,6 +2250,22 @@ else
                 join -j 9999 ${whitelistdir}/Illumina_Nextera_Index1_i7_barcodes.txt ${whitelistdir}/Illumina_Nextera_Index2_i5_barcodes.txt | sed "s/ //g" | \
                 sort | uniq \
                 > ${whitelistdir}/Illumina_Nextera_dual_barcodes.txt
+            fi
+        elif [[ "$technology" == "gexscope-v2.0.0" ]] || [[ "$technology" == "gexscope-v2.0.1" ]] || [[ "$technology" == "gexscope-v2.1.0" ]] || [[ "$technology" == "gexscope-v2.1.1" ]] || [[ "$technology" == "gexscope-v2.2.0" ]] || [[ "$technology" == "gexscope-v2.2.1" ]]; then
+            if [[ ! -f ${whitelistdir}/GEXSCOPE-v2_barcodes.txt ]]; then
+                #generates all combinations of R2 barcodes
+                join -j 9999 ${whitelistdir}/bc_gexscope_v2.txt ${whitelistdir}/bc_gexscope_v2..txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/bc_gexscope_v2.txt | sed "s/ //g" | \
+                sort | uniq \
+                > ${whitelistdir}/GEXSCOPE-v2_barcodes.txt
+            fi
+        elif [[ "$technology" == "gexscope-v3.0.0" ]] || [[ "$technology" == "gexscope-v3.0.1" ]]; then
+            if [[ ! -f ${whitelistdir}/GEXSCOPE-v3_barcodes.txt ]]; then
+                #generates all combinations of R2 barcodes
+                join -j 9999 ${whitelistdir}/bc_gexscope_v3.txt ${whitelistdir}/bc_gexscope_v3..txt | sed "s/ //g" | \
+                join -j 9999 - ${whitelistdir}/bc_gexscope_v3.txt | sed "s/ //g" | \
+                sort | uniq \
+                > ${whitelistdir}/GEXSCOPE-v3_barcodes.tx
             fi
         elif [[ "$technology" == "icell8-full-length" ]]; then
             if [[ ! -f ${whitelistdir}/SmartSeq_ICELL8_dual_barcodes.txt ]]; then
@@ -3306,7 +3332,136 @@ else
             echo "  ${convFile} adjusted"
         done
     fi
-    
+
+
+    #GEXSCOPE: remove linkers or Poly-T
+    ##https://github.com/Hoohm/dropSeqPipe/issues/42
+    if [[ "$technology" == "gexscope-v1.0.0" ]]; then
+        echo "  ... remove adapter for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove poly-T
+            sed -E '
+                /.*(.{12})(.{8})T{18}/ {
+                s/.*(.{12})(.{8}).{18}/\1\2/g
+                n
+                n
+                s/.*(.{12})(.{8}).{18}/\1\2/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    if [[ "$technology" == "gexscope-v2.0.0" ]] || [[ "$technology" == "gexscope-v2.1.0" ]]; then
+        echo "  ... remove adapter for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{8})ATCCACGTGCTTGAGA(.{8})TCAGCATGCGGCTACG(.{8})(.{12})T{18}/ {
+                s/.*(.{8})ATCCACGTGCTTGAGA(.{8})TCAGCATGCGGCTACG(.{8})(.{12})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{8}).{16}(.{8}).{16}(.{8})(.{12}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    if [[ "$technology" == "gexscope-v2.0.1" ]] || [[ "$technology" == "gexscope-v2.1.1" ]]; then
+        echo "  ... remove adapter for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{8})ATCCACGTGCTTGAGA(.{8})TCAGCATGCGGCTACG(.{8})C(.{12})T{18}/ {
+                s/.*(.{8})ATCCACGTGCTTGAGA(.{8})TCAGCATGCGGCTACG(.{8})C(.{12})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{8}).{16}(.{8}).{16}(.{8}).{1}(.{12}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    if [[ "$technology" == "gexscope-v3.0.0" ]]; then
+        echo "  ... remove adapter for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{9})ATCCACGTGCTTGAGA(.{9})TCAGCATGCGGCTACG(.{9})(.{12})T{18}/ {
+                s/.*(.{9})ATCCACGTGCTTGAGA(.{9})TCAGCATGCGGCTACG(.{9})(.{12})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{9}).{16}(.{9}).{16}(.{9})(.{12}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #remove 2nd linker
+            sed -E '
+                /.*(.{9})TCGGTGACAGCCATAT(.{9})CGTAGTCAGAAGCTGA(.{9})(.{12})T{18}/ {
+                s/.*(.{9})TCGGTGACAGCCATAT(.{9})CGTAGTCAGAAGCTGA(.{9})(.{12})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{9}).{16}(.{9}).{16}(.{9})(.{12}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #remove 3rd linker
+            sed -E '
+                /.*(.{9})CGAACATGTAGGTCTC(.{9})GACTACGTATTAGCAT(.{9})(.{12})T{18}/ {
+                s/.*(.{9})CGAACATGTAGGTCTC(.{9})GACTACGTATTAGCAT(.{9})(.{12})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{9}).{16}(.{9}).{16}(.{9})(.{12}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #remove 4th linker
+            sed -E '
+                /.*(.{9})GATTGTCACTAACGCG(.{9})ATGCTGACTCCTAGTC(.{9})(.{12})T{18}/ {
+                s/.*(.{9})GATTGTCACTAACGCG(.{9})ATGCTGACTCCTAGTC(.{9})(.{12})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{9}).{16}(.{9}).{16}(.{9})(.{12}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    if [[ "$technology" == "gexscope-v3.0.1" ]]; then
+        echo "  ... remove adapter for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{9})ATCCACGTGCTTGAGA(.{9})TCAGCATGCGGCTACG(.{9})C(.{12})T{18}/ {
+                s/.*(.{9})ATCCACGTGCTTGAGA(.{9})TCAGCATGCGGCTACG(.{9})C(.{12})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{9}).{16}(.{9}).{16}(.{9}).{1}(.{12}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #remove 2nd linker
+            sed -E '
+                /.*(.{9})TCGGTGACAGCCATAT(.{9})CGTAGTCAGAAGCTGA(.{9})C(.{12})T{18}/ {
+                s/.*(.{9})TCGGTGACAGCCATAT(.{9})CGTAGTCAGAAGCTGA(.{9})C(.{12})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{9}).{16}(.{9}).{16}(.{9}).{1}(.{12}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #remove 3rd linker
+            sed -E '
+                /.*(.{9})CGAACATGTAGGTCTC(.{9})GACTACGTATTAGCAT(.{9})C(.{12})T{18}/ {
+                s/.*(.{9})CGAACATGTAGGTCTC(.{9})GACTACGTATTAGCAT(.{9})C(.{12})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{9}).{16}(.{9}).{16}(.{9}).{1}(.{12}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+            #remove 4th linker
+            sed -E '
+                /.*(.{9})GATTGTCACTAACGCG(.{9})ATGCTGACTCCTAGTC(.{9})C(.{12})T{18}/ {
+                s/.*(.{9})GATTGTCACTAACGCG(.{9})ATGCTGACTCCTAGTC(.{9})C(.{12})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{9}).{16}(.{9}).{16}(.{9}).{1}(.{12}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+
+
     #ICELL8 version 2 (non-UMI technology)
     if [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell8-5-prime" ]] || [[ "$technology" == "icell8-full-length" ]]; then
         echo "  ... filtering tagged reads for ${iechnology}"
