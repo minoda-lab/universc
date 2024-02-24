@@ -835,7 +835,7 @@ elif [[ "$technology" == "strt-seq-c1" ]] || [[ "$technology" == "strt-seqc1" ]]
      technology="strt-seq-c1"
 elif [[ "$technology" == "strt-seq-2i" ]] || [[ "$technology" == "strt-seq2i" ]] || [[ "$technology" == "strtseq2i" ]] || [[ "$technology" == "strtseq-2i" ]]; then
      technology="strt-seq-2i"
-elif [[ "$technology" == "strt-seq-2018" ]] || [[ "$technology" == "strt-seqc2018" ]] || [[ "$technology" == "strtseq2018" ]] || [[ "$technology" == "strtseq-2018" ]] || [[ "$technology" == "strt-seq-v3" ]]; then
+elif [[ "$technology" == "strt-seq-2018" ]] || [[ "$technology" == "strt-seq2018" ]] || [[ "$technology" == "strtseq2018" ]] || [[ "$technology" == "strtseq-2018" ]] || [[ "$technology" == "strt-seq-v3" ]]; then
     technology="strt-seq-2018"
     if [[ -z ${chemistry} ]] || [[ ${chemistry} == "SC5P"* ]]; then
         if [[ $verbose ]]; then
