@@ -6,7 +6,7 @@ affiliations:
    index: 1
  - name: "RIKEN Center for Sustainable Resource Sciences, Suehiro-cho-1-7-22, Tsurumi Ward, Yokohama, Kanagawa 230-0045, Japan"
    index: 2
-date: "Friday 09 February 2024"
+date: "Saturday 24 February 2024"
 output:
   prettydoc::html_pretty:
        theme: cayman
@@ -199,6 +199,7 @@ default settings, see the [installation](#Uninstalling) or [troubleshooting](#De
     -  CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
 -  Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
 -  GEXSCOPE
+    -  GEXSCOPE version 1.0.0 (12 bp barcode, 8 bp UMI): gexscope-v1.0.0
     -  GEXSCOPE version 2.0.0 (24 bp barcode, 8 bp UMI): gexscope-v2.0.0
     -  GEXSCOPE version 2.0.1 (24 bp barcode, 12 bp UMI): gexscope-v2.0.1
     -  GEXSCOPE version 2.1.0 (24 bp barcode, 12 bp UMI): gexscope-v2.0.0
@@ -1197,6 +1198,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
+                                  GEXSCOPE version 1.0.0 (12 bp barcode, 8 bp UMI): gexscope-v1.0.0
                                   GEXSCOPE version 2.0.0 (24 bp barcode, 8 bp UMI): gexscope-v2.0.0
                                   GEXSCOPE version 2.0.1 (24 bp barcode, 12 bp UMI): gexscope-v2.0.1
                                   GEXSCOPE version 2.1.0 (24 bp barcode, 12 bp UMI): gexscope-v2.0.0

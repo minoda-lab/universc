@@ -197,6 +197,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   CEL-Seq (8 bp barcode, 4 bp UMI): celseq
                                   CEL-Seq2 (6 bp UMI, 6 bp barcode): celseq2
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq, nadia
+                                  GEXSCOPE version 1.0.0 (12 bp barcode, 8 bp UMI): gexscope-v1.0.0
                                   GEXSCOPE version 2.0.0 (24 bp barcode, 8 bp UMI): gexscope-v2.0.0
                                   GEXSCOPE version 2.0.1 (24 bp barcode, 12 bp UMI): gexscope-v2.0.1
                                   GEXSCOPE version 2.1.0 (24 bp barcode, 12 bp UMI): gexscope-v2.0.0
