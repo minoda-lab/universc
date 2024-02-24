@@ -3350,7 +3350,21 @@ else
             mv ${crIN}/.temp $convFile
         done
     fi
-    if [[ "$technology" == "gexscope-v2.0.0" ]] || [[ "$technology" == "gexscope-v2.1.0" ]]; then
+    if [[ "$technology" == "gexscope-v2.0.0" ]]; then
+        echo "  ... remove adapter for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{8})ATCCACGTGCTTGAGA(.{8})TCAGCATGCGGCTACG(.{8})(.{8})T{18}/ {
+                s/.*(.{8})ATCCACGTGCTTGAGA(.{8})TCAGCATGCGGCTACG(.{8})(.{8})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{8}).{16}(.{8}).{16}(.{8})(.{8}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    if [[ "$technology" == "gexscope-v2.1.0" ]]; then
         echo "  ... remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
@@ -3364,7 +3378,21 @@ else
             mv ${crIN}/.temp $convFile
         done
     fi
-    if [[ "$technology" == "gexscope-v2.0.1" ]] || [[ "$technology" == "gexscope-v2.1.1" ]]; then
+    if [[ "$technology" == "gexscope-v2.0.1" ]]; then
+        echo "  ... remove adapter for ${technology}"
+        for convFile in "${convFiles[@]}"; do
+            #remove phase blocks and linkers
+            sed -E '
+                /.*(.{8})ATCCACGTGCTTGAGA(.{8})TCAGCATGCGGCTACG(.{8})C(.{8})T{18}/ {
+                s/.*(.{8})ATCCACGTGCTTGAGA(.{8})TCAGCATGCGGCTACG(.{8})C(.{8})T{18}/\1\2\3\4/g
+                n
+                n
+                s/.*(.{8}).{16}(.{8}).{16}(.{8}).{1}(.{8}).{18}/\1\2\3\4/g
+                }' $convFile > ${crIN}/.temp
+            mv ${crIN}/.temp $convFile
+        done
+    fi
+    if [[ "$technology" == "gexscope-v2.1.1" ]]; then
         echo "  ... remove adapter for ${technology}"
         for convFile in "${convFiles[@]}"; do
             #remove phase blocks and linkers
