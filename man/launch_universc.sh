@@ -225,7 +225,7 @@ Provides a conversion script to run multiple technologies and custom libraries w
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq
                                   GEXSCOPE version 1.0.0 (12 bp barcode, 8 bp UMI): gexscope-v1.0.0
                                   GEXSCOPE version 2.0.0 (24 bp barcode, 8 bp UMI): gexscope-v2.0.0
-                                  GEXSCOPE version 2.0.1 (24 bp barcode, 12 bp UMI): gexscope-v2.0.1
+                                  GEXSCOPE version 2.0.1 (24 bp barcode, 8 bp UMI): gexscope-v2.0.1
                                   GEXSCOPE version 2.1.0 (24 bp barcode, 12 bp UMI): gexscope-v2.0.0
                                   GEXSCOPE version 2.1.1 (24 bp barcode, 12 bp UMI): gexscope-v2.1.1
                                   GEXSCOPE version 2.2.1 (24 bp barcode, 12 bp UMI): gexscope-v2.2.1

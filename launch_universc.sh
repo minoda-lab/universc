@@ -199,7 +199,7 @@ Mandatory arguments to long options are mandatory for short options too.
                                   Drop-Seq (12 bp barcode, 8 bp UMI): dropseq, nadia
                                   GEXSCOPE version 1.0.0 (12 bp barcode, 8 bp UMI): gexscope-v1.0.0
                                   GEXSCOPE version 2.0.0 (24 bp barcode, 8 bp UMI): gexscope-v2.0.0
-                                  GEXSCOPE version 2.0.1 (24 bp barcode, 12 bp UMI): gexscope-v2.0.1
+                                  GEXSCOPE version 2.0.1 (24 bp barcode, 8 bp UMI): gexscope-v2.0.1
                                   GEXSCOPE version 2.1.0 (24 bp barcode, 12 bp UMI): gexscope-v2.0.0
                                   GEXSCOPE version 2.1.1 (24 bp barcode, 12 bp UMI): gexscope-v2.1.1
                                   GEXSCOPE version 2.2.1 (24 bp barcode, 12 bp UMI): gexscope-v2.2.1
@@ -735,6 +735,20 @@ elif [[ "$technology" == "celseq2" ]] || [[ "$technology" == "cel-seq2" ]]; then
     technology="celseq2"
 elif [[ "$technology" == "nadia" ]] || [[ "$technology" == "dropseq" ]] || [[ "$technology" == "drop-seq" ]]; then
     technology="nadia"
+elif [[ "$technology" == "gexscope-v1 ]] || [[ "$technology" == "gexscope-v1.0" ]] || [[ "$technology" == "gexscope-v1.0.0" ]] || [[ "$technology" == "gexscopev1.0.0" ]] || [[ "$technology" == "Singleron-v1 ]] || [[ "$technology" == "Singleron-v1.0.0" ]] || [[ "$technology" == "singleron-v1.0.0" ]] || [[ "$technology" == "GEXSCOPE-v1.0.0" ]] || [[ "$technology" == "Gexscope-v1.0.0" ]]; then
+    technology="gexscope-v1.0.0"
+elif [[ "$technology" == "gexscope-v2 ]] || [[ "$technology" == "gexscope-v2.0" ]] || [[ "$technology" == "gexscope-v2.0.0" ]] || [[ "$technology" == "gexscopev2.0.0" ]] || [[ "$technology" == "Singleron-v1 ]] || [[ "$technology" == "Singleron-v2.0.0" ]] || [[ "$technology" == "singleron-v2.0.0" ]] || [[ "$technology" == "GEXSCOPE-v2.0.0" ]] || [[ "$technology" == "Gexscope-v2.0.0" ]]; then
+    technology="gexscope-v2.0.0"
+elif [[ "$technology" == "gexscope-v2.0.1" ]] || [[ "$technology" == "gexscopev2.0.1" ]] || [[ "$technology" == "Singleron-v1 ]] || [[ "$technology" == "Singleron-v2.0.1" ]] || [[ "$technology" == "singleron-v2.0.1" ]] || [[ "$technology" == "GEXSCOPE-v2.0.1" ]] || [[ "$technology" == "Gexscope-v2.0.1" ]]; then
+    technology="gexscope-v2.0.1
+elif [[ "$technology" == "gexscope-v2.1" ]] || [[ "$technology" == "gexscope-v2.1.0" ]] || [[ "$technology" == "gexscopev2.1.0" ]] || [[ "$technology" == "Singleron-v1 ]] || [[ "$technology" == "Singleron-v2.1.0" ]] || [[ "$technology" == "singleron-v2.1.0" ]] || [[ "$technology" == "GEXSCOPE-v2.1.0" ]] || [[ "$technology" == "Gexscope-v2.1.0" ]]; then
+    technology="gexscope-v2.1.0"
+elif [[ "$technology" == "gexscope-v2.1.1" ]] || [[ "$technology" == "gexscopev2.1.1" ]] || [[ "$technology" == "Singleron-v1 ]] || [[ "$technology" == "Singleron-v2.1.1" ]] || [[ "$technology" == "singleron-v2.1.1" ]] || [[ "$technology" == "GEXSCOPE-v2.1.1" ]] || [[ "$technology" == "Gexscope-v2.1.1" ]]; then
+    technology="gexscope-v2.1.1"
+elif [[ "$technology" == "gexscope-v2.2" ]] || [[ "$technology" == "gexscope-v2.2.1" ]] || [[ "$technology" == "gexscopev2.2.1" ]] || [[ "$technology" == "Singleron-v1 ]] || [[ "$technology" == "Singleron-v2.2.1" ]] || [[ "$technology" == "singleron-v2.2.1" ]] || [[ "$technology" == "GEXSCOPE-v2.2.1" ]] || [[ "$technology" == "Gexscope-v2.2.1" ]]; then
+    technology="gexscope-v2.2.1"
+elif [[ "$technology" == "gexscope-v3 ]] || [[ "$technology" == "gexscope-v3.0" ]] || [[ "$technology" == "gexscope-v3.0.1" ]] || [[ "$technology" == "gexscopev3.0.1" ]] || [[ "$technology" == "Singleron-v1 ]] || [[ "$technology" == "Singleron-v3.0.1" ]] || [[ "$technology" == "singleron-v3.0.1" ]] || [[ "$technology" == "GEXSCOPE-v3.0.1" ]] || [[ "$technology" == "Gexscope-v3.0.1" ]]; then
+    technology="gexscope-v3.0.1"
 elif [[ "$technology" == "icell8" ]] || [[ "$technology" == "icell-8" ]] ||  [[ "$technology" == "icell8-v3" ]] || [[ "$technology" == "icell8v3" ]]; then
     technology="icell8"
     #set as "icell8-5-prime" if called by chemistry
@@ -944,6 +958,22 @@ elif [[ "$technology" == "nadia" ]]; then
     barcodelength=12
     umilength=8
     minlength=12
+elif [[ "$technology" == "gexscope-v1.0.0" ]]; then
+    barcodelength=12
+    umilength=8
+    minlength=12
+elif [[ "$technology" == "gexscope-v2.0.0" ]] || [[ "$technology" == "gexscope-v2.0.1" ]]; then
+    barcodelength=24
+    umilength=8
+    minlength=24
+elif [[ "$technology" == "gexscope-v2.1.0" ]] || [[ "$technology" == "gexscope-v2.1.1" ]] || [[ "$technology" == "gexscope-v2.2.0" ]] || [[ "$technology" == "gexscope-v2.2.1" ]]; then
+    barcodelength=24
+    umilength=12
+    minlength=24
+elif [[ "$technology" == "gexscope-v3.0.0" ]] || [[ "$technology" == "gexscope-v3.0.1" ]]; then
+    barcodelength=27
+    umilength=12
+    minlength=27
 elif [[ "$technology" == "icell8" ]]; then
     barcodelength=11
     if [[ $nonUMI == "true" ]]; then
