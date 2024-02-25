@@ -70,39 +70,6 @@ PERCELLSTATS=${TOOLS}/ExtractBasicStats.pl
 
 
 
-#####define set options#####
-# set defaults to 10x if missing (enables unit testing without warnings)
-if [[ -z ${lastcall_b} ]]; then
-    lastcall_b=16
-fi
-if [[ -z ${lastcall_u} ]]; then
-    lastcall_u=10
-fi
-if [[ -z ${lastcall_p} ]]; then
-    lastcall_p="default:10x"
-fi
-lockfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock #path for .lock file
-lastcallfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.last_called #path for .last_called
-lastcall=`[[ -e $lastcallfile ]] && cat $lastcallfile || echo ""`
-lastcall_b=`echo ${lastcall} | cut -f 1 -d' '`
-lastcall_u=`echo ${lastcall} | cut -f 2 -d' '`
-lastcall_p=`echo ${lastcall} | cut -f 3 -d' '`
-barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
-if [[ $(echo "${cellrangerversion} 4.0.0" | tr " " "\n" | sort -V | tail -n 1) == ${cellrangerversion} ]]; then
-    barcodedir=$(dirname $cellrangerpath)/lib/python/cellranger/barcodes
-    mkdir -p ${cellrangerpath}-cs/${cellrangerversion}
-    ln -sf $(dirname $cellrangerpath)/mro/rna ${cellrangerpath}-cs/${cellrangerversion}/mro
-    ln -sf $(dirname $cellrangerpath)/lib ${cellrangerpath}-cs/${cellrangerversion}/lib
-fi
-barcodefile=""
-crIN=input4cellranger #name of the directory with all FASTQ and index files given to Cell Ranger
-whitelistdir=${SDIR}/whitelists #path to whitelists
-whitelistfile="outs/whitelist.txt" #name of the whitelist file added to the cellranger output
-percellfile="outs/basic_stats.txt" #name of the file with the basic statistics of the run added to the cellranger output
-##########
-
-
-
 #####usage statement#####
 ## detect shell across different OS
 if [[ -z $VENDOR ]]; then
@@ -628,7 +595,42 @@ fi
 cellrangerversion=$(cellranger --version 2>/dev/null | head -n 2 | tail -n 1 | rev | cut -f 1 -d" " | rev | cut -f 2 -d'(' | cut -f 1 -d')')
 if [[ $verbose ]]; then
     echo $cellrangerversion
+    echo ${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes
 fi
+barcodedir=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes #folder within cellranger with the whitelist barcodes
+if [[ $(echo "${cellrangerversion} 4.0.0" | tr " " "\n" | sort -V | tail -n 1) == ${cellrangerversion} ]]; then
+    barcodedir=$(dirname $cellrangerpath)/lib/python/cellranger/barcodes
+    mkdir -p ${cellrangerpath}-cs/${cellrangerversion}
+    ln -sf $(dirname $cellrangerpath)/mro/rna ${cellrangerpath}-cs/${cellrangerversion}/mro
+    ln -sf $(dirname $cellrangerpath)/lib ${cellrangerpath}-cs/${cellrangerversion}/lib
+fi
+##########
+
+
+
+
+#####define set options#####
+# set defaults to 10x if missing (enables unit testing without warnings)
+if [[ -z ${lastcall_b} ]]; then
+    lastcall_b=16
+fi
+if [[ -z ${lastcall_u} ]]; then
+    lastcall_u=10
+fi
+if [[ -z ${lastcall_p} ]]; then
+    lastcall_p="default:10x"
+fi
+lockfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.lock #path for .lock file
+lastcallfile=${cellrangerpath}-cs/${cellrangerversion}/lib/python/cellranger/barcodes/.last_called #path for .last_called
+lastcall=`[[ -e $lastcallfile ]] && cat $lastcallfile || echo ""`
+lastcall_b=`echo ${lastcall} | cut -f 1 -d' '`
+lastcall_u=`echo ${lastcall} | cut -f 2 -d' '`
+lastcall_p=`echo ${lastcall} | cut -f 3 -d' '`
+barcodefile=""
+crIN=input4cellranger #name of the directory with all FASTQ and index files given to Cell Ranger
+whitelistdir=${SDIR}/whitelists #path to whitelists
+whitelistfile="outs/whitelist.txt" #name of the whitelist file added to the cellranger output
+percellfile="outs/basic_stats.txt" #name of the file with the basic statistics of the run added to the cellranger output
 ##########
 
 
@@ -640,6 +642,10 @@ host=$(hostname) # returns host for local run and container ID for docker contai
 user=$(whoami 2> /dev/null || id -ur) # returns username if defined and user ID if not
 
 #Cell Ranger
+if [[ $verbose ]]; then
+    echo barcode directory:
+    echo $barcodedir
+fi
 if ! [[ -w "$barcodedir" ]]; then
     echo "Error: Trying to run Cell Ranger installed at ${cellrangerpath}"
     echo "launch_universc.sh can only run with Cell Ranger installed locally"
@@ -740,7 +746,7 @@ elif [[ "$technology" == "gexscope-v1 ]] || [[ "$technology" == "gexscope-v1.0" 
 elif [[ "$technology" == "gexscope-v2 ]] || [[ "$technology" == "gexscope-v2.0" ]] || [[ "$technology" == "gexscope-v2.0.0" ]] || [[ "$technology" == "gexscopev2.0.0" ]] || [[ "$technology" == "Singleron-v1 ]] || [[ "$technology" == "Singleron-v2.0.0" ]] || [[ "$technology" == "singleron-v2.0.0" ]] || [[ "$technology" == "GEXSCOPE-v2.0.0" ]] || [[ "$technology" == "Gexscope-v2.0.0" ]]; then
     technology="gexscope-v2.0.0"
 elif [[ "$technology" == "gexscope-v2.0.1" ]] || [[ "$technology" == "gexscopev2.0.1" ]] || [[ "$technology" == "Singleron-v1 ]] || [[ "$technology" == "Singleron-v2.0.1" ]] || [[ "$technology" == "singleron-v2.0.1" ]] || [[ "$technology" == "GEXSCOPE-v2.0.1" ]] || [[ "$technology" == "Gexscope-v2.0.1" ]]; then
-    technology="gexscope-v2.0.1
+    technology="gexscope-v2.0.1"
 elif [[ "$technology" == "gexscope-v2.1" ]] || [[ "$technology" == "gexscope-v2.1.0" ]] || [[ "$technology" == "gexscopev2.1.0" ]] || [[ "$technology" == "Singleron-v1 ]] || [[ "$technology" == "Singleron-v2.1.0" ]] || [[ "$technology" == "singleron-v2.1.0" ]] || [[ "$technology" == "GEXSCOPE-v2.1.0" ]] || [[ "$technology" == "Gexscope-v2.1.0" ]]; then
     technology="gexscope-v2.1.0"
 elif [[ "$technology" == "gexscope-v2.1.1" ]] || [[ "$technology" == "gexscopev2.1.1" ]] || [[ "$technology" == "Singleron-v1 ]] || [[ "$technology" == "Singleron-v2.1.1" ]] || [[ "$technology" == "singleron-v2.1.1" ]] || [[ "$technology" == "GEXSCOPE-v2.1.1" ]] || [[ "$technology" == "Gexscope-v2.1.1" ]]; then
